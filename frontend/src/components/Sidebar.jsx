@@ -3,21 +3,21 @@ import { useNavigate } from 'react-router-dom'
 /**
  * Sidebar
  *
- * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board
+ * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board | Club Activities
  *
- * TODO (Phase 2 / collaborators):
- *   - Each nav item should navigate to its own route
+ * TODO (Phase 3 / collaborators):
  *   - "Logout" should clear the JWT token from localStorage
  *     and call POST /api/auth/logout before redirecting to /
  *   - Highlight activeItem based on current route (useLocation)
  */
 
 const NAV_ITEMS = [
-  { id: 'home',          label: 'Home',           icon: <HomeIcon /> },
-  { id: 'courses',       label: 'Courses',         icon: <CoursesIcon /> },
-  { id: 'bookmarks',     label: 'Bookmarks',       icon: <BookmarksIcon /> },
-  { id: 'advising',      label: 'Advising',        icon: <AdvisingIcon /> },
-  { id: 'messaging',     label: 'Messaging Board', icon: <MessagingIcon /> },
+  { id: 'home',      label: 'Home',            icon: <HomeIcon />,      route: '/dashboard'       },
+  { id: 'courses',   label: 'Courses',          icon: <CoursesIcon />,   route: '/courses'         },
+  { id: 'bookmarks', label: 'Bookmarks',        icon: <BookmarksIcon />, route: '/bookmarks'       },
+  { id: 'advising',  label: 'Advising',         icon: <AdvisingIcon />,  route: '/advising'        },
+  { id: 'messaging', label: 'Messaging Board',  icon: <MessagingIcon />, route: '/messaging'       },
+  { id: 'clubs',     label: 'Club Activities',  icon: <ClubIcon />,      route: '/club-activities' },
 ]
 
 export default function Sidebar({ activeItem = 'home' }) {
@@ -25,13 +25,15 @@ export default function Sidebar({ activeItem = 'home' }) {
 
   const handleLogout = () => {
     /*
-     * ── Phase 2 stub ──────────────────────────────────────────
+     * ── Phase 3 stub ──────────────────────────────────────────
      * await fetch('/api/auth/logout', { method: 'POST',
      *   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
      * })
      * localStorage.removeItem('token')
+     * localStorage.removeItem('userRole')
      * ─────────────────────────────────────────────────────────
      */
+    localStorage.removeItem('userRole')
     navigate('/')
   }
 
@@ -51,7 +53,7 @@ export default function Sidebar({ activeItem = 'home' }) {
             id={`nav-${item.id}`}
             className={`sidebar-nav-item ${activeItem === item.id ? 'active' : ''}`}
             aria-current={activeItem === item.id ? 'page' : undefined}
-            onClick={() => {/* TODO: navigate to item route */}}
+            onClick={() => navigate(item.route)}
           >
             {item.icon}
             {item.label}
@@ -74,6 +76,7 @@ export default function Sidebar({ activeItem = 'home' }) {
     </aside>
   )
 }
+
 
 /* ── SVG Icons ───────────────────────────────────────────── */
 function HomeIcon() {
@@ -130,3 +133,16 @@ function LogoutIcon() {
     </svg>
   )
 }
+
+function ClubIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      <line x1="12" y1="17" x2="22" y2="17"/>
+    </svg>
+  )
+}
+

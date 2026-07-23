@@ -2,9 +2,8 @@
 
 > This file covers the **shared frontend and shared backend** of CampusConnect.
 > It is the first file any AI assistant or new collaborator should read.
->
-> For Arham's personal backend workspace, see `Arham/memory.md`.
 > For full team onboarding, see `COLLABORATORS.md`.
+
 
 ------------------------------------------------------------------------
 
@@ -30,9 +29,6 @@
 CampusConnect/
 ├── frontend/                  ← Shared React (Vite) app
 ├── backend/                   ← Shared Spring Boot backend
-├── Arham/                     ← Arham's personal workspace
-│   ├── backend/               ← Arham's individual Spring Boot project
-│   └── memory.md              ← Arham's personal session memory
 ├── COLLABORATORS.md           ← Team onboarding guide
 └── memory.md                  ← This file (shared project memory)
 ```
@@ -103,7 +99,6 @@ CampusConnect/
 ## Documentation
 
 - ✅ `COLLABORATORS.md` — Full team onboarding guide
-- ✅ `Arham/memory.md` — Arham's personal workspace memory (reverted, untouched)
 
 ------------------------------------------------------------------------
 
@@ -225,11 +220,9 @@ None.
 Before any task on the shared project:
 
 1. Read this file first to understand current state.
-2. The shared backend is `backend/` (repo root) — NOT `Arham/backend/`.
+2. The shared backend is `backend/` (repo root).
 3. The shared frontend is `frontend/` (repo root).
-4. Do NOT modify `Arham/memory.md` — that is Arham's personal file.
-5. Update **this file** after completing any shared frontend or backend work.
-6. For team conventions, refer to `COLLABORATORS.md`.
-7. For product requirements, refer to `Arham/prd.md`.
-8. For system architecture, refer to `Arham/architecture.md`.
-9. All Phase 2 TODOs in source files are marked with `// TODO (Phase 2)` comments.
+4. Update **this file** after completing any shared frontend or backend work.
+5. For team conventions, refer to `COLLABORATORS.md`.
+6. All Phase 3 TODOs in source files are marked with `// TODO (Phase 3)` comments.
+
