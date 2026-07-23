@@ -22,38 +22,38 @@ CampusConnect/
 ├── frontend/                  ← React (Vite) – shared UI
 │   ├── src/
 │   │   ├── pages/
-│   │   │   ├── LoginPage.jsx       ← Login page
-│   │   │   ├── SignupPage.jsx      ← Signup page
-│   │   │   └── DashboardPage.jsx   ← Dashboard shell (add your feature here)
+│   │   │   ├── LoginPage.jsx           ← Login page (role selector added)
+│   │   │   ├── SignupPage.jsx          ← Signup page
+│   │   │   ├── DashboardPage.jsx       ← Dashboard shell
+│   │   │   └── ClubActivitiesPage.jsx  ← ✅ NEW – Phase 2 Club feature
 │   │   ├── components/
-│   │   │   ├── Sidebar.jsx         ← Navigation sidebar
-│   │   │   └── StatCard.jsx        ← Reusable stat card
-│   │   ├── App.jsx                 ← Route definitions
-│   │   ├── main.jsx                ← React entry point
-│   │   └── index.css               ← Global design system (DO NOT OVERRIDE)
+│   │   │   ├── Sidebar.jsx             ← Navigation sidebar (updated)
+│   │   │   └── StatCard.jsx            ← Reusable stat card
+│   │   ├── App.jsx                     ← Route definitions (updated)
+│   │   ├── main.jsx                    ← React entry point
+│   │   └── index.css                   ← Global design system (DO NOT OVERRIDE)
 │   └── package.json
 │
-├── backend/                   ← Spring Boot – shared auth backend (Phase 1 stub)
+├── backend/                   ← Spring Boot – shared backend
 │   ├── src/main/java/com/campusconnect/backend/
-│   │   ├── CampusConnectApplication.java
-│   │   ├── controller/AuthController.java   ← Login / Register / Logout stubs
-│   │   ├── dto/AuthRequest.java
-│   │   ├── dto/AuthResponse.java
-│   │   └── config/
-│   │       ├── SecurityConfig.java
-│   │       └── CorsConfig.java
-│   ├── src/main/resources/application.properties
-│   ├── pom.xml
+│   │   ├── BackendApplication.java
+│   │   ├── controller/
+│   │   │   ├── HealthController.java    ← Health check
+│   │   │   └── ClubController.java      ← ✅ NEW – Club API (Phase 2 static)
+│   │   ├── config/
+│   │   │   ├── SecurityConfig.java
+│   │   │   └── CorsConfig.java
+│   │   ├── exception/
+│   │   │   ├── GlobalExceptionHandler.java
+│   │   │   ├── ResourceNotFoundException.java
+│   │   │   ├── ForbiddenException.java
+│   │   │   └── UnauthorizedException.java
+│   │   ├── dto/, model/, repository/, security/, service/
+│   ├── src/main/resources/
+│   │   ├── application.properties
+│   │   ├── application-dev.properties   ← H2 in-memory
+│   │   └── application-prod.properties  ← MySQL
 │   └── README.md
-│
-├── Arham/                     ← Arham's personal workspace
-│   ├── backend/               ← Arham's individual Spring Boot project
-│   ├── memory.md              ← Arham's session memory (AI reads this)
-│   ├── prd.md
-│   ├── architecture.md
-│   ├── design.md
-│   ├── phases.md
-│   └── rules.md
 │
 └── COLLABORATORS.md           ← This file
 ```
@@ -82,7 +82,7 @@ mvn spring-boot:run   # starts at http://localhost:8080
 
 ---
 
-## Current Status (Phase 1 – Complete)
+## Current Status
 
 | Feature                | Status        | Location                        |
 |------------------------|---------------|---------------------------------|
@@ -90,10 +90,12 @@ mvn spring-boot:run   # starts at http://localhost:8080
 | Signup Page            | ✅ Done        | `frontend/src/pages/SignupPage.jsx` |
 | Dashboard Shell        | ✅ Done        | `frontend/src/pages/DashboardPage.jsx` |
 | Sidebar Navigation     | ✅ Done        | `frontend/src/components/Sidebar.jsx` |
-| Auth Stub Endpoints    | ✅ Done        | `backend/controller/AuthController.java` |
-| Database Integration   | ⏳ Phase 2     | `backend/` (see Phase 2 section) |
-| JWT Authentication     | ⏳ Phase 2     | `backend/config/SecurityConfig.java` |
-| Real User Data         | ⏳ Phase 2     | Dashboard page TODOs |
+| Health Endpoint        | ✅ Done        | `backend/controller/HealthController.java` |
+| Club Activities Page   | ✅ Phase 2     | `frontend/src/pages/ClubActivitiesPage.jsx` |
+| Club API (static)      | ✅ Phase 2     | `backend/controller/ClubController.java` |
+| Database Integration   | ⏳ Phase 3     | `backend/` (see Phase 3 section) |
+| JWT Authentication     | ⏳ Phase 3     | `backend/config/SecurityConfig.java` |
+| Real User Data         | ⏳ Phase 3     | Dashboard page TODOs |
 | Courses Feature        | ⏳ TBD         | Add page + API |
 | Advising Feature       | ⏳ TBD         | Add page + API |
 | Messaging Board        | ⏳ TBD         | Add page + API |
@@ -185,36 +187,38 @@ All design tokens live in `frontend/src/index.css` under `:root {}`.
 
 ## Sidebar Nav Items
 
-The sidebar has these nav items. Each is a placeholder for a future route:
+The sidebar has these nav items. Each navigates to its own route:
 
-| Nav Item        | Target Route       | Status       |
-|-----------------|--------------------|--------------|
-| Home            | `/dashboard`       | ✅ Active     |
-| Courses         | `/courses`         | ⏳ TBD        |
-| Bookmarks       | `/bookmarks`       | ⏳ TBD        |
-| Advising        | `/advising`        | ⏳ TBD        |
-| Messaging Board | `/messaging`       | ⏳ TBD        |
+| Nav Item        | Target Route         | Status        |
+|-----------------|----------------------|---------------|
+| Home            | `/dashboard`         | ✅ Active      |
+| Courses         | `/courses`           | ⏳ TBD         |
+| Bookmarks       | `/bookmarks`         | ⏳ TBD         |
+| Advising        | `/advising`          | ⏳ TBD         |
+| Messaging Board | `/messaging`         | ⏳ TBD         |
+| Club Activities | `/club-activities`   | ✅ Phase 2     |
 
 ---
 
-## Phase 2 – What Still Needs to Be Done
+## Phase 3 – What Still Needs to Be Done (Auth & RBAC)
 
 > These are shared tasks. Coordinate before starting.
+> Phase 3 was originally Phase 2 — deferred to prioritize the Club Activities demo.
 
 ### Backend
-- [ ] Add JPA + H2 (dev) + MySQL (prod) to `backend/pom.xml`
+- [ ] Add JPA + H2 (dev) + MySQL (prod) to `backend/pom.xml` (already partially done)
 - [ ] Create `User` and `Role` entities in `backend/.../model/`
 - [ ] Create `UserRepository` in `backend/.../repository/`
 - [ ] Implement `JwtService` + `JwtAuthFilter`
-- [ ] Update `AuthController.login` — BCrypt verify + return JWT
-- [ ] Update `AuthController.register` — save user + return JWT
+- [ ] Update auth endpoints — BCrypt verify + return JWT
 - [ ] Update `SecurityConfig` — add JWT filter + RBAC rules
-- [ ] Remove datasource exclusions from `application.properties`
+- [ ] Add role claim to JWT so Club Activities can enforce ADMIN restriction
 
 ### Frontend
 - [ ] Create `ProtectedRoute` component that checks for JWT
 - [ ] Wrap `/dashboard` and all feature routes with `ProtectedRoute`
 - [ ] Store JWT in `localStorage` after login/signup
+- [ ] Replace demo role dropdown in `LoginPage` with real role from JWT
 - [ ] Add Axios/fetch interceptor to attach `Authorization` header
 - [ ] Pull real username from JWT for the dashboard greeting
 - [ ] Replace all static placeholder data with real API calls
@@ -232,7 +236,7 @@ The sidebar has these nav items. Each is a placeholder for a future route:
 
 ## Contact / Questions
 
-- Refer to `Arham/prd.md` for the full product requirements.
-- Refer to `Arham/architecture.md` for the system architecture.
-- Refer to `Arham/design.md` for design guidelines.
-- Refer to `Arham/memory.md` for session history (AI assistant context).
+- Refer to `backend/README.md` for API documentation and setup.
+- Refer to `memory.md` (root) for shared project session history.
+- Refer to `COLLABORATORS.md` (this file) for team conventions and onboarding.
+

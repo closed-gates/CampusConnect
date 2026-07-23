@@ -4,6 +4,7 @@ import SignupPage            from './pages/SignupPage'
 import DashboardPage         from './pages/DashboardPage'
 import AcademicCalendarPage  from './pages/AcademicCalendarPage'
 import MessagingPage         from './pages/MessagingPage'
+import ClubActivitiesPage    from './pages/ClubActivitiesPage'
 
 /**
  * App – Root router
@@ -15,8 +16,13 @@ import MessagingPage         from './pages/MessagingPage'
  *   /academic-calendar  → AcademicCalendarPage
  *   /messaging          → MessagingPage
  *   *                   → redirect to /
+ *   /                → LoginPage
+ *   /signup          → SignupPage
+ *   /dashboard       → DashboardPage
+ *   /club-activities → ClubActivitiesPage  ← Phase 2
+ *   *                → redirect to /
  *
- * NOTE (Phase 2): Replace the wildcard redirect with a
+ * NOTE (Phase 3): Replace the wildcard redirect with a
  * ProtectedRoute component that checks for a valid JWT token.
  */
 export default function App() {
@@ -27,8 +33,9 @@ export default function App() {
       <Route path="/dashboard"         element={<DashboardPage />} />
       <Route path="/academic-calendar" element={<AcademicCalendarPage />} />
       <Route path="/messaging"         element={<MessagingPage />} />
+      <Route path="/club-activities" element={<ClubActivitiesPage />} />
       {/* Catch-all */}
-      <Route path="*"                  element={<Navigate to="/" replace />} />
+      <Route path="*"                element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
