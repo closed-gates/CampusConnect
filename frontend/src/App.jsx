@@ -1,13 +1,19 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import LoginPage          from './pages/LoginPage'
-import SignupPage         from './pages/SignupPage'
-import DashboardPage      from './pages/DashboardPage'
+import LoginPage    from './pages/LoginPage'
+import SignupPage   from './pages/SignupPage'
+import DashboardPage from './pages/DashboardPage'
+import AcademicCalendarPage from './pages/AcademicCalendarPage'
 import ClubActivitiesPage from './pages/ClubActivitiesPage'
 
 /**
  * App – Root router
  *
  * Routes:
+ *   /                   → LoginPage
+ *   /signup             → SignupPage
+ *   /dashboard          → DashboardPage
+ *   /academic-calendar  → AcademicCalendarPage
+ *   *                   → redirect to /
  *   /                → LoginPage
  *   /signup          → SignupPage
  *   /dashboard       → DashboardPage
@@ -20,9 +26,10 @@ import ClubActivitiesPage from './pages/ClubActivitiesPage'
 export default function App() {
   return (
     <Routes>
-      <Route path="/"                element={<LoginPage />} />
-      <Route path="/signup"          element={<SignupPage />} />
-      <Route path="/dashboard"       element={<DashboardPage />} />
+      <Route path="/"                  element={<LoginPage />} />
+      <Route path="/signup"            element={<SignupPage />} />
+      <Route path="/dashboard"         element={<DashboardPage />} />
+      <Route path="/academic-calendar" element={<AcademicCalendarPage />} />
       <Route path="/club-activities" element={<ClubActivitiesPage />} />
       {/* Catch-all */}
       <Route path="*"                element={<Navigate to="/" replace />} />

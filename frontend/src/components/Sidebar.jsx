@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 /**
  * Sidebar
  *
+ * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board | Academic Calendar
  * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board | Club Activities
  *
  * TODO (Phase 3 / collaborators):
@@ -12,11 +13,12 @@ import { useNavigate } from 'react-router-dom'
  */
 
 const NAV_ITEMS = [
-  { id: 'home',      label: 'Home',            icon: <HomeIcon />,      route: '/dashboard'       },
-  { id: 'courses',   label: 'Courses',          icon: <CoursesIcon />,   route: '/courses'         },
-  { id: 'bookmarks', label: 'Bookmarks',        icon: <BookmarksIcon />, route: '/bookmarks'       },
-  { id: 'advising',  label: 'Advising',         icon: <AdvisingIcon />,  route: '/advising'        },
-  { id: 'messaging', label: 'Messaging Board',  icon: <MessagingIcon />, route: '/messaging'       },
+  { id: 'home',              label: 'Home',              icon: <HomeIcon />,           route: '/dashboard' },
+  { id: 'courses',           label: 'Courses',            icon: <CoursesIcon />,        route: null },
+  { id: 'bookmarks',         label: 'Bookmarks',          icon: <BookmarksIcon />,      route: null },
+  { id: 'advising',          label: 'Advising',           icon: <AdvisingIcon />,       route: null },
+  { id: 'messaging',         label: 'Messaging Board',    icon: <MessagingIcon />,      route: null },
+  { id: 'academic-calendar', label: 'Academic Calendar',  icon: <CalendarIcon />,       route: '/academic-calendar' },
   { id: 'clubs',     label: 'Club Activities',  icon: <ClubIcon />,      route: '/club-activities' },
 ]
 
@@ -53,7 +55,7 @@ export default function Sidebar({ activeItem = 'home' }) {
             id={`nav-${item.id}`}
             className={`sidebar-nav-item ${activeItem === item.id ? 'active' : ''}`}
             aria-current={activeItem === item.id ? 'page' : undefined}
-            onClick={() => navigate(item.route)}
+            onClick={() => item.route && navigate(item.route)}
           >
             {item.icon}
             {item.label}
@@ -120,6 +122,17 @@ function MessagingIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  )
+}
+
+function CalendarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
     </svg>
   )
 }
