@@ -1,6 +1,8 @@
 package com.campusconnect.assignment;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,12 +13,14 @@ public class Assignment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
     private String title;
 
     @Column(length = 1000)
     private String description;
 
-    private Long courseId;
+    @NotBlank(message = "Course code is required")
+    private String courseCode;
 
     private LocalDateTime dueDate;
 
@@ -25,10 +29,10 @@ public class Assignment {
     // Constructors
     public Assignment() {}
 
-    public Assignment(String title, String description, Long courseId, LocalDateTime dueDate) {
+    public Assignment(String title, String description, String courseCode, LocalDateTime dueDate) {
         this.title = title;
         this.description = description;
-        this.courseId = courseId;
+        this.courseCode = courseCode;
         this.dueDate = dueDate;
     }
 
@@ -41,8 +45,8 @@ public class Assignment {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Long getCourseId() { return courseId; }
-    public void setCourseId(Long courseId) { this.courseId = courseId; }
+    public String getCourseCode() { return courseCode; }
+    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
 
     public LocalDateTime getDueDate() { return dueDate; }
     public void setDueDate(LocalDateTime dueDate) { this.dueDate = dueDate; }
