@@ -1,18 +1,20 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import LoginPage          from './pages/LoginPage'
-import SignupPage         from './pages/SignupPage'
-import DashboardPage      from './pages/DashboardPage'
-import ClubActivitiesPage from './pages/ClubActivitiesPage'
+import LoginPage            from './pages/LoginPage'
+import SignupPage           from './pages/SignupPage'
+import DashboardPage        from './pages/DashboardPage'
+import ClubActivitiesPage   from './pages/ClubActivitiesPage'
+import AcademicCalendarPage from './pages/AcademicCalendarPage'
 
 /**
  * App – Root router
  *
  * Routes:
- *   /                → LoginPage
- *   /signup          → SignupPage
- *   /dashboard       → DashboardPage
- *   /club-activities → ClubActivitiesPage  ← Phase 2
- *   *                → redirect to /
+ *   /                   → LoginPage
+ *   /signup             → SignupPage
+ *   /dashboard          → DashboardPage
+ *   /club-activities    → ClubActivitiesPage   ← Phase 2 (Arham)
+ *   /academic-calendar  → AcademicCalendarPage ← Phase 2 (Nafiz)
+ *   *                   → redirect to /
  *
  * NOTE (Phase 3): Replace the wildcard redirect with a
  * ProtectedRoute component that checks for a valid JWT token.
@@ -20,12 +22,13 @@ import ClubActivitiesPage from './pages/ClubActivitiesPage'
 export default function App() {
   return (
     <Routes>
-      <Route path="/"                element={<LoginPage />} />
-      <Route path="/signup"          element={<SignupPage />} />
-      <Route path="/dashboard"       element={<DashboardPage />} />
-      <Route path="/club-activities" element={<ClubActivitiesPage />} />
+      <Route path="/"                  element={<LoginPage />} />
+      <Route path="/signup"            element={<SignupPage />} />
+      <Route path="/dashboard"         element={<DashboardPage />} />
+      <Route path="/club-activities"   element={<ClubActivitiesPage />} />
+      <Route path="/academic-calendar" element={<AcademicCalendarPage />} />
       {/* Catch-all */}
-      <Route path="*"                element={<Navigate to="/" replace />} />
+      <Route path="*"                  element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

@@ -3,21 +3,22 @@ import { useNavigate } from 'react-router-dom'
 /**
  * Sidebar
  *
- * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board | Club Activities
+ * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board
+ *            | Academic Calendar (Nafiz) | Club Activities (Arham)
  *
- * TODO (Phase 3 / collaborators):
- *   - "Logout" should clear the JWT token from localStorage
- *     and call POST /api/auth/logout before redirecting to /
+ * TODO (Phase 3):
+ *   - "Logout" should clear JWT from localStorage and call POST /api/auth/logout
  *   - Highlight activeItem based on current route (useLocation)
  */
 
 const NAV_ITEMS = [
-  { id: 'home',      label: 'Home',            icon: <HomeIcon />,      route: '/dashboard'       },
-  { id: 'courses',   label: 'Courses',          icon: <CoursesIcon />,   route: '/courses'         },
-  { id: 'bookmarks', label: 'Bookmarks',        icon: <BookmarksIcon />, route: '/bookmarks'       },
-  { id: 'advising',  label: 'Advising',         icon: <AdvisingIcon />,  route: '/advising'        },
-  { id: 'messaging', label: 'Messaging Board',  icon: <MessagingIcon />, route: '/messaging'       },
-  { id: 'clubs',     label: 'Club Activities',  icon: <ClubIcon />,      route: '/club-activities' },
+  { id: 'home',              label: 'Home',             icon: <HomeIcon />,      route: '/dashboard'       },
+  { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: null               },
+  { id: 'bookmarks',         label: 'Bookmarks',         icon: <BookmarksIcon />, route: null               },
+  { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: null               },
+  { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: null               },
+  { id: 'academic-calendar', label: 'Academic Calendar', icon: <CalendarIcon />,  route: '/academic-calendar' },
+  { id: 'clubs',             label: 'Club Activities',   icon: <ClubIcon />,      route: '/club-activities' },
 ]
 
 export default function Sidebar({ activeItem = 'home' }) {
@@ -53,7 +54,7 @@ export default function Sidebar({ activeItem = 'home' }) {
             id={`nav-${item.id}`}
             className={`sidebar-nav-item ${activeItem === item.id ? 'active' : ''}`}
             aria-current={activeItem === item.id ? 'page' : undefined}
-            onClick={() => navigate(item.route)}
+            onClick={() => item.route && navigate(item.route)}
           >
             {item.icon}
             {item.label}
@@ -76,7 +77,6 @@ export default function Sidebar({ activeItem = 'home' }) {
     </aside>
   )
 }
-
 
 /* ── SVG Icons ───────────────────────────────────────────── */
 function HomeIcon() {
@@ -124,12 +124,13 @@ function MessagingIcon() {
   )
 }
 
-function LogoutIcon() {
+function CalendarIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
     </svg>
   )
 }
@@ -146,3 +147,12 @@ function ClubIcon() {
   )
 }
 
+function LogoutIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+  )
+}
