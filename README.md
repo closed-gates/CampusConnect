@@ -11,7 +11,7 @@
 
 ## Group Members
 
-| Member Name | Student ID | Primary Modules / Responsibilities |
+| Member Name | Student ID | 
 |-------------|------------|------------------------------------|
 | **Jawadul Arham** | **23201518** | 
 | **Afnan Mohammad Hafiz** | **23241004** | 
