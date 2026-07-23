@@ -5,6 +5,7 @@ import DashboardPage         from './pages/DashboardPage'
 import AcademicCalendarPage  from './pages/AcademicCalendarPage'
 import MessagingPage         from './pages/MessagingPage'
 import ClubActivitiesPage    from './pages/ClubActivitiesPage'
+import CoursesPage           from './pages/CoursesPage'
 
 /**
  * App – Root router
@@ -33,7 +34,8 @@ export default function App() {
       <Route path="/dashboard"         element={<DashboardPage />} />
       <Route path="/academic-calendar" element={<AcademicCalendarPage />} />
       <Route path="/messaging"         element={<MessagingPage />} />
-      <Route path="/club-activities" element={<ClubActivitiesPage />} />
+      <Route path="/club-activities"   element={<ClubActivitiesPage />} />
+      <Route path="/courses"           element={<CoursesPage />} />
       {/* Catch-all */}
       <Route path="*"                element={<Navigate to="/" replace />} />
     </Routes>
