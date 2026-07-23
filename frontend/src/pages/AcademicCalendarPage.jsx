@@ -1,4 +1,4 @@
-﻿import Sidebar from '../components/Sidebar'
+import Sidebar from '../components/Sidebar'
 
 /**
  * AcademicCalendarPage
@@ -16,9 +16,9 @@ export default function AcademicCalendarPage() {
       <main className="dashboard-main" aria-label="Academic Calendar">
         {/* Header */}
         <div className="dashboard-header">
-          <h1 className="dashboard-greeting">≡ƒôà Academic Calendar</h1>
+          <h1 className="dashboard-greeting">📅 Academic Calendar</h1>
           <p className="dashboard-date">
-            BRAC University ΓÇö Official Academic Calendar
+            BRAC University — Official Academic Calendar
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export default function AcademicCalendarPage() {
             >
               {/* Fallback for browsers that can't render PDFs inline */}
               <div className="calendar-fallback">
-                <div className="calendar-fallback-icon">≡ƒôä</div>
+                <div className="calendar-fallback-icon">📄</div>
                 <p className="calendar-fallback-title">
                   Unable to display the PDF in your browser.
                 </p>
@@ -75,7 +75,7 @@ export default function AcademicCalendarPage() {
   )
 }
 
-/* ΓöÇΓöÇ SVG Icon ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── SVG Icon ──────────────────────────────────────────────── */
 function DownloadIcon() {
   return (
     <svg
