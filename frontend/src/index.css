@@ -7,56 +7,60 @@
 /* ── CSS Variables ───────────────────────────────────────── */
 :root {
   /* Brand colors */
-  --color-teal:        #1A9882;
-  --color-teal-light:  #E6F5F2;
-  --color-teal-dark:   #147A68;
-  --color-lavender:    #E8EAFA;
-  --color-lavender-mid:#D0D4F5;
+  --color-teal: #1A9882;
+  --color-teal-light: #E6F5F2;
+  --color-teal-dark: #147A68;
+  --color-lavender: #E8EAFA;
+  --color-lavender-mid: #D0D4F5;
 
   /* Neutrals */
-  --color-white:       #FFFFFF;
-  --color-bg:          #F4F6F8;
-  --color-surface:     #FFFFFF;
-  --color-border:      #E5E7EB;
-  --color-border-focus:#1A9882;
+  --color-white: #FFFFFF;
+  --color-bg: #F4F6F8;
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-border-focus: #1A9882;
 
   /* Text */
-  --color-text:        #111827;
-  --color-text-sub:    #6B7280;
-  --color-text-light:  #9CA3AF;
+  --color-text: #111827;
+  --color-text-sub: #6B7280;
+  --color-text-light: #9CA3AF;
 
   /* Status */
-  --color-success:     #10B981;
-  --color-warning:     #F59E0B;
-  --color-error:       #EF4444;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
 
   /* Sidebar */
-  --sidebar-width:     240px;
-  --sidebar-bg:        #FFFFFF;
+  --sidebar-width: 240px;
+  --sidebar-bg: #FFFFFF;
 
   /* Shadows */
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg:  0 10px 40px rgba(0,0,0,0.10);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.10);
 
   /* Radius */
-  --radius-sm:  6px;
-  --radius-md:  12px;
-  --radius-lg:  20px;
-  --radius-xl:  28px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
 
   /* Transitions */
   --transition: 0.2s ease;
 }
 
 /* ── Reset ───────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   font-family: 'Inter', -apple-system, sans-serif;
   background: var(--color-bg);
@@ -65,9 +69,19 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
-a { text-decoration: none; color: inherit; }
-button { cursor: pointer; font-family: inherit; }
-input { font-family: inherit; }
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
 
 /* ── Auth Layout ─────────────────────────────────────────── */
 .auth-wrapper {
@@ -77,7 +91,8 @@ input { font-family: inherit; }
 }
 
 .auth-form-panel {
-  flex: 0 0 460px;
+  flex: 0 0 30%;
+  width: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -86,7 +101,7 @@ input { font-family: inherit; }
 }
 
 .auth-image-panel {
-  flex: 1;
+  flex: 1 1 70%;
   background: var(--color-lavender);
   display: flex;
   align-items: center;
@@ -96,14 +111,16 @@ input { font-family: inherit; }
 }
 
 .auth-image-panel img {
-  width: 80%;
-  max-width: 480px;
+  width: 100%;
+  max-width: 800px;
   object-fit: contain;
-  filter: drop-shadow(0 20px 40px rgba(26,152,130,0.12));
+  filter: drop-shadow(0 20px 40px rgba(26, 152, 130, 0.12));
 }
 
 /* Signup mirrors the layout */
-.auth-wrapper.signup .auth-image-panel { order: -1; }
+.auth-wrapper.signup .auth-image-panel {
+  order: -1;
+}
 
 /* ── Auth Form Content ───────────────────────────────────── */
 .auth-logo {
@@ -179,7 +196,7 @@ input { font-family: inherit; }
 
 .form-input:focus {
   border-color: var(--color-teal);
-  box-shadow: 0 0 0 3px rgba(26,152,130,0.12);
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.12);
 }
 
 /* ── Checkbox Row ────────────────────────────────────────── */
@@ -214,7 +231,9 @@ input { font-family: inherit; }
   transition: opacity var(--transition);
 }
 
-.form-link:hover { opacity: 0.75; }
+.form-link:hover {
+  opacity: 0.75;
+}
 
 /* ── Buttons ─────────────────────────────────────────────── */
 .btn {
@@ -234,15 +253,17 @@ input { font-family: inherit; }
 .btn-primary {
   background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
   color: white;
-  box-shadow: 0 4px 14px rgba(26,152,130,0.3);
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(26,152,130,0.4);
+  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
 }
 
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:active {
+  transform: translateY(0);
+}
 
 .btn-outline {
   background: var(--color-white);
@@ -255,7 +276,9 @@ input { font-family: inherit; }
   background: var(--color-teal-light);
 }
 
-.btn + .btn { margin-top: 10px; }
+.btn+.btn {
+  margin-top: 10px;
+}
 
 /* ── Divider ─────────────────────────────────────────────── */
 .auth-divider {
@@ -289,7 +312,9 @@ input { font-family: inherit; }
   margin-left: 4px;
 }
 
-.auth-bottom a:hover { opacity: 0.75; }
+.auth-bottom a:hover {
+  opacity: 0.75;
+}
 
 /* ── Social Button Icons ─────────────────────────────────── */
 .social-icon {
@@ -414,7 +439,10 @@ input { font-family: inherit; }
   color: var(--color-error);
 }
 
-.sidebar-logout svg { width: 18px; height: 18px; }
+.sidebar-logout svg {
+  width: 18px;
+  height: 18px;
+}
 
 /* ── Dashboard Main ──────────────────────────────────────── */
 .dashboard-main {
@@ -481,11 +509,21 @@ input { font-family: inherit; }
   font-size: 20px;
 }
 
-.stat-card-icon.teal   { background: var(--color-teal-light); }
-.stat-card-icon.purple { background: #F3EFFE; }
-.stat-card-icon.orange { background: #FFF4ED; }
+.stat-card-icon.teal {
+  background: var(--color-teal-light);
+}
 
-.stat-card-body { flex: 1; }
+.stat-card-icon.purple {
+  background: #F3EFFE;
+}
+
+.stat-card-icon.orange {
+  background: #FFF4ED;
+}
+
+.stat-card-body {
+  flex: 1;
+}
 
 .stat-card-value {
   font-size: 28px;
@@ -514,7 +552,9 @@ input { font-family: inherit; }
   cursor: pointer;
 }
 
-.stat-card-link:hover { gap: 8px; }
+.stat-card-link:hover {
+  gap: 8px;
+}
 
 /* ── Section Card ────────────────────────────────────────── */
 .section-card {
@@ -580,7 +620,9 @@ input { font-family: inherit; }
   vertical-align: middle;
 }
 
-.learning-table tr:last-child td { border-bottom: none; }
+.learning-table tr:last-child td {
+  border-bottom: none;
+}
 
 .course-name-cell {
   display: flex;
@@ -711,12 +753,26 @@ input { font-family: inherit; }
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 1100px) {
-  .recommended-grid { grid-template-columns: repeat(2, 1fr); }
+  .recommended-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
-  .auth-image-panel { display: none; }
-  .auth-form-panel  { flex: 1; padding: 40px 28px; }
-  .stat-cards-row   { grid-template-columns: 1fr; }
-  .dashboard-main   { padding: 20px 16px; }
+  .auth-image-panel {
+    display: none;
+  }
+
+  .auth-form-panel {
+    flex: 1;
+    padding: 40px 28px;
+  }
+
+  .stat-cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-main {
+    padding: 20px 16px;
+  }
 }
