@@ -19,7 +19,7 @@ import authIllustration from '../assets/auth_illustration.png'
  */
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({ username: '', password: '', remember: false })
+  const [formData, setFormData] = useState({ username: '', password: '', remember: false, role: 'student' })
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
@@ -47,6 +47,8 @@ export default function LoginPage() {
      */
     setTimeout(() => {
       setLoading(false)
+      // Save selected role for demo role simulation
+      localStorage.setItem('userRole', formData.role)
       navigate('/dashboard')
     }, 600)
   }
@@ -95,6 +97,22 @@ export default function LoginPage() {
               onChange={handleChange}
               autoComplete="current-password"
             />
+          </div>
+
+          {/* Role selector – demo only, remove in Phase 3 when JWT carries role */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="login-role">I am a:</label>
+            <select
+              id="login-role"
+              name="role"
+              className="form-input"
+              value={formData.role}
+              onChange={handleChange}
+              style={{ cursor: 'pointer' }}
+            >
+              <option value="student">🎓 Student</option>
+              <option value="admin">🛡️ Admin (Club/Faculty)</option>
+            </select>
           </div>
 
           {/* Remember me + Forgot password */}

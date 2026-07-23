@@ -1,5 +1,6 @@
 package com.campusconnect.backend.config;
 
+import com.campusconnect.backend.config.CorsConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,36 +9,46 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * SecurityConfig – Spring Security configuration.
+ * SecurityConfig — Phase 1 Stub
  *
- * Phase 1:
- *   All requests are permitted to allow frontend development without
- *   authentication. CSRF is disabled for REST API usage.
+ * Temporarily permits all requests during Phase 1 so we can
+ * verify the server starts and the health endpoint responds.
  *
- * TODO (Phase 2 – JWT + RBAC):
- *   1. Inject JwtAuthFilter and add it before UsernamePasswordAuthenticationFilter.
- *   2. Restrict endpoints by role using authorizeHttpRequests():
- *      .requestMatchers("/api/auth/**").permitAll()
- *      .requestMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
- *      .requestMatchers("/api/faculty/**").hasAnyRole("FACULTY", "ADMINISTRATOR")
- *      .anyRequest().authenticated()
- *   3. Add sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
- *   4. Register AuthenticationProvider with BCryptPasswordEncoder.
+ * ⚠️  THIS WILL BE REPLACED in Phase 2 with full JWT-based
+ *     authentication and Role-Based Access Control (RBAC).
+ *
+ * Phase 2 changes:
+ * - Add JwtAuthFilter before UsernamePasswordAuthenticationFilter
+ * - Restrict endpoints by role (STUDENT, FACULTY, STAFF, ADMIN)
+ * - Configure stateless session management
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CorsConfig corsConfig;
+
+    public SecurityConfig(CorsConfig corsConfig) {
+        this.corsConfig = corsConfig;
+    }
+
+    /**
+     * Security filter chain.
+     * Phase 1: All requests permitted (no auth enforced yet).
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF — stateless REST API
+            // Apply CORS configuration from CorsConfig bean
+            .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
+
+            // Disable CSRF — using JWT (stateless), CSRF protection not needed
             .csrf(AbstractHttpConfigurer::disable)
 
             // Phase 1: permit all requests
+            // TODO Phase 2: replace with role-based restrictions
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()  // Auth endpoints always public
-                .anyRequest().permitAll()                      // TODO Phase 2: restrict this
+                .anyRequest().permitAll()
             );
 
         return http.build();
