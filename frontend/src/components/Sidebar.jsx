@@ -6,33 +6,24 @@ import { useNavigate } from 'react-router-dom'
  * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board | Academic Calendar
  *
  * TODO (Phase 2 / collaborators):
- *   - Each nav item should navigate to its own route
  *   - "Logout" should clear the JWT token from localStorage
  *     and call POST /api/auth/logout before redirecting to /
  *   - Highlight activeItem based on current route (useLocation)
  */
 
 const NAV_ITEMS = [
-  { id: 'home',              label: 'Home',              icon: <HomeIcon />,           route: '/dashboard' },
-  { id: 'courses',           label: 'Courses',            icon: <CoursesIcon />,        route: null },
-  { id: 'bookmarks',         label: 'Bookmarks',          icon: <BookmarksIcon />,      route: null },
-  { id: 'advising',          label: 'Advising',           icon: <AdvisingIcon />,       route: null },
-  { id: 'messaging',         label: 'Messaging Board',    icon: <MessagingIcon />,      route: null },
-  { id: 'academic-calendar', label: 'Academic Calendar',  icon: <CalendarIcon />,       route: '/academic-calendar' },
+  { id: 'home',              label: 'Home',             icon: <HomeIcon />,      route: '/dashboard' },
+  { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: null },
+  { id: 'bookmarks',         label: 'Bookmarks',         icon: <BookmarksIcon />, route: null },
+  { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: null },
+  { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: '/messaging' },
+  { id: 'academic-calendar', label: 'Academic Calendar', icon: <CalendarIcon />,  route: '/academic-calendar' },
 ]
 
 export default function Sidebar({ activeItem = 'home' }) {
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    /*
-     * ── Phase 2 stub ──────────────────────────────────────────
-     * await fetch('/api/auth/logout', { method: 'POST',
-     *   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-     * })
-     * localStorage.removeItem('token')
-     * ─────────────────────────────────────────────────────────
-     */
     navigate('/')
   }
 

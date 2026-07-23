@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import LoginPage    from './pages/LoginPage'
-import SignupPage   from './pages/SignupPage'
-import DashboardPage from './pages/DashboardPage'
-import AcademicCalendarPage from './pages/AcademicCalendarPage'
+import LoginPage             from './pages/LoginPage'
+import SignupPage            from './pages/SignupPage'
+import DashboardPage         from './pages/DashboardPage'
+import AcademicCalendarPage  from './pages/AcademicCalendarPage'
+import MessagingPage         from './pages/MessagingPage'
 
 /**
  * App – Root router
@@ -12,6 +13,7 @@ import AcademicCalendarPage from './pages/AcademicCalendarPage'
  *   /signup             → SignupPage
  *   /dashboard          → DashboardPage
  *   /academic-calendar  → AcademicCalendarPage
+ *   /messaging          → MessagingPage
  *   *                   → redirect to /
  *
  * NOTE (Phase 2): Replace the wildcard redirect with a
@@ -24,6 +26,7 @@ export default function App() {
       <Route path="/signup"            element={<SignupPage />} />
       <Route path="/dashboard"         element={<DashboardPage />} />
       <Route path="/academic-calendar" element={<AcademicCalendarPage />} />
+      <Route path="/messaging"         element={<MessagingPage />} />
       {/* Catch-all */}
       <Route path="*"                  element={<Navigate to="/" replace />} />
     </Routes>
