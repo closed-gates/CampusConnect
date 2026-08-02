@@ -1,0 +1,766 @@
+/* ============================================================
+   AttendancePage – Faculty Attendance Tracking Styles
+   Follows the CampusConnect design system from index.css
+   ============================================================ */
+
+/* ── Course Selector ─────────────────────────────────────────── */
+.att-section-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.att-course-selector {
+  margin-bottom: 28px;
+}
+
+.att-course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.att-course-card {
+  position: relative;
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition);
+  padding: 0;
+  font-family: inherit;
+}
+
+.att-course-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.att-course-card.active {
+  border-color: var(--course-color, var(--color-teal));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--course-color, var(--color-teal)) 15%, transparent);
+}
+
+.att-course-card-accent {
+  height: 4px;
+  background: var(--course-color, var(--color-teal));
+  transition: height var(--transition);
+}
+
+.att-course-card.active .att-course-card-accent {
+  height: 6px;
+}
+
+.att-course-card-body {
+  padding: 16px 18px;
+}
+
+.att-course-id {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--course-color, var(--color-teal));
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.att-course-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.att-course-info {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-sub);
+  margin-bottom: 4px;
+}
+
+.att-course-schedule {
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+/* ── Tab Navigation ──────────────────────────────────────────── */
+.att-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 24px;
+}
+
+.att-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  position: relative;
+  bottom: -2px;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition), border-color var(--transition);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.att-tab:hover {
+  color: var(--color-teal);
+  background: var(--color-teal-light);
+}
+
+.att-tab.active {
+  color: var(--color-teal);
+  font-weight: 700;
+  border-bottom-color: var(--color-teal);
+}
+
+.att-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--color-bg);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+}
+
+.att-tab.active .att-tab-count {
+  background: var(--color-teal);
+  color: white;
+}
+
+.att-tab-content {
+  animation: attFadeIn 0.2s ease;
+}
+
+@keyframes attFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Mark Attendance Header ──────────────────────────────────── */
+.att-mark-header {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.att-date-picker {
+  min-width: 180px;
+}
+
+.att-date-input {
+  max-width: 200px;
+}
+
+.att-quick-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.att-quick-btn {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.att-quick-btn.present {
+  color: #10B981;
+}
+
+.att-quick-btn.present:hover {
+  background: #ECFDF5;
+  border-color: #10B981;
+}
+
+.att-quick-btn.absent {
+  color: #EF4444;
+}
+
+.att-quick-btn.absent:hover {
+  background: #FEF2F2;
+  border-color: #EF4444;
+}
+
+.att-mark-progress {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.att-mark-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+}
+
+.att-mark-bar {
+  width: 80px;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.att-mark-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0D9488, #14B8A6);
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+
+.att-submitted-badge {
+  padding: 12px 18px;
+  background: #ECFDF5;
+  border: 1px solid #6EE7B7;
+  border-radius: var(--radius-sm);
+  color: #047857;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* ── Attendance Table ────────────────────────────────────────── */
+.att-table-wrapper {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+.att-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.att-table thead {
+  background: var(--color-bg);
+}
+
+.att-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1.5px solid var(--color-border);
+}
+
+.att-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.att-table tbody tr {
+  transition: background var(--transition);
+}
+
+.att-table tbody tr:hover {
+  background: var(--color-bg);
+}
+
+.att-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.att-row-present { background: #F0FDF9; }
+.att-row-absent  { background: #FFF5F5; }
+.att-row-late    { background: #FFFDF0; }
+
+.att-th-num   { width: 50px; }
+.att-th-id    { width: 130px; }
+.att-th-name  { min-width: 180px; }
+.att-th-status { min-width: 280px; }
+
+.att-td-num {
+  font-weight: 600;
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+.att-td-id {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+}
+
+.att-td-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+/* ── Student Avatar ──────────────────────────────────────────── */
+.att-student-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0D9488, #14B8A6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.att-student-avatar.small {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+
+/* ── Status Buttons ──────────────────────────────────────────── */
+.att-status-group {
+  display: flex;
+  gap: 6px;
+}
+
+.att-status-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-white);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--color-text-sub);
+}
+
+.att-status-btn:hover {
+  transform: translateY(-1px);
+}
+
+.att-status-btn.present:hover,
+.att-status-btn.present.active {
+  background: #ECFDF5;
+  border-color: #10B981;
+  color: #047857;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+}
+
+.att-status-btn.absent:hover,
+.att-status-btn.absent.active {
+  background: #FEF2F2;
+  border-color: #EF4444;
+  color: #B91C1C;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+}
+
+.att-status-btn.late:hover,
+.att-status-btn.late.active {
+  background: #FFFBEB;
+  border-color: #F59E0B;
+  color: #92400E;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.att-status-icon {
+  font-size: 14px;
+}
+
+/* ── Submit Row ──────────────────────────────────────────────── */
+.att-submit-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.att-submit-btn {
+  padding: 14px 32px;
+  font-size: 15px;
+}
+
+.att-submit-btn.ready {
+  background: linear-gradient(135deg, #0D9488, #14B8A6);
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.2);
+}
+
+.att-submit-btn.ready:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(13, 148, 136, 0.3);
+}
+
+.att-submit-hint {
+  font-size: 13px;
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+/* ── History ─────────────────────────────────────────────────── */
+.att-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.att-history-card {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: box-shadow var(--transition);
+}
+
+.att-history-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.att-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.att-history-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.att-history-date-icon {
+  font-size: 16px;
+}
+
+.att-history-stats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.att-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.att-stat-chip.small {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.att-stat-chip.present {
+  background: #ECFDF5;
+  color: #047857;
+}
+
+.att-stat-chip.absent {
+  background: #FEF2F2;
+  color: #B91C1C;
+}
+
+.att-stat-chip.late {
+  background: #FFFBEB;
+  color: #92400E;
+}
+
+.att-stat-chip.rate {
+  background: var(--color-teal-light);
+  color: var(--color-teal-dark);
+}
+
+.att-history-students {
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.att-history-student {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+
+.att-history-student:hover {
+  background: var(--color-bg);
+}
+
+.att-history-sname {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.att-history-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.att-history-badge.present {
+  background: #ECFDF5;
+  color: #047857;
+}
+
+.att-history-badge.absent {
+  background: #FEF2F2;
+  color: #B91C1C;
+}
+
+.att-history-badge.late {
+  background: #FFFBEB;
+  color: #92400E;
+}
+
+/* ── Empty State ─────────────────────────────────────────────── */
+.att-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-light);
+}
+
+.att-empty-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.att-empty-state p {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ── Summary Grid ────────────────────────────────────────────── */
+.att-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.att-summary-card {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  text-align: center;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.att-summary-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.att-summary-card.att-summary-rate {
+  grid-column: span 1;
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F0FDFA, #E6F5F2);
+  border-color: var(--color-teal);
+}
+
+.att-summary-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin: 0 auto 12px;
+}
+
+.att-summary-icon.present  { background: #ECFDF5; }
+.att-summary-icon.absent   { background: #FEF2F2; }
+.att-summary-icon.late     { background: #FFFBEB; }
+.att-summary-icon.sessions { background: var(--color-teal-light); }
+.att-summary-icon.records  { background: #EDE9FE; }
+
+.att-summary-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.att-summary-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  margin-top: 4px;
+}
+
+.att-summary-sub {
+  font-size: 12px;
+  color: var(--color-text-light);
+  margin-top: 2px;
+}
+
+/* ── Circular Progress ───────────────────────────────────────── */
+.att-summary-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 8px;
+}
+
+.att-circle-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.att-circle-bg {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 3;
+}
+
+.att-circle-fill {
+  fill: none;
+  stroke: var(--color-teal);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+}
+
+.att-circle-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-teal-dark);
+}
+
+/* ── Per-Student Summary ─────────────────────────────────────── */
+.att-student-summary-section {
+  margin-top: 8px;
+}
+
+.att-rate-bar {
+  position: relative;
+  width: 100%;
+  min-width: 80px;
+  height: 24px;
+  background: var(--color-bg);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.att-rate-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0D9488, #14B8A6);
+  border-radius: 100px;
+  transition: width 0.4s ease;
+}
+
+.att-rate-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .att-course-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .att-mark-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .att-mark-progress {
+    margin-left: 0;
+  }
+
+  .att-status-group {
+    flex-wrap: wrap;
+  }
+
+  .att-status-label {
+    display: none;
+  }
+
+  .att-summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .att-summary-card.att-summary-rate {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .att-history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
