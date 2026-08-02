@@ -7,11 +7,16 @@
  */
 
 import { useState, useEffect } from 'react'
-import { SEED_NOTICES, SEED_RECRUITMENTS } from '../models/clubModel.js'
+import {
+  SEED_NOTICES,
+  SEED_RECRUITMENTS,
+  RECRUITMENT_FORM_STEPS,
+  EMPTY_RECRUITMENT_FORM,
+} from '../models/clubModel.js'
 
 /**
  * useClubController
- * Manages tabs, notices, recruitments, application modal, and toast state.
+ * Manages tabs, notices, recruitments, multi-step application form, and toast state.
  *
  * TODO (Phase 2): Wire API calls:
  *   GET  /api/clubs/notices       → initial notices
@@ -40,10 +45,14 @@ export function useClubController() {
   const [recruitForm,       setRecruitForm]       = useState({ clubName: '', role: '', description: '', deadline: '', slots: '' })
   const [recruitSubmitting, setRecruitSubmitting] = useState(false)
 
-  // Application modal state
-  const [applyTarget,      setApplyTarget]      = useState(null)
-  const [applyForm,        setApplyForm]        = useState({ studentName: '', studentEmail: '', motivation: '' })
+  // ── Multi-step Application Form State ────────────────────────
+  const [applyTarget,      setApplyTarget]      = useState(null) // recruitment object or null
+  const [applyStep,        setApplyStep]        = useState(0)    // current step index
+  const [applyForm,        setApplyForm]        = useState({ ...EMPTY_RECRUITMENT_FORM })
   const [applySubmitting,  setApplySubmitting]  = useState(false)
+  const [applyErrors,      setApplyErrors]      = useState({})
+
+  const totalSteps = RECRUITMENT_FORM_STEPS.length
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -96,22 +105,112 @@ export function useClubController() {
     showToast('✅ Recruitment posting published!')
   }
 
-  // Student: open apply modal
+  /* ── Multi-step Application Form Logic ────────────────────── */
+
+  // Open the multi-step form for a recruitment
   function openApplyModal(rec) {
     setApplyTarget(rec)
-    setApplyForm({ studentName: '', studentEmail: '', motivation: '' })
+    setApplyStep(0)
+    setApplyForm({ ...EMPTY_RECRUITMENT_FORM })
+    setApplyErrors({})
   }
 
-  // Student: submit application
-  async function handleApply(e) {
-    e.preventDefault()
-    if (!applyForm.studentName || !applyForm.studentEmail || !applyForm.motivation) return
-    setApplySubmitting(true)
-    await new Promise(r => setTimeout(r, 700))
-    setApplySubmitting(false)
+  function closeApplyModal() {
     setApplyTarget(null)
-    setApplyForm({ studentName: '', studentEmail: '', motivation: '' })
+    setApplyStep(0)
+    setApplyForm({ ...EMPTY_RECRUITMENT_FORM })
+    setApplyErrors({})
+  }
+
+  // Validate fields for the current step
+  function validateStep(step) {
+    const errors = {}
+    const stepId = RECRUITMENT_FORM_STEPS[step]?.id
+
+    if (stepId === 'personal') {
+      if (!applyForm.fullName.trim()) errors.fullName = 'Full name is required'
+      if (!applyForm.studentId.trim()) errors.studentId = 'Student ID is required'
+      if (!applyForm.universityEmail.trim()) errors.universityEmail = 'University email is required'
+      else if (!/\S+@\S+\.\S+/.test(applyForm.universityEmail)) errors.universityEmail = 'Enter a valid email'
+      if (!applyForm.department) errors.department = 'Department is required'
+      if (!applyForm.yearSemester) errors.yearSemester = 'Year/Semester is required'
+    }
+
+    if (stepId === 'interests') {
+      if (applyForm.interestedTeams.length === 0) errors.interestedTeams = 'Select at least one team'
+      if (!applyForm.motivation.trim()) errors.motivation = 'Please tell us why you want to join'
+    }
+
+    if (stepId === 'availability') {
+      if (!applyForm.willingToParticipate) errors.willingToParticipate = 'Please select an option'
+    }
+
+    return errors
+  }
+
+  function nextStep() {
+    const errors = validateStep(applyStep)
+    if (Object.keys(errors).length > 0) {
+      setApplyErrors(errors)
+      return
+    }
+    setApplyErrors({})
+    if (applyStep < totalSteps - 1) {
+      setApplyStep(prev => prev + 1)
+    }
+  }
+
+  function prevStep() {
+    setApplyErrors({})
+    if (applyStep > 0) {
+      setApplyStep(prev => prev - 1)
+    }
+  }
+
+  // Submit application (called from the final question step)
+  async function handleApply() {
+    const errors = validateStep(applyStep)
+    if (Object.keys(errors).length > 0) {
+      setApplyErrors(errors)
+      return
+    }
+    setApplySubmitting(true)
+    await new Promise(r => setTimeout(r, 800))
+    setApplySubmitting(false)
+    // Move to confirmation step
+    setApplyStep(totalSteps - 1)
     showToast('🎉 Application submitted! The club will contact you soon.')
+  }
+
+  // Update a field in the apply form
+  function updateApplyField(field, value) {
+    setApplyForm(prev => ({ ...prev, [field]: value }))
+    // Clear error for this field when user starts typing
+    if (applyErrors[field]) {
+      setApplyErrors(prev => {
+        const next = { ...prev }
+        delete next[field]
+        return next
+      })
+    }
+  }
+
+  // Toggle a value in an array field (for checkboxes)
+  function toggleApplyArrayField(field, value) {
+    setApplyForm(prev => {
+      const arr = prev[field]
+      const next = arr.includes(value)
+        ? arr.filter(v => v !== value)
+        : [...arr, value]
+      return { ...prev, [field]: next }
+    })
+    if (applyErrors[field]) {
+      setApplyErrors(prev => {
+        const next = { ...prev }
+        delete next[field]
+        return next
+      })
+    }
   }
 
   const sortedNotices = [...notices].sort((a, b) => Number(b.pinned) - Number(a.pinned))
@@ -134,12 +233,19 @@ export function useClubController() {
     recruitForm, setRecruitForm,
     recruitSubmitting,
     handlePostRecruitment,
-    // Application state
+    // Multi-step Application state
     applyTarget,
-    applyForm, setApplyForm,
+    applyStep,
+    applyForm,
+    applyErrors,
     applySubmitting,
+    totalSteps,
     openApplyModal,
-    closeApplyModal: () => setApplyTarget(null),
+    closeApplyModal,
+    nextStep,
+    prevStep,
     handleApply,
+    updateApplyField,
+    toggleApplyArrayField,
   }
 }

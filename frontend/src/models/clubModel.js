@@ -3,6 +3,7 @@
  *
  * MVC Role: Model
  * Contains seed data for notices, recruitments, and club icon mappings.
+ * Also contains recruitment form step definitions and option constants.
  *
  * TODO (Phase 2): Replace seed data with API calls:
  *   GET /api/clubs/notices      → SEED_NOTICES
@@ -84,4 +85,109 @@ export function formatClubDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
   })
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Recruitment Form – Multi-step form constants
+   ══════════════════════════════════════════════════════════════ */
+
+/** Step definitions for the multi-step recruitment form */
+export const RECRUITMENT_FORM_STEPS = [
+  { id: 'welcome',      label: 'Welcome',       icon: '👋' },
+  { id: 'personal',     label: 'Personal Info',  icon: '👤' },
+  { id: 'interests',    label: 'Interests',      icon: '💡' },
+  { id: 'skills',       label: 'Skills',         icon: '🛠️' },
+  { id: 'availability', label: 'Availability',   icon: '⏰' },
+  { id: 'final',        label: 'Final Question', icon: '✨' },
+  { id: 'confirmation', label: 'Confirmation',   icon: '🎉' },
+]
+
+/** Team/department options for recruitment */
+export const TEAM_OPTIONS = [
+  'Event Management',
+  'Marketing & PR',
+  'Graphics & Design',
+  'Content & Documentation',
+  'Technical',
+  'HR/Operations',
+  'Other',
+]
+
+/** Skill options for recruitment */
+export const SKILL_OPTIONS = [
+  'Graphic Design',
+  'Video Editing',
+  'Photography',
+  'Content Writing',
+  'Programming',
+  'Public Speaking',
+  'Event Management',
+  'Marketing',
+  'Other',
+]
+
+/** Time commitment options */
+export const TIME_COMMITMENT_OPTIONS = [
+  '1–2 hours',
+  '3–5 hours',
+  '5+ hours',
+]
+
+/** Participation options */
+export const PARTICIPATION_OPTIONS = [
+  'Yes',
+  'Maybe, depending on schedule',
+]
+
+/** Department options for student info */
+export const DEPARTMENT_OPTIONS = [
+  'Computer Science & Engineering',
+  'Electrical & Electronic Engineering',
+  'Business Administration',
+  'English & Humanities',
+  'Architecture',
+  'Pharmacy',
+  'Law',
+  'Mathematics & Natural Sciences',
+  'Other',
+]
+
+/** Year/Semester options */
+export const YEAR_SEMESTER_OPTIONS = [
+  '1st Year, 1st Semester',
+  '1st Year, 2nd Semester',
+  '2nd Year, 1st Semester',
+  '2nd Year, 2nd Semester',
+  '3rd Year, 1st Semester',
+  '3rd Year, 2nd Semester',
+  '4th Year, 1st Semester',
+  '4th Year, 2nd Semester',
+]
+
+/** Default empty state for the recruitment application form */
+export const EMPTY_RECRUITMENT_FORM = {
+  // Personal Info
+  fullName: '',
+  studentId: '',
+  universityEmail: '',
+  phone: '',
+  department: '',
+  yearSemester: '',
+
+  // Interests
+  interestedTeams: [],
+  motivation: '',
+
+  // Skills
+  skills: [],
+  hasPreviousExperience: null,
+  experienceDescription: '',
+  portfolioLink: '',
+
+  // Availability
+  timeCommitment: '',
+  willingToParticipate: '',
+
+  // Final
+  bringToClub: '',
 }

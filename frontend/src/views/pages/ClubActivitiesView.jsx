@@ -1,13 +1,23 @@
 import Sidebar from '../components/Sidebar.jsx'
 import { useClubController } from '../../controllers/clubController.js'
-import { getClubIcon, formatClubDate } from '../../models/clubModel.js'
+import {
+  getClubIcon,
+  formatClubDate,
+  RECRUITMENT_FORM_STEPS,
+  TEAM_OPTIONS,
+  SKILL_OPTIONS,
+  TIME_COMMITMENT_OPTIONS,
+  PARTICIPATION_OPTIONS,
+  DEPARTMENT_OPTIONS,
+  YEAR_SEMESTER_OPTIONS,
+} from '../../models/clubModel.js'
 import './ClubActivitiesPage.css'
 
 /**
  * ClubActivitiesView – View layer for the Club Activities page.
  *
  * MVC Role: View
- * Renders club notices, recruitment listings, and the application modal.
+ * Renders club notices, recruitment listings, and the multi-step application form.
  * All state and logic is provided by useClubController().
  */
 export default function ClubActivitiesView() {
@@ -21,8 +31,16 @@ export default function ClubActivitiesView() {
     recruitForm, setRecruitForm,
     recruitSubmitting, handlePostRecruitment,
     applyTarget,
-    applyForm, setApplyForm,
-    applySubmitting, openApplyModal, closeApplyModal, handleApply,
+    applyStep,
+    applyForm,
+    applyErrors,
+    applySubmitting,
+    totalSteps,
+    openApplyModal, closeApplyModal,
+    nextStep, prevStep,
+    handleApply,
+    updateApplyField,
+    toggleApplyArrayField,
   } = useClubController()
 
   return (
@@ -250,50 +268,386 @@ export default function ClubActivitiesView() {
           </div>
         )}
 
-        {/* ── Application Modal ──────────────────────────── */}
+        {/* ══════════════════════════════════════════════════════════
+            Multi-Step Application Form Overlay
+           ══════════════════════════════════════════════════════════ */}
         {applyTarget && (
           <div
-            className="club-modal-overlay"
+            className="recruit-form-overlay"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="modal-title"
-            onClick={e => { if (e.target === e.currentTarget) closeApplyModal() }}
+            aria-labelledby="recruit-form-title"
           >
-            <div className="club-modal">
-              <button id="close-modal-btn" className="club-modal-close" onClick={closeApplyModal} aria-label="Close modal">✕</button>
+            <div className="recruit-form-container">
+              {/* Close button */}
+              <button
+                id="close-recruit-form-btn"
+                className="recruit-form-close"
+                onClick={closeApplyModal}
+                aria-label="Close application form"
+              >✕</button>
 
-              <div className="club-modal-header">
-                <span className="club-icon-bubble large">{getClubIcon(applyTarget.clubName)}</span>
-                <div>
-                  <div className="club-modal-club">{applyTarget.clubName}</div>
-                  <h2 id="modal-title" className="club-modal-role">Apply — {applyTarget.role}</h2>
+              {/* Header */}
+              <div className="recruit-form-header">
+                <div className="recruit-form-logo">
+                  {getClubIcon(applyTarget.clubName)}
                 </div>
+                <h2 id="recruit-form-title" className="recruit-form-club-name">
+                  {applyTarget.clubName}
+                </h2>
+                <div className="recruit-form-subtitle">
+                  Member Recruitment — 2026
+                </div>
+                {applyStep === 0 && (
+                  <p className="recruit-form-description">
+                    We're looking for enthusiastic students who want to learn, contribute, and be part of our community. Fill out the form below to apply.
+                  </p>
+                )}
               </div>
 
-              <form onSubmit={handleApply} noValidate className="club-modal-form">
-                <div className="form-group">
-                  <label className="form-label" htmlFor="apply-name">Full Name</label>
-                  <input id="apply-name" className="form-input" placeholder="Your full name"
-                    value={applyForm.studentName}
-                    onChange={e => setApplyForm(p => ({ ...p, studentName: e.target.value }))} required />
+              {/* Progress Bar */}
+              {applyStep < totalSteps - 1 && (
+                <div className="recruit-progress">
+                  <div className="recruit-progress-bar">
+                    <div
+                      className="recruit-progress-fill"
+                      style={{ width: `${((applyStep) / (totalSteps - 2)) * 100}%` }}
+                    />
+                  </div>
+                  <div className="recruit-progress-steps">
+                    {RECRUITMENT_FORM_STEPS.slice(0, -1).map((step, i) => (
+                      <div
+                        key={step.id}
+                        className={`recruit-progress-step ${i <= applyStep ? 'active' : ''} ${i < applyStep ? 'completed' : ''}`}
+                      >
+                        <span className="recruit-step-dot">
+                          {i < applyStep ? '✓' : step.icon}
+                        </span>
+                        <span className="recruit-step-label">{step.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="apply-email">University Email</label>
-                  <input id="apply-email" type="email" className="form-input" placeholder="you@university.edu"
-                    value={applyForm.studentEmail}
-                    onChange={e => setApplyForm(p => ({ ...p, studentEmail: e.target.value }))} required />
+              )}
+
+              {/* Step Content */}
+              <div className="recruit-form-body" key={applyStep}>
+
+                {/* ── Step 0: Welcome ── */}
+                {applyStep === 0 && (
+                  <div className="recruit-step-content recruit-step-welcome">
+                    <div className="recruit-welcome-card">
+                      <div className="recruit-welcome-icon">🚀</div>
+                      <h3>Ready to join {applyTarget.clubName}?</h3>
+                      <p>Applying for: <strong>{applyTarget.role}</strong></p>
+                      <p className="recruit-welcome-desc">
+                        This form takes about 3–5 minutes. We'll ask about your background,
+                        interests, and what you can bring to the team.
+                      </p>
+                      <div className="recruit-welcome-chips">
+                        <span>👤 Personal Info</span>
+                        <span>💡 Interests</span>
+                        <span>🛠️ Skills</span>
+                        <span>⏰ Availability</span>
+                        <span>✨ Final Question</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Step 1: Personal Info ── */}
+                {applyStep === 1 && (
+                  <div className="recruit-step-content">
+                    <h3 className="recruit-step-title">👤 Basic Information</h3>
+                    <p className="recruit-step-desc">Tell us about yourself. Fields marked with * are required.</p>
+
+                    <div className="recruit-form-grid">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="rf-fullname">Full Name *</label>
+                        <input id="rf-fullname" className={`form-input ${applyErrors.fullName ? 'error' : ''}`}
+                          placeholder="Your full name"
+                          value={applyForm.fullName}
+                          onChange={e => updateApplyField('fullName', e.target.value)} />
+                        {applyErrors.fullName && <span className="recruit-field-error">{applyErrors.fullName}</span>}
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="rf-studentid">Student ID *</label>
+                        <input id="rf-studentid" className={`form-input ${applyErrors.studentId ? 'error' : ''}`}
+                          placeholder="e.g. 21201234"
+                          value={applyForm.studentId}
+                          onChange={e => updateApplyField('studentId', e.target.value)} />
+                        {applyErrors.studentId && <span className="recruit-field-error">{applyErrors.studentId}</span>}
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="rf-email">University Email *</label>
+                        <input id="rf-email" type="email"
+                          className={`form-input ${applyErrors.universityEmail ? 'error' : ''}`}
+                          placeholder="you@university.edu"
+                          value={applyForm.universityEmail}
+                          onChange={e => updateApplyField('universityEmail', e.target.value)} />
+                        {applyErrors.universityEmail && <span className="recruit-field-error">{applyErrors.universityEmail}</span>}
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="rf-phone">Phone Number</label>
+                        <input id="rf-phone" className="form-input"
+                          placeholder="01XXXXXXXXX (optional)"
+                          value={applyForm.phone}
+                          onChange={e => updateApplyField('phone', e.target.value)} />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="rf-department">Department *</label>
+                        <select id="rf-department"
+                          className={`form-input ${applyErrors.department ? 'error' : ''}`}
+                          value={applyForm.department}
+                          onChange={e => updateApplyField('department', e.target.value)}>
+                          <option value="">Select department</option>
+                          {DEPARTMENT_OPTIONS.map(d => (
+                            <option key={d} value={d}>{d}</option>
+                          ))}
+                        </select>
+                        {applyErrors.department && <span className="recruit-field-error">{applyErrors.department}</span>}
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="rf-year">Year / Semester *</label>
+                        <select id="rf-year"
+                          className={`form-input ${applyErrors.yearSemester ? 'error' : ''}`}
+                          value={applyForm.yearSemester}
+                          onChange={e => updateApplyField('yearSemester', e.target.value)}>
+                          <option value="">Select year/semester</option>
+                          {YEAR_SEMESTER_OPTIONS.map(y => (
+                            <option key={y} value={y}>{y}</option>
+                          ))}
+                        </select>
+                        {applyErrors.yearSemester && <span className="recruit-field-error">{applyErrors.yearSemester}</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Step 2: Interests ── */}
+                {applyStep === 2 && (
+                  <div className="recruit-step-content">
+                    <h3 className="recruit-step-title">💡 Club Interests</h3>
+                    <p className="recruit-step-desc">Which team(s) are you interested in?</p>
+
+                    <div className="form-group">
+                      <label className="form-label">Department / Team you're interested in *</label>
+                      <div className={`recruit-checkbox-grid ${applyErrors.interestedTeams ? 'error-border' : ''}`}>
+                        {TEAM_OPTIONS.map(team => (
+                          <label key={team} className={`recruit-checkbox-item ${applyForm.interestedTeams.includes(team) ? 'checked' : ''}`}>
+                            <input type="checkbox"
+                              checked={applyForm.interestedTeams.includes(team)}
+                              onChange={() => toggleApplyArrayField('interestedTeams', team)} />
+                            <span className="recruit-checkbox-mark">
+                              {applyForm.interestedTeams.includes(team) ? '✓' : ''}
+                            </span>
+                            {team}
+                          </label>
+                        ))}
+                      </div>
+                      {applyErrors.interestedTeams && <span className="recruit-field-error">{applyErrors.interestedTeams}</span>}
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="rf-motivation">Why do you want to join our club? *</label>
+                      <textarea id="rf-motivation"
+                        className={`form-input club-textarea ${applyErrors.motivation ? 'error' : ''}`}
+                        placeholder="Tell us what excites you about this club and what you hope to contribute..."
+                        rows={4}
+                        value={applyForm.motivation}
+                        onChange={e => updateApplyField('motivation', e.target.value)} />
+                      {applyErrors.motivation && <span className="recruit-field-error">{applyErrors.motivation}</span>}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Step 3: Skills ── */}
+                {applyStep === 3 && (
+                  <div className="recruit-step-content">
+                    <h3 className="recruit-step-title">🛠️ Skills & Experience</h3>
+                    <p className="recruit-step-desc">Let us know what you bring to the table.</p>
+
+                    <div className="form-group">
+                      <label className="form-label">What skills do you have?</label>
+                      <div className="recruit-checkbox-grid">
+                        {SKILL_OPTIONS.map(skill => (
+                          <label key={skill} className={`recruit-checkbox-item ${applyForm.skills.includes(skill) ? 'checked' : ''}`}>
+                            <input type="checkbox"
+                              checked={applyForm.skills.includes(skill)}
+                              onChange={() => toggleApplyArrayField('skills', skill)} />
+                            <span className="recruit-checkbox-mark">
+                              {applyForm.skills.includes(skill) ? '✓' : ''}
+                            </span>
+                            {skill}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Do you have any previous club/organization experience?</label>
+                      <div className="recruit-radio-group">
+                        <label className={`recruit-radio-item ${applyForm.hasPreviousExperience === true ? 'checked' : ''}`}>
+                          <input type="radio" name="experience"
+                            checked={applyForm.hasPreviousExperience === true}
+                            onChange={() => updateApplyField('hasPreviousExperience', true)} />
+                          <span className="recruit-radio-mark" />
+                          Yes
+                        </label>
+                        <label className={`recruit-radio-item ${applyForm.hasPreviousExperience === false ? 'checked' : ''}`}>
+                          <input type="radio" name="experience"
+                            checked={applyForm.hasPreviousExperience === false}
+                            onChange={() => updateApplyField('hasPreviousExperience', false)} />
+                          <span className="recruit-radio-mark" />
+                          No
+                        </label>
+                      </div>
+                    </div>
+
+                    {applyForm.hasPreviousExperience && (
+                      <div className="form-group recruit-fade-in">
+                        <label className="form-label" htmlFor="rf-exp-desc">Briefly describe your experience</label>
+                        <textarea id="rf-exp-desc"
+                          className="form-input club-textarea"
+                          placeholder="What clubs/organizations were you part of? What did you do?"
+                          rows={3}
+                          value={applyForm.experienceDescription}
+                          onChange={e => updateApplyField('experienceDescription', e.target.value)} />
+                      </div>
+                    )}
+
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="rf-portfolio">Portfolio / LinkedIn / GitHub link</label>
+                      <input id="rf-portfolio" className="form-input"
+                        placeholder="https:// (optional)"
+                        value={applyForm.portfolioLink}
+                        onChange={e => updateApplyField('portfolioLink', e.target.value)} />
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Step 4: Availability ── */}
+                {applyStep === 4 && (
+                  <div className="recruit-step-content">
+                    <h3 className="recruit-step-title">⏰ Availability & Commitment</h3>
+                    <p className="recruit-step-desc">Help us understand your availability.</p>
+
+                    <div className="form-group">
+                      <label className="form-label">How much time can you contribute per week?</label>
+                      <div className="recruit-radio-group vertical">
+                        {TIME_COMMITMENT_OPTIONS.map(option => (
+                          <label key={option} className={`recruit-radio-item ${applyForm.timeCommitment === option ? 'checked' : ''}`}>
+                            <input type="radio" name="time-commitment"
+                              checked={applyForm.timeCommitment === option}
+                              onChange={() => updateApplyField('timeCommitment', option)} />
+                            <span className="recruit-radio-mark" />
+                            {option}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Are you willing to participate in club events and activities? *</label>
+                      <div className={`recruit-radio-group vertical ${applyErrors.willingToParticipate ? 'error-border' : ''}`}>
+                        {PARTICIPATION_OPTIONS.map(option => (
+                          <label key={option} className={`recruit-radio-item ${applyForm.willingToParticipate === option ? 'checked' : ''}`}>
+                            <input type="radio" name="participation"
+                              checked={applyForm.willingToParticipate === option}
+                              onChange={() => updateApplyField('willingToParticipate', option)} />
+                            <span className="recruit-radio-mark" />
+                            {option}
+                          </label>
+                        ))}
+                      </div>
+                      {applyErrors.willingToParticipate && <span className="recruit-field-error">{applyErrors.willingToParticipate}</span>}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Step 5: Final Question ── */}
+                {applyStep === 5 && (
+                  <div className="recruit-step-content">
+                    <h3 className="recruit-step-title">✨ One Last Thing...</h3>
+                    <p className="recruit-step-desc">This is your chance to stand out!</p>
+
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="rf-bring">
+                        What is one thing you would like to bring to our club?
+                      </label>
+                      <textarea id="rf-bring"
+                        className="form-input club-textarea"
+                        placeholder="Share your ideas, initiatives, or unique contributions you envision..."
+                        rows={5}
+                        value={applyForm.bringToClub}
+                        onChange={e => updateApplyField('bringToClub', e.target.value)} />
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Step 6: Confirmation ── */}
+                {applyStep === totalSteps - 1 && (
+                  <div className="recruit-step-content recruit-step-confirmation">
+                    <div className="recruit-confirmation-card">
+                      <div className="recruit-confirmation-icon">🎉</div>
+                      <h3>Thanks for applying!</h3>
+                      <p>
+                        We'll review your application and contact shortlisted candidates
+                        regarding the next step.
+                      </p>
+                      <div className="recruit-confirmation-details">
+                        <span>📧 Confirmation sent to <strong>{applyForm.universityEmail || 'your email'}</strong></span>
+                      </div>
+                      <button
+                        id="close-confirmation-btn"
+                        className="btn btn-primary recruit-done-btn"
+                        onClick={closeApplyModal}
+                      >
+                        Done ✓
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation buttons */}
+              {applyStep < totalSteps - 1 && (
+                <div className="recruit-form-nav">
+                  {applyStep > 0 && (
+                    <button
+                      id="recruit-prev-btn"
+                      className="btn recruit-nav-btn recruit-nav-back"
+                      onClick={prevStep}
+                    >
+                      ← Back
+                    </button>
+                  )}
+                  <div className="recruit-nav-spacer" />
+                  {applyStep < 5 ? (
+                    <button
+                      id="recruit-next-btn"
+                      className="btn btn-primary recruit-nav-btn"
+                      onClick={nextStep}
+                    >
+                      {applyStep === 0 ? "Let's Go! →" : 'Continue →'}
+                    </button>
+                  ) : (
+                    <button
+                      id="recruit-submit-btn"
+                      className="btn btn-primary recruit-nav-btn recruit-nav-submit"
+                      onClick={handleApply}
+                      disabled={applySubmitting}
+                    >
+                      {applySubmitting ? 'Submitting…' : '🚀 Submit Application'}
+                    </button>
+                  )}
                 </div>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="apply-motivation">Why do you want to join?</label>
-                  <textarea id="apply-motivation" className="form-input club-textarea"
-                    placeholder="Tell the club why you'd be a great fit..." rows={4}
-                    value={applyForm.motivation}
-                    onChange={e => setApplyForm(p => ({ ...p, motivation: e.target.value }))} required />
-                </div>
-                <button id="submit-application-btn" type="submit" className="btn btn-primary" disabled={applySubmitting}>
-                  {applySubmitting ? 'Submitting…' : '🚀 Submit Application'}
-                </button>
-              </form>
+              )}
             </div>
           </div>
         )}

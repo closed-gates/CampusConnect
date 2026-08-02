@@ -9,6 +9,7 @@ import MessagingView        from './views/pages/MessagingView'
 import ClubActivitiesView   from './views/pages/ClubActivitiesView'
 import CoursesView          from './views/pages/CoursesView'
 import RoutineView          from './views/pages/RoutineView'
+import AttendanceView       from './views/pages/AttendanceView'
 
 /**
  * App – Root router
@@ -24,6 +25,7 @@ import RoutineView          from './views/pages/RoutineView'
  *   /messaging          → MessagingView
  *   /courses            → CoursesView
  *   /routine            → RoutineView
+ *   /attendance         → AttendanceView        ← Phase 2 (Arham)
  *   *                   → redirect to /
  *
  * NOTE (Phase 3): Replace the wildcard redirect with a
@@ -40,6 +42,7 @@ export default function App() {
       <Route path="/club-activities"   element={<ClubActivitiesView />} />
       <Route path="/courses"           element={<CoursesView />} />
       <Route path="/routine"           element={<RoutineView />} />
+      <Route path="/attendance"        element={<AttendanceView />} />
       {/* Catch-all */}
       <Route path="*"                  element={<Navigate to="/" replace />} />
     </Routes>
