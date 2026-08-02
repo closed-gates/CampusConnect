@@ -1,5 +1,5 @@
-import Sidebar  from '../components/Sidebar'
-import StatCard  from '../components/StatCard'
+import Sidebar from '../components/Sidebar'
+import StatCard from '../components/StatCard'
 
 /**
  * DashboardPage
@@ -65,7 +65,7 @@ export default function DashboardPage() {
         <div className="dashboard-header">
           <h1 className="dashboard-greeting">
             {/* TODO (Phase 2): replace "Student" with authenticated user's name */}
-            Welcome back, Student! 👋
+            Welcome back, Student!
           </h1>
           <p className="dashboard-date">{today}</p>
         </div>
