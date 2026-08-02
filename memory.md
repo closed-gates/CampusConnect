@@ -194,24 +194,50 @@ None.
 
 # Session Notes
 
-## Session 1 (2026-07-23)
+## Session 2 (2026-08-02)
 
-- Scaffolded Vite + React frontend (`frontend/`)
-- Built Login, Signup, Dashboard pages from reference images
-- Created Sidebar with 5 nav items, StatCard component
-- Created shared Spring Boot backend (`backend/`) with auth stub endpoints
-- Created `COLLABORATORS.md` for team onboarding
-- Vite dev server confirmed running on `http://localhost:5173`
+### Club Recruitment Form Improvement (Arham)
+
+- Replaced the simple 3-field application modal in `ClubActivitiesView` with a rich 7-step multi-step form overlay
+- **Flow:** Welcome → Personal Info → Interests → Skills → Availability → Final Question → Confirmation
+- **New frontend model constants** (`clubModel.js`): `RECRUITMENT_FORM_STEPS`, `TEAM_OPTIONS`, `SKILL_OPTIONS`, `TIME_COMMITMENT_OPTIONS`, `PARTICIPATION_OPTIONS`, `DEPARTMENT_OPTIONS`, `YEAR_SEMESTER_OPTIONS`, `EMPTY_RECRUITMENT_FORM`
+- **Controller** (`clubController.js`): multi-step state, `nextStep`, `prevStep`, per-step validation, `updateApplyField`, `toggleApplyArrayField`
+- **View** (`ClubActivitiesView.jsx`): fullscreen overlay with teal gradient header, animated progress bar with step dots, branded checkboxes/radio buttons, fade-in step transitions, confirmation card with bounce animation
+- **CSS** (`ClubActivitiesPage.css` in views/): 200+ lines of new styles for the multi-step form; all existing notice/recruitment styles preserved exactly
+
+### Faculty Attendance Tracking — New Feature (Arham)
+
+**Backend (new files only):**
+- `model/AttendanceRecord.java` — domain model (courseId, studentId, date, status: PRESENT/ABSENT/LATE)
+- `service/AttendanceService.java` — in-memory store with seeded data; `getAttendance`, `markAttendance`, `getCourseSummary`, `getCourseHistory`
+- `controller/AttendanceController.java` — REST endpoints: `GET /api/attendance`, `POST /api/attendance`, `GET /api/attendance/summary`, `GET /api/attendance/history`
+
+**Frontend (new files only):**
+- `models/attendanceModel.js` — `FACULTY_COURSES`, `COURSE_STUDENTS`, `SEED_ATTENDANCE_HISTORY`, `STATUS_CONFIG`, `calculateSummary`, `groupByDate`
+- `controllers/attendanceController.js` — `useAttendanceController()` hook: course selection, date picker, roster, mark individual/all students, submit, history, summary stats
+- `views/pages/AttendanceView.jsx` — Course selector cards (color-coded), 3 tabs: Mark Attendance (table with P/A/L buttons, quick-mark-all, progress bar), History (grouped by date with stats), Summary (circular chart + stat cards + per-student table)
+- `views/pages/AttendancePage.css` — dedicated styles: course cards with accent colors, attendance table, status button states, circular progress SVG, rate bars
+
+**Minimal wiring changes:**
+- `App.jsx`: added `/attendance` route + `AttendanceView` import
+- `Sidebar.jsx` (views/): added Attendance nav item with clipboard icon, route `/attendance`
+
+**No other features changed.** Dashboard, Courses, Routine, Messaging, Advising — all untouched.
 
 ------------------------------------------------------------------------
 
 # Change Log
 
 ## v0.1
-
 - Phase 1 complete: Login, Signup, Dashboard UI shell built.
 - Shared Spring Boot backend with auth stubs.
 - COLLABORATORS.md created.
+
+## v0.2 (2026-08-02)
+
+- **Club Recruitment Form:** Multi-step application form (7 steps) replacing the old 3-field modal. Full MVC update: model constants, controller hooks, view overlay, CSS.
+- **Faculty Attendance Tracking:** New feature end-to-end. Backend: `AttendanceRecord`, `AttendanceService`, `AttendanceController`. Frontend: model, controller, view, CSS. Route `/attendance` and sidebar nav item added.
+- All other features (Dashboard, Courses, Routine, Messaging, Academic Calendar) unchanged.
 
 ------------------------------------------------------------------------
 
