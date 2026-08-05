@@ -1,0 +1,542 @@
+/* ============================================================
+   CourseChannelView.css
+   Discord-inspired layout, CampusConnect teal accent system
+   ============================================================ */
+
+.cc-channel-root {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background: #0d1117;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+/* -- Sub-channel sidebar ----------------------------------- */
+.cc-sub-sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: #161b22;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.cc-course-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: #0d1117;
+}
+
+.cc-course-header-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.cc-course-emoji {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1A9882, #147A68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  color: #fff;
+  font-weight: 700;
+}
+
+.cc-course-code {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e6edf3;
+  line-height: 1.2;
+}
+
+.cc-course-name {
+  font-size: 11px;
+  color: #8b949e;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-member-count-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 3px 8px;
+  background: rgba(26,152,130,0.15);
+  border: 1px solid rgba(26,152,130,0.3);
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #1A9882;
+  letter-spacing: 0.3px;
+}
+
+.cc-channel-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.cc-channel-list::-webkit-scrollbar { width: 4px; }
+.cc-channel-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+.cc-category-label {
+  padding: 16px 16px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8b949e;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+}
+
+.cc-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  margin: 1px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #8b949e;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.12s ease;
+  position: relative;
+}
+
+.cc-sub-item:hover {
+  background: rgba(255,255,255,0.06);
+  color: #e6edf3;
+}
+
+.cc-sub-item.active {
+  background: rgba(26,152,130,0.18);
+  color: #e6edf3;
+}
+
+.cc-sub-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #1A9882;
+  border-radius: 0 3px 3px 0;
+}
+
+.cc-sub-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.cc-sub-icon.hash {
+  font-size: 18px;
+  font-weight: 700;
+  color: inherit;
+  opacity: 0.6;
+}
+
+.cc-sub-name { flex: 1; }
+
+.cc-sub-badge {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: #1A9882;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-read-only-tag {
+  font-size: 9px;
+  font-weight: 700;
+  color: #f59e0b;
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.25);
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+}
+
+/* -- Main channel content --------------------------------- */
+.cc-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #0d1117;
+  min-width: 0;
+}
+
+.cc-channel-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  height: 52px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: #161b22;
+  flex-shrink: 0;
+}
+
+.cc-topbar-icon {
+  font-size: 18px;
+  color: #8b949e;
+}
+
+.cc-topbar-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e6edf3;
+}
+
+.cc-topbar-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255,255,255,0.1);
+}
+
+.cc-topbar-desc {
+  font-size: 13px;
+  color: #8b949e;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-topbar-readonly {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: #f59e0b;
+  border-radius: 6px;
+}
+
+/* -- Messages area ---------------------------------------- */
+.cc-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cc-messages::-webkit-scrollbar { width: 6px; }
+.cc-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+
+.cc-welcome-banner {
+  padding: 24px 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 16px;
+}
+
+.cc-welcome-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1A9882, #147A68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 12px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.cc-welcome-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #e6edf3;
+  margin-bottom: 4px;
+}
+
+.cc-welcome-desc {
+  font-size: 13px;
+  color: #8b949e;
+}
+
+.cc-date-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 8px;
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cc-date-divider::before,
+.cc-date-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+}
+
+.cc-msg {
+  display: flex;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.1s;
+}
+
+.cc-msg:hover { background: rgba(255,255,255,0.03); }
+
+.cc-msg-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #fff;
+}
+
+.cc-msg-body { flex: 1; min-width: 0; }
+
+.cc-msg-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.cc-msg-author {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e6edf3;
+}
+
+.cc-msg-author.faculty { color: #f59e0b; }
+.cc-msg-author.student { color: #79c0ff; }
+
+.cc-msg-role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.cc-msg-role-badge.faculty {
+  background: rgba(245,158,11,0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245,158,11,0.3);
+}
+
+.cc-msg-role-badge.student {
+  background: rgba(121,192,255,0.1);
+  color: #79c0ff;
+  border: 1px solid rgba(121,192,255,0.2);
+}
+
+.cc-msg-time {
+  font-size: 11px;
+  color: #8b949e;
+}
+
+.cc-msg-content {
+  font-size: 13.5px;
+  color: #c9d1d9;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.cc-msg-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: #1c2128;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  border-left: 3px solid #1A9882;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.cc-msg-attachment:hover { background: #21262d; }
+
+.cc-attach-icon { font-size: 20px; }
+
+.cc-attach-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #79c0ff;
+}
+
+.cc-attach-size {
+  font-size: 11px;
+  color: #8b949e;
+}
+
+/* -- Input area ------------------------------------------- */
+.cc-input-area {
+  padding: 12px 20px 20px;
+  flex-shrink: 0;
+}
+
+.cc-input-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1c2128;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: border-color 0.15s;
+}
+
+.cc-input-box:focus-within {
+  border-color: rgba(26,152,130,0.6);
+}
+
+.cc-input-field {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #e6edf3;
+  font-family: inherit;
+}
+
+.cc-input-field::placeholder { color: #8b949e; }
+
+.cc-input-btn {
+  background: linear-gradient(135deg, #1A9882, #147A68);
+  border: none;
+  border-radius: 7px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  color: #fff;
+  font-size: 15px;
+}
+
+.cc-input-btn:hover { opacity: 0.85; }
+.cc-input-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.cc-read-only-notice {
+  text-align: center;
+  padding: 12px;
+  font-size: 12px;
+  color: #8b949e;
+  background: rgba(245,158,11,0.06);
+  border: 1px solid rgba(245,158,11,0.15);
+  border-radius: 8px;
+}
+
+/* -- Members panel ---------------------------------------- */
+.cc-members-panel {
+  width: 220px;
+  min-width: 220px;
+  background: #161b22;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.cc-members-panel::-webkit-scrollbar { width: 4px; }
+.cc-members-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+
+.cc-members-section-label {
+  padding: 8px 16px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8b949e;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.cc-member-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  margin: 1px 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.cc-member-item:hover { background: rgba(255,255,255,0.05); }
+
+.cc-member-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cc-member-presence {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #161b22;
+}
+
+.cc-member-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #8b949e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-member-item:hover .cc-member-name { color: #e6edf3; }
+
+.cc-member-name.faculty { color: #f59e0b; }

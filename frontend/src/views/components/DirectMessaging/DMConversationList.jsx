@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { getPresenceColor, formatMessageTime } from '../../../utils/dmUtils.js';
 import UserAvatar from './UserAvatar.jsx';
 
 export default function DMConversationList({
   conversations,
+  channelConvs = [],
   activeConversationId,
   onSelectConversation,
   availableUsers,
@@ -126,7 +127,7 @@ export default function DMConversationList({
       </div>
 
       <div className="univ-chat-list">
-        {filteredConversations.length === 0 ? (
+        {filteredConversations.length === 0 && channelConvs.length === 0 ? (
           <div style={{ padding: '30px 16px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
             <p>No conversations found matching <strong>"{searchQuery || filterTab.toLowerCase()}"</strong>.</p>
           </div>
@@ -147,6 +148,15 @@ export default function DMConversationList({
                   <span>👥 Classmates & Students ({studentConvs.length})</span>
                 </div>
                 {studentConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation))}
+              </>
+            )}
+
+            {channelConvs.length > 0 && (
+              <>
+                <div className="univ-category-label" style={{ marginTop: (facultyConvs.length + studentConvs.length) > 0 ? 12 : 0 }}>
+                  <span>📚 Course Channels ({channelConvs.length})</span>
+                </div>
+                {channelConvs.map((ch) => renderChannelItem(ch, activeConversationId, onSelectConversation))}
               </>
             )}
           </>
@@ -198,6 +208,55 @@ function renderChatItem(conv, activeConvId, onSelectConversation) {
 
       {conv.unreadCount > 0 && !isActive && (
         <span className="univ-badge-count">{conv.unreadCount}</span>
+      )}
+    </div>
+  );
+}
+
+function renderChannelItem(ch, activeConvId, onSelectConversation) {
+  const isActive = ch.id === activeConvId;
+  return (
+    <div
+      key={ch.id}
+      className={`univ-chat-item ${isActive ? 'active' : ''}`}
+      onClick={() => onSelectConversation(ch.id)}
+    >
+      <div
+        className="univ-avatar-frame"
+        style={{
+          width: 42, height: 42,
+          borderRadius: 10,
+          background: 'var(--color-teal-light, #E6F5F2)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 20, flexShrink: 0,
+        }}
+      >
+        {ch.emoji}
+      </div>
+
+      <div className="univ-chat-meta">
+        <div className="univ-chat-top-line">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+            <span className="univ-chat-name">{ch.name}</span>
+            <span
+              style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 6px',
+                borderRadius: 4, background: 'var(--color-teal-light, #E6F5F2)',
+                color: 'var(--color-teal, #1A9882)', border: '1px solid rgba(26,152,130,0.3)',
+                textTransform: 'uppercase', letterSpacing: '0.4px',
+              }}
+            >
+              CHANNEL
+            </span>
+          </div>
+        </div>
+        <div className="univ-chat-preview">
+          {ch.lastMessage?.content || ch.displayName}
+        </div>
+      </div>
+
+      {ch.unreadCount > 0 && !isActive && (
+        <span className="univ-badge-count">{ch.unreadCount}</span>
       )}
     </div>
   );

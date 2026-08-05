@@ -19,6 +19,7 @@ export default function CoursesView() {
     viewMode, setViewMode,
     filtered, grouped, facultyMap, total,
     FACULTIES, totalCourses,
+    handleEnroll, enrolledIds, enrollToast,
   } = useCoursesController()
 
   return (
@@ -96,7 +97,7 @@ export default function CoursesView() {
         {/* Single-faculty grid */}
         {total > 0 && activeFaculty !== 'all' && (
           <div className={viewMode === 'grid' ? 'course-grid' : 'course-list'}>
-            {filtered.map(c => <CourseCard key={c.id} course={c} faculty={facultyMap[c.faculty]} />)}
+            {filtered.map(c => <CourseCard key={c.id} course={c} faculty={facultyMap[c.faculty]} onEnroll={handleEnroll} enrolled={enrolledIds.has(c.id)} />)}
           </div>
         )}
 
@@ -105,10 +106,25 @@ export default function CoursesView() {
           <div key={faculty.id} className="faculty-section">
             <FacultyHeader faculty={faculty} count={grouped[faculty.id].length} />
             <div className={viewMode === 'grid' ? 'course-grid' : 'course-list'}>
-              {grouped[faculty.id].map(c => <CourseCard key={c.id} course={c} faculty={faculty} />)}
+              {grouped[faculty.id].map(c => <CourseCard key={c.id} course={c} faculty={faculty} onEnroll={handleEnroll} enrolled={enrolledIds.has(c.id)} />)}
             </div>
           </div>
         ))}
+
+        {/* Enrollment toast */}
+        {enrollToast && (
+          <div
+            style={{
+              position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)',
+              background: '#0f172a', color: '#fff', padding: '12px 24px',
+              borderRadius: 12, fontSize: 14, fontWeight: 600,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.35)', zIndex: 9999,
+              border: '1px solid rgba(255,255,255,0.1)',
+            }}
+          >
+            {enrollToast}
+          </div>
+        )}
 
       </main>
     </div>
@@ -128,7 +144,7 @@ function StarRating({ rating }) {
   )
 }
 
-function CourseCard({ course, faculty }) {
+function CourseCard({ course, faculty, onEnroll, enrolled = false }) {
   const [bookmarked, setBookmarked] = useState(false)
   const avail   = getAvailability(course.enrolled, course.capacity)
   const fillPct = Math.round((course.enrolled / course.capacity) * 100)
@@ -182,10 +198,14 @@ function CourseCard({ course, faculty }) {
         <button
           className="course-enroll-btn"
           id={'enroll-btn-' + course.id}
-          disabled={avail.label === 'Full'}
-          style={{ background: faculty.accent }}
+          disabled={avail.label === 'Full' || enrolled}
+          style={{
+            background: enrolled ? '#10B981' : faculty.accent,
+            opacity: enrolled ? 0.85 : 1,
+          }}
+          onClick={() => !enrolled && onEnroll && onEnroll(course)}
         >
-          {avail.label === 'Full' ? 'Join Waitlist' : 'View Details'}
+          {enrolled ? '✅ Enrolled' : avail.label === 'Full' ? 'Join Waitlist' : 'Enroll Now'}
         </button>
       </div>
     </div>
