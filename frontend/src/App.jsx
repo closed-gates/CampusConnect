@@ -1,23 +1,31 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import LoginPage             from './pages/LoginPage'
-import SignupPage            from './pages/SignupPage'
-import DashboardPage         from './pages/DashboardPage'
-import AcademicCalendarPage  from './pages/AcademicCalendarPage'
-import MessagingPage         from './pages/MessagingPage'
-import ClubActivitiesPage    from './pages/ClubActivitiesPage'
-import CoursesPage           from './pages/CoursesPage'
-import RoutinePage           from './pages/RoutinePage'
+
+// ── MVC: View layer (pages) ──────────────────────────────────
+import LoginView            from './views/pages/LoginView'
+import SignupView           from './views/pages/SignupView'
+import DashboardView        from './views/pages/DashboardView'
+import AcademicCalendarView from './views/pages/AcademicCalendarView'
+import MessagingView        from './views/pages/MessagingView'
+import ClubActivitiesView   from './views/pages/ClubActivitiesView'
+import CoursesView          from './views/pages/CoursesView'
+import RoutineView          from './views/pages/RoutineView'
+import AttendanceView       from './views/pages/AttendanceView'
 
 /**
  * App – Root router
  *
+ * MVC Role: Application entry-point (wires routes to Views)
+ *
  * Routes:
- *   /                   → LoginPage
- *   /signup             → SignupPage
- *   /dashboard          → DashboardPage
- *   /club-activities    → ClubActivitiesPage   ← Phase 2 (Arham)
- *   /academic-calendar  → AcademicCalendarPage
- *   /messaging          → MessagingPage
+ *   /                   → LoginView
+ *   /signup             → SignupView
+ *   /dashboard          → DashboardView
+ *   /club-activities    → ClubActivitiesView   ← Phase 2 (Arham)
+ *   /academic-calendar  → AcademicCalendarView
+ *   /messaging          → MessagingView
+ *   /courses            → CoursesView
+ *   /routine            → RoutineView
+ *   /attendance         → AttendanceView        ← Phase 2 (Arham)
  *   *                   → redirect to /
  *
  * NOTE (Phase 3): Replace the wildcard redirect with a
@@ -26,14 +34,15 @@ import RoutinePage           from './pages/RoutinePage'
 export default function App() {
   return (
     <Routes>
-      <Route path="/"                  element={<LoginPage />} />
-      <Route path="/signup"            element={<SignupPage />} />
-      <Route path="/dashboard"         element={<DashboardPage />} />
-      <Route path="/academic-calendar" element={<AcademicCalendarPage />} />
-      <Route path="/messaging"         element={<MessagingPage />} />
-      <Route path="/club-activities"   element={<ClubActivitiesPage />} />
-      <Route path="/courses"           element={<CoursesPage />} />
-      <Route path="/routine"           element={<RoutinePage />} />
+      <Route path="/"                  element={<LoginView />} />
+      <Route path="/signup"            element={<SignupView />} />
+      <Route path="/dashboard"         element={<DashboardView />} />
+      <Route path="/academic-calendar" element={<AcademicCalendarView />} />
+      <Route path="/messaging"         element={<MessagingView />} />
+      <Route path="/club-activities"   element={<ClubActivitiesView />} />
+      <Route path="/courses"           element={<CoursesView />} />
+      <Route path="/routine"           element={<RoutineView />} />
+      <Route path="/attendance"        element={<AttendanceView />} />
       {/* Catch-all */}
       <Route path="*"                  element={<Navigate to="/" replace />} />
     </Routes>
