@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react'
 import { CURRENT_USER, MOCK_USERS, MOCK_CONVERSATIONS, INITIAL_MESSAGES } from '../models/messagingModel.js'
 import { getDeterministicRoomId } from '../utils/dmUtils.js'
 import { dmService } from '../services/dmService.js'
+import { channelService } from '../services/channelService.js'
 
 /**
  * useMessagingController
@@ -24,8 +25,14 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
   const [messagesMap,      setMessagesMap]      = useState(INITIAL_MESSAGES)
   const [typingState,      setTypingState]      = useState({})
   const [notificationToast, setNotificationToast] = useState(null)
+  /** Channels auto-provisioned via enrollment */
+  const [channelConvs, setChannelConvs] = useState(
+    () => channelService.getChannelsForUser(user.id)
+  )
 
-  const activeConversation = conversations.find(c => c.id === activeConvId) || conversations[0]
+  const activeConversation = conversations.find(c => c.id === activeConvId)
+    || channelConvs.find(c => c.id === activeConvId)
+    || conversations[0]
   const activeRecipient    = activeConversation?.recipient
   const currentMessages    = messagesMap[activeConvId] || []
 
@@ -61,10 +68,26 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
     return () => unsubscribe()
   }, [activeConvId])
 
+  // Subscribe to channelService – push new channel to conv list on enrollment
+  useEffect(() => {
+    const unsub = channelService.subscribe(({ event, payload }) => {
+      if (event === 'CHANNEL_JOINED') {
+        const { channel } = payload
+        setChannelConvs(prev => {
+          if (prev.find(c => c.id === channel.id)) return prev   // idempotent
+          return [channel, ...prev]
+        })
+        // Auto-select the newly joined channel
+        setActiveConvId(channel.id)
+      }
+    })
+    return () => unsub()
+  }, [])
+
   /* ── Handlers ─────────────────────────────────────────────── */
 
   const handleSendMessage = async (payload) => {
-    if (!activeRecipient) return
+    if (!activeRecipient) return   // channels are read-only in this phase
     const textContent = typeof payload === 'string' ? payload : (payload?.content || '')
     const attachments = typeof payload === 'object' && payload?.attachments ? payload.attachments : []
 
@@ -129,5 +152,7 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
     handleTyping,
     handleSelectConversation,
     handleStartNewDM,
+    // Channel convs (auto-provisioned on enrollment)
+    channelConvs,
   }
 }
