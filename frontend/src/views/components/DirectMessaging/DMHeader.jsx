@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { getPresenceColor, getDeterministicRoomId } from '../../../utils/dmUtils.js';
 import UserAvatar from './UserAvatar.jsx';
 
@@ -45,7 +45,7 @@ export default function DMHeader({ currentUser, activeConversation }) {
           onClick={() => setShowKeyDetails(!showKeyDetails)}
           title="Click to view Deterministic WebSocket Room Key"
         >
-          <span>🔒</span>
+          <span>🔑</span>
           <span>{showKeyDetails ? `Room: ${deterministicKey}` : `Key: ${deterministicKey.substring(0, 18)}...`}</span>
         </button>
       </div>
