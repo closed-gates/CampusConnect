@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { CURRENT_USER, MOCK_USERS, MOCK_CONVERSATIONS, INITIAL_MESSAGES } from '../models/messagingModel.js'
+import { CURRENT_USER, MOCK_USERS, MOCK_CONVERSATIONS, INITIAL_MESSAGES, ADVISOR_CHANNEL } from '../models/messagingModel.js'
 import { getDeterministicRoomId } from '../utils/dmUtils.js'
 import { dmService } from '../services/dmService.js'
 import { channelService } from '../services/channelService.js'
@@ -25,9 +25,9 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
   const [messagesMap,      setMessagesMap]      = useState(INITIAL_MESSAGES)
   const [typingState,      setTypingState]      = useState({})
   const [notificationToast, setNotificationToast] = useState(null)
-  /** Channels auto-provisioned via enrollment */
+  /** Channels: advisor channel always first, then enrollment-based course channels */
   const [channelConvs, setChannelConvs] = useState(
-    () => channelService.getChannelsForUser(user.id)
+    () => [ADVISOR_CHANNEL, ...channelService.getChannelsForUser(user.id)]
   )
 
   const activeConversation = conversations.find(c => c.id === activeConvId)

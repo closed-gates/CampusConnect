@@ -10,6 +10,7 @@ import ClubActivitiesView   from './views/pages/ClubActivitiesView'
 import CoursesView          from './views/pages/CoursesView'
 import RoutineView          from './views/pages/RoutineView'
 import AttendanceView       from './views/pages/AttendanceView'
+import AdvisingView        from './views/pages/AdvisingView'
 
 /**
  * App – Root router
@@ -43,6 +44,7 @@ export default function App() {
       <Route path="/courses"           element={<CoursesView />} />
       <Route path="/routine"           element={<RoutineView />} />
       <Route path="/attendance"        element={<AttendanceView />} />
+      <Route path="/advising"          element={<AdvisingView />} />
       {/* Catch-all */}
       <Route path="*"                  element={<Navigate to="/" replace />} />
     </Routes>
