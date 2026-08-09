@@ -150,3 +150,20 @@ export const INITIAL_MESSAGES = {
     }
   ]
 }
+
+/**
+ * ADVISOR_CHANNEL – Permanent advisor channel always visible in the DM sidebar.
+ * Not tied to course enrollment — always present for all users.
+ */
+export const ADVISOR_CHANNEL = {
+  id: 'ch_advisor_001',
+  isAdvisorChannel: true,
+  name: '🎓 Advisor Channel',
+  emoji: '🎓',
+  displayName: 'Academic Advising — message your advisor here',
+  unreadCount: 0,
+  lastMessage: {
+    content: 'Welcome! Use this channel to communicate with your academic advisor.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+  },
+}

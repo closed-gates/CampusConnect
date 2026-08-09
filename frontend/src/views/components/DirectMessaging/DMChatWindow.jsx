@@ -1,6 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import { formatMessageTime } from '../../../utils/dmUtils.js';
 import UserAvatar from './UserAvatar.jsx';
+
+function isImageFile(att) {
+  if (!att) return false;
+  if (att.type && att.type.startsWith('image/')) return true;
+  const name = att.name || '';
+  return /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(name);
+}
+
+function getFileExt(filename = '') {
+  const parts = filename.split('.');
+  return parts.length > 1 ? parts.pop().substring(0, 4).toUpperCase() : 'FILE';
+}
 
 export default function DMChatWindow({
   messages = [],
@@ -20,17 +32,17 @@ export default function DMChatWindow({
 
   return (
     <div className="univ-msg-feed" ref={scrollRef}>
-      <div style={{ textAlign: 'center', padding: '24px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ textAlign: 'center', padding: '24px 16px', borderBottom: '1px solid var(--color-border, #E5E7EB)', marginBottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#ffffff', borderRadius: 12, margin: '16px 16px 8px' }}>
         <div style={{ marginBottom: 12 }}>
           <UserAvatar user={recipientUser} size={64} />
         </div>
-        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 22, color: '#f8fafc', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text, #111827)', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
           <span>{recipientUser?.displayName}</span>
           <span className={`role-badge ${isFacultyRecipient ? 'faculty' : 'student'}`}>
             {recipientUser?.role}
           </span>
         </h2>
-        <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--color-text-sub, #6B7280)', margin: 0 }}>
           This is the start of your direct communication history with {isFacultyRecipient ? 'Faculty Instructor' : 'Student'}{' '}
           <strong>{recipientUser?.displayName}</strong> (@{recipientUser?.username}).
         </p>
@@ -71,42 +83,25 @@ export default function DMChatWindow({
 
                 {hasAttachments && (
                   <div className="univ-attachment-container">
-                    {msg.attachments.map((att, attIdx) => {
-                      const isImage = att.type?.startsWith('image/') || /\.(png|jpe?g|gif|webp)$/i.test(att.name);
-                      const fileExt = getFileExt(att.name);
-
-                      if (isImage) {
+                    {msg.attachments.map((att, idx) => {
+                      if (isImageFile(att) && att.url) {
                         return (
-                          <div key={attIdx} style={{ marginTop: 4 }}>
+                          <div key={idx} style={{ marginTop: 6, overflow: 'hidden', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', maxWidth: 320 }}>
                             <img
                               src={att.url}
-                              alt={att.name}
-                              className="univ-image-preview"
+                              alt={att.name || 'Image Attachment'}
+                              style={{ display: 'block', width: '100%', maxHeight: 280, objectFit: 'cover' }}
                             />
-                            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-                              📷 {att.name} ({att.size || 'Image'})
-                            </div>
                           </div>
                         );
                       }
-
                       return (
-                        <div key={attIdx} className="univ-file-card">
-                          <div className="univ-file-ext-badge">{fileExt}</div>
-                          <div className="univ-file-info">
-                            <div className="univ-file-name" title={att.name}>{att.name}</div>
-                            <div className="univ-file-size">{att.size || 'Attachment'}</div>
+                        <div key={idx} className="univ-file-card">
+                          <span className="univ-file-ext-badge">{getFileExt(att.name)}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{att.name}</span>
+                            <span style={{ fontSize: 11, opacity: 0.7 }}>{att.size}</span>
                           </div>
-                          <a
-                            href={att.url}
-                            download={att.name}
-                            className="univ-file-download-btn"
-                            title={`Download ${att.name}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            📥
-                          </a>
                         </div>
                       );
                     })}
@@ -119,16 +114,16 @@ export default function DMChatWindow({
       )}
 
       {isTyping && (
-        <div className="univ-typing-bar">
-          <span><strong>{recipientUser?.displayName}</strong> is typing...</span>
+        <div className="univ-msg-card">
+          <UserAvatar user={recipientUser} size={36} />
+          <div className="univ-typing-indicator-bubble">
+            <span className="typing-dot"></span>
+            <span className="typing-dot"></span>
+            <span className="typing-dot"></span>
+            <span className="typing-text">{recipientUser?.displayName} is typing…</span>
+          </div>
         </div>
       )}
     </div>
   );
-}
-
-function getFileExt(filename) {
-  if (!filename) return 'FILE';
-  const parts = filename.split('.');
-  return parts.length > 1 ? parts.pop().toUpperCase() : 'FILE';
 }

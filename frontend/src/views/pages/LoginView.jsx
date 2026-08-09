@@ -71,6 +71,7 @@ export default function LoginView() {
               style={{ cursor: 'pointer' }}
             >
               <option value="student">🎓 Student</option>
+              <option value="advisor">🧑‍🏫 Advisor</option>
               <option value="admin">🛡️ Admin (Club/Faculty)</option>
             </select>
           </div>

@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { id: 'home',              label: 'Home',             icon: <HomeIcon />,      route: '/dashboard' },
   { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: '/courses' },
   { id: 'bookmarks',         label: 'Bookmarks',         icon: <BookmarksIcon />, route: null },
-  { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: null },
+  { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: '/advising' },
   { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: '/messaging' },
   { id: 'academic-calendar', label: 'Academic Calendar', icon: <CalendarIcon />,  route: '/academic-calendar' },
   { id: 'clubs',             label: 'Club Activities',   icon: <ClubIcon />,      route: '/club-activities' },
