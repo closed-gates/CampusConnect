@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 
 const ACADEMIC_EMOJIS = {
-  academic: ['🎓', '📚', '📖', '📝', '✍️', '🖊️', '🎒', '🏫', '📜', '💡', '🔬', '🧪', '📐', '📊'],
-  greetings: ['👋', '🙏', '👍', '🙌', '🤝', '👏', '🫡', '✅', '💯', '⭐', '🤝'],
-  schedule: ['⏰', '📅', '⌛', '⏳', '🔔', '📍', '❓', '‼️'],
-  expressions: ['😊', '😄', '🏼', '🤔', '💭', '🧠', '🎯', '🚀', '✨']
+  academic: ['🎓', '📚', '📝', '🔍', '💡', '📊', '💻', '🧪', '📐', '🧠', '📌', '🗓️', '🏆', '⭐'],
+  greetings: ['👋', '🙌', '👍', '🤝', '😊', '🎉', '✨', '👏', '💬', '🔥', '💯'],
+  schedule: ['📅', '⏰', '📌', '📍', '📢', '🔔', '⌛', '🎯'],
+  expressions: ['🤔', '😅', '👀', '💯', '🚀', '⚡', '💪', '🎯']
 };
 
 export default function DMInputArea({
@@ -59,23 +59,18 @@ export default function DMInputArea({
 
   const handleSend = (e) => {
     if (e) e.preventDefault();
-    const trimmedText = text.trim();
 
-    if (!trimmedText && stagedFiles.length === 0) return;
+    if (!text.trim() && stagedFiles.length === 0) return;
 
     onSendMessage({
-      content: trimmedText,
+      content: text,
       attachments: stagedFiles
     });
 
     setText('');
     setStagedFiles([]);
     setShowEmojiPicker(false);
-
-    if (onTyping) {
-      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-      onTyping(false);
-    }
+    if (onTyping) onTyping(false);
   };
 
   const handleKeyDown = (e) => {
@@ -87,66 +82,17 @@ export default function DMInputArea({
 
   return (
     <div className="univ-input-section">
-      {showEmojiPicker && (
-        <div className="univ-emoji-picker-modal">
-          <div className="univ-emoji-header">
-            <span>🎓 University Academic Emojis</span>
-            <button
-              onClick={() => setShowEmojiPicker(false)}
-              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="univ-emoji-category">Academic & Course:</div>
-          <div className="univ-emoji-grid">
-            {ACADEMIC_EMOJIS.academic.map((e, i) => (
-              <button key={i} className="univ-emoji-btn" onClick={() => handleEmojiClick(e)}>
-                {e}
-              </button>
-            ))}
-          </div>
-
-          <div className="univ-emoji-category">Greetings & Respect:</div>
-          <div className="univ-emoji-grid">
-            {ACADEMIC_EMOJIS.greetings.map((e, i) => (
-              <button key={i} className="univ-emoji-btn" onClick={() => handleEmojiClick(e)}>
-                {e}
-              </button>
-            ))}
-          </div>
-
-          <div className="univ-emoji-category">Deadlines & Schedule:</div>
-          <div className="univ-emoji-grid">
-            {ACADEMIC_EMOJIS.schedule.map((e, i) => (
-              <button key={i} className="univ-emoji-btn" onClick={() => handleEmojiClick(e)}>
-                {e}
-              </button>
-            ))}
-          </div>
-
-          <div className="univ-emoji-category">Expressions:</div>
-          <div className="univ-emoji-grid">
-            {ACADEMIC_EMOJIS.expressions.map((e, i) => (
-              <button key={i} className="univ-emoji-btn" onClick={() => handleEmojiClick(e)}>
-                {e}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {stagedFiles.length > 0 && (
         <div className="univ-staged-files-bar">
           {stagedFiles.map((fileObj, idx) => (
             <div key={idx} className="univ-staged-chip">
-              <span>📎</span>
-              <span style={{ fontWeight: 600 }}>{fileObj.name}</span>
-              <span style={{ fontSize: 10, opacity: 0.7 }}>({fileObj.size})</span>
+              <span>📄</span>
+              <span>{fileObj.name}</span>
+              <span style={{ fontSize: 11, opacity: 0.7 }}>({fileObj.size})</span>
               <button
+                type="button"
                 onClick={() => removeStagedFile(idx)}
-                style={{ background: 'none', border: 'none', color: '#f23f43', cursor: 'pointer', marginLeft: 4 }}
+                style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '0 2px', fontWeight: 'bold' }}
               >
                 ✕
               </button>
@@ -155,21 +101,65 @@ export default function DMInputArea({
         </div>
       )}
 
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileSelect}
-        multiple
-        style={{ display: 'none' }}
-      />
+      {showEmojiPicker && (
+        <div className="univ-emoji-picker-modal">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <span className="univ-emoji-header">Quick Academic Emojis</span>
+            <button
+              onClick={() => setShowEmojiPicker(false)}
+              style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 14 }}
+            >
+              ✕
+            </button>
+          </div>
+          <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+            {Object.entries(ACADEMIC_EMOJIS).map(([category, emojis]) => (
+              <div key={category} style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', marginBottom: 6 }}>
+                  {category}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
+                  {emojis.map((emoji, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handleEmojiClick(emoji)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: 18,
+                        padding: 4,
+                        borderRadius: 6,
+                        cursor: 'pointer',
+                        transition: 'background 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#E6F5F2')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <form className="univ-input-form-box" onSubmit={handleSend}>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+          multiple
+        />
+
         <button
           type="button"
           className="univ-action-btn"
           onClick={() => fileInputRef.current?.click()}
-          title="Attach files of ANY type (PDF, DOCX, ZIP, Code, Images, etc.)"
-          aria-label="Attach File"
+          title="Attach Files"
         >
           📎
         </button>
@@ -178,8 +168,7 @@ export default function DMInputArea({
           type="button"
           className="univ-action-btn"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          title="Academic & University Emojis"
-          aria-label="Insert Academic Emoji"
+          title="Insert Emoji"
         >
           😊
         </button>
@@ -188,7 +177,11 @@ export default function DMInputArea({
           ref={textInputRef}
           type="text"
           className="univ-input-field"
-          placeholder={`Message @${recipientName || 'user'}... (Attach files or type message)`}
+          placeholder={
+            recipientName
+              ? `Message @${recipientName}…`
+              : 'Type your message here…'
+          }
           value={text}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
@@ -197,10 +190,14 @@ export default function DMInputArea({
         <button
           type="submit"
           className="univ-send-submit-btn"
-          title="Send Direct Message"
-          aria-label="Send Message"
+          disabled={!text.trim() && stagedFiles.length === 0}
+          title="Send Message"
+          style={{
+            opacity: (!text.trim() && stagedFiles.length === 0) ? 0.45 : 1,
+            cursor: (!text.trim() && stagedFiles.length === 0) ? 'not-allowed' : 'pointer'
+          }}
         >
-          ➤
+          ✈️
         </button>
       </form>
     </div>
@@ -208,7 +205,7 @@ export default function DMInputArea({
 }
 
 function formatFileSize(bytes) {
-  if (!bytes) return '0 B';
+  if (bytes === 0) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -216,7 +213,5 @@ function formatFileSize(bytes) {
 }
 
 function getFileExt(filename) {
-  if (!filename) return 'FILE';
-  const parts = filename.split('.');
-  return parts.length > 1 ? parts.pop().toUpperCase() : 'FILE';
+  return filename.split('.').pop().toLowerCase();
 }

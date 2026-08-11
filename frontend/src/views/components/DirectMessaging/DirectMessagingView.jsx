@@ -3,6 +3,7 @@ import DMConversationList from './DMConversationList.jsx'
 import DMHeader from './DMHeader.jsx'
 import DMChatWindow from './DMChatWindow.jsx'
 import DMInputArea from './DMInputArea.jsx'
+import CourseChannelView from './CourseChannelView.jsx'
 import './DirectMessaging.css'
 
 /**
@@ -32,11 +33,16 @@ export default function DirectMessagingView({ user, onMessageSent }) {
     activeRecipient,
     availableUsers,
     currentUser,
+    channelConvs,
     handleSendMessage,
     handleTyping,
     handleSelectConversation,
     handleStartNewDM,
   } = useMessagingController(user, onMessageSent)
+
+  // Is the active conversation a course channel?
+  const isChannel = activeConvId?.startsWith('ch_')
+  const activeChannel = channelConvs.find(c => c.id === activeConvId)
 
   return (
     /* univ-dm-root: light-theme flex row (no own nav sidebar) */
@@ -66,32 +72,37 @@ export default function DirectMessagingView({ user, onMessageSent }) {
       {/* Column 1 – Conversation list */}
       <DMConversationList
         conversations={conversations}
+        channelConvs={channelConvs}
         activeConversationId={activeConvId}
         onSelectConversation={handleSelectConversation}
         availableUsers={availableUsers}
         onStartNewDM={handleStartNewDM}
       />
 
-      {/* Column 2 – Active chat */}
-      <main className="univ-message-window">
-        <DMHeader
-          currentUser={currentUser}
-          activeConversation={activeConversation}
-        />
+      {/* Column 2 – Active chat OR course channel view */}
+      {isChannel && activeChannel ? (
+        <CourseChannelView channel={activeChannel} />
+      ) : (
+        <main className="univ-message-window">
+          <DMHeader
+            currentUser={currentUser}
+            activeConversation={activeConversation}
+          />
 
-        <DMChatWindow
-          messages={currentMessages}
-          currentUser={currentUser}
-          recipientUser={activeRecipient}
-          isTyping={!!typingState[activeConvId]}
-        />
+          <DMChatWindow
+            messages={currentMessages}
+            currentUser={currentUser}
+            recipientUser={activeRecipient}
+            isTyping={!!typingState[activeConvId]}
+          />
 
-        <DMInputArea
-          onSendMessage={handleSendMessage}
-          onTyping={handleTyping}
-          recipientName={activeRecipient?.displayName}
-        />
-      </main>
+          <DMInputArea
+            onSendMessage={handleSendMessage}
+            onTyping={handleTyping}
+            recipientName={activeRecipient?.displayName}
+          />
+        </main>
+      )}
     </div>
   )
 }
