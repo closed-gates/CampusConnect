@@ -1,0 +1,22 @@
+# === Environment Variables (NEVER COMMIT) ===
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# === Build outputs ===
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# === IDE ===
+.vscode/
+.idea/
+*.iml
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Neon (no secrets, safe to commit, but optional) ===
+# .neon
