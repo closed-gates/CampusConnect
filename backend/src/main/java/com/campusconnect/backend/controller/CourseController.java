@@ -76,7 +76,7 @@ public class CourseController {
         String studentId = (String) body.get("studentId");
         Long courseId    = Long.valueOf(body.get("courseId").toString());
 
-        if (enrollmentRepo.existsByStudentIdAndCourseId(studentId, courseId)) {
+        if (enrollmentRepo.existsByStudentIdAndCourse_Id(studentId, courseId)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("message", "Already enrolled in this course."));
         }
