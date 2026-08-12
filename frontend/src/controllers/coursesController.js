@@ -1,12 +1,16 @@
-﻿/**
+/**
  * coursesController.js – Controller layer for the Courses Catalog page.
  *
  * MVC Role: Controller
+ *
  * Manages all filter/search/sort state for CoursesView.
+ * Fetches real BRACU course data from the backend (Neon DB).
+ * Enrollment is persisted to the database AND cached in localStorage.
  */
 
-import { useState, useMemo, useCallback } from 'react'
-import { COURSES, FACULTIES } from '../models/coursesModel.js'
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import { FACULTIES, YEARS, SEMESTERS } from '../models/coursesModel.js'
+import { courseService } from '../services/courseService.js'
 import { channelService } from '../services/channelService.js'
 import { CURRENT_USER } from '../models/messagingModel.js'
 
@@ -24,20 +28,42 @@ export function getAvailability(enrolled, capacity) {
   return               { label: 'Open',         color: '#10B981', bg: '#ECFDF5' }
 }
 
+/* ── Normaliser: maps DB fields to frontend shape ────────────── */
+/**
+ * The backend returns { facultyId, description, ... }.
+ * The frontend expects { faculty, desc, tags: Array, ... }.
+ */
+function normaliseCourse(c) {
+  return {
+    ...c,
+    faculty: c.facultyId,
+    desc:    c.description,
+    tags:    typeof c.tags === 'string'
+               ? c.tags.split(',').map(t => t.trim()).filter(Boolean)
+               : (c.tags || []),
+  }
+}
+
 /* ── Controller Hook ─────────────────────────────────────────── */
 
 /**
  * useCoursesController
- * Manages search, filter, and view-mode state for the course catalog.
+ * Fetches BRACU courses from Neon DB, manages search/filter/view state.
  */
 export function useCoursesController() {
+  // ── Remote data state ─────────────────────────────────────────
+  const [allCourses, setAllCourses] = useState([])
+  const [loading,    setLoading]    = useState(true)
+  const [error,      setError]      = useState(null)
+
+  // ── Filter / UI state ─────────────────────────────────────────
   const [searchQuery,    setSearchQuery]    = useState('')
   const [activeFaculty,  setActiveFaculty]  = useState('all')
   const [activeYear,     setActiveYear]     = useState('All Years')
   const [activeSemester, setActiveSemester] = useState('All Semesters')
   const [viewMode,       setViewMode]       = useState('grid')
 
-  /** Set of courseIds the current user has enrolled in (persisted) */
+  /** Enrolled IDs: sourced from DB, cached in localStorage */
   const [enrolledIds, setEnrolledIds] = useState(() => {
     try {
       const raw = localStorage.getItem(ENROLLED_IDS_KEY)
@@ -49,35 +75,80 @@ export function useCoursesController() {
 
   const [enrollToast, setEnrollToast] = useState(null)
 
+  // ── Fetch courses from Neon DB on mount ───────────────────────
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    courseService.getCatalog()
+      .then(data => {
+        if (!cancelled) {
+          setAllCourses(data.map(normaliseCourse))
+          setLoading(false)
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          console.error('[CoursesController] Failed to fetch catalog:', err)
+          setError('Could not load courses. Please check the backend is running.')
+          setLoading(false)
+        }
+      })
+
+    return () => { cancelled = true }
+  }, [])
+
+  // ── Hydrate enrolledIds from DB on mount ──────────────────────
+  useEffect(() => {
+    courseService.getEnrolledIds(CURRENT_USER.id)
+      .then(ids => {
+        const dbSet = new Set(ids.map(String))
+        setEnrolledIds(prev => {
+          const merged = new Set([...prev, ...dbSet])
+          try {
+            localStorage.setItem(ENROLLED_IDS_KEY, JSON.stringify(Array.from(merged)))
+          } catch (e) { /* ignore */ }
+          return merged
+        })
+      })
+      .catch(() => { /* use localStorage cache if DB is unavailable */ })
+  }, [])
+
   /**
-   * handleEnroll – enrollment event hook.
-   * Marks course enrolled, provisions channel, shows toast.
+   * handleEnroll – persists to Neon DB AND updates localStorage cache.
    */
   const handleEnroll = useCallback(async (course) => {
-    if (enrolledIds.has(course.id)) return          // already enrolled
+    if (enrolledIds.has(String(course.id))) return   // already enrolled
 
+    // Optimistic local update
     setEnrolledIds(prev => {
-      const next = new Set([...prev, course.id])
+      const next = new Set([...prev, String(course.id)])
       try {
         localStorage.setItem(ENROLLED_IDS_KEY, JSON.stringify(Array.from(next)))
-      } catch (e) {
-        console.warn('Could not persist enrolledIds to localStorage', e)
-      }
+      } catch (e) { /* ignore */ }
       return next
     })
 
-    const channel = await channelService.onEnrollment({
-      userId: CURRENT_USER.id,
-      course,
-    })
-    setEnrollToast(`✅ Enrolled in ${course.code} · Channel ${channel.name} ready!`)
+    try {
+      await courseService.enroll(CURRENT_USER.id, course.id)
+    } catch (err) {
+      console.warn('[CoursesController] DB enroll failed (using cache):', err.message)
+    }
+
+    try {
+      const channel = await channelService.onEnrollment({ userId: CURRENT_USER.id, course })
+      setEnrollToast(`✅ Enrolled in ${course.code} · Channel ${channel.name} ready!`)
+    } catch {
+      setEnrollToast(`✅ Enrolled in ${course.code}!`)
+    }
     setTimeout(() => setEnrollToast(null), 4000)
   }, [enrolledIds])
 
-  /* Derived: filtered course list */
+  /* Derived: client-side filtered courses */
   const filtered = useMemo(() => {
-    let r = [...COURSES]
-    if (activeFaculty !== 'all') r = r.filter(c => c.faculty === activeFaculty)
+    let r = [...allCourses]
+    if (activeFaculty !== 'all')         r = r.filter(c => c.faculty === activeFaculty)
     if (activeYear !== 'All Years') {
       const yr = parseInt(activeYear.replace('Year ', ''))
       r = r.filter(c => c.year === yr)
@@ -86,17 +157,17 @@ export function useCoursesController() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       r = r.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        c.code.toLowerCase().includes(q) ||
+        c.name.toLowerCase().includes(q)       ||
+        c.code.toLowerCase().includes(q)       ||
         c.instructor.toLowerCase().includes(q) ||
-        c.desc.toLowerCase().includes(q) ||
-        c.tags.some(t => t.toLowerCase().includes(q))
+        c.desc?.toLowerCase().includes(q)      ||
+        c.tags?.some(t => t.toLowerCase().includes(q))
       )
     }
     return r
-  }, [searchQuery, activeFaculty, activeYear, activeSemester])
+  }, [allCourses, searchQuery, activeFaculty, activeYear, activeSemester])
 
-  /* Derived: grouped by faculty (only when showing "all faculties") */
+  /* Derived: grouped by faculty (only when showing all) */
   const grouped = useMemo(() => {
     if (activeFaculty !== 'all') return null
     const map = {}
@@ -111,6 +182,8 @@ export function useCoursesController() {
   const total      = filtered.length
 
   return {
+    // Remote state
+    loading, error,
     // Filter state
     searchQuery,    setSearchQuery,
     activeFaculty,  setActiveFaculty,
@@ -118,16 +191,11 @@ export function useCoursesController() {
     activeSemester, setActiveSemester,
     viewMode,       setViewMode,
     // Derived
-    filtered,
-    grouped,
-    facultyMap,
-    total,
+    filtered, grouped, facultyMap, total,
     // Static data (passed through for the View)
-    FACULTIES,
-    totalCourses: COURSES.length,
+    FACULTIES, YEARS, SEMESTERS,
+    totalCourses: allCourses.length,
     // Enrollment
-    enrolledIds,
-    enrollToast,
-    handleEnroll,
+    enrolledIds, enrollToast, handleEnroll,
   }
 }
