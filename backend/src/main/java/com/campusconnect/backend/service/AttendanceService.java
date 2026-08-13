@@ -1,68 +1,104 @@
 package com.campusconnect.backend.service;
 
 import com.campusconnect.backend.model.AttendanceRecord;
+import com.campusconnect.backend.repository.AttendanceRecordRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
  * AttendanceService – Business logic for faculty attendance tracking.
  *
- * MVC Role: Service (sits between Controller and Model)
+ * MVC Role: Service (sits between Controller and Repository)
  *
- * Phase 2: In-memory data store with seeded data (no database).
- *
- * TODO (Phase 3 – Database persistence):
- *   - Replace in-memory list with JPA repository: AttendanceRecordRepository
- *   - Add @Transactional where needed
- *   - Add RBAC validation (only FACULTY can mark attendance)
+ * Phase 3: Persisted via JPA to the Neon PostgreSQL "attendance_records" table.
+ * Seed data is inserted once on first startup using @PostConstruct with a count() guard.
  */
 @Service
 public class AttendanceService {
 
-    // ── In-memory data store ──────────────────────────────────────
-    private final List<AttendanceRecord> records = new ArrayList<>();
-    private final AtomicLong idSeq = new AtomicLong(100);
+    private final AttendanceRecordRepository repo;
 
-    // ── Seed data ─────────────────────────────────────────────────
-    public AttendanceService() {
-        // Seed some past attendance records for demo
-        String today = LocalDate.now().toString();
-        String yesterday = LocalDate.now().minusDays(1).toString();
-        String twoDaysAgo = LocalDate.now().minusDays(2).toString();
-
-        // CSE470 — yesterday
-        seedRecord("CSE470", "Software Engineering", "21201001", "Arham Khan", yesterday, "PRESENT");
-        seedRecord("CSE470", "Software Engineering", "21201002", "Sarah Ahmed", yesterday, "PRESENT");
-        seedRecord("CSE470", "Software Engineering", "21201003", "David Kim", yesterday, "ABSENT");
-        seedRecord("CSE470", "Software Engineering", "21201004", "Emily Chen", yesterday, "PRESENT");
-        seedRecord("CSE470", "Software Engineering", "21201005", "Michael Ross", yesterday, "LATE");
-
-        // CSE470 — two days ago
-        seedRecord("CSE470", "Software Engineering", "21201001", "Arham Khan", twoDaysAgo, "PRESENT");
-        seedRecord("CSE470", "Software Engineering", "21201002", "Sarah Ahmed", twoDaysAgo, "LATE");
-        seedRecord("CSE470", "Software Engineering", "21201003", "David Kim", twoDaysAgo, "PRESENT");
-        seedRecord("CSE470", "Software Engineering", "21201004", "Emily Chen", twoDaysAgo, "PRESENT");
-        seedRecord("CSE470", "Software Engineering", "21201005", "Michael Ross", twoDaysAgo, "PRESENT");
-
-        // CSE341 — yesterday
-        seedRecord("CSE341", "Microprocessors", "21201001", "Arham Khan", yesterday, "PRESENT");
-        seedRecord("CSE341", "Microprocessors", "21201006", "Jessica Park", yesterday, "PRESENT");
-        seedRecord("CSE341", "Microprocessors", "21201007", "James Wilson", yesterday, "ABSENT");
-        seedRecord("CSE341", "Microprocessors", "21201008", "Lily Zhang", yesterday, "PRESENT");
+    public AttendanceService(AttendanceRecordRepository repo) {
+        this.repo = repo;
     }
 
-    private void seedRecord(String courseId, String courseName, String studentId,
-                            String studentName, String date, String status) {
-        records.add(new AttendanceRecord(
-            idSeq.getAndIncrement(), courseId, courseName,
-            studentId, studentName, date, status,
-            "Dr. Mahbubur Rahman", LocalDateTime.now().toString()
-        ));
+    // ── Seed data on first startup ────────────────────────────────
+    /**
+     * Inserts seed attendance records if the table is empty.
+     * Uses a count() == 0 guard so it only runs once per fresh database.
+     */
+    @PostConstruct
+    @Transactional
+    public void seedData() {
+        if (repo.count() > 0) return;  // Already seeded — skip
+
+        String yesterday   = LocalDate.now().minusDays(1).toString();
+        String twoDaysAgo  = LocalDate.now().minusDays(2).toString();
+        String fourDaysAgo = LocalDate.now().minusDays(4).toString();
+        String marked      = LocalDateTime.now().toString();
+        String faculty     = "Dr. Mahbubur Rahman";
+
+        // CSE470 — Software Engineering — yesterday
+        save("CSE470", "Software Engineering", "21201001", "Arham Khan",   yesterday,   "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201002", "Sarah Ahmed",  yesterday,   "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201003", "David Kim",    yesterday,   "ABSENT",  faculty, marked);
+        save("CSE470", "Software Engineering", "21201004", "Emily Chen",   yesterday,   "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201005", "Michael Ross", yesterday,   "LATE",    faculty, marked);
+
+        // CSE470 — two days ago
+        save("CSE470", "Software Engineering", "21201001", "Arham Khan",   twoDaysAgo,  "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201002", "Sarah Ahmed",  twoDaysAgo,  "LATE",    faculty, marked);
+        save("CSE470", "Software Engineering", "21201003", "David Kim",    twoDaysAgo,  "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201004", "Emily Chen",   twoDaysAgo,  "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201005", "Michael Ross", twoDaysAgo,  "PRESENT", faculty, marked);
+
+        // CSE470 — four days ago
+        save("CSE470", "Software Engineering", "21201001", "Arham Khan",   fourDaysAgo, "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201002", "Sarah Ahmed",  fourDaysAgo, "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201003", "David Kim",    fourDaysAgo, "PRESENT", faculty, marked);
+        save("CSE470", "Software Engineering", "21201004", "Emily Chen",   fourDaysAgo, "ABSENT",  faculty, marked);
+        save("CSE470", "Software Engineering", "21201005", "Michael Ross", fourDaysAgo, "PRESENT", faculty, marked);
+
+        // CSE341 — Microprocessors — yesterday
+        save("CSE341", "Microprocessors", "21201001", "Arham Khan",   yesterday, "PRESENT", faculty, marked);
+        save("CSE341", "Microprocessors", "21201006", "Jessica Park", yesterday, "PRESENT", faculty, marked);
+        save("CSE341", "Microprocessors", "21201007", "James Wilson", yesterday, "ABSENT",  faculty, marked);
+        save("CSE341", "Microprocessors", "21201008", "Lily Zhang",   yesterday, "PRESENT", faculty, marked);
+
+        // CSE341 — three days ago
+        save("CSE341", "Microprocessors", "21201001", "Arham Khan",   LocalDate.now().minusDays(3).toString(), "LATE",    faculty, marked);
+        save("CSE341", "Microprocessors", "21201006", "Jessica Park", LocalDate.now().minusDays(3).toString(), "PRESENT", faculty, marked);
+        save("CSE341", "Microprocessors", "21201007", "James Wilson", LocalDate.now().minusDays(3).toString(), "PRESENT", faculty, marked);
+        save("CSE341", "Microprocessors", "21201008", "Lily Zhang",   LocalDate.now().minusDays(3).toString(), "PRESENT", faculty, marked);
+
+        // CSE221 — Data Structures — two days ago
+        save("CSE221", "Data Structures", "21201001", "Arham Khan",   twoDaysAgo, "PRESENT", faculty, marked);
+        save("CSE221", "Data Structures", "21201002", "Sarah Ahmed",  twoDaysAgo, "PRESENT", faculty, marked);
+        save("CSE221", "Data Structures", "21201006", "Jessica Park", twoDaysAgo, "ABSENT",  faculty, marked);
+        save("CSE221", "Data Structures", "21201009", "Omar Faruk",   twoDaysAgo, "PRESENT", faculty, marked);
+        save("CSE221", "Data Structures", "21201010", "Nadia Rahman", twoDaysAgo, "LATE",    faculty, marked);
+        save("CSE221", "Data Structures", "21201011", "Chris Lee",    twoDaysAgo, "PRESENT", faculty, marked);
+    }
+
+    /** Helper to build and persist a single record */
+    private void save(String courseId, String courseName, String studentId, String studentName,
+                      String date, String status, String markedBy, String markedAt) {
+        AttendanceRecord rec = new AttendanceRecord();
+        rec.setCourseId(courseId);
+        rec.setCourseName(courseName);
+        rec.setStudentId(studentId);
+        rec.setStudentName(studentName);
+        rec.setDate(date);
+        rec.setStatus(status);
+        rec.setMarkedBy(markedBy);
+        rec.setMarkedAt(markedAt);
+        repo.save(rec);
     }
 
     // ── Get attendance for a course on a given date ───────────────
@@ -75,9 +111,7 @@ public class AttendanceService {
      * @return List of matching AttendanceRecords
      */
     public List<AttendanceRecord> getAttendance(String courseId, String date) {
-        return records.stream()
-            .filter(r -> r.getCourseId().equals(courseId) && r.getDate().equals(date))
-            .collect(Collectors.toList());
+        return repo.findByCourseIdAndDate(courseId, date);
     }
 
     // ── Get all attendance history for a course ───────────────────
@@ -89,10 +123,7 @@ public class AttendanceService {
      * @return List of AttendanceRecords
      */
     public List<AttendanceRecord> getCourseHistory(String courseId) {
-        return records.stream()
-            .filter(r -> r.getCourseId().equals(courseId))
-            .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
-            .collect(Collectors.toList());
+        return repo.findByCourseIdOrderByDateDesc(courseId);
     }
 
     // ── Mark or update attendance ─────────────────────────────────
@@ -110,38 +141,31 @@ public class AttendanceService {
      * @param markedBy   Faculty who marked
      * @return The created or updated AttendanceRecord
      */
+    @Transactional
     public AttendanceRecord markAttendance(String courseId, String courseName,
                                            String studentId, String studentName,
                                            String date, String status, String markedBy) {
         // Check if record already exists → update
-        Optional<AttendanceRecord> existing = records.stream()
-            .filter(r -> r.getCourseId().equals(courseId)
-                      && r.getStudentId().equals(studentId)
-                      && r.getDate().equals(date))
-            .findFirst();
+        AttendanceRecord existing = repo.findByCourseIdAndStudentIdAndDate(courseId, studentId, date);
 
-        if (existing.isPresent()) {
-            AttendanceRecord rec = existing.get();
-            rec.setStatus(status != null ? status : "PRESENT");
-            rec.setMarkedBy(markedBy != null ? markedBy : "Faculty");
-            rec.setMarkedAt(LocalDateTime.now().toString());
-            return rec;
+        if (existing != null) {
+            existing.setStatus(status != null ? status : "PRESENT");
+            existing.setMarkedBy(markedBy != null ? markedBy : "Faculty");
+            existing.setMarkedAt(LocalDateTime.now().toString());
+            return repo.save(existing);
         }
 
         // Create new record
-        AttendanceRecord rec = new AttendanceRecord(
-            idSeq.getAndIncrement(),
-            courseId    != null ? courseId    : "",
-            courseName != null ? courseName : "",
-            studentId  != null ? studentId  : "",
-            studentName != null ? studentName : "",
-            date       != null ? date       : LocalDate.now().toString(),
-            status     != null ? status     : "PRESENT",
-            markedBy   != null ? markedBy   : "Faculty",
-            LocalDateTime.now().toString()
-        );
-        records.add(rec);
-        return rec;
+        AttendanceRecord rec = new AttendanceRecord();
+        rec.setCourseId(courseId    != null ? courseId    : "");
+        rec.setCourseName(courseName != null ? courseName : "");
+        rec.setStudentId(studentId  != null ? studentId  : "");
+        rec.setStudentName(studentName != null ? studentName : "");
+        rec.setDate(date            != null ? date       : LocalDate.now().toString());
+        rec.setStatus(status        != null ? status     : "PRESENT");
+        rec.setMarkedBy(markedBy    != null ? markedBy   : "Faculty");
+        rec.setMarkedAt(LocalDateTime.now().toString());
+        return repo.save(rec);
     }
 
     // ── Attendance summary for a course ───────────────────────────
@@ -153,9 +177,7 @@ public class AttendanceService {
      * @return Map with summary statistics
      */
     public Map<String, Object> getCourseSummary(String courseId) {
-        List<AttendanceRecord> courseRecords = records.stream()
-            .filter(r -> r.getCourseId().equals(courseId))
-            .collect(Collectors.toList());
+        List<AttendanceRecord> courseRecords = repo.findByCourseIdOrderByDateDesc(courseId);
 
         long totalRecords = courseRecords.size();
         long presentCount = courseRecords.stream().filter(r -> "PRESENT".equals(r.getStatus())).count();

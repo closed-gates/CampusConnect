@@ -1,24 +1,45 @@
 package com.campusconnect.backend.model;
 
+import jakarta.persistence.*;
+
 /**
- * AttendanceRecord – Domain model for a single attendance entry.
+ * AttendanceRecord – JPA Entity for a single attendance entry.
  *
  * MVC Role: Model
  *
+ * Maps to the "attendance_records" table in the Neon PostgreSQL database.
  * Represents one student's attendance status for a specific course on a given date.
- *
- * TODO (Phase 3): Map to a JPA entity and persist via AttendanceRepository.
  */
+@Entity
+@Table(name = "attendance_records")
 public class AttendanceRecord {
 
-    private Long   id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "course_id", nullable = false, length = 20)
     private String courseId;
+
+    @Column(name = "course_name", nullable = false, length = 120)
     private String courseName;
+
+    @Column(name = "student_id", nullable = false, length = 20)
     private String studentId;
+
+    @Column(name = "student_name", nullable = false, length = 120)
     private String studentName;
+
+    @Column(name = "date", nullable = false, length = 10)
     private String date;           // ISO date string (e.g. "2026-08-01")
+
+    @Column(name = "status", nullable = false, length = 10)
     private String status;         // "PRESENT", "ABSENT", "LATE"
+
+    @Column(name = "marked_by", length = 120)
     private String markedBy;       // Faculty name who marked
+
+    @Column(name = "marked_at", length = 40)
     private String markedAt;       // ISO datetime when marked
 
     // ── Constructors ──────────────────────────────────────────

@@ -3,69 +3,150 @@ package com.campusconnect.backend.service;
 import com.campusconnect.backend.model.Application;
 import com.campusconnect.backend.model.ClubNotice;
 import com.campusconnect.backend.model.Recruitment;
+import com.campusconnect.backend.repository.ApplicationRepository;
+import com.campusconnect.backend.repository.ClubNoticeRepository;
+import com.campusconnect.backend.repository.RecruitmentRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 /**
  * ClubService – Business logic for club notices, recruitment, and applications.
  *
- * MVC Role: Service (sits between Controller and Model)
+ * MVC Role: Service (sits between Controller and Repository)
  *
- * Phase 2: In-memory data store with seeded data (no database).
- * This is the authoritative source of truth for all club-related data.
+ * Phase 3: Persisted via JPA to Neon PostgreSQL.
+ * Tables: "club_notices", "recruitments", "club_applications"
  *
- * TODO (Phase 3 – Database persistence):
- *   - Replace in-memory lists with JPA repositories:
- *       ClubNoticeRepository, RecruitmentRepository, ApplicationRepository
- *   - Add @Transactional where needed
- *   - Add RBAC validation (only ADMIN can post notices / recruitments)
+ * Seed data is inserted once on first startup using @PostConstruct with count() guards.
  */
 @Service
 public class ClubService {
 
-    // ── In-memory data stores (Model layer — Phase 2 stub) ────────
-    private final List<ClubNotice>  notices      = new ArrayList<>();
-    private final List<Recruitment> recruitments = new ArrayList<>();
-    private final List<Application> applications = new ArrayList<>();
+    private final ClubNoticeRepository   noticeRepo;
+    private final RecruitmentRepository  recruitRepo;
+    private final ApplicationRepository  appRepo;
 
-    private final AtomicLong noticeIdSeq      = new AtomicLong(4);
-    private final AtomicLong recruitIdSeq     = new AtomicLong(4);
-    private final AtomicLong applicationIdSeq = new AtomicLong(1);
+    public ClubService(ClubNoticeRepository noticeRepo,
+                       RecruitmentRepository recruitRepo,
+                       ApplicationRepository appRepo) {
+        this.noticeRepo  = noticeRepo;
+        this.recruitRepo = recruitRepo;
+        this.appRepo     = appRepo;
+    }
 
-    // ── Seed data ──────────────────────────────────────────────────
-    public ClubService() {
-        notices.add(new ClubNotice(1L, "Robotics Club",
-            "Annual Robo-Wars Competition 2026",
-            "We are excited to announce the Annual Robo-Wars Competition! All students are welcome to participate. Teams of 2–4 members. Register before August 10th at the club office.",
-            "Admin", "2026-07-20T10:00:00", true));
+    // ── Seed data on first startup ────────────────────────────────
+    /**
+     * Inserts seed data if the tables are empty.
+     * Uses count() == 0 guards so it only runs once per fresh database.
+     */
+    @PostConstruct
+    @Transactional
+    public void seedData() {
+        // ── Seed Notices ────────────────────────────────────────
+        if (noticeRepo.count() == 0) {
+            ClubNotice n1 = new ClubNotice();
+            n1.setClubName("Robotics Club");
+            n1.setTitle("Annual Robo-Wars Competition 2026");
+            n1.setBody("We are excited to announce the Annual Robo-Wars Competition! All students are welcome to participate. Teams of 2–4 members. Register before August 10th at the club office.");
+            n1.setPostedBy("Admin");
+            n1.setPostedAt("2026-07-20T10:00:00");
+            n1.setPinned(true);
+            noticeRepo.save(n1);
 
-        notices.add(new ClubNotice(2L, "Photography Club",
-            "Campus Photo Walk – This Saturday",
-            "Join us for a guided photo walk around the campus grounds this Saturday at 7:00 AM. Bring your cameras or smartphones. All skill levels welcome!",
-            "Admin", "2026-07-21T14:30:00", false));
+            ClubNotice n2 = new ClubNotice();
+            n2.setClubName("Photography Club");
+            n2.setTitle("Campus Photo Walk – This Saturday");
+            n2.setBody("Join us for a guided photo walk around the campus grounds this Saturday at 7:00 AM. Bring your cameras or smartphones. All skill levels welcome!");
+            n2.setPostedBy("Admin");
+            n2.setPostedAt("2026-07-21T14:30:00");
+            n2.setPinned(false);
+            noticeRepo.save(n2);
 
-        notices.add(new ClubNotice(3L, "Debate Society",
-            "Inter-University Debate — Call for Participants",
-            "The Debate Society is representing our university at the National Inter-University Debate Championship. Tryouts will be held on July 28th in Auditorium A. Prepare a 3-minute speech on the topic: 'AI in Education'.",
-            "Admin", "2026-07-22T09:15:00", true));
+            ClubNotice n3 = new ClubNotice();
+            n3.setClubName("Debate Society");
+            n3.setTitle("Inter-University Debate — Call for Participants");
+            n3.setBody("The Debate Society is representing our university at the National Inter-University Debate Championship. Tryouts will be held on July 28th in Auditorium A. Prepare a 3-minute speech on the topic: 'AI in Education'.");
+            n3.setPostedBy("Admin");
+            n3.setPostedAt("2026-07-22T09:15:00");
+            n3.setPinned(true);
+            noticeRepo.save(n3);
 
-        recruitments.add(new Recruitment(1L, "Robotics Club", "Mechanical Engineer",
-            "Looking for students with hands-on experience in mechanical design, CAD tools, or 3D printing. Work on real competition robots!",
-            "2026-08-05", 5, "2026-07-19T11:00:00", true));
+            ClubNotice n4 = new ClubNotice();
+            n4.setClubName("Coding Club");
+            n4.setTitle("Hackathon 2026 — Team Registration Open");
+            n4.setBody("CampusConnect Hackathon 2026 registrations are now open! Form teams of 2–4 and compete to build the best university app in 24 hours. Prizes worth 50,000 BDT! Register at the Coding Club booth.");
+            n4.setPostedBy("Admin");
+            n4.setPostedAt("2026-07-25T10:00:00");
+            n4.setPinned(true);
+            noticeRepo.save(n4);
 
-        recruitments.add(new Recruitment(2L, "Photography Club", "Event Photographer",
-            "We need passionate photographers to cover university events. Basic DSLR knowledge required. Equipment provided for official events.",
-            "2026-08-01", 3, "2026-07-20T16:00:00", true));
+            ClubNotice n5 = new ClubNotice();
+            n5.setClubName("Music Club");
+            n5.setTitle("Jamming Session – Open to All");
+            n5.setBody("The Music Club is hosting an open jamming session this Friday at 5:00 PM in the Cultural Center. Bring your instruments or just your love of music. All genres welcome!");
+            n5.setPostedBy("Admin");
+            n5.setPostedAt("2026-07-26T16:00:00");
+            n5.setPinned(false);
+            noticeRepo.save(n5);
+        }
 
-        recruitments.add(new Recruitment(3L, "Coding Club", "Full Stack Developer",
-            "Building a university app? Join us! We need React & Spring Boot developers. Contribute to real projects used by students.",
-            "2026-08-10", 8, "2026-07-21T12:00:00", true));
+        // ── Seed Recruitments ───────────────────────────────────
+        if (recruitRepo.count() == 0) {
+            Recruitment r1 = new Recruitment();
+            r1.setClubName("Robotics Club");
+            r1.setRole("Mechanical Engineer");
+            r1.setDescription("Looking for students with hands-on experience in mechanical design, CAD tools, or 3D printing. Work on real competition robots!");
+            r1.setDeadline("2026-08-25");
+            r1.setSlots(5);
+            r1.setPostedAt("2026-07-19T11:00:00");
+            r1.setActive(true);
+            recruitRepo.save(r1);
+
+            Recruitment r2 = new Recruitment();
+            r2.setClubName("Photography Club");
+            r2.setRole("Event Photographer");
+            r2.setDescription("We need passionate photographers to cover university events. Basic DSLR knowledge required. Equipment provided for official events.");
+            r2.setDeadline("2026-08-30");
+            r2.setSlots(3);
+            r2.setPostedAt("2026-07-20T16:00:00");
+            r2.setActive(true);
+            recruitRepo.save(r2);
+
+            Recruitment r3 = new Recruitment();
+            r3.setClubName("Coding Club");
+            r3.setRole("Full Stack Developer");
+            r3.setDescription("Building a university app? Join us! We need React & Spring Boot developers. Contribute to real projects used by students.");
+            r3.setDeadline("2026-08-28");
+            r3.setSlots(8);
+            r3.setPostedAt("2026-07-21T12:00:00");
+            r3.setActive(true);
+            recruitRepo.save(r3);
+
+            Recruitment r4 = new Recruitment();
+            r4.setClubName("Debate Society");
+            r4.setRole("Debater / Speaker");
+            r4.setDescription("Sharpen your critical thinking and public speaking skills by joining the competitive debate team. Represent our university at national championships.");
+            r4.setDeadline("2026-08-20");
+            r4.setSlots(6);
+            r4.setPostedAt("2026-07-22T09:00:00");
+            r4.setActive(true);
+            recruitRepo.save(r4);
+
+            Recruitment r5 = new Recruitment();
+            r5.setClubName("Music Club");
+            r5.setRole("Guitarist / Keyboardist");
+            r5.setDescription("Looking for talented musicians to join our performance band. Must be able to read sheet music or tabs. Practice sessions twice a week.");
+            r5.setDeadline("2026-08-15");
+            r5.setSlots(2);
+            r5.setPostedAt("2026-07-23T14:00:00");
+            r5.setActive(true);
+            recruitRepo.save(r5);
+        }
     }
 
     // ── Notice operations ──────────────────────────────────────────
@@ -74,9 +155,7 @@ public class ClubService {
      * Returns all notices sorted: pinned first, then by posted date descending.
      */
     public List<ClubNotice> getAllNotices() {
-        return notices.stream()
-            .sorted((a, b) -> Boolean.compare(b.isPinned(), a.isPinned()))
-            .collect(Collectors.toList());
+        return noticeRepo.findAllByOrderByPinnedDescPostedAtDesc();
     }
 
     /**
@@ -87,18 +166,16 @@ public class ClubService {
      * @param body      Full notice content
      * @return The newly created ClubNotice
      */
+    @Transactional
     public ClubNotice postNotice(String clubName, String title, String body) {
-        ClubNotice notice = new ClubNotice(
-            noticeIdSeq.getAndIncrement(),
-            clubName != null ? clubName : "Unknown Club",
-            title    != null ? title    : "Untitled Notice",
-            body     != null ? body     : "",
-            "Admin",
-            LocalDateTime.now().toString(),
-            false
-        );
-        notices.add(notice);
-        return notice;
+        ClubNotice notice = new ClubNotice();
+        notice.setClubName(clubName != null ? clubName : "Unknown Club");
+        notice.setTitle(title       != null ? title    : "Untitled Notice");
+        notice.setBody(body         != null ? body     : "");
+        notice.setPostedBy("Admin");
+        notice.setPostedAt(LocalDateTime.now().toString());
+        notice.setPinned(false);
+        return noticeRepo.save(notice);
     }
 
     // ── Recruitment operations ─────────────────────────────────────
@@ -107,9 +184,7 @@ public class ClubService {
      * Returns all active recruitment postings.
      */
     public List<Recruitment> getActiveRecruitments() {
-        return recruitments.stream()
-            .filter(Recruitment::isActive)
-            .collect(Collectors.toList());
+        return recruitRepo.findByActiveTrue();
     }
 
     /**
@@ -122,20 +197,18 @@ public class ClubService {
      * @param slots       Number of open slots
      * @return The newly created Recruitment
      */
+    @Transactional
     public Recruitment postRecruitment(String clubName, String role,
                                        String description, String deadline, int slots) {
-        Recruitment posting = new Recruitment(
-            recruitIdSeq.getAndIncrement(),
-            clubName    != null ? clubName    : "Unknown Club",
-            role        != null ? role        : "Member",
-            description != null ? description : "",
-            deadline    != null ? deadline    : LocalDate.now().plusWeeks(2).toString(),
-            slots,
-            LocalDateTime.now().toString(),
-            true
-        );
-        recruitments.add(posting);
-        return posting;
+        Recruitment posting = new Recruitment();
+        posting.setClubName(clubName       != null ? clubName    : "Unknown Club");
+        posting.setRole(role               != null ? role        : "Member");
+        posting.setDescription(description != null ? description : "");
+        posting.setDeadline(deadline       != null ? deadline    : LocalDate.now().plusWeeks(2).toString());
+        posting.setSlots(slots);
+        posting.setPostedAt(LocalDateTime.now().toString());
+        posting.setActive(true);
+        return recruitRepo.save(posting);
     }
 
     // ── Application operations ─────────────────────────────────────
@@ -151,19 +224,18 @@ public class ClubService {
      * @param motivation    Applicant's motivation statement
      * @return The newly created Application
      */
+    @Transactional
     public Application applyToClub(String recruitmentId, String clubName, String role,
                                    String studentName, String studentEmail, String motivation) {
         Application app = new Application();
-        app.setId(applicationIdSeq.getAndIncrement());
         app.setRecruitmentId(recruitmentId != null ? recruitmentId : "");
-        app.setClubName(clubName     != null ? clubName     : "");
-        app.setRole(role             != null ? role         : "");
-        app.setStudentName(studentName  != null ? studentName  : "");
-        app.setStudentEmail(studentEmail != null ? studentEmail : "");
-        app.setMotivation(motivation  != null ? motivation  : "");
+        app.setClubName(clubName           != null ? clubName      : "");
+        app.setRole(role                   != null ? role          : "");
+        app.setStudentName(studentName     != null ? studentName   : "");
+        app.setStudentEmail(studentEmail   != null ? studentEmail  : "");
+        app.setMotivation(motivation       != null ? motivation    : "");
         app.setAppliedAt(LocalDateTime.now().toString());
         app.setStatus("PENDING");
-        applications.add(app);
-        return app;
+        return appRepo.save(app);
     }
 }
