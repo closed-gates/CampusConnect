@@ -47,7 +47,7 @@ public class CourseCatalog {
     private Integer credits;
 
     /** Academic year level: 1, 2, 3, or 4 */
-    @Column(nullable = false)
+    @Column(name = "academic_year", nullable = false)
     private Integer year;
 
     /** Semester offered: "Fall", "Spring", or "Summer" */
