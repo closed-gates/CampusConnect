@@ -1,22 +1,44 @@
 package com.campusconnect.backend.model;
 
+import jakarta.persistence.*;
+
 /**
- * Application – Domain model for a student club application.
+ * Application – JPA Entity for a student club application.
  *
  * MVC Role: Model
  *
- * TODO (Phase 3): Map to a JPA entity and persist via ApplicationRepository.
+ * Maps to the "club_applications" table in the Neon PostgreSQL database.
  */
+@Entity
+@Table(name = "club_applications")
 public class Application {
 
-    private Long   id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "recruitment_id", length = 20)
     private String recruitmentId;
+
+    @Column(name = "club_name", nullable = false, length = 100)
     private String clubName;
+
+    @Column(name = "role", nullable = false, length = 100)
     private String role;
+
+    @Column(name = "student_name", nullable = false, length = 120)
     private String studentName;
+
+    @Column(name = "student_email", nullable = false, length = 200)
     private String studentEmail;
+
+    @Column(name = "motivation", columnDefinition = "TEXT")
     private String motivation;
+
+    @Column(name = "applied_at", length = 40)
     private String appliedAt;
+
+    @Column(name = "status", length = 20)
     private String status;     // e.g. "PENDING", "ACCEPTED", "REJECTED"
 
     // ── Constructors ──────────────────────────────────────────

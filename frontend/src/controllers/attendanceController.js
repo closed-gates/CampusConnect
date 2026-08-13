@@ -6,22 +6,23 @@
  * history viewing, and summary stats.
  * Used by AttendanceView.
  *
- * TODO (Phase 2): Wire API calls:
- *   GET  /api/attendance?courseId=X&date=Y  → getAttendance
- *   POST /api/attendance                    → markAttendance
- *   GET  /api/attendance/summary?courseId=X  → getCourseSummary
- *   GET  /api/attendance/history?courseId=X  → getCourseHistory
+ * Phase 3: All data is fetched from and persisted to the real backend API (Neon PostgreSQL).
+ *   GET  /api/attendance?courseId=X&date=Y  → load attendance for a course/date
+ *   POST /api/attendance                    → mark/update a single student's attendance
+ *   GET  /api/attendance/summary?courseId=X → summary stats for a course
+ *   GET  /api/attendance/history?courseId=X → full attendance history
  */
 
 import { useState, useEffect, useMemo } from 'react'
 import {
   FACULTY_COURSES,
   COURSE_STUDENTS,
-  SEED_ATTENDANCE_HISTORY,
   getToday,
   calculateSummary,
   groupByDate,
 } from '../models/attendanceModel.js'
+
+const API_BASE = 'http://localhost:8080/api'
 
 export function useAttendanceController() {
   const role      = localStorage.getItem('userRole') || 'student'
@@ -33,12 +34,17 @@ export function useAttendanceController() {
   const [activeTab,      setActiveTab]      = useState('mark')  // 'mark' | 'history' | 'summary'
   const [toast,          setToast]          = useState(null)
 
-  // ── Attendance records (in-memory for Phase 1) ──────────────
-  const [allRecords, setAllRecords] = useState([...SEED_ATTENDANCE_HISTORY])
-  const [idCounter, setIdCounter]   = useState(100)
+  // ── Loading flags ────────────────────────────────────────────
+  const [loadingAttendance, setLoadingAttendance] = useState(false)
+  const [loadingHistory,    setLoadingHistory]    = useState(false)
+  const [loadingSummary,    setLoadingSummary]    = useState(false)
 
-  // ── Current session attendance (today's marking) ────────────
-  // Maps studentId → status ('PRESENT' | 'ABSENT' | 'LATE' | null)
+  // ── Attendance records (from backend) ───────────────────────
+  const [dateRecords,   setDateRecords]   = useState([])  // records for selected course + date
+  const [allRecords,    setAllRecords]    = useState([])  // full history for selected course
+  const [courseSummary, setCourseSummary] = useState({ total: 0, present: 0, absent: 0, late: 0, rate: 0 })
+
+  // ── Current session attendance (marking state) ───────────────
   const [currentMarks, setCurrentMarks] = useState({})
   const [submitting,   setSubmitting]   = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -67,44 +73,87 @@ export function useAttendanceController() {
     return FACULTY_COURSES.find(c => c.id === selectedCourse) || null
   }, [selectedCourse])
 
-  /** Records for the selected course and date */
-  const dateRecords = useMemo(() => {
-    return allRecords.filter(
-      r => r.courseId === selectedCourse && r.date === selectedDate
-    )
-  }, [allRecords, selectedCourse, selectedDate])
-
-  /** All records for the selected course (for history/summary) */
-  const courseRecords = useMemo(() => {
-    return allRecords.filter(r => r.courseId === selectedCourse)
-  }, [allRecords, selectedCourse])
-
-  /** Summary stats for the selected course */
-  const courseSummary = useMemo(() => {
-    return calculateSummary(courseRecords)
-  }, [courseRecords])
-
   /** Attendance grouped by date (for history view) */
   const historyByDate = useMemo(() => {
-    return groupByDate(courseRecords)
-  }, [courseRecords])
+    return groupByDate(allRecords)
+  }, [allRecords])
 
   /** Unique dates in history, sorted descending */
   const historyDates = useMemo(() => {
     return Object.keys(historyByDate).sort((a, b) => b.localeCompare(a))
   }, [historyByDate])
 
-  // ── Initialize marks when course/date changes ──────────────
+  // ── Load attendance for the current course + date ───────────
   useEffect(() => {
-    const marks = {}
-    const existing = allRecords.filter(
-      r => r.courseId === selectedCourse && r.date === selectedDate
-    )
-    // Pre-fill from existing records
-    existing.forEach(r => { marks[r.studentId] = r.status })
-    setCurrentMarks(marks)
-    setHasSubmitted(existing.length > 0)
-  }, [selectedCourse, selectedDate, allRecords])
+    if (!selectedCourse || !selectedDate) return
+
+    async function loadAttendance() {
+      setLoadingAttendance(true)
+      try {
+        const res = await fetch(
+          `${API_BASE}/attendance?courseId=${encodeURIComponent(selectedCourse)}&date=${encodeURIComponent(selectedDate)}`
+        )
+        if (res.ok) {
+          const json = await res.json()
+          const records = json.data || []
+          setDateRecords(records)
+
+          // Pre-fill current marks from existing records
+          const marks = {}
+          records.forEach(r => { marks[r.studentId] = r.status })
+          setCurrentMarks(marks)
+          setHasSubmitted(records.length > 0)
+        }
+      } catch (err) {
+        console.error('[AttendanceController] Failed to load attendance:', err)
+      } finally {
+        setLoadingAttendance(false)
+      }
+    }
+
+    loadAttendance()
+  }, [selectedCourse, selectedDate])
+
+  // ── Load history + summary when course changes ───────────────
+  useEffect(() => {
+    if (!selectedCourse) return
+
+    async function loadHistoryAndSummary() {
+      setLoadingHistory(true)
+      setLoadingSummary(true)
+
+      try {
+        const [histRes, sumRes] = await Promise.all([
+          fetch(`${API_BASE}/attendance/history?courseId=${encodeURIComponent(selectedCourse)}`),
+          fetch(`${API_BASE}/attendance/summary?courseId=${encodeURIComponent(selectedCourse)}`),
+        ])
+
+        if (histRes.ok) {
+          const json = await histRes.json()
+          setAllRecords(json.data || [])
+        }
+
+        if (sumRes.ok) {
+          const json = await sumRes.json()
+          const d = json.data || {}
+          setCourseSummary({
+            total:   d.totalRecords   || 0,
+            present: d.presentCount   || 0,
+            absent:  d.absentCount    || 0,
+            late:    d.lateCount      || 0,
+            rate:    d.attendanceRate || 0,
+          })
+        }
+      } catch (err) {
+        console.error('[AttendanceController] Failed to load history/summary:', err)
+      } finally {
+        setLoadingHistory(false)
+        setLoadingSummary(false)
+      }
+    }
+
+    loadHistoryAndSummary()
+  }, [selectedCourse])
 
   // ── Handlers ────────────────────────────────────────────────
 
@@ -120,7 +169,7 @@ export function useAttendanceController() {
     setCurrentMarks(marks)
   }
 
-  /** Submit attendance for the current course/date */
+  /** Submit attendance for the current course/date — posts each student to the backend */
   async function submitAttendance() {
     // Validate: all students must have a status
     const unmarked = courseStudents.filter(s => !currentMarks[s.id])
@@ -130,38 +179,78 @@ export function useAttendanceController() {
     }
 
     setSubmitting(true)
-    await new Promise(r => setTimeout(r, 600)) // simulate network
 
-    // Build new records, replacing any existing for same course+date+student
-    let nextId = idCounter
-    const newRecords = courseStudents.map(student => ({
-      id: nextId++,
-      courseId: selectedCourse,
-      studentId: student.id,
-      studentName: student.name,
-      date: selectedDate,
-      status: currentMarks[student.id],
-    }))
-
-    setIdCounter(nextId)
-
-    // Remove old records for this course+date, add new ones
-    setAllRecords(prev => {
-      const filtered = prev.filter(
-        r => !(r.courseId === selectedCourse && r.date === selectedDate)
+    try {
+      // POST each student's attendance record to the backend
+      const markedBy = 'Dr. Mahbubur Rahman'
+      const promises = courseStudents.map(student =>
+        fetch(`${API_BASE}/attendance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            courseId:    selectedCourse,
+            courseName:  courseInfo?.name || selectedCourse,
+            studentId:   student.id,
+            studentName: student.name,
+            date:        selectedDate,
+            status:      currentMarks[student.id],
+            markedBy,
+          }),
+        })
       )
-      return [...filtered, ...newRecords]
-    })
 
-    setSubmitting(false)
-    setHasSubmitted(true)
-    showToast('✅ Attendance saved successfully!')
+      const results = await Promise.all(promises)
+      const allOk = results.every(r => r.ok)
+
+      if (allOk) {
+        // Refresh date records and history/summary after submit
+        const [dateRes, histRes, sumRes] = await Promise.all([
+          fetch(`${API_BASE}/attendance?courseId=${encodeURIComponent(selectedCourse)}&date=${encodeURIComponent(selectedDate)}`),
+          fetch(`${API_BASE}/attendance/history?courseId=${encodeURIComponent(selectedCourse)}`),
+          fetch(`${API_BASE}/attendance/summary?courseId=${encodeURIComponent(selectedCourse)}`),
+        ])
+
+        if (dateRes.ok) {
+          const json = await dateRes.json()
+          setDateRecords(json.data || [])
+        }
+        if (histRes.ok) {
+          const json = await histRes.json()
+          setAllRecords(json.data || [])
+        }
+        if (sumRes.ok) {
+          const json = await sumRes.json()
+          const d = json.data || {}
+          setCourseSummary({
+            total:   d.totalRecords   || 0,
+            present: d.presentCount   || 0,
+            absent:  d.absentCount    || 0,
+            late:    d.lateCount      || 0,
+            rate:    d.attendanceRate || 0,
+          })
+        }
+
+        setHasSubmitted(true)
+        showToast('✅ Attendance saved successfully!')
+      } else {
+        showToast('❌ Some records failed to save. Please try again.', 'error')
+      }
+    } catch (err) {
+      console.error('[AttendanceController] submitAttendance error:', err)
+      showToast('❌ Network error. Please try again.', 'error')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   /** Change the selected course */
   function selectCourse(courseId) {
     setSelectedCourse(courseId)
     setActiveTab('mark')
+    setCurrentMarks({})
+    setHasSubmitted(false)
+    setDateRecords([])
+    setAllRecords([])
   }
 
   return {
@@ -186,9 +275,13 @@ export function useAttendanceController() {
     submitAttendance,
     submitting,
     hasSubmitted,
-    // History / Summary
+    // Loading
+    loadingAttendance,
+    loadingHistory,
+    loadingSummary,
+    // History / Summary (from backend)
     dateRecords,
-    courseRecords,
+    courseRecords: allRecords,
     courseSummary,
     historyByDate,
     historyDates,

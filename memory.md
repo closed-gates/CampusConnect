@@ -17,7 +17,7 @@
 
 **Shared Backend:** Spring Boot 3.3.2 / Java 17 — `backend/`
 
-**Database:** None yet (Phase 2)
+**Database:** Neon PostgreSQL (cloud) — active on `prod` profile
 
 **Build Tool:** Maven (backend) · npm (frontend)
 
@@ -37,9 +37,11 @@ CampusConnect/
 
 # Current Development Phase
 
-**Phase:** Phase 1 – UI Shell + Auth Stubs ✅ COMPLETED
+**Phase:** Phase 3 – Database Integration (Club Activities + Attendance) ✅ IN PROGRESS
 
-**Next Phase:** Phase 2 – Database Integration + JWT Authentication
+**Active Profile:** `prod` (Neon PostgreSQL cloud DB)
+
+**Next Phase:** Full JWT Authentication + RBAC
 
 ------------------------------------------------------------------------
 
@@ -233,11 +235,39 @@ None.
 - Shared Spring Boot backend with auth stubs.
 - COLLABORATORS.md created.
 
-## v0.2 (2026-08-02)
+## v0.3 (2026-08-14)
 
-- **Club Recruitment Form:** Multi-step application form (7 steps) replacing the old 3-field modal. Full MVC update: model constants, controller hooks, view overlay, CSS.
-- **Faculty Attendance Tracking:** New feature end-to-end. Backend: `AttendanceRecord`, `AttendanceService`, `AttendanceController`. Frontend: model, controller, view, CSS. Route `/attendance` and sidebar nav item added.
-- All other features (Dashboard, Courses, Routine, Messaging, Academic Calendar) unchanged.
+**Phase 3 – Neon PostgreSQL Database Integration (Club Activities + Attendance)**
+
+### Backend Changes
+- **pom.xml:** Added `maven-compiler-plugin` with `annotationProcessorPaths` for Lombok. Bumped `lombok.version` to `1.18.46` for Java 26 compatibility.
+- **application.properties:** Switched `spring.profiles.active` from `dev` (H2) → `prod` (Neon PostgreSQL).
+- **JPA Entity conversions (4 files):**
+  - `model/AttendanceRecord.java` → `@Entity` mapped to `attendance_records`
+  - `model/ClubNotice.java` → `@Entity` mapped to `club_notices`
+  - `model/Recruitment.java` → `@Entity` mapped to `recruitments`
+  - `model/Application.java` → `@Entity` mapped to `club_applications`
+- **New JPA Repositories (4 files):**
+  - `repository/AttendanceRecordRepository.java`
+  - `repository/ClubNoticeRepository.java`
+  - `repository/RecruitmentRepository.java`
+  - `repository/ApplicationRepository.java`
+- **Service refactors:**
+  - `service/AttendanceService.java` — Uses `AttendanceRecordRepository`; `@PostConstruct` seeds 28 records across 3 courses
+  - `service/ClubService.java` — Uses 3 club repositories; `@PostConstruct` seeds 5 notices + 5 recruitments
+
+### Frontend Changes
+- `controllers/clubController.js` — `useEffect` loads notices + recruitments from `GET /api/clubs/notices` and `GET /api/clubs/recruitment` on mount. All mutations use real API calls.
+- `controllers/attendanceController.js` — `useEffect` loads records + history + summary from real backend on course/date change. Submits each mark via `POST /api/attendance`.
+
+### Database State (Neon PostgreSQL)
+- Tables auto-created by Hibernate `ddl-auto=update`
+- Seed data inserted via `@PostConstruct` (count() == 0 guard)
+  - `club_notices`: 5 records (3 pinned)
+  - `recruitments`: 5 active records
+  - `attendance_records`: 28 records across CSE470, CSE341, CSE221
+
+All other features (Dashboard, Courses, Routine, Advising, Auth) unchanged.
 
 ------------------------------------------------------------------------
 

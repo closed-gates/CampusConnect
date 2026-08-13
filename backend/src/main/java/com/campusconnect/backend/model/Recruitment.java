@@ -1,21 +1,41 @@
 package com.campusconnect.backend.model;
 
+import jakarta.persistence.*;
+
 /**
- * Recruitment – Domain model for a club recruitment posting.
+ * Recruitment – JPA Entity for a club recruitment posting.
  *
  * MVC Role: Model
  *
- * TODO (Phase 3): Map to a JPA entity and persist via RecruitmentRepository.
+ * Maps to the "recruitments" table in the Neon PostgreSQL database.
  */
+@Entity
+@Table(name = "recruitments")
 public class Recruitment {
 
-    private Long    id;
-    private String  clubName;
-    private String  role;
-    private String  description;
-    private String  deadline;
-    private int     slots;
-    private String  postedAt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "club_name", nullable = false, length = 100)
+    private String clubName;
+
+    @Column(name = "role", nullable = false, length = 100)
+    private String role;
+
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "deadline", length = 20)
+    private String deadline;
+
+    @Column(name = "slots", nullable = false)
+    private int slots;
+
+    @Column(name = "posted_at", length = 40)
+    private String postedAt;
+
+    @Column(name = "active", nullable = false)
     private boolean active;
 
     // ── Constructors ──────────────────────────────────────────

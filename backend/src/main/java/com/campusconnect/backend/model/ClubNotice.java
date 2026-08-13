@@ -1,21 +1,38 @@
 package com.campusconnect.backend.model;
 
+import jakarta.persistence.*;
+
 /**
- * ClubNotice – Domain model for a club notice post.
+ * ClubNotice – JPA Entity for a club notice post.
  *
  * MVC Role: Model
  *
- * TODO (Phase 3): Map this class to a JPA entity (@Entity, @Table("club_notices"))
- *   and persist via ClubNoticeRepository (JpaRepository).
+ * Maps to the "club_notices" table in the Neon PostgreSQL database.
  */
+@Entity
+@Table(name = "club_notices")
 public class ClubNotice {
 
-    private Long    id;
-    private String  clubName;
-    private String  title;
-    private String  body;
-    private String  postedBy;
-    private String  postedAt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "club_name", nullable = false, length = 100)
+    private String clubName;
+
+    @Column(name = "title", nullable = false, length = 200)
+    private String title;
+
+    @Column(name = "body", nullable = false, columnDefinition = "TEXT")
+    private String body;
+
+    @Column(name = "posted_by", length = 100)
+    private String postedBy;
+
+    @Column(name = "posted_at", length = 40)
+    private String postedAt;
+
+    @Column(name = "pinned", nullable = false)
     private boolean pinned;
 
     // ── Constructors ──────────────────────────────────────────

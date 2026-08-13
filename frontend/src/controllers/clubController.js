@@ -4,26 +4,26 @@
  * MVC Role: Controller
  * Manages all state and handlers for notices, recruitment, and applications.
  * Used by ClubActivitiesView.
- */
-
-import { useState, useEffect } from 'react'
-import {
-  SEED_NOTICES,
-  SEED_RECRUITMENTS,
-  RECRUITMENT_FORM_STEPS,
-  EMPTY_RECRUITMENT_FORM,
-} from '../models/clubModel.js'
-
-/**
- * useClubController
- * Manages tabs, notices, recruitments, multi-step application form, and toast state.
  *
- * TODO (Phase 2): Wire API calls:
+ * Phase 3: All data is fetched from the real backend API (Neon PostgreSQL).
  *   GET  /api/clubs/notices       → initial notices
  *   GET  /api/clubs/recruitment   → initial recruitments
  *   POST /api/clubs/notices       → handlePostNotice
  *   POST /api/clubs/recruitment   → handlePostRecruitment
  *   POST /api/clubs/apply         → handleApply
+ */
+
+import { useState, useEffect } from 'react'
+import {
+  RECRUITMENT_FORM_STEPS,
+  EMPTY_RECRUITMENT_FORM,
+} from '../models/clubModel.js'
+
+const API_BASE = 'http://localhost:8080/api'
+
+/**
+ * useClubController
+ * Manages tabs, notices, recruitments, multi-step application form, and toast state.
  */
 export function useClubController() {
   const role    = localStorage.getItem('userRole') || 'student'
@@ -31,10 +31,11 @@ export function useClubController() {
 
   const [activeTab,  setActiveTab]  = useState('notices')
 
-  // Data state
-  const [notices,      setNotices]      = useState(SEED_NOTICES)
-  const [recruitments, setRecruitments] = useState(SEED_RECRUITMENTS)
+  // Data state — starts empty, populated from API
+  const [notices,      setNotices]      = useState([])
+  const [recruitments, setRecruitments] = useState([])
   const [toast,        setToast]        = useState(null)
+  const [loading,      setLoading]      = useState(true)
 
   // Notices UI state
   const [expandedNotice,   setExpandedNotice]   = useState(null)
@@ -54,6 +55,35 @@ export function useClubController() {
 
   const totalSteps = RECRUITMENT_FORM_STEPS.length
 
+  // ── Load initial data from backend API ──────────────────────
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true)
+      try {
+        const [noticesRes, recruitmentsRes] = await Promise.all([
+          fetch(`${API_BASE}/clubs/notices`),
+          fetch(`${API_BASE}/clubs/recruitment`),
+        ])
+
+        if (noticesRes.ok) {
+          const json = await noticesRes.json()
+          setNotices(json.data || [])
+        }
+
+        if (recruitmentsRes.ok) {
+          const json = await recruitmentsRes.json()
+          setRecruitments(json.data || [])
+        }
+      } catch (err) {
+        console.error('[ClubController] Failed to load club data:', err)
+        showToast('⚠️ Failed to load club data. Please try again.', 'error')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
   // Auto-dismiss toast
   useEffect(() => {
     if (toast) {
@@ -69,40 +99,64 @@ export function useClubController() {
 
   /* ── Handlers ─────────────────────────────────────────────── */
 
-  // Admin: post notice
+  // Admin: post notice (calls backend API, then refreshes from server)
   async function handlePostNotice(e) {
     e.preventDefault()
     if (!noticeForm.clubName || !noticeForm.title || !noticeForm.body) return
     setNoticeSubmitting(true)
-    await new Promise(r => setTimeout(r, 600))
-    const newNotice = {
-      id: Date.now(),
-      ...noticeForm,
-      postedBy: 'Admin',
-      postedAt: new Date().toISOString(),
-      pinned: false,
+
+    try {
+      const res = await fetch(`${API_BASE}/clubs/notices`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(noticeForm),
+      })
+      if (res.ok) {
+        const json = await res.json()
+        // Prepend new notice to the list
+        setNotices(prev => [json.data, ...prev])
+        setNoticeForm({ clubName: '', title: '', body: '' })
+        showToast('✅ Notice posted successfully!')
+      } else {
+        showToast('❌ Failed to post notice.', 'error')
+      }
+    } catch (err) {
+      console.error('[ClubController] handlePostNotice error:', err)
+      showToast('❌ Network error. Please try again.', 'error')
+    } finally {
+      setNoticeSubmitting(false)
     }
-    setNotices(prev => [newNotice, ...prev])
-    setNoticeForm({ clubName: '', title: '', body: '' })
-    setNoticeSubmitting(false)
-    showToast('✅ Notice posted successfully!')
   }
 
-  // Admin: post recruitment
+  // Admin: post recruitment (calls backend API)
   async function handlePostRecruitment(e) {
     e.preventDefault()
     if (!recruitForm.clubName || !recruitForm.role || !recruitForm.description || !recruitForm.deadline) return
     setRecruitSubmitting(true)
-    await new Promise(r => setTimeout(r, 600))
-    const newRec = {
-      id: Date.now(),
-      ...recruitForm,
-      slots: parseInt(recruitForm.slots) || 5,
+
+    try {
+      const res = await fetch(`${API_BASE}/clubs/recruitment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...recruitForm,
+          slots: String(recruitForm.slots || 5),
+        }),
+      })
+      if (res.ok) {
+        const json = await res.json()
+        setRecruitments(prev => [json.data, ...prev])
+        setRecruitForm({ clubName: '', role: '', description: '', deadline: '', slots: '' })
+        showToast('✅ Recruitment posting published!')
+      } else {
+        showToast('❌ Failed to post recruitment.', 'error')
+      }
+    } catch (err) {
+      console.error('[ClubController] handlePostRecruitment error:', err)
+      showToast('❌ Network error. Please try again.', 'error')
+    } finally {
+      setRecruitSubmitting(false)
     }
-    setRecruitments(prev => [newRec, ...prev])
-    setRecruitForm({ clubName: '', role: '', description: '', deadline: '', slots: '' })
-    setRecruitSubmitting(false)
-    showToast('✅ Recruitment posting published!')
   }
 
   /* ── Multi-step Application Form Logic ────────────────────── */
@@ -167,7 +221,7 @@ export function useClubController() {
     }
   }
 
-  // Submit application (called from the final question step)
+  // Submit application (calls backend API, then moves to confirmation step)
   async function handleApply() {
     const errors = validateStep(applyStep)
     if (Object.keys(errors).length > 0) {
@@ -175,11 +229,36 @@ export function useClubController() {
       return
     }
     setApplySubmitting(true)
-    await new Promise(r => setTimeout(r, 800))
-    setApplySubmitting(false)
-    // Move to confirmation step
-    setApplyStep(totalSteps - 1)
-    showToast('🎉 Application submitted! The club will contact you soon.')
+
+    try {
+      const payload = {
+        recruitmentId: String(applyTarget?.id || ''),
+        clubName:      applyTarget?.clubName || '',
+        role:          applyTarget?.role     || '',
+        studentName:   applyForm.fullName,
+        studentEmail:  applyForm.universityEmail,
+        motivation:    applyForm.motivation,
+      }
+
+      const res = await fetch(`${API_BASE}/clubs/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (res.ok) {
+        // Move to confirmation step
+        setApplyStep(totalSteps - 1)
+        showToast('🎉 Application submitted! The club will contact you soon.')
+      } else {
+        showToast('❌ Failed to submit application.', 'error')
+      }
+    } catch (err) {
+      console.error('[ClubController] handleApply error:', err)
+      showToast('❌ Network error. Please try again.', 'error')
+    } finally {
+      setApplySubmitting(false)
+    }
   }
 
   // Update a field in the apply form
@@ -220,6 +299,8 @@ export function useClubController() {
     isAdmin,
     // Tab
     activeTab, setActiveTab,
+    // Loading
+    loading,
     // Data
     notices: sortedNotices,
     recruitments,
