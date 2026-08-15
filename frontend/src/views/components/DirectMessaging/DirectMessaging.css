@@ -1,0 +1,867 @@
+/* ============================================================
+   DirectMessaging — Themed to CampusConnect Design System
+   Mirrors index.css tokens: teal, white surfaces, Inter font
+   ============================================================ */
+
+/* ── Root wrapper ──────────────────────────────────────────── */
+.univ-dm-root {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background: var(--color-bg, #F4F6F8);
+  color: var(--color-text, #111827);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+/* ── Role badges ───────────────────────────────────────────── */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-badge.faculty {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+}
+
+.role-badge.student {
+  background: var(--color-lavender, #E8EAFA);
+  color: #3730A3;
+  border: 1px solid var(--color-lavender-mid, #D0D4F5);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COLUMN 1 – Compact Nav Sidebar (72px icon rail)
+   ═══════════════════════════════════════════════════════════ */
+.univ-nav-sidebar {
+  width: 72px;
+  min-width: 72px;
+  background: var(--color-surface, #FFFFFF);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-right: 1px solid var(--color-border, #E5E7EB);
+  z-index: 20;
+}
+
+.univ-nav-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.univ-brand-crest {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm, 6px);
+  background: linear-gradient(135deg, var(--color-teal, #1A9882), #2FB8A0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+}
+
+.univ-nav-item {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  border: none;
+  color: var(--color-text-sub, #6B7280);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition, 0.2s ease);
+  position: relative;
+}
+
+.univ-nav-item:hover {
+  background: var(--color-teal-light, #E6F5F2);
+  color: var(--color-teal, #1A9882);
+}
+
+.univ-nav-item.active {
+  background: var(--color-teal-light, #E6F5F2);
+  color: var(--color-teal, #1A9882);
+}
+
+.univ-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  width: 3px;
+  height: 20px;
+  background: var(--color-teal, #1A9882);
+  border-radius: 0 4px 4px 0;
+}
+
+.univ-nav-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COLUMN 2 – Conversation List Sidebar
+   ═══════════════════════════════════════════════════════════ */
+.univ-chats-sidebar {
+  width: 300px;
+  min-width: 260px;
+  background: var(--color-surface, #FFFFFF);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border, #E5E7EB);
+  z-index: 10;
+}
+
+.univ-chats-header {
+  padding: 20px 16px 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border, #E5E7EB);
+}
+
+.univ-chats-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+  letter-spacing: -0.3px;
+}
+
+.univ-new-dm-btn {
+  min-height: 36px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, var(--color-teal, #1A9882), var(--color-teal-dark, #147A68));
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
+  transition: transform var(--transition, 0.2s ease), box-shadow var(--transition, 0.2s ease);
+}
+
+.univ-new-dm-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
+}
+
+.univ-search-wrapper {
+  padding: 12px 16px 8px 16px;
+}
+
+.univ-search-input-box {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg, #F4F6F8);
+  border: 1.5px solid var(--color-border, #E5E7EB);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0 12px;
+  min-height: 40px;
+  gap: 8px;
+  transition: border-color var(--transition, 0.2s ease);
+}
+
+.univ-search-input-box:focus-within {
+  border-color: var(--color-teal, #1A9882);
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.1);
+}
+
+.univ-search-input-box input {
+  background: transparent;
+  border: none;
+  color: var(--color-text, #111827);
+  font-size: 13px;
+  font-family: inherit;
+  width: 100%;
+  outline: none;
+}
+
+.univ-search-input-box input::placeholder {
+  color: var(--color-text-light, #9CA3AF);
+}
+
+.univ-filter-tabs {
+  display: flex;
+  padding: 8px 16px;
+  gap: 6px;
+  border-bottom: 1px solid var(--color-border, #E5E7EB);
+}
+
+.univ-tab-btn {
+  min-height: 32px;
+  padding: 0 12px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 100px;
+  color: var(--color-text-sub, #6B7280);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition, 0.2s ease);
+}
+
+.univ-tab-btn:hover {
+  color: var(--color-teal, #1A9882);
+  background: var(--color-teal-light, #E6F5F2);
+}
+
+.univ-tab-btn.active {
+  background: var(--color-teal-light, #E6F5F2);
+  color: var(--color-teal, #1A9882);
+  border-color: var(--color-teal, #1A9882);
+}
+
+.univ-chat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+.univ-chat-list::-webkit-scrollbar { width: 4px; }
+.univ-chat-list::-webkit-scrollbar-track { background: transparent; }
+.univ-chat-list::-webkit-scrollbar-thumb {
+  background: var(--color-border, #E5E7EB);
+  border-radius: 10px;
+}
+
+.univ-category-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-light, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 12px 8px 4px 8px;
+}
+
+.univ-chat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  min-height: 56px;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  margin-bottom: 2px;
+  transition: all var(--transition, 0.2s ease);
+  border: 1.5px solid transparent;
+}
+
+.univ-chat-item:hover {
+  background: var(--color-teal-light, #E6F5F2);
+}
+
+.univ-chat-item.active {
+  background: var(--color-teal-light, #E6F5F2);
+  border-color: var(--color-teal, #1A9882);
+}
+
+/* ── Avatar ────────────────────────────────────────────────── */
+.univ-avatar-frame {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.univ-presence-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--color-surface, #FFFFFF);
+}
+
+.univ-chat-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.univ-chat-top-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.univ-chat-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.univ-chat-time {
+  font-size: 11px;
+  color: var(--color-text-light, #9CA3AF);
+  flex-shrink: 0;
+}
+
+.univ-chat-preview {
+  font-size: 12px;
+  color: var(--color-text-sub, #6B7280);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.univ-badge-count {
+  background: var(--color-teal, #1A9882);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 100px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COLUMN 3 – Message Window
+   ═══════════════════════════════════════════════════════════ */
+.univ-message-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg, #F4F6F8);
+  height: 100%;
+}
+
+/* ── Chat Header ───────────────────────────────────────────── */
+.univ-window-header {
+  height: 64px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface, #FFFFFF);
+  border-bottom: 1px solid var(--color-border, #E5E7EB);
+}
+
+.univ-header-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.univ-header-details h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.univ-header-details p {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: var(--color-text-sub, #6B7280);
+}
+
+.univ-key-badge {
+  min-height: 36px;
+  padding: 0 14px;
+  background: var(--color-bg, #F4F6F8);
+  border: 1.5px solid var(--color-border, #E5E7EB);
+  color: var(--color-text-sub, #6B7280);
+  border-radius: var(--radius-sm, 6px);
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition, 0.2s ease);
+}
+
+.univ-key-badge:hover {
+  border-color: var(--color-teal, #1A9882);
+  color: var(--color-teal, #1A9882);
+  background: var(--color-teal-light, #E6F5F2);
+}
+
+/* ── Message Feed ──────────────────────────────────────────── */
+.univ-msg-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.univ-msg-feed::-webkit-scrollbar { width: 4px; }
+.univ-msg-feed::-webkit-scrollbar-track { background: transparent; }
+.univ-msg-feed::-webkit-scrollbar-thumb {
+  background: var(--color-border, #E5E7EB);
+  border-radius: 10px;
+}
+
+.univ-msg-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  max-width: 75%;
+}
+
+.univ-msg-card.self {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+/* ── Message Bubble ────────────────────────────────────────── */
+.univ-msg-bubble {
+  background: var(--color-surface, #FFFFFF);
+  border: 1.5px solid var(--color-border, #E5E7EB);
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 12px);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+}
+
+.univ-msg-card.self .univ-msg-bubble {
+  background: linear-gradient(135deg, var(--color-teal, #1A9882), var(--color-teal-dark, #147A68));
+  border-color: transparent;
+  border-bottom-left-radius: var(--radius-md, 12px);
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.25);
+}
+
+.univ-msg-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.univ-msg-author {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+}
+
+.univ-msg-card.self .univ-msg-author {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.univ-msg-timestamp {
+  font-size: 11px;
+  color: var(--color-text-light, #9CA3AF);
+}
+
+.univ-msg-card.self .univ-msg-timestamp {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.univ-msg-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text, #111827);
+}
+
+.univ-msg-card.self .univ-msg-text {
+  color: white;
+}
+
+/* ── File Attachments ──────────────────────────────────────── */
+.univ-attachment-container {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.univ-file-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-bg, #F4F6F8);
+  border: 1.5px solid var(--color-border, #E5E7EB);
+  border-radius: var(--radius-sm, 6px);
+  padding: 10px 12px;
+  max-width: 340px;
+  transition: border-color var(--transition, 0.2s ease), box-shadow var(--transition, 0.2s ease);
+  cursor: default;
+}
+
+.univ-file-card:hover {
+  border-color: var(--color-teal, #1A9882);
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.08);
+}
+
+.univ-msg-card.self .univ-file-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.univ-msg-card.self .univ-file-card:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: none;
+}
+
+.univ-file-ext-badge {
+  background: var(--color-teal-light, #E6F5F2);
+  color: var(--color-teal-dark, #147A68);
+  font-family: monospace;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid rgba(26, 152, 130, 0.3);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.univ-msg-card.self .univ-file-ext-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.univ-file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.univ-file-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.univ-msg-card.self .univ-file-name {
+  color: white;
+}
+
+.univ-file-size {
+  font-size: 11px;
+  color: var(--color-text-sub, #6B7280);
+  margin-top: 2px;
+}
+
+.univ-msg-card.self .univ-file-size {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.univ-file-download-btn {
+  min-width: 32px;
+  min-height: 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--color-border, #E5E7EB);
+  border: none;
+  color: var(--color-text-sub, #6B7280);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition, 0.2s ease);
+}
+
+.univ-file-download-btn:hover {
+  background: var(--color-teal, #1A9882);
+  color: white;
+}
+
+.univ-msg-card.self .univ-file-download-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.univ-msg-card.self .univ-file-download-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.univ-image-preview {
+  max-width: 280px;
+  max-height: 200px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1.5px solid var(--color-border, #E5E7EB);
+  object-fit: cover;
+  margin-top: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Input Area
+   ═══════════════════════════════════════════════════════════ */
+.univ-input-section {
+  padding: 0 20px 20px 20px;
+  position: relative;
+}
+
+/* ── Staged files bar ──────────────────────────────────────── */
+.univ-staged-files-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--color-surface, #FFFFFF);
+  border: 1.5px dashed var(--color-teal, #1A9882);
+  border-bottom: none;
+  border-radius: var(--radius-sm, 6px) var(--radius-sm, 6px) 0 0;
+  overflow-x: auto;
+}
+
+.univ-staged-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-teal-light, #E6F5F2);
+  border: 1px solid rgba(26, 152, 130, 0.3);
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--color-teal-dark, #147A68);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── Message input form ────────────────────────────────────── */
+.univ-input-form-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface, #FFFFFF);
+  border: 1.5px solid var(--color-border, #E5E7EB);
+  border-radius: var(--radius-md, 12px);
+  padding: 6px 8px 6px 14px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+  transition: border-color var(--transition, 0.2s ease), box-shadow var(--transition, 0.2s ease);
+}
+
+.univ-input-form-box:focus-within {
+  border-color: var(--color-teal, #1A9882);
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.12);
+}
+
+.univ-input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text, #111827);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  min-height: 44px;
+}
+
+.univ-input-field::placeholder {
+  color: var(--color-text-light, #9CA3AF);
+}
+
+.univ-action-btn {
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm, 6px);
+  border: none;
+  background: transparent;
+  color: var(--color-text-sub, #6B7280);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition, 0.2s ease);
+  font-family: inherit;
+}
+
+.univ-action-btn:hover {
+  background: var(--color-teal-light, #E6F5F2);
+  color: var(--color-teal, #1A9882);
+}
+
+.univ-send-submit-btn {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm, 6px);
+  border: none;
+  background: linear-gradient(135deg, var(--color-teal, #1A9882), var(--color-teal-dark, #147A68));
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
+  transition: transform var(--transition, 0.2s ease), box-shadow var(--transition, 0.2s ease);
+}
+
+.univ-send-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
+}
+
+.univ-send-submit-btn:active {
+  transform: translateY(0);
+}
+
+/* ─── Emoji Picker Modal ───────────────────────────────────── */
+.univ-emoji-picker-modal {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  width: 320px;
+  background: var(--color-surface, #FFFFFF);
+  border: 1.5px solid var(--color-border, #E5E7EB);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: var(--shadow-lg, 0 10px 40px rgba(0,0,0,0.10));
+  padding: 14px;
+  z-index: 100;
+}
+
+.univ-emoji-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-sub, #6B7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.univ-emoji-header button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--color-text-light, #9CA3AF);
+  padding: 0;
+  line-height: 1;
+  transition: color var(--transition, 0.2s ease);
+}
+
+.univ-emoji-header button:hover {
+  color: var(--color-error, #EF4444);
+}
+
+.univ-emoji-category {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-teal, #1A9882);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 10px 0 4px 0;
+}
+
+.univ-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.univ-emoji-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition, 0.2s ease);
+}
+
+.univ-emoji-btn:hover {
+  background: var(--color-teal-light, #E6F5F2);
+}
+
+/* ── Empty state ───────────────────────────────────────────── */
+.univ-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--color-text-sub, #6B7280);
+  text-align: center;
+  padding: 40px;
+}
+
+.univ-empty-state-icon {
+  font-size: 48px;
+  line-height: 1;
+  opacity: 0.4;
+}
+
+.univ-empty-state h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+  margin: 0;
+}
+
+.univ-empty-state p {
+  font-size: 14px;
+  color: var(--color-text-sub, #6B7280);
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+.univ-msg-feed::-webkit-scrollbar,
+.univ-chat-list::-webkit-scrollbar { width: 4px; }
+.univ-msg-feed::-webkit-scrollbar-thumb,
+.univ-chat-list::-webkit-scrollbar-thumb {
+  background: var(--color-border, #E5E7EB);
+  border-radius: 10px;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .univ-nav-sidebar { display: none; }
+  .univ-chats-sidebar { width: 260px; min-width: 220px; }
+}
+
+@media (max-width: 640px) {
+  .univ-chats-sidebar { display: none; }
+}

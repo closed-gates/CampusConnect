@@ -2,9 +2,8 @@
 
 > This file covers the **shared frontend and shared backend** of CampusConnect.
 > It is the first file any AI assistant or new collaborator should read.
->
-> For Arham's personal backend workspace, see `Arham/memory.md`.
 > For full team onboarding, see `COLLABORATORS.md`.
+
 
 ------------------------------------------------------------------------
 
@@ -18,7 +17,7 @@
 
 **Shared Backend:** Spring Boot 3.3.2 / Java 17 — `backend/`
 
-**Database:** None yet (Phase 2)
+**Database:** Neon PostgreSQL (cloud) — active on `prod` profile
 
 **Build Tool:** Maven (backend) · npm (frontend)
 
@@ -30,9 +29,6 @@
 CampusConnect/
 ├── frontend/                  ← Shared React (Vite) app
 ├── backend/                   ← Shared Spring Boot backend
-├── Arham/                     ← Arham's personal workspace
-│   ├── backend/               ← Arham's individual Spring Boot project
-│   └── memory.md              ← Arham's personal session memory
 ├── COLLABORATORS.md           ← Team onboarding guide
 └── memory.md                  ← This file (shared project memory)
 ```
@@ -41,9 +37,11 @@ CampusConnect/
 
 # Current Development Phase
 
-**Phase:** Phase 1 – UI Shell + Auth Stubs ✅ COMPLETED
+**Phase:** Phase 3 – Database Integration (Club Activities + Attendance) ✅ IN PROGRESS
 
-**Next Phase:** Phase 2 – Database Integration + JWT Authentication
+**Active Profile:** `prod` (Neon PostgreSQL cloud DB)
+
+**Next Phase:** Full JWT Authentication + RBAC
 
 ------------------------------------------------------------------------
 
@@ -103,7 +101,6 @@ CampusConnect/
 ## Documentation
 
 - ✅ `COLLABORATORS.md` — Full team onboarding guide
-- ✅ `Arham/memory.md` — Arham's personal workspace memory (reverted, untouched)
 
 ------------------------------------------------------------------------
 
@@ -199,24 +196,78 @@ None.
 
 # Session Notes
 
-## Session 1 (2026-07-23)
+## Session 2 (2026-08-02)
 
-- Scaffolded Vite + React frontend (`frontend/`)
-- Built Login, Signup, Dashboard pages from reference images
-- Created Sidebar with 5 nav items, StatCard component
-- Created shared Spring Boot backend (`backend/`) with auth stub endpoints
-- Created `COLLABORATORS.md` for team onboarding
-- Vite dev server confirmed running on `http://localhost:5173`
+### Club Recruitment Form Improvement (Arham)
+
+- Replaced the simple 3-field application modal in `ClubActivitiesView` with a rich 7-step multi-step form overlay
+- **Flow:** Welcome → Personal Info → Interests → Skills → Availability → Final Question → Confirmation
+- **New frontend model constants** (`clubModel.js`): `RECRUITMENT_FORM_STEPS`, `TEAM_OPTIONS`, `SKILL_OPTIONS`, `TIME_COMMITMENT_OPTIONS`, `PARTICIPATION_OPTIONS`, `DEPARTMENT_OPTIONS`, `YEAR_SEMESTER_OPTIONS`, `EMPTY_RECRUITMENT_FORM`
+- **Controller** (`clubController.js`): multi-step state, `nextStep`, `prevStep`, per-step validation, `updateApplyField`, `toggleApplyArrayField`
+- **View** (`ClubActivitiesView.jsx`): fullscreen overlay with teal gradient header, animated progress bar with step dots, branded checkboxes/radio buttons, fade-in step transitions, confirmation card with bounce animation
+- **CSS** (`ClubActivitiesPage.css` in views/): 200+ lines of new styles for the multi-step form; all existing notice/recruitment styles preserved exactly
+
+### Faculty Attendance Tracking — New Feature (Arham)
+
+**Backend (new files only):**
+- `model/AttendanceRecord.java` — domain model (courseId, studentId, date, status: PRESENT/ABSENT/LATE)
+- `service/AttendanceService.java` — in-memory store with seeded data; `getAttendance`, `markAttendance`, `getCourseSummary`, `getCourseHistory`
+- `controller/AttendanceController.java` — REST endpoints: `GET /api/attendance`, `POST /api/attendance`, `GET /api/attendance/summary`, `GET /api/attendance/history`
+
+**Frontend (new files only):**
+- `models/attendanceModel.js` — `FACULTY_COURSES`, `COURSE_STUDENTS`, `SEED_ATTENDANCE_HISTORY`, `STATUS_CONFIG`, `calculateSummary`, `groupByDate`
+- `controllers/attendanceController.js` — `useAttendanceController()` hook: course selection, date picker, roster, mark individual/all students, submit, history, summary stats
+- `views/pages/AttendanceView.jsx` — Course selector cards (color-coded), 3 tabs: Mark Attendance (table with P/A/L buttons, quick-mark-all, progress bar), History (grouped by date with stats), Summary (circular chart + stat cards + per-student table)
+- `views/pages/AttendancePage.css` — dedicated styles: course cards with accent colors, attendance table, status button states, circular progress SVG, rate bars
+
+**Minimal wiring changes:**
+- `App.jsx`: added `/attendance` route + `AttendanceView` import
+- `Sidebar.jsx` (views/): added Attendance nav item with clipboard icon, route `/attendance`
+
+**No other features changed.** Dashboard, Courses, Routine, Messaging, Advising — all untouched.
 
 ------------------------------------------------------------------------
 
 # Change Log
 
 ## v0.1
-
 - Phase 1 complete: Login, Signup, Dashboard UI shell built.
 - Shared Spring Boot backend with auth stubs.
 - COLLABORATORS.md created.
+
+## v0.3 (2026-08-14)
+
+**Phase 3 – Neon PostgreSQL Database Integration (Club Activities + Attendance)**
+
+### Backend Changes
+- **pom.xml:** Added `maven-compiler-plugin` with `annotationProcessorPaths` for Lombok. Bumped `lombok.version` to `1.18.46` for Java 26 compatibility.
+- **application.properties:** Switched `spring.profiles.active` from `dev` (H2) → `prod` (Neon PostgreSQL).
+- **JPA Entity conversions (4 files):**
+  - `model/AttendanceRecord.java` → `@Entity` mapped to `attendance_records`
+  - `model/ClubNotice.java` → `@Entity` mapped to `club_notices`
+  - `model/Recruitment.java` → `@Entity` mapped to `recruitments`
+  - `model/Application.java` → `@Entity` mapped to `club_applications`
+- **New JPA Repositories (4 files):**
+  - `repository/AttendanceRecordRepository.java`
+  - `repository/ClubNoticeRepository.java`
+  - `repository/RecruitmentRepository.java`
+  - `repository/ApplicationRepository.java`
+- **Service refactors:**
+  - `service/AttendanceService.java` — Uses `AttendanceRecordRepository`; `@PostConstruct` seeds 28 records across 3 courses
+  - `service/ClubService.java` — Uses 3 club repositories; `@PostConstruct` seeds 5 notices + 5 recruitments
+
+### Frontend Changes
+- `controllers/clubController.js` — `useEffect` loads notices + recruitments from `GET /api/clubs/notices` and `GET /api/clubs/recruitment` on mount. All mutations use real API calls.
+- `controllers/attendanceController.js` — `useEffect` loads records + history + summary from real backend on course/date change. Submits each mark via `POST /api/attendance`.
+
+### Database State (Neon PostgreSQL)
+- Tables auto-created by Hibernate `ddl-auto=update`
+- Seed data inserted via `@PostConstruct` (count() == 0 guard)
+  - `club_notices`: 5 records (3 pinned)
+  - `recruitments`: 5 active records
+  - `attendance_records`: 28 records across CSE470, CSE341, CSE221
+
+All other features (Dashboard, Courses, Routine, Advising, Auth) unchanged.
 
 ------------------------------------------------------------------------
 
@@ -225,11 +276,9 @@ None.
 Before any task on the shared project:
 
 1. Read this file first to understand current state.
-2. The shared backend is `backend/` (repo root) — NOT `Arham/backend/`.
+2. The shared backend is `backend/` (repo root).
 3. The shared frontend is `frontend/` (repo root).
-4. Do NOT modify `Arham/memory.md` — that is Arham's personal file.
-5. Update **this file** after completing any shared frontend or backend work.
-6. For team conventions, refer to `COLLABORATORS.md`.
-7. For product requirements, refer to `Arham/prd.md`.
-8. For system architecture, refer to `Arham/architecture.md`.
-9. All Phase 2 TODOs in source files are marked with `// TODO (Phase 2)` comments.
+4. Update **this file** after completing any shared frontend or backend work.
+5. For team conventions, refer to `COLLABORATORS.md`.
+6. All Phase 3 TODOs in source files are marked with `// TODO (Phase 3)` comments.
+

@@ -9,34 +9,60 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 /**
- * CorsConfig – Cross-Origin Resource Sharing configuration.
+ * CorsConfig
  *
- * Allows the React frontend dev server (Vite on port 5173) to call
- * the backend during development.
+ * Configures Cross-Origin Resource Sharing (CORS) to allow the React
+ * frontend development server to communicate with this backend.
  *
- * TODO (Production):
- *   - Replace "http://localhost:5173" with the deployed frontend URL.
- *   - Remove "http://localhost:3000" if CRA is not used.
+ * Development origin:  http://localhost:3000  (React default)
+ * Production origins:  Update this list with the deployed frontend URL.
+ *
+ * This bean is consumed by SecurityConfig (Phase 2) via
+ * HttpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource())).
  */
 @Configuration
 public class CorsConfig {
 
+    /**
+     * Defines allowed origins, methods, and headers for CORS requests.
+     *
+     * @return CorsConfigurationSource used by the Spring Security filter chain.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
+        CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allowed frontend origins (dev)
-        config.setAllowedOrigins(List.of(
-            "http://localhost:5173",   // Vite dev server
-            "http://localhost:3000"    // CRA dev server (fallback)
+        // Allowed origins — update with production URL when deploying
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",   // React dev server
+                "http://localhost:5173"    // Vite dev server (alternative)
         ));
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);  // Required for cookies / Authorization header
+        // Allowed HTTP methods
+        configuration.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+        ));
+
+        // Allowed headers
+        configuration.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "X-Requested-With"
+        ));
+
+        // Expose the Authorization header to the frontend for JWT
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        // Allow credentials (needed for JWT Authorization header)
+        configuration.setAllowCredentials(true);
+
+        // Cache pre-flight response for 1 hour (3600 seconds)
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/api/**", configuration);
+
         return source;
     }
 }
