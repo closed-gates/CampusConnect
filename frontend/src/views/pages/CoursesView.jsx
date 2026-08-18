@@ -19,7 +19,6 @@ export default function CoursesView() {
     viewMode, setViewMode,
     filtered, grouped, facultyMap, total,
     FACULTIES, totalCourses,
-    handleEnroll, enrolledIds, enrollToast,
   } = useCoursesController()
 
   return (
@@ -97,7 +96,7 @@ export default function CoursesView() {
         {/* Single-faculty grid */}
         {total > 0 && activeFaculty !== 'all' && (
           <div className={viewMode === 'grid' ? 'course-grid' : 'course-list'}>
-            {filtered.map(c => <CourseCard key={c.id} course={c} faculty={facultyMap[c.faculty]} onEnroll={handleEnroll} enrolled={enrolledIds.has(c.id)} />)}
+            {filtered.map(c => <CourseCard key={c.id} course={c} faculty={facultyMap[c.faculty]} />)}
           </div>
         )}
 
@@ -106,25 +105,10 @@ export default function CoursesView() {
           <div key={faculty.id} className="faculty-section">
             <FacultyHeader faculty={faculty} count={grouped[faculty.id].length} />
             <div className={viewMode === 'grid' ? 'course-grid' : 'course-list'}>
-              {grouped[faculty.id].map(c => <CourseCard key={c.id} course={c} faculty={faculty} onEnroll={handleEnroll} enrolled={enrolledIds.has(c.id)} />)}
+              {grouped[faculty.id].map(c => <CourseCard key={c.id} course={c} faculty={faculty} />)}
             </div>
           </div>
         ))}
-
-        {/* Enrollment toast */}
-        {enrollToast && (
-          <div
-            style={{
-              position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)',
-              background: '#0f172a', color: '#fff', padding: '12px 24px',
-              borderRadius: 12, fontSize: 14, fontWeight: 600,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.35)', zIndex: 9999,
-              border: '1px solid rgba(255,255,255,0.1)',
-            }}
-          >
-            {enrollToast}
-          </div>
-        )}
 
       </main>
     </div>
@@ -144,73 +128,158 @@ function StarRating({ rating }) {
   )
 }
 
-function CourseCard({ course, faculty, onEnroll, enrolled = false }) {
-  const [bookmarked, setBookmarked] = useState(false)
+function CourseCard({ course, faculty }) {
+  const [bookmarked,   setBookmarked]   = useState(false)
+  const [showDetails,  setShowDetails]  = useState(false)
   const avail   = getAvailability(course.enrolled, course.capacity)
   const fillPct = Math.round((course.enrolled / course.capacity) * 100)
 
   return (
-    <div className="course-card" id={'course-card-' + course.id}>
-      <div className="course-card-header" style={{ background: faculty.color }}>
-        <span className="course-card-emoji" aria-hidden="true">{faculty.icon}</span>
-        <div className="course-card-header-right">
-          <span className="course-card-code">{course.code}</span>
+    <>
+      <div className="course-card" id={'course-card-' + course.id}>
+        <div className="course-card-header" style={{ background: faculty.color }}>
+          <span className="course-card-emoji" aria-hidden="true">{faculty.icon}</span>
+          <div className="course-card-header-right">
+            <span className="course-card-code">{course.code}</span>
+            <button
+              className={'course-bookmark-btn' + (bookmarked ? ' bookmarked' : '')}
+              onClick={() => setBookmarked(b => !b)}
+              aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark course'}
+              id={'bookmark-' + course.id}
+            >
+              {bookmarked ? '★' : '☆'}
+            </button>
+          </div>
+        </div>
+
+        <div className="course-card-body">
+          <h3 className="course-card-name">{course.name}</h3>
+          <p className="course-card-instructor">👤 {course.instructor}</p>
+          <p className="course-card-desc">{course.desc}</p>
+
+          <div className="course-card-tags">
+            {course.tags.map(tag => <span key={tag} className="course-tag">{tag}</span>)}
+          </div>
+
+          <div className="course-card-stats">
+            <span>📅 {course.semester}</span>
+            <span>🎓 Year {course.year}</span>
+            <span>📋 {course.credits} cr.</span>
+          </div>
+
+          <StarRating rating={course.rating} />
+
+          <div className="course-card-footer">
+            <div className="course-enrollment">
+              <div className="enrollment-bar-track">
+                <div className="enrollment-bar-fill" style={{ width: fillPct + '%', background: avail.color }} />
+              </div>
+              <span className="enrollment-text">{course.enrolled}/{course.capacity}</span>
+            </div>
+            <span className="course-avail-badge" style={{ color: avail.color, background: avail.bg }}>
+              {avail.label}
+            </span>
+          </div>
+
+          {/* View Details button — replaces old Enroll Now */}
           <button
-            className={'course-bookmark-btn' + (bookmarked ? ' bookmarked' : '')}
-            onClick={() => setBookmarked(b => !b)}
-            aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark course'}
-            id={'bookmark-' + course.id}
+            className="course-enroll-btn"
+            id={'view-details-btn-' + course.id}
+            style={{ background: faculty.accent }}
+            onClick={() => setShowDetails(true)}
           >
-            {bookmarked ? '★' : '☆'}
+            📋 View Details
           </button>
         </div>
       </div>
 
-      <div className="course-card-body">
-        <h3 className="course-card-name">{course.name}</h3>
-        <p className="course-card-instructor">👤 {course.instructor}</p>
-        <p className="course-card-desc">{course.desc}</p>
-
-        <div className="course-card-tags">
-          {course.tags.map(tag => <span key={tag} className="course-tag">{tag}</span>)}
-        </div>
-
-        <div className="course-card-stats">
-          <span>📅 {course.semester}</span>
-          <span>🎓 Year {course.year}</span>
-          <span>📋 {course.credits} cr.</span>
-        </div>
-
-        <StarRating rating={course.rating} />
-
-        <div className="course-card-footer">
-          <div className="course-enrollment">
-            <div className="enrollment-bar-track">
-              <div className="enrollment-bar-fill" style={{ width: fillPct + '%', background: avail.color }} />
-            </div>
-            <span className="enrollment-text">{course.enrolled}/{course.capacity}</span>
-          </div>
-          <span className="course-avail-badge" style={{ color: avail.color, background: avail.bg }}>
-            {avail.label}
-          </span>
-        </div>
-
-        <button
-          className="course-enroll-btn"
-          id={'enroll-btn-' + course.id}
-          disabled={avail.label === 'Full' || enrolled}
-          style={{
-            background: enrolled ? '#10B981' : faculty.accent,
-            opacity: enrolled ? 0.85 : 1,
-          }}
-          onClick={() => !enrolled && onEnroll && onEnroll(course)}
+      {/* Details Modal */}
+      {showDetails && (
+        <div
+          className="course-details-overlay"
+          id={'course-details-overlay-' + course.id}
+          onClick={e => { if (e.target === e.currentTarget) setShowDetails(false) }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={'Details for ' + course.name}
         >
-          {enrolled ? '✅ Enrolled' : avail.label === 'Full' ? 'Join Waitlist' : 'Enroll Now'}
-        </button>
-      </div>
-    </div>
+          <div className="course-details-modal">
+            {/* Modal header */}
+            <div className="course-details-header" style={{ background: faculty.color }}>
+              <span className="course-details-emoji">{faculty.icon}</span>
+              <div className="course-details-title-wrap">
+                <span className="course-details-code">{course.code}</span>
+                <h2 className="course-details-name">{course.name}</h2>
+              </div>
+              <button
+                className="course-details-close"
+                id={'close-details-btn-' + course.id}
+                onClick={() => setShowDetails(false)}
+                aria-label="Close details"
+              >✕</button>
+            </div>
+
+            {/* Modal body */}
+            <div className="course-details-body">
+              <div className="course-details-grid">
+                <div className="course-details-item">
+                  <span className="course-details-label">Instructor</span>
+                  <span className="course-details-value">👤 {course.instructor}</span>
+                </div>
+                <div className="course-details-item">
+                  <span className="course-details-label">Faculty</span>
+                  <span className="course-details-value">{faculty.icon} {faculty.label}</span>
+                </div>
+                <div className="course-details-item">
+                  <span className="course-details-label">Credits</span>
+                  <span className="course-details-value">📋 {course.credits} credit{course.credits !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="course-details-item">
+                  <span className="course-details-label">Year / Semester</span>
+                  <span className="course-details-value">🎓 Year {course.year} · {course.semester}</span>
+                </div>
+                <div className="course-details-item">
+                  <span className="course-details-label">Enrollment</span>
+                  <span className="course-details-value" style={{ color: avail.color }}>
+                    {course.enrolled} / {course.capacity} &nbsp;·&nbsp;
+                    <strong>{avail.label}</strong>
+                  </span>
+                </div>
+                <div className="course-details-item">
+                  <span className="course-details-label">Rating</span>
+                  <span className="course-details-value"><StarRating rating={course.rating} /></span>
+                </div>
+              </div>
+
+              <div className="course-details-desc">
+                <span className="course-details-label">About this course</span>
+                <p>{course.desc}</p>
+              </div>
+
+              <div className="course-details-tags">
+                {course.tags.map(tag => <span key={tag} className="course-tag">{tag}</span>)}
+              </div>
+
+              <div className="course-details-enrollment-bar">
+                <div className="enrollment-bar-track" style={{ height: 8 }}>
+                  <div className="enrollment-bar-fill" style={{ width: fillPct + '%', background: avail.color }} />
+                </div>
+                <span style={{ fontSize: 12, color: '#6B7280', marginTop: 4, display: 'block' }}>
+                  {fillPct}% seats filled
+                </span>
+              </div>
+
+              <p className="course-details-note">
+                💡 To register for a section of this course, go to <strong>Advising</strong> in the sidebar.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
+
 
 function FacultyHeader({ faculty, count }) {
   return (

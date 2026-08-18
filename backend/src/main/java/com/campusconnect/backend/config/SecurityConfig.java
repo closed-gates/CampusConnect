@@ -45,11 +45,12 @@ public class SecurityConfig {
             // Disable CSRF — using JWT (stateless), CSRF protection not needed
             .csrf(AbstractHttpConfigurer::disable)
 
-            // Phase 1: permit all requests
-            // TODO Phase 2: replace with role-based restrictions
+            // Phase 1: permit all requests; Phase 3 will add JWT role checks
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/ws/**").permitAll()   // WebSocket handshake
                 .anyRequest().permitAll()
             );
+
 
         return http.build();
     }
