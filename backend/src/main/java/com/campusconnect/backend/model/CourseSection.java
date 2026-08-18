@@ -63,4 +63,13 @@ public class CourseSection {
     /** Number of booked seats */
     @Column(nullable = false)
     private Integer booked;
+
+    /**
+     * Comma-separated prerequisite course codes that must be completed before
+     * a student can register for this section.
+     * e.g. "CSE110" or "CSE110,CSE111"
+     * Null/empty means no prerequisites.
+     */
+    @Column(name = "prerequisite_codes", length = 200)
+    private String prerequisiteCodes;
 }

@@ -503,3 +503,164 @@ WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG101-09');
 INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
 SELECT 'ENG101-10','ENG101','10','English & Communication Skills I','Dr. Niaz Zaman','MON-WED 03:30 PM-04:50 PM','SB-501','Dec 24, 2026 2:00 PM-4:00 PM',40,22
 WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG101-10');
+
+-- ============================================================
+-- Advisors (Phase 3 – Neon PostgreSQL)
+-- ============================================================
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Sarah Ahmed','Associate Professor & Academic Advisor','cse','Computer Science & Engineering','9:00 AM - 3:00 PM','s.ahmed@campusconnect.edu','Dr. Ahmed has 10+ years of experience advising CSE students on course selection, research opportunities, and career pathways in software and AI.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 's.ahmed@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Prof. Tariq Hassan','Senior Lecturer & Academic Advisor','cse','Computer Science & Engineering','10:00 AM - 4:00 PM','t.hassan@campusconnect.edu','Prof. Hassan specializes in guiding students through advanced CSE coursework and graduate admissions.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 't.hassan@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Ayan Das','Associate Professor & Academic Advisor','eee','Electrical & Electronic Engineering','11:00 AM - 5:00 PM','a.das@campusconnect.edu','Dr. Das advises EEE students on lab-intensive courses and industry placements.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'a.das@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Meena Akter','Professor & Academic Advisor','bba','Business Administration','10:00 AM - 2:00 PM','m.akter@campusconnect.edu','Dr. Akter guides BBA students in selecting electives aligned with their career goals.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'm.akter@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Prof. Dina Alam','Head of Academic Affairs','arch','Architecture & Planning','9:00 AM - 1:00 PM','d.alam@campusconnect.edu','Prof. Alam helps Architecture students balance studio workloads and build portfolios.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'd.alam@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Karim Hossain','Academic Advisor & Research Mentor','math','Mathematics & Physics','8:00 AM - 12:00 PM','k.hossain@campusconnect.edu','Dr. Hossain advises Math & Physics students on research projects and graduate admissions.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'k.hossain@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Prof. Jabir Khan','Academic Advisor','eco','Economics','1:00 PM - 5:00 PM','j.khan@campusconnect.edu','Prof. Khan guides Economics students in research and career preparation.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'j.khan@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Sonia Rahman','Academic Advisor & Career Counsellor','eng','English & Literature','11:00 AM - 3:00 PM','s.rahman@campusconnect.edu','Dr. Rahman supports English students with course planning and career paths.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 's.rahman@campusconnect.edu');
+
+-- Advisor specialties
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Software Engineering'),('Machine Learning'),('Career Planning')) AS v(spec) ON true
+WHERE a.email = 's.ahmed@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Data Structures'),('Competitive Programming'),('Graduate School')) AS v(spec) ON true
+WHERE a.email = 't.hassan@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Circuit Design'),('Embedded Systems'),('Power Electronics')) AS v(spec) ON true
+WHERE a.email = 'a.das@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Marketing'),('Entrepreneurship'),('International Business')) AS v(spec) ON true
+WHERE a.email = 'm.akter@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Applied Mathematics'),('Research Methods'),('Graduate Admissions')) AS v(spec) ON true
+WHERE a.email = 'k.hossain@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+-- Advisor available days
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Wednesday'),('Friday')) AS v(d) ON true
+WHERE a.email = 's.ahmed@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Tuesday'),('Thursday')) AS v(d) ON true
+WHERE a.email = 't.hassan@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Tuesday'),('Thursday')) AS v(d) ON true
+WHERE a.email = 'a.das@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Wednesday'),('Friday')) AS v(d) ON true
+WHERE a.email = 'm.akter@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Wednesday'),('Thursday'),('Friday')) AS v(d) ON true
+WHERE a.email = 'k.hossain@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Tuesday'),('Thursday'),('Saturday')) AS v(d) ON true
+WHERE a.email = 'd.alam@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Tuesday'),('Friday')) AS v(d) ON true
+WHERE a.email = 'j.khan@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Wednesday'),('Thursday'),('Friday')) AS v(d) ON true
+WHERE a.email = 's.rahman@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+-- ============================================================
+-- Student Profiles (Phase 3 – Neon PostgreSQL)
+-- completedCourses: CSV of codes the student has already passed
+-- ============================================================
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU001','Eusha Kayenat','eusha@campusconnect.edu','Computer Science & Engineering',2,3.45,48,false,'CSE110,CSE111,MAT110,ENG101,PHY101,CSE220,CSE260'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU001');
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU002','Arham Hossain','arham@campusconnect.edu','Computer Science & Engineering',3,1.85,90,true,'CSE110,CSE111,MAT110,ENG101,PHY101,CSE220,CSE260,CSE321,CSE330,CSE331,CSE340,CSE370,EEE101'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU002');
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU003','Nafiz Rahman','nafiz@campusconnect.edu','Electrical & Electronic Engineering',2,3.72,54,false,'EEE101,MAT110,ENG101,PHY101,EEE201,EEE203'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU003');
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU004','Sadia Islam','sadia@campusconnect.edu','Business Administration',1,2.10,18,false,'BUS101,ENG101,MAT110'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU004');
+
+-- ============================================================
+-- Prerequisite codes for CourseSection rows
+-- Applied safely: only updates rows where prereq is not yet set
+-- ============================================================
+
+UPDATE course_section SET prerequisite_codes = 'CSE110'     WHERE code = 'CSE111' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE111'     WHERE code = 'CSE220' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220'     WHERE code = 'CSE221' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE111'     WHERE code = 'CSE260' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220,CSE260' WHERE code = 'CSE321' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220'     WHERE code = 'CSE330' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE221'     WHERE code = 'CSE331' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE260'     WHERE code = 'CSE340' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220'     WHERE code = 'CSE370' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE221,CSE321' WHERE code = 'CSE420' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE321'     WHERE code = 'CSE421' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE221'     WHERE code = 'CSE422' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE370'     WHERE code = 'CSE470' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE101'     WHERE code = 'EEE201' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE101'     WHERE code = 'EEE203' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE203'     WHERE code = 'EEE308' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE208'     WHERE code = 'EEE321' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+

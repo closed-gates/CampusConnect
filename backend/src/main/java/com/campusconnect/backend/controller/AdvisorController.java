@@ -1,7 +1,6 @@
 package com.campusconnect.backend.controller;
 
 import com.campusconnect.backend.dto.AdvisorMatchResponse;
-import com.campusconnect.backend.model.StudentProfile;
 import com.campusconnect.backend.service.AdvisorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +24,11 @@ import java.util.Optional;
  *   GET    /api/advisors/student/{studentId}                → single student profile
  *   POST   /api/advisors/assign                             → assign course to student
  *   DELETE /api/advisors/assign/{studentId}/{courseId}      → remove course from student
+ *   GET    /api/advisors/seat-updates                       → sectionId → booking count
  */
 @RestController
 @RequestMapping("/api/advisors")
+@CrossOrigin(origins = "*")
 public class AdvisorController {
 
     private final AdvisorService advisorService;
@@ -45,15 +46,19 @@ public class AdvisorController {
     }
 
     // ── GET /api/advisors/students ─────────────────────────────────
+    /**
+     * Returns all students ordered by completedCredits descending (priority order).
+     * Returns the profile-response map shape so the frontend can read advisedCourses.
+     */
     @GetMapping("/students")
-    public ResponseEntity<List<StudentProfile>> getAllStudents() {
-        return ResponseEntity.ok(advisorService.getAllStudents());
+    public ResponseEntity<List<Map<String, Object>>> getAllStudents() {
+        return ResponseEntity.ok(advisorService.getAllStudentsAsResponse());
     }
 
     // ── GET /api/advisors/student/{studentId} ──────────────────────
     @GetMapping("/student/{studentId}")
     public ResponseEntity<?> getStudentProfile(@PathVariable String studentId) {
-        Optional<StudentProfile> profile = advisorService.getStudentProfile(studentId);
+        Optional<Map<String, Object>> profile = advisorService.getStudentProfileAsResponse(studentId);
         return profile.<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -100,8 +105,8 @@ public class AdvisorController {
         return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
 
-    // ── GET /api/advisors/seat-updates ────────────────────────
-    /** Returns courseId → additional bookings count for live seat display. */
+    // ── GET /api/advisors/seat-updates ─────────────────────────────
+    /** Returns sectionId → total booking count for live seat display in advisor panel. */
     @GetMapping("/seat-updates")
     public ResponseEntity<Map<String, Integer>> getSeatUpdates() {
         return ResponseEntity.ok(advisorService.getSeatUpdates());
