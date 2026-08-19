@@ -161,9 +161,6 @@ function AssignmentCard({ assignment, onClick }) {
       </div>
 
       <div className="asgn-card-right">
-        <div className="asgn-card-points">
-          {assignment.totalPoints} pts
-        </div>
         <div className={`asgn-deadline-badge ${
           deadline.overdue ? 'overdue' : deadline.urgent ? 'urgent' : 'normal'
         }`}>
@@ -220,8 +217,6 @@ function AssignmentDetail({ ctrl }) {
                 )}
               </div>
               <div className="asgn-detail-meta-row">
-                <span className="points-label">{a.totalPoints} points</span>
-                <span>|</span>
                 <span className={`asgn-deadline-badge ${
                   deadline.overdue ? 'overdue' : deadline.urgent ? 'urgent' : 'normal'
                 }`}>
@@ -260,9 +255,9 @@ function AssignmentDetail({ ctrl }) {
             </a>
           )}
 
-          {/* Teacher: Submissions grading table */}
+          {/* Teacher: Submissions table */}
           {ctrl.isTeacher && (
-            <SubmissionsTable ctrl={ctrl} totalPoints={a.totalPoints} />
+            <SubmissionsTable ctrl={ctrl} />
           )}
         </div>
 
@@ -279,7 +274,7 @@ function AssignmentDetail({ ctrl }) {
               </span>
             </div>
             <div className="asgn-work-body">
-              <StudentWorkPanel ctrl={ctrl} deadline={deadline} status={status} />
+              <StudentWorkPanel ctrl={ctrl} deadline={deadline} />
             </div>
           </div>
         )}
@@ -289,40 +284,9 @@ function AssignmentDetail({ ctrl }) {
 }
 
 /* ── Student "Your Work" Panel Content ─────────────────────── */
-function StudentWorkPanel({ ctrl, deadline, status }) {
+function StudentWorkPanel({ ctrl, deadline }) {
   const isTurnedIn = ctrl.submission && ctrl.submission.status === 'TURNED_IN'
-  const isGraded   = ctrl.submission && ctrl.submission.status === 'GRADED'
   const isOverdue  = deadline.overdue
-
-  // Graded state
-  if (isGraded && ctrl.submission) {
-    return (
-      <>
-        {/* Submitted file */}
-        {ctrl.submission.fileName && (
-          <div className="asgn-submitted-file">
-            <span className="asgn-file-icon">
-              {getFileIcon(ctrl.submission.fileType)}
-            </span>
-            <div className="asgn-file-info">
-              <div className="asgn-file-name">{ctrl.submission.fileName}</div>
-              <div className="asgn-file-size">{ctrl.submission.fileType?.split('/').pop().toUpperCase()}</div>
-            </div>
-          </div>
-        )}
-        <div className="asgn-grade-display">
-          <span className="asgn-grade-value">{ctrl.submission.grade}</span>
-          <span className="asgn-grade-total">/ {ctrl.selectedAssignment.totalPoints}</span>
-        </div>
-        {ctrl.submission.feedback && (
-          <div className="asgn-grade-feedback">
-            <strong>Teacher Feedback</strong>
-            {ctrl.submission.feedback}
-          </div>
-        )}
-      </>
-    )
-  }
 
   // Turned in state
   if (isTurnedIn && ctrl.submission) {
@@ -425,9 +389,9 @@ function StudentWorkPanel({ ctrl, deadline, status }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   Teacher: Submissions Grading Table
+   Teacher: Submissions Table
    ══════════════════════════════════════════════════════════════ */
-function SubmissionsTable({ ctrl, totalPoints }) {
+function SubmissionsTable({ ctrl }) {
   if (ctrl.submissionsLoading) {
     return (
       <div className="asgn-submissions-section">
@@ -454,15 +418,12 @@ function SubmissionsTable({ ctrl, totalPoints }) {
               <th>Student</th>
               <th>Status</th>
               <th>File</th>
-              <th>Grade</th>
-              <th>Feedback</th>
-              <th></th>
+              <th>Submitted At</th>
             </tr>
           </thead>
           <tbody>
             {ctrl.allSubmissions.map(sub => {
               const statusCfg = STATUS_CONFIG[sub.status] || STATUS_CONFIG.ASSIGNED
-              const gradeInput = ctrl.gradeInputs[sub.id] || { grade: '', feedback: '' }
 
               return (
                 <tr key={sub.id}>
@@ -495,33 +456,8 @@ function SubmissionsTable({ ctrl, totalPoints }) {
                       </span>
                     )}
                   </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="asgn-grade-input"
-                      value={gradeInput.grade}
-                      onChange={(e) => ctrl.updateGradeInput(sub.id, 'grade', e.target.value)}
-                      placeholder={`/ ${totalPoints}`}
-                      min="0"
-                      max={totalPoints}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      className="asgn-feedback-input"
-                      value={gradeInput.feedback}
-                      onChange={(e) => ctrl.updateGradeInput(sub.id, 'feedback', e.target.value)}
-                      placeholder="Feedback..."
-                    />
-                  </td>
-                  <td>
-                    <button
-                      className="asgn-grade-btn"
-                      onClick={() => ctrl.handleGrade(sub.id)}
-                    >
-                      Grade
-                    </button>
+                  <td style={{ fontSize: 13, color: 'var(--color-text-sub)' }}>
+                    {sub.submittedAt ? formatDeadline(sub.submittedAt) : '—'}
                   </td>
                 </tr>
               )
@@ -598,27 +534,15 @@ function CreateAssignmentModal({ ctrl }) {
             />
           </div>
 
-          {/* Points + Deadline */}
-          <div className="asgn-form-row">
-            <div className="asgn-form-group">
-              <label>Points</label>
-              <input
-                type="number"
-                value={ctrl.createForm.totalPoints}
-                onChange={(e) => ctrl.updateCreateForm('totalPoints', parseInt(e.target.value) || 0)}
-                min="0"
-                id="asgn-create-points"
-              />
-            </div>
-            <div className="asgn-form-group">
-              <label>Deadline</label>
-              <input
-                type="datetime-local"
-                value={ctrl.createForm.deadline}
-                onChange={(e) => ctrl.updateCreateForm('deadline', e.target.value)}
-                id="asgn-create-deadline"
-              />
-            </div>
+          {/* Deadline */}
+          <div className="asgn-form-group">
+            <label>Deadline</label>
+            <input
+              type="datetime-local"
+              value={ctrl.createForm.deadline}
+              onChange={(e) => ctrl.updateCreateForm('deadline', e.target.value)}
+              id="asgn-create-deadline"
+            />
           </div>
 
           {/* Teacher Name */}

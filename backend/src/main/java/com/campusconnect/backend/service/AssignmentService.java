@@ -57,7 +57,6 @@ public class AssignmentService {
             "- Screenshots of all major features\n" +
             "- GitHub repository link"
         );
-        a1.setTotalPoints(100);
         a1.setDeadline(LocalDateTime.now().plusDays(7).withHour(23).withMinute(59).withSecond(0));
         a1.setCreatedBy("Ahmed Akib Jawad Karim");
         a1.setCreatedAt(LocalDateTime.now().minusDays(5));
@@ -79,7 +78,6 @@ public class AssignmentService {
             "- Average turnaround time\n\n" +
             "Submit your source code + a PDF with sample outputs."
         );
-        a2.setTotalPoints(50);
         a2.setDeadline(LocalDateTime.now().plusDays(3).withHour(23).withMinute(59).withSecond(0));
         a2.setCreatedBy("Dr. Md. Rashedul Islam");
         a2.setCreatedAt(LocalDateTime.now().minusDays(2));
@@ -101,7 +99,6 @@ public class AssignmentService {
             "Include a main method with test cases demonstrating each operation.\n" +
             "Submit a single .java file."
         );
-        a3.setTotalPoints(30);
         a3.setDeadline(LocalDateTime.now().plusDays(14).withHour(23).withMinute(59).withSecond(0));
         a3.setCreatedBy("Prof. Sadia Sharmin");
         a3.setCreatedAt(LocalDateTime.now().minusDays(1));
@@ -120,7 +117,6 @@ public class AssignmentService {
             "4. Write a program to print a right-angled triangle pattern of stars\n\n" +
             "Submit a single Python file (.py) with all solutions."
         );
-        a4.setTotalPoints(20);
         a4.setDeadline(LocalDateTime.now().minusDays(2).withHour(23).withMinute(59).withSecond(0));
         a4.setCreatedBy("Annajiat Alim Rasel");
         a4.setCreatedAt(LocalDateTime.now().minusDays(10));
@@ -149,7 +145,7 @@ public class AssignmentService {
     @Transactional
     public Assignment createAssignment(String courseCode, String courseName,
                                        String title, String description,
-                                       int totalPoints, LocalDateTime deadline,
+                                       LocalDateTime deadline,
                                        String createdBy,
                                        String attachmentName, String attachmentType,
                                        byte[] attachmentData) {
@@ -158,7 +154,6 @@ public class AssignmentService {
         assignment.setCourseName(courseName != null ? courseName : "General");
         assignment.setTitle(title != null ? title : "Untitled Assignment");
         assignment.setDescription(description != null ? description : "");
-        assignment.setTotalPoints(totalPoints);
         assignment.setDeadline(deadline != null ? deadline : LocalDateTime.now().plusWeeks(1));
         assignment.setCreatedBy(createdBy != null ? createdBy : "Teacher");
         assignment.setCreatedAt(LocalDateTime.now());
@@ -203,9 +198,6 @@ public class AssignmentService {
         submission.setFileName(fileName);
         submission.setFileType(fileType);
         submission.setFileData(fileData);
-        // Clear any previous grade when resubmitting
-        submission.setGrade(null);
-        submission.setFeedback(null);
 
         return submissionRepo.save(submission);
     }
@@ -255,19 +247,5 @@ public class AssignmentService {
      */
     public Optional<Submission> getSubmissionById(Long submissionId) {
         return submissionRepo.findById(submissionId);
-    }
-
-    /**
-     * Teacher grades a student's submission.
-     */
-    @Transactional
-    public Submission gradeSubmission(Long submissionId, int grade, String feedback) {
-        Submission submission = submissionRepo.findById(submissionId)
-            .orElseThrow(() -> new IllegalArgumentException("Submission not found: " + submissionId));
-
-        submission.setGrade(grade);
-        submission.setFeedback(feedback);
-        submission.setStatus("GRADED");
-        return submissionRepo.save(submission);
     }
 }

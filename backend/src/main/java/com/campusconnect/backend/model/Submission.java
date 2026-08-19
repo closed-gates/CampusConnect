@@ -47,12 +47,6 @@ public class Submission {
     @Column(name = "file_data", columnDefinition = "BYTEA")
     private byte[] fileData;
 
-    @Column(name = "grade")
-    private Integer grade;  // nullable — not graded yet
-
-    @Column(name = "feedback", columnDefinition = "TEXT")
-    private String feedback;
-
     // ── Constructors ──────────────────────────────────────────
     public Submission() {}
 
@@ -83,10 +77,4 @@ public class Submission {
 
     public byte[] getFileData()                  { return fileData; }
     public void setFileData(byte[] d)            { this.fileData = d; }
-
-    public Integer getGrade()                    { return grade; }
-    public void setGrade(Integer g)              { this.grade = g; }
-
-    public String getFeedback()                  { return feedback; }
-    public void setFeedback(String f)            { this.feedback = f; }
 }

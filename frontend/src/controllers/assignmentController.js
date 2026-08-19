@@ -62,7 +62,6 @@ export function useAssignmentController() {
   // ── Teacher: submissions list (grading view) ──────────────────
   const [allSubmissions,    setAllSubmissions]    = useState([])
   const [submissionsLoading, setSubmissionsLoading] = useState(false)
-  const [gradeInputs,       setGradeInputs]       = useState({}) // { subId: { grade, feedback } }
 
   // ── Toast notification ────────────────────────────────────────
   const [toast, setToast] = useState(null)
@@ -123,15 +122,6 @@ export function useAssignmentController() {
         try {
           const subs = await assignmentService.getSubmissions(id)
           setAllSubmissions(subs)
-          // Initialize grade inputs
-          const inputs = {}
-          subs.forEach(s => {
-            inputs[s.id] = {
-              grade:    s.grade != null ? s.grade.toString() : '',
-              feedback: s.feedback || '',
-            }
-          })
-          setGradeInputs(inputs)
         } catch (e) {
           console.error('[AssignmentController] Failed to load submissions:', e)
         } finally {
@@ -257,7 +247,6 @@ export function useAssignmentController() {
       formData.append('courseName',  createForm.courseName)
       formData.append('title',       createForm.title)
       formData.append('description', createForm.description || '')
-      formData.append('totalPoints', createForm.totalPoints.toString())
       formData.append('deadline',    createForm.deadline)
       formData.append('createdBy',   createForm.createdBy || 'Teacher')
       if (createFile) {
@@ -279,38 +268,6 @@ export function useAssignmentController() {
       setCreating(false)
     }
   }, [createForm, createFile])
-
-  // ── Teacher: Grade submission handlers ────────────────────────
-  const updateGradeInput = useCallback((subId, field, value) => {
-    setGradeInputs(prev => ({
-      ...prev,
-      [subId]: { ...prev[subId], [field]: value },
-    }))
-  }, [])
-
-  const handleGrade = useCallback(async (subId) => {
-    const input = gradeInputs[subId]
-    if (!input || input.grade === '') {
-      showToast('⚠️ Please enter a grade.', 'error')
-      return
-    }
-
-    try {
-      const result = await assignmentService.gradeSubmission(
-        subId,
-        parseInt(input.grade, 10),
-        input.feedback || ''
-      )
-      // Update local submissions list
-      setAllSubmissions(prev =>
-        prev.map(s => (s.id === subId ? result : s))
-      )
-      showToast('✅ Submission graded successfully!')
-    } catch (err) {
-      console.error('[AssignmentController] Grade failed:', err)
-      showToast(`⚠️ ${err.message}`, 'error')
-    }
-  }, [gradeInputs])
 
   // ── Derived state ─────────────────────────────────────────────
   // Compute status for each assignment in the list (for student)
@@ -364,12 +321,9 @@ export function useAssignmentController() {
     handleCreateFileSelect,
     handleCreateAssignment,
 
-    // Teacher: grading
+    // Teacher: submissions list
     allSubmissions,
     submissionsLoading,
-    gradeInputs,
-    updateGradeInput,
-    handleGrade,
 
     // Toast
     toast,

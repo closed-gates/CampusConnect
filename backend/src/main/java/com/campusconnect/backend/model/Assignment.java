@@ -31,8 +31,7 @@ public class Assignment {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "total_points", nullable = false)
-    private int totalPoints;
+
 
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
@@ -71,8 +70,7 @@ public class Assignment {
     public String getDescription()               { return description; }
     public void setDescription(String d)         { this.description = d; }
 
-    public int getTotalPoints()                  { return totalPoints; }
-    public void setTotalPoints(int p)            { this.totalPoints = p; }
+
 
     public LocalDateTime getDeadline()           { return deadline; }
     public void setDeadline(LocalDateTime d)     { this.deadline = d; }
