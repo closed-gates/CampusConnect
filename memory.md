@@ -228,7 +228,43 @@ None.
 
 ------------------------------------------------------------------------
 
-# Change Log
+## Session 3 (2026-08-19)
+
+### Exam Schedule Dashboard Widget + Routine Builder Integration
+
+**Goal:** Replace static "Continue Learning" table on dashboard with a live exam countdown panel; also wire the Routine Builder to use DB-sourced exam dates.
+
+**Backend (new files only):**
+- `model/ExamSchedule.java` — `@Entity` mapped to `exam_schedules`; fields: courseCode (unique), courseName, midtermDate, finalDate
+- `repository/ExamScheduleRepository.java` — `findByCourseCode`, `findByCourseCodeIn`
+- `dto/ExamScheduleDTO.java` — response DTO with pre-computed `midtermDaysLeft` / `finalDaysLeft`
+- `service/ExamScheduleService.java` — `@PostConstruct` seeds one row per course code by parsing `CourseSection.examDay` (finalDate) and computing midtermDate = finalDate − 56 days; `getExamScheduleForStudent()` joins enrollment + exam_schedules; `getAllExamSchedules()` for Routine Builder
+- `controller/ExamScheduleController.java` — REST: `GET /api/exam-schedule?studentId=`, `/all`, `/{code}`
+
+**Frontend (new files only):**
+- `models/examScheduleModel.js` — constants, `getUrgency()`, `formatExamDate()`, `formatDaysLeft()`
+- `controllers/examScheduleController.js` — `useExamScheduleController()` hook: reads studentId from localStorage, fetches `/api/exam-schedule?studentId=`
+- `views/components/ExamScheduleWidget.jsx` — dashboard panel; per-course cards with Midterm + Final rows and colour-coded countdown badges (green/amber/red/passed); shimmer loading skeletons
+- `views/components/ExamScheduleWidget.css` — dedicated styles, urgency pulse animation, shimmer keyframes
+
+**Minimal wiring changes:**
+- `views/pages/DashboardView.jsx`: removed Continue Learning block, added `<ExamScheduleWidget />`
+- `controllers/dashboardController.js`: removed unused `continueLearning` return value
+- `services/courseService.js`: added `getExamSchedules()` → `GET /api/exam-schedule/all`
+- `controllers/routineController.js`: parallel-fetches sections + exam schedules, merges DB dates into each section via `normaliseSection(s, scheduleMap)`
+- `views/pages/RoutineView.jsx`: `CourseInfoBlock` now shows separate Midterm and Final Exam rows from DB
+
+**Database State (Neon PostgreSQL):**
+- `exam_schedules` table auto-created by Hibernate `ddl-auto=update`
+- Seeded on first startup via `@PostConstruct` (idempotent)
+  - One row per unique course code (CSE110, CSE220, CSE321, CSE370, CSE421, CSE470, CSE481, MAT201, PHY101)
+  - finalDate parsed from `CourseSection.examDay` string
+  - midtermDate = finalDate − 56 days
+
+**No other features changed.** Attendance, Club, Courses, Advising, Auth — all untouched.
+
+------------------------------------------------------------------------
+
 
 ## v0.1
 - Phase 1 complete: Login, Signup, Dashboard UI shell built.

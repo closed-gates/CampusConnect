@@ -46,6 +46,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- ── WebSocket / STOMP (Real-time seat updates) ───────── -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <!-- ── Data / JPA ───────────────────────────────────────── -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -48,7 +48,9 @@ public class CorsConfig {
                 "Authorization",
                 "Content-Type",
                 "Accept",
-                "X-Requested-With"
+                "X-Requested-With",
+                "Upgrade",            // Required for WebSocket protocol upgrade
+                "Connection"
         ));
 
         // Expose the Authorization header to the frontend for JWT
@@ -62,6 +64,7 @@ public class CorsConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/ws/**",  configuration);  // SockJS WebSocket
 
         return source;
     }

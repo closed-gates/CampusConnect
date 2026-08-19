@@ -40,45 +40,28 @@ RoutinePage (View)
             → course_section (Neon PostgreSQL Table)
 ```
 
-### Enrollment
+### Advising & Pre-Registration (Official Enrollment)
 ```
-CoursesPage Enroll button (View)
-  → useCoursesController.handleEnroll() (Controller)
-    → courseService.enroll(studentId, courseId) (Service) [DB persist]
-    → localStorage cache update [offline cache]
-    → channelService.onEnrollment() [chat channel provision]
-      → POST /api/courses/enroll (HTTP)
-        → CourseController.enroll() (Backend Controller)
-          → EnrollmentRepository.save() (Repository)
-            → enrollment (Neon PostgreSQL Table)
-```
-
-### Enrollment Sync (on page load)
-```
-CoursesPage mount (View)
-  → useCoursesController useEffect (Controller)
-    → courseService.getEnrolledIds(studentId) (Service)
-      → GET /api/courses/enrolled?studentId= (HTTP)
-        → CourseController.getEnrolledIds() (Backend Controller)
-          → EnrollmentRepository.findByStudentId() (Repository)
-            → enrollment (Neon PostgreSQL Table)
-    → merges DB IDs into localStorage cache
+AdvisingPage / RoutinePage (View)
+  → useAdvisorController / useRoutineController (Controller)
+    → POST /api/advisors/assign (HTTP)
+      → AdvisorController.assignCourse() (Backend Controller)
+        → AdvisorService.assignCourse() (Service)
+          → StudentProfile & AdvisedCourse (JPA Model)
 ```
 
 ---
 
 ## Files Involved
 
-### Backend (New)
+### Backend (New & Maintained)
 | File | Role |
 |------|------|
-| `model/CourseCatalog.java` | JPA entity → `course_catalog` table |
-| `model/CourseSection.java` | JPA entity → `course_section` table |
-| `model/Enrollment.java` | JPA entity → `enrollment` table |
-| `repository/CourseCatalogRepository.java` | Spring Data JPA repo |
-| `repository/CourseSectionRepository.java` | Spring Data JPA repo |
-| `repository/EnrollmentRepository.java` | Spring Data JPA repo |
-| `controller/CourseController.java` | REST API (4 endpoints) |
+| `model/CourseCatalog.java` | JPA entity → `course_catalog` table (Informational catalog) |
+| `model/CourseSection.java` | JPA entity → `course_section` table (Section times, rooms, seats) |
+| `repository/CourseCatalogRepository.java` | Spring Data JPA repo for catalog |
+| `repository/CourseSectionRepository.java` | Spring Data JPA repo for sections |
+| `controller/CourseController.java` | REST API (`/api/courses/catalog`, `/api/courses/sections`) |
 | `resources/data.sql` | BRACU seed data (45 catalog courses + 70 sections) |
 
 ### Backend (Modified)
@@ -91,7 +74,7 @@ CoursesPage mount (View)
 ### Frontend (New)
 | File | Role |
 |------|------|
-| `services/courseService.js` | API fetch wrapper (4 functions) |
+| `services/courseService.js` | API fetch wrapper for catalog & routine sections |
 
 ### Frontend (Modified)
 | File | Change |
@@ -105,13 +88,10 @@ CoursesPage mount (View)
 ## Database Tables (Neon PostgreSQL)
 
 ### `course_catalog`
-Stores 45 real BRACU undergraduate courses across CSE, EEE, BBA, Math, English departments.
+Stores 45 real BRACU undergraduate courses across CSE, EEE, BBA, Math, English departments for browsing course syllabus, credits, and faculty.
 
 ### `course_section`
-Stores 70+ course sections with BRACU's actual scheduling pattern (SUN-TUE, MON-WED, TUE-THU), BRACU room codes (UB40, TARC, SB buildings), and exam schedules.
-
-### `enrollment`
-Tracks student–course enrollments with a unique constraint (studentId + courseId).
+Stores 70+ course sections with BRACU's actual scheduling pattern (SUN-TUE, MON-WED, TUE-THU), BRACU room codes (UB40, TARC, SB buildings), and exam schedules for Routine Builder & Advising.
 
 ---
 
@@ -119,10 +99,10 @@ Tracks student–course enrollments with a unique constraint (studentId + course
 
 | Method | URL | Description |
 |--------|-----|-------------|
-| GET | `/api/courses/catalog` | All catalog courses |
-| GET | `/api/courses/sections?q=` | Sections (optional search) |
-| POST | `/api/courses/enroll` | Enroll student (body: {studentId, courseId}) |
-| GET | `/api/courses/enrolled?studentId=` | Enrolled course IDs for student |
+| GET | `/api/courses/catalog` | All catalog courses for Courses page |
+| GET | `/api/courses/sections?q=` | Sections (optional search) for Routine Builder |
+| GET | `/api/advisors/students` | Advising student list |
+| POST | `/api/advisors/assign` | Course section advising / registration |
 
 ---
 

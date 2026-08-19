@@ -503,3 +503,868 @@ WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG101-09');
 INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
 SELECT 'ENG101-10','ENG101','10','English & Communication Skills I','Dr. Niaz Zaman','MON-WED 03:30 PM-04:50 PM','SB-501','Dec 24, 2026 2:00 PM-4:00 PM',40,22
 WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG101-10');
+
+-- ============================================================
+-- Additional Course Sections – All Remaining Catalog Courses
+-- Exam dates match ExamScheduleService hardcoded values.
+-- ============================================================
+
+-- CSE111 – Programming Language II (Final: Dec 10, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE111-01','CSE111','01','Programming Language II','Prof. Mosaddek Hossain','SUN-TUE 08:00 AM-09:20 AM','AB1-101','Dec 10, 2026 2:00 PM-4:00 PM',35,32
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE111-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE111-02','CSE111','02','Programming Language II','Prof. Mosaddek Hossain','MON-WED 08:00 AM-09:20 AM','AB1-102','Dec 10, 2026 2:00 PM-4:00 PM',35,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE111-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE111-03','CSE111','03','Programming Language II','Mr. Tanvir Ahmed','TUE-THU 09:30 AM-10:50 AM','AB1-103','Dec 10, 2026 2:00 PM-4:00 PM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE111-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE111-04','CSE111','04','Programming Language II','Mr. Tanvir Ahmed','SUN-TUE 11:00 AM-12:20 PM','AB1-104','Dec 10, 2026 2:00 PM-4:00 PM',35,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE111-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE111-05','CSE111','05','Programming Language II','Ms. Nadia Farhan','MON-WED 12:30 PM-01:50 PM','AB1-201','Dec 10, 2026 2:00 PM-4:00 PM',35,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE111-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE111-06','CSE111','06','Programming Language II','Ms. Nadia Farhan','TUE-THU 02:00 PM-03:20 PM','AB1-202','Dec 10, 2026 2:00 PM-4:00 PM',35,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE111-06');
+
+-- CSE260 – Digital Logic Design (Final: Dec 12, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE260-01','CSE260','01','Digital Logic Design','Dr. A.K.M. Nazrul Islam','SUN-TUE 08:00 AM-09:20 AM','AB1-203','Dec 12, 2026 9:00 AM-11:00 AM',35,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE260-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE260-02','CSE260','02','Digital Logic Design','Dr. A.K.M. Nazrul Islam','MON-WED 09:30 AM-10:50 AM','AB1-204','Dec 12, 2026 9:00 AM-11:00 AM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE260-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE260-03','CSE260','03','Digital Logic Design','Mr. Raisul Islam','TUE-THU 08:00 AM-09:20 AM','AB1-301','Dec 12, 2026 9:00 AM-11:00 AM',35,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE260-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE260-04','CSE260','04','Digital Logic Design','Mr. Raisul Islam','SUN-TUE 11:00 AM-12:20 PM','AB1-302','Dec 12, 2026 9:00 AM-11:00 AM',35,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE260-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE260-05','CSE260','05','Digital Logic Design','Dr. A.K.M. Nazrul Islam','MON-WED 02:00 PM-03:20 PM','AB1-303','Dec 12, 2026 9:00 AM-11:00 AM',35,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE260-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE260-06','CSE260','06','Digital Logic Design','Mr. Raisul Islam','TUE-THU 03:30 PM-04:50 PM','AB1-304','Dec 12, 2026 9:00 AM-11:00 AM',35,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE260-06');
+
+-- CSE330 – Numerical Methods (Final: Dec 15, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE330-01','CSE330','01','Numerical Methods','Dr. Amitabha Chakrabarty','SUN-TUE 08:00 AM-09:20 AM','AB1-401','Dec 15, 2026 9:00 AM-11:00 AM',30,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE330-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE330-02','CSE330','02','Numerical Methods','Dr. Amitabha Chakrabarty','MON-WED 09:30 AM-10:50 AM','AB1-402','Dec 15, 2026 9:00 AM-11:00 AM',30,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE330-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE330-03','CSE330','03','Numerical Methods','Ms. Sumaiya Alam','TUE-THU 09:30 AM-10:50 AM','AB1-403','Dec 15, 2026 9:00 AM-11:00 AM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE330-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE330-04','CSE330','04','Numerical Methods','Ms. Sumaiya Alam','SUN-TUE 12:30 PM-01:50 PM','AB1-404','Dec 15, 2026 9:00 AM-11:00 AM',30,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE330-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE330-05','CSE330','05','Numerical Methods','Dr. Amitabha Chakrabarty','MON-WED 02:00 PM-03:20 PM','AB1-501','Dec 15, 2026 9:00 AM-11:00 AM',30,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE330-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE330-06','CSE330','06','Numerical Methods','Ms. Sumaiya Alam','TUE-THU 03:30 PM-04:50 PM','AB1-502','Dec 15, 2026 9:00 AM-11:00 AM',30,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE330-06');
+
+-- CSE331 – Automata and Computability (Final: Dec 16, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE331-01','CSE331','01','Automata and Computability','Dr. Shazzad Hosain','SUN-TUE 08:00 AM-09:20 AM','AB1-503','Dec 16, 2026 2:00 PM-4:00 PM',30,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE331-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE331-02','CSE331','02','Automata and Computability','Dr. Shazzad Hosain','MON-WED 08:00 AM-09:20 AM','AB1-601','Dec 16, 2026 2:00 PM-4:00 PM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE331-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE331-03','CSE331','03','Automata and Computability','Dr. Rezaul Karim','TUE-THU 09:30 AM-10:50 AM','AB1-602','Dec 16, 2026 2:00 PM-4:00 PM',30,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE331-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE331-04','CSE331','04','Automata and Computability','Dr. Rezaul Karim','SUN-TUE 11:00 AM-12:20 PM','AB1-603','Dec 16, 2026 2:00 PM-4:00 PM',30,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE331-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE331-05','CSE331','05','Automata and Computability','Dr. Shazzad Hosain','MON-WED 02:00 PM-03:20 PM','AB1-604','Dec 16, 2026 2:00 PM-4:00 PM',30,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE331-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE331-06','CSE331','06','Automata and Computability','Dr. Rezaul Karim','TUE-THU 02:00 PM-03:20 PM','AB2-101','Dec 16, 2026 2:00 PM-4:00 PM',30,15
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE331-06');
+
+-- CSE340 – Computer Architecture (Final: Dec 17, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE340-01','CSE340','01','Computer Architecture','Dr. A.K.M. Nazrul Islam','SUN-TUE 09:30 AM-10:50 AM','AB2-102','Dec 17, 2026 9:00 AM-11:00 AM',30,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE340-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE340-02','CSE340','02','Computer Architecture','Dr. A.K.M. Nazrul Islam','MON-WED 09:30 AM-10:50 AM','AB2-103','Dec 17, 2026 9:00 AM-11:00 AM',30,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE340-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE340-03','CSE340','03','Computer Architecture','Ms. Khadija Begum','TUE-THU 08:00 AM-09:20 AM','AB2-104','Dec 17, 2026 9:00 AM-11:00 AM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE340-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE340-04','CSE340','04','Computer Architecture','Ms. Khadija Begum','SUN-TUE 12:30 PM-01:50 PM','AB2-201','Dec 17, 2026 9:00 AM-11:00 AM',30,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE340-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE340-05','CSE340','05','Computer Architecture','Dr. A.K.M. Nazrul Islam','MON-WED 03:30 PM-04:50 PM','AB2-202','Dec 17, 2026 9:00 AM-11:00 AM',30,24
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE340-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE340-06','CSE340','06','Computer Architecture','Ms. Khadija Begum','TUE-THU 03:30 PM-04:50 PM','AB2-203','Dec 17, 2026 9:00 AM-11:00 AM',30,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE340-06');
+
+-- CSE420 – Compiler Design (Final: Dec 19, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE420-01','CSE420','01','Compiler Design','Dr. Shazzad Hosain','SUN-TUE 08:00 AM-09:20 AM','AB2-204','Dec 19, 2026 9:00 AM-11:00 AM',25,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE420-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE420-02','CSE420','02','Compiler Design','Dr. Shazzad Hosain','MON-WED 09:30 AM-10:50 AM','AB2-301','Dec 19, 2026 9:00 AM-11:00 AM',25,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE420-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE420-03','CSE420','03','Compiler Design','Dr. Rezaul Karim','TUE-THU 09:30 AM-10:50 AM','AB2-302','Dec 19, 2026 9:00 AM-11:00 AM',25,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE420-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE420-04','CSE420','04','Compiler Design','Dr. Rezaul Karim','SUN-TUE 11:00 AM-12:20 PM','AB2-303','Dec 19, 2026 9:00 AM-11:00 AM',25,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE420-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE420-05','CSE420','05','Compiler Design','Dr. Shazzad Hosain','MON-WED 02:00 PM-03:20 PM','AB2-304','Dec 19, 2026 9:00 AM-11:00 AM',25,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE420-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE420-06','CSE420','06','Compiler Design','Dr. Rezaul Karim','TUE-THU 02:00 PM-03:20 PM','AB2-401','Dec 19, 2026 9:00 AM-11:00 AM',25,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE420-06');
+
+-- CSE421 – Computer Networks (Final: Dec 19, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE421-01','CSE421','01','Computer Networks','Dr. Md. Faizul Bari','SUN-TUE 08:00 AM-09:20 AM','AB2-402','Dec 19, 2026 2:00 PM-4:00 PM',35,32
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE421-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE421-02','CSE421','02','Computer Networks','Dr. Md. Faizul Bari','MON-WED 08:00 AM-09:20 AM','AB2-403','Dec 19, 2026 2:00 PM-4:00 PM',35,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE421-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE421-03','CSE421','03','Computer Networks','Ms. Tahmina Hossain','TUE-THU 09:30 AM-10:50 AM','AB2-404','Dec 19, 2026 2:00 PM-4:00 PM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE421-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE421-04','CSE421','04','Computer Networks','Ms. Tahmina Hossain','SUN-TUE 11:00 AM-12:20 PM','AB2-501','Dec 19, 2026 2:00 PM-4:00 PM',35,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE421-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE421-05','CSE421','05','Computer Networks','Dr. Md. Faizul Bari','MON-WED 12:30 PM-01:50 PM','AB2-502','Dec 19, 2026 2:00 PM-4:00 PM',35,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE421-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE421-06','CSE421','06','Computer Networks','Ms. Tahmina Hossain','TUE-THU 03:30 PM-04:50 PM','AB2-503','Dec 19, 2026 2:00 PM-4:00 PM',35,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE421-06');
+
+-- CSE422 – Artificial Intelligence (Final: Dec 21, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE422-01','CSE422','01','Artificial Intelligence','Dr. Amitabha Chakrabarty','SUN-TUE 09:30 AM-10:50 AM','AB2-601','Dec 21, 2026 9:00 AM-11:00 AM',30,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE422-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE422-02','CSE422','02','Artificial Intelligence','Dr. Amitabha Chakrabarty','MON-WED 09:30 AM-10:50 AM','AB2-602','Dec 21, 2026 9:00 AM-11:00 AM',30,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE422-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE422-03','CSE422','03','Artificial Intelligence','Ms. Sumaiya Alam','TUE-THU 08:00 AM-09:20 AM','AB2-603','Dec 21, 2026 9:00 AM-11:00 AM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE422-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE422-04','CSE422','04','Artificial Intelligence','Ms. Sumaiya Alam','SUN-TUE 12:30 PM-01:50 PM','AB2-604','Dec 21, 2026 9:00 AM-11:00 AM',30,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE422-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE422-05','CSE422','05','Artificial Intelligence','Dr. Amitabha Chakrabarty','MON-WED 02:00 PM-03:20 PM','AB2-701','Dec 21, 2026 9:00 AM-11:00 AM',30,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE422-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE422-06','CSE422','06','Artificial Intelligence','Ms. Sumaiya Alam','TUE-THU 02:00 PM-03:20 PM','AB2-702','Dec 21, 2026 9:00 AM-11:00 AM',30,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE422-06');
+
+-- CSE400 – Project/Thesis (Final: Dec 22, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE400-01','CSE400','01','Project/Thesis','Dr. Md. Haider Ali','SUN-TUE 08:00 AM-09:20 AM','AB2-703','Dec 22, 2026 9:00 AM-11:00 AM',15,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE400-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE400-02','CSE400','02','Project/Thesis','Dr. Sadia Islam','MON-WED 08:00 AM-09:20 AM','AB2-704','Dec 22, 2026 9:00 AM-11:00 AM',15,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE400-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE400-03','CSE400','03','Project/Thesis','Prof. Mosaddek Hossain','TUE-THU 09:30 AM-10:50 AM','AB2-801','Dec 22, 2026 9:00 AM-11:00 AM',15,15
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE400-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE400-04','CSE400','04','Project/Thesis','Dr. Shazzad Hosain','SUN-TUE 11:00 AM-12:20 PM','AB2-802','Dec 22, 2026 9:00 AM-11:00 AM',15,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE400-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE400-05','CSE400','05','Project/Thesis','Dr. Amitabha Chakrabarty','MON-WED 12:30 PM-01:50 PM','AB2-803','Dec 22, 2026 9:00 AM-11:00 AM',15,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE400-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'CSE400-06','CSE400','06','Project/Thesis','Dr. Md. Faizul Bari','TUE-THU 02:00 PM-03:20 PM','AB2-804','Dec 22, 2026 9:00 AM-11:00 AM',15,6
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'CSE400-06');
+
+-- EEE101 – Electrical Circuits I (Final: Dec 11, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE101-01','EEE101','01','Electrical Circuits I','Dr. Celia Shahnaz','SUN-TUE 08:00 AM-09:20 AM','EEE-101','Dec 11, 2026 9:00 AM-11:00 AM',40,38
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE101-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE101-02','EEE101','02','Electrical Circuits I','Dr. Celia Shahnaz','MON-WED 08:00 AM-09:20 AM','EEE-102','Dec 11, 2026 9:00 AM-11:00 AM',40,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE101-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE101-03','EEE101','03','Electrical Circuits I','Ms. Farzana Nasrin','TUE-THU 09:30 AM-10:50 AM','EEE-103','Dec 11, 2026 9:00 AM-11:00 AM',40,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE101-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE101-04','EEE101','04','Electrical Circuits I','Ms. Farzana Nasrin','SUN-TUE 11:00 AM-12:20 PM','EEE-201','Dec 11, 2026 9:00 AM-11:00 AM',40,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE101-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE101-05','EEE101','05','Electrical Circuits I','Dr. Celia Shahnaz','MON-WED 12:30 PM-01:50 PM','EEE-202','Dec 11, 2026 9:00 AM-11:00 AM',40,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE101-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE101-06','EEE101','06','Electrical Circuits I','Ms. Farzana Nasrin','TUE-THU 02:00 PM-03:20 PM','EEE-203','Dec 11, 2026 9:00 AM-11:00 AM',40,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE101-06');
+
+-- EEE201 – Electrical Circuits II (Final: Dec 11, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE201-01','EEE201','01','Electrical Circuits II','Dr. Celia Shahnaz','SUN-TUE 09:30 AM-10:50 AM','EEE-301','Dec 11, 2026 2:00 PM-4:00 PM',35,32
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE201-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE201-02','EEE201','02','Electrical Circuits II','Dr. Celia Shahnaz','MON-WED 09:30 AM-10:50 AM','EEE-302','Dec 11, 2026 2:00 PM-4:00 PM',35,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE201-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE201-03','EEE201','03','Electrical Circuits II','Ms. Farzana Nasrin','TUE-THU 08:00 AM-09:20 AM','EEE-303','Dec 11, 2026 2:00 PM-4:00 PM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE201-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE201-04','EEE201','04','Electrical Circuits II','Ms. Farzana Nasrin','SUN-TUE 11:00 AM-12:20 PM','EEE-401','Dec 11, 2026 2:00 PM-4:00 PM',35,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE201-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE201-05','EEE201','05','Electrical Circuits II','Dr. Celia Shahnaz','MON-WED 02:00 PM-03:20 PM','EEE-402','Dec 11, 2026 2:00 PM-4:00 PM',35,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE201-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE201-06','EEE201','06','Electrical Circuits II','Ms. Farzana Nasrin','TUE-THU 03:30 PM-04:50 PM','EEE-403','Dec 11, 2026 2:00 PM-4:00 PM',35,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE201-06');
+
+-- EEE203 – Electronic Circuits I (Final: Dec 13, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE203-01','EEE203','01','Electronic Circuits I','Dr. Satya Prasad Majumder','SUN-TUE 08:00 AM-09:20 AM','EEE-501','Dec 13, 2026 9:00 AM-11:00 AM',35,33
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE203-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE203-02','EEE203','02','Electronic Circuits I','Dr. Satya Prasad Majumder','MON-WED 08:00 AM-09:20 AM','EEE-502','Dec 13, 2026 9:00 AM-11:00 AM',35,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE203-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE203-03','EEE203','03','Electronic Circuits I','Ms. Farzana Nasrin','TUE-THU 09:30 AM-10:50 AM','EEE-503','Dec 13, 2026 9:00 AM-11:00 AM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE203-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE203-04','EEE203','04','Electronic Circuits I','Ms. Farzana Nasrin','SUN-TUE 12:30 PM-01:50 PM','EEE-601','Dec 13, 2026 9:00 AM-11:00 AM',35,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE203-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE203-05','EEE203','05','Electronic Circuits I','Dr. Satya Prasad Majumder','MON-WED 02:00 PM-03:20 PM','EEE-602','Dec 13, 2026 9:00 AM-11:00 AM',35,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE203-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE203-06','EEE203','06','Electronic Circuits I','Ms. Farzana Nasrin','TUE-THU 03:30 PM-04:50 PM','EEE-603','Dec 13, 2026 9:00 AM-11:00 AM',35,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE203-06');
+
+-- EEE208 – Signals and Systems (Final: Dec 13, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE208-01','EEE208','01','Signals and Systems','Dr. Md. Fokhrul Islam','SUN-TUE 09:30 AM-10:50 AM','EEE-701','Dec 13, 2026 2:00 PM-4:00 PM',35,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE208-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE208-02','EEE208','02','Signals and Systems','Dr. Md. Fokhrul Islam','MON-WED 09:30 AM-10:50 AM','EEE-702','Dec 13, 2026 2:00 PM-4:00 PM',35,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE208-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE208-03','EEE208','03','Signals and Systems','Ms. Farzana Nasrin','TUE-THU 08:00 AM-09:20 AM','EEE-703','Dec 13, 2026 2:00 PM-4:00 PM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE208-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE208-04','EEE208','04','Signals and Systems','Ms. Farzana Nasrin','SUN-TUE 11:00 AM-12:20 PM','EEE-801','Dec 13, 2026 2:00 PM-4:00 PM',35,24
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE208-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE208-05','EEE208','05','Signals and Systems','Dr. Md. Fokhrul Islam','MON-WED 12:30 PM-01:50 PM','EEE-802','Dec 13, 2026 2:00 PM-4:00 PM',35,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE208-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE208-06','EEE208','06','Signals and Systems','Ms. Farzana Nasrin','TUE-THU 02:00 PM-03:20 PM','EEE-803','Dec 13, 2026 2:00 PM-4:00 PM',35,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE208-06');
+
+-- EEE308 – Electronic Circuits II (Final: Dec 15, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE308-01','EEE308','01','Electronic Circuits II','Dr. Satya Prasad Majumder','SUN-TUE 08:00 AM-09:20 AM','EEE-901','Dec 15, 2026 2:00 PM-4:00 PM',30,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE308-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE308-02','EEE308','02','Electronic Circuits II','Dr. Satya Prasad Majumder','MON-WED 08:00 AM-09:20 AM','EEE-902','Dec 15, 2026 2:00 PM-4:00 PM',30,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE308-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE308-03','EEE308','03','Electronic Circuits II','Ms. Farzana Nasrin','TUE-THU 09:30 AM-10:50 AM','EEB-101','Dec 15, 2026 2:00 PM-4:00 PM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE308-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE308-04','EEE308','04','Electronic Circuits II','Ms. Farzana Nasrin','SUN-TUE 12:30 PM-01:50 PM','EEB-102','Dec 15, 2026 2:00 PM-4:00 PM',30,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE308-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE308-05','EEE308','05','Electronic Circuits II','Dr. Satya Prasad Majumder','MON-WED 02:00 PM-03:20 PM','EEB-103','Dec 15, 2026 2:00 PM-4:00 PM',30,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE308-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE308-06','EEE308','06','Electronic Circuits II','Ms. Farzana Nasrin','TUE-THU 03:30 PM-04:50 PM','EEB-104','Dec 15, 2026 2:00 PM-4:00 PM',30,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE308-06');
+
+-- EEE315 – Microprocessors & Interfacing (Final: Dec 17, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE315-01','EEE315','01','Microprocessors & Interfacing','Dr. Md. Fokhrul Islam','SUN-TUE 08:00 AM-09:20 AM','EEB-201','Dec 17, 2026 2:00 PM-4:00 PM',30,26
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE315-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE315-02','EEE315','02','Microprocessors & Interfacing','Dr. Md. Fokhrul Islam','MON-WED 09:30 AM-10:50 AM','EEB-202','Dec 17, 2026 2:00 PM-4:00 PM',30,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE315-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE315-03','EEE315','03','Microprocessors & Interfacing','Ms. Farzana Nasrin','TUE-THU 08:00 AM-09:20 AM','EEB-203','Dec 17, 2026 2:00 PM-4:00 PM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE315-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE315-04','EEE315','04','Microprocessors & Interfacing','Ms. Farzana Nasrin','SUN-TUE 11:00 AM-12:20 PM','EEB-204','Dec 17, 2026 2:00 PM-4:00 PM',30,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE315-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE315-05','EEE315','05','Microprocessors & Interfacing','Dr. Md. Fokhrul Islam','MON-WED 02:00 PM-03:20 PM','EEB-301','Dec 17, 2026 2:00 PM-4:00 PM',30,24
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE315-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE315-06','EEE315','06','Microprocessors & Interfacing','Ms. Farzana Nasrin','TUE-THU 02:00 PM-03:20 PM','EEB-302','Dec 17, 2026 2:00 PM-4:00 PM',30,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE315-06');
+
+-- EEE321 – Digital Signal Processing (Final: Dec 20, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE321-01','EEE321','01','Digital Signal Processing','Dr. Celia Shahnaz','SUN-TUE 09:30 AM-10:50 AM','EEB-303','Dec 20, 2026 9:00 AM-11:00 AM',25,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE321-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE321-02','EEE321','02','Digital Signal Processing','Dr. Celia Shahnaz','MON-WED 08:00 AM-09:20 AM','EEB-304','Dec 20, 2026 9:00 AM-11:00 AM',25,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE321-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE321-03','EEE321','03','Digital Signal Processing','Dr. Md. Fokhrul Islam','TUE-THU 08:00 AM-09:20 AM','EEB-401','Dec 20, 2026 9:00 AM-11:00 AM',25,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE321-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE321-04','EEE321','04','Digital Signal Processing','Dr. Md. Fokhrul Islam','SUN-TUE 12:30 PM-01:50 PM','EEB-402','Dec 20, 2026 9:00 AM-11:00 AM',25,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE321-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE321-05','EEE321','05','Digital Signal Processing','Dr. Celia Shahnaz','MON-WED 02:00 PM-03:20 PM','EEB-403','Dec 20, 2026 9:00 AM-11:00 AM',25,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE321-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE321-06','EEE321','06','Digital Signal Processing','Dr. Md. Fokhrul Islam','TUE-THU 03:30 PM-04:50 PM','EEB-404','Dec 20, 2026 9:00 AM-11:00 AM',25,6
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE321-06');
+
+-- EEE401 – Power System Analysis (Final: Dec 21, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE401-01','EEE401','01','Power System Analysis','Dr. Mohammad Ali','SUN-TUE 08:00 AM-09:20 AM','EEB-501','Dec 21, 2026 2:00 PM-4:00 PM',25,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE401-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE401-02','EEE401','02','Power System Analysis','Dr. Mohammad Ali','MON-WED 09:30 AM-10:50 AM','EEB-502','Dec 21, 2026 2:00 PM-4:00 PM',25,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE401-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE401-03','EEE401','03','Power System Analysis','Dr. Satya Prasad Majumder','TUE-THU 09:30 AM-10:50 AM','EEB-503','Dec 21, 2026 2:00 PM-4:00 PM',25,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE401-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE401-04','EEE401','04','Power System Analysis','Dr. Satya Prasad Majumder','SUN-TUE 11:00 AM-12:20 PM','EEB-601','Dec 21, 2026 2:00 PM-4:00 PM',25,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE401-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE401-05','EEE401','05','Power System Analysis','Dr. Mohammad Ali','MON-WED 12:30 PM-01:50 PM','EEB-602','Dec 21, 2026 2:00 PM-4:00 PM',25,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE401-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE401-06','EEE401','06','Power System Analysis','Dr. Satya Prasad Majumder','TUE-THU 02:00 PM-03:20 PM','EEB-603','Dec 21, 2026 2:00 PM-4:00 PM',25,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE401-06');
+
+-- EEE411 – Renewable Energy Systems (Final: Dec 22, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE411-01','EEE411','01','Renewable Energy Systems','Dr. Saifur Rahman','SUN-TUE 09:30 AM-10:50 AM','EEB-701','Dec 22, 2026 2:00 PM-4:00 PM',25,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE411-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE411-02','EEE411','02','Renewable Energy Systems','Dr. Saifur Rahman','MON-WED 08:00 AM-09:20 AM','EEB-702','Dec 22, 2026 2:00 PM-4:00 PM',25,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE411-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE411-03','EEE411','03','Renewable Energy Systems','Dr. Mohammad Ali','TUE-THU 08:00 AM-09:20 AM','EEB-703','Dec 22, 2026 2:00 PM-4:00 PM',25,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE411-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE411-04','EEE411','04','Renewable Energy Systems','Dr. Mohammad Ali','SUN-TUE 12:30 PM-01:50 PM','EEB-801','Dec 22, 2026 2:00 PM-4:00 PM',25,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE411-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE411-05','EEE411','05','Renewable Energy Systems','Dr. Saifur Rahman','MON-WED 02:00 PM-03:20 PM','EEB-802','Dec 22, 2026 2:00 PM-4:00 PM',25,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE411-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE411-06','EEE411','06','Renewable Energy Systems','Dr. Mohammad Ali','TUE-THU 03:30 PM-04:50 PM','EEB-803','Dec 22, 2026 2:00 PM-4:00 PM',25,6
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE411-06');
+
+-- EEE450 – Communication Systems (Final: Dec 23, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE450-01','EEE450','01','Communication Systems','Dr. Md. Fokhrul Islam','SUN-TUE 08:00 AM-09:20 AM','EEB-901','Dec 23, 2026 9:00 AM-11:00 AM',30,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE450-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE450-02','EEE450','02','Communication Systems','Dr. Md. Fokhrul Islam','MON-WED 09:30 AM-10:50 AM','EEB-902','Dec 23, 2026 9:00 AM-11:00 AM',30,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE450-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE450-03','EEE450','03','Communication Systems','Dr. Celia Shahnaz','TUE-THU 09:30 AM-10:50 AM','EEB-903','Dec 23, 2026 9:00 AM-11:00 AM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE450-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE450-04','EEE450','04','Communication Systems','Dr. Celia Shahnaz','SUN-TUE 11:00 AM-12:20 PM','EEC-101','Dec 23, 2026 9:00 AM-11:00 AM',30,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE450-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE450-05','EEE450','05','Communication Systems','Dr. Md. Fokhrul Islam','MON-WED 02:00 PM-03:20 PM','EEC-102','Dec 23, 2026 9:00 AM-11:00 AM',30,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE450-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'EEE450-06','EEE450','06','Communication Systems','Dr. Celia Shahnaz','TUE-THU 02:00 PM-03:20 PM','EEC-103','Dec 23, 2026 9:00 AM-11:00 AM',30,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'EEE450-06');
+
+-- BUS101 – Introduction to Business (Final: Dec 10, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'BUS101-01','BUS101','01','Introduction to Business','Dr. Syed Akhter Hossain','SUN-TUE 08:00 AM-09:20 AM','BBA-101','Dec 10, 2026 9:00 AM-11:00 AM',50,48
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'BUS101-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'BUS101-02','BUS101','02','Introduction to Business','Dr. Syed Akhter Hossain','MON-WED 08:00 AM-09:20 AM','BBA-102','Dec 10, 2026 9:00 AM-11:00 AM',50,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'BUS101-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'BUS101-03','BUS101','03','Introduction to Business','Ms. Tasneem Ali','TUE-THU 09:30 AM-10:50 AM','BBA-103','Dec 10, 2026 9:00 AM-11:00 AM',50,50
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'BUS101-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'BUS101-04','BUS101','04','Introduction to Business','Ms. Tasneem Ali','SUN-TUE 11:00 AM-12:20 PM','BBA-201','Dec 10, 2026 9:00 AM-11:00 AM',50,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'BUS101-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'BUS101-05','BUS101','05','Introduction to Business','Dr. Syed Akhter Hossain','MON-WED 12:30 PM-01:50 PM','BBA-202','Dec 10, 2026 9:00 AM-11:00 AM',50,42
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'BUS101-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'BUS101-06','BUS101','06','Introduction to Business','Ms. Tasneem Ali','TUE-THU 02:00 PM-03:20 PM','BBA-203','Dec 10, 2026 9:00 AM-11:00 AM',50,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'BUS101-06');
+
+-- ECO101 – Microeconomics (Final: Dec 10, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO101-01','ECO101','01','Microeconomics','Dr. Nazneen Ahmed','SUN-TUE 09:30 AM-10:50 AM','BBA-301','Dec 10, 2026 2:00 PM-4:00 PM',45,42
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO101-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO101-02','ECO101','02','Microeconomics','Dr. Nazneen Ahmed','MON-WED 09:30 AM-10:50 AM','BBA-302','Dec 10, 2026 2:00 PM-4:00 PM',45,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO101-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO101-03','ECO101','03','Microeconomics','Ms. Tasneem Ali','TUE-THU 08:00 AM-09:20 AM','BBA-303','Dec 10, 2026 2:00 PM-4:00 PM',45,45
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO101-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO101-04','ECO101','04','Microeconomics','Ms. Tasneem Ali','SUN-TUE 12:30 PM-01:50 PM','BBA-401','Dec 10, 2026 2:00 PM-4:00 PM',45,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO101-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO101-05','ECO101','05','Microeconomics','Dr. Nazneen Ahmed','MON-WED 02:00 PM-03:20 PM','BBA-402','Dec 10, 2026 2:00 PM-4:00 PM',45,38
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO101-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO101-06','ECO101','06','Microeconomics','Ms. Tasneem Ali','TUE-THU 03:30 PM-04:50 PM','BBA-403','Dec 10, 2026 2:00 PM-4:00 PM',45,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO101-06');
+
+-- ECO102 – Macroeconomics (Final: Dec 12, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO102-01','ECO102','01','Macroeconomics','Dr. Nazneen Ahmed','SUN-TUE 08:00 AM-09:20 AM','BBA-501','Dec 12, 2026 9:00 AM-11:00 AM',45,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO102-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO102-02','ECO102','02','Macroeconomics','Dr. Nazneen Ahmed','MON-WED 08:00 AM-09:20 AM','BBA-502','Dec 12, 2026 9:00 AM-11:00 AM',45,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO102-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO102-03','ECO102','03','Macroeconomics','Ms. Tasneem Ali','TUE-THU 09:30 AM-10:50 AM','BBA-503','Dec 12, 2026 9:00 AM-11:00 AM',45,45
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO102-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO102-04','ECO102','04','Macroeconomics','Ms. Tasneem Ali','SUN-TUE 11:00 AM-12:20 PM','BBA-601','Dec 12, 2026 9:00 AM-11:00 AM',45,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO102-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO102-05','ECO102','05','Macroeconomics','Dr. Nazneen Ahmed','MON-WED 12:30 PM-01:50 PM','BBA-602','Dec 12, 2026 9:00 AM-11:00 AM',45,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO102-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ECO102-06','ECO102','06','Macroeconomics','Ms. Tasneem Ali','TUE-THU 02:00 PM-03:20 PM','BBA-603','Dec 12, 2026 9:00 AM-11:00 AM',45,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ECO102-06');
+
+-- ACC101 – Financial Accounting (Final: Dec 12, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ACC101-01','ACC101','01','Financial Accounting','Dr. Mahbub Ahmed','SUN-TUE 09:30 AM-10:50 AM','BBA-701','Dec 12, 2026 2:00 PM-4:00 PM',40,38
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ACC101-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ACC101-02','ACC101','02','Financial Accounting','Dr. Mahbub Ahmed','MON-WED 09:30 AM-10:50 AM','BBA-702','Dec 12, 2026 2:00 PM-4:00 PM',40,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ACC101-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ACC101-03','ACC101','03','Financial Accounting','Ms. Tasneem Ali','TUE-THU 08:00 AM-09:20 AM','BBA-703','Dec 12, 2026 2:00 PM-4:00 PM',40,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ACC101-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ACC101-04','ACC101','04','Financial Accounting','Ms. Tasneem Ali','SUN-TUE 12:30 PM-01:50 PM','BBA-801','Dec 12, 2026 2:00 PM-4:00 PM',40,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ACC101-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ACC101-05','ACC101','05','Financial Accounting','Dr. Mahbub Ahmed','MON-WED 02:00 PM-03:20 PM','BBA-802','Dec 12, 2026 2:00 PM-4:00 PM',40,32
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ACC101-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ACC101-06','ACC101','06','Financial Accounting','Ms. Tasneem Ali','TUE-THU 03:30 PM-04:50 PM','BBA-803','Dec 12, 2026 2:00 PM-4:00 PM',40,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ACC101-06');
+
+-- MGT201 – Principles of Management (Final: Dec 14, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT201-01','MGT201','01','Principles of Management','Dr. Syed Akhter Hossain','SUN-TUE 08:00 AM-09:20 AM','BBA-901','Dec 14, 2026 2:00 PM-4:00 PM',40,36
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT201-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT201-02','MGT201','02','Principles of Management','Dr. Syed Akhter Hossain','MON-WED 08:00 AM-09:20 AM','BBA-902','Dec 14, 2026 2:00 PM-4:00 PM',40,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT201-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT201-03','MGT201','03','Principles of Management','Ms. Tasneem Ali','TUE-THU 09:30 AM-10:50 AM','BBB-101','Dec 14, 2026 2:00 PM-4:00 PM',40,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT201-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT201-04','MGT201','04','Principles of Management','Ms. Tasneem Ali','SUN-TUE 11:00 AM-12:20 PM','BBB-102','Dec 14, 2026 2:00 PM-4:00 PM',40,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT201-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT201-05','MGT201','05','Principles of Management','Dr. Syed Akhter Hossain','MON-WED 12:30 PM-01:50 PM','BBB-103','Dec 14, 2026 2:00 PM-4:00 PM',40,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT201-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT201-06','MGT201','06','Principles of Management','Ms. Tasneem Ali','TUE-THU 02:00 PM-03:20 PM','BBB-104','Dec 14, 2026 2:00 PM-4:00 PM',40,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT201-06');
+
+-- MKT301 – Marketing Management (Final: Dec 16, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT301-01','MKT301','01','Marketing Management','Dr. Mujib Rahman','SUN-TUE 09:30 AM-10:50 AM','BBB-201','Dec 16, 2026 9:00 AM-11:00 AM',35,32
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT301-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT301-02','MKT301','02','Marketing Management','Dr. Mujib Rahman','MON-WED 09:30 AM-10:50 AM','BBB-202','Dec 16, 2026 9:00 AM-11:00 AM',35,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT301-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT301-03','MKT301','03','Marketing Management','Ms. Tasneem Ali','TUE-THU 08:00 AM-09:20 AM','BBB-203','Dec 16, 2026 9:00 AM-11:00 AM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT301-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT301-04','MKT301','04','Marketing Management','Ms. Tasneem Ali','SUN-TUE 12:30 PM-01:50 PM','BBB-301','Dec 16, 2026 9:00 AM-11:00 AM',35,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT301-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT301-05','MKT301','05','Marketing Management','Dr. Mujib Rahman','MON-WED 02:00 PM-03:20 PM','BBB-302','Dec 16, 2026 9:00 AM-11:00 AM',35,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT301-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT301-06','MKT301','06','Marketing Management','Ms. Tasneem Ali','TUE-THU 03:30 PM-04:50 PM','BBB-303','Dec 16, 2026 9:00 AM-11:00 AM',35,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT301-06');
+
+-- FIN301 – Financial Management (Final: Dec 16, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN301-01','FIN301','01','Financial Management','Dr. Mahbub Ahmed','SUN-TUE 08:00 AM-09:20 AM','BBB-401','Dec 16, 2026 2:00 PM-4:00 PM',35,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN301-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN301-02','FIN301','02','Financial Management','Dr. Mahbub Ahmed','MON-WED 08:00 AM-09:20 AM','BBB-402','Dec 16, 2026 2:00 PM-4:00 PM',35,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN301-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN301-03','FIN301','03','Financial Management','Ms. Tasneem Ali','TUE-THU 09:30 AM-10:50 AM','BBB-403','Dec 16, 2026 2:00 PM-4:00 PM',35,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN301-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN301-04','FIN301','04','Financial Management','Ms. Tasneem Ali','SUN-TUE 12:30 PM-01:50 PM','BBB-501','Dec 16, 2026 2:00 PM-4:00 PM',35,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN301-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN301-05','FIN301','05','Financial Management','Dr. Mahbub Ahmed','MON-WED 12:30 PM-01:50 PM','BBB-502','Dec 16, 2026 2:00 PM-4:00 PM',35,26
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN301-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN301-06','FIN301','06','Financial Management','Ms. Tasneem Ali','TUE-THU 02:00 PM-03:20 PM','BBB-503','Dec 16, 2026 2:00 PM-4:00 PM',35,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN301-06');
+
+-- MGT401 – Strategic Management (Final: Dec 18, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT401-01','MGT401','01','Strategic Management','Dr. Syed Akhter Hossain','SUN-TUE 09:30 AM-10:50 AM','BBB-601','Dec 18, 2026 2:00 PM-4:00 PM',30,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT401-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT401-02','MGT401','02','Strategic Management','Dr. Syed Akhter Hossain','MON-WED 09:30 AM-10:50 AM','BBB-602','Dec 18, 2026 2:00 PM-4:00 PM',30,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT401-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT401-03','MGT401','03','Strategic Management','Ms. Tasneem Ali','TUE-THU 08:00 AM-09:20 AM','BBB-603','Dec 18, 2026 2:00 PM-4:00 PM',30,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT401-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT401-04','MGT401','04','Strategic Management','Ms. Tasneem Ali','SUN-TUE 11:00 AM-12:20 PM','BBB-701','Dec 18, 2026 2:00 PM-4:00 PM',30,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT401-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT401-05','MGT401','05','Strategic Management','Dr. Syed Akhter Hossain','MON-WED 02:00 PM-03:20 PM','BBB-702','Dec 18, 2026 2:00 PM-4:00 PM',30,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT401-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MGT401-06','MGT401','06','Strategic Management','Ms. Tasneem Ali','TUE-THU 02:00 PM-03:20 PM','BBB-703','Dec 18, 2026 2:00 PM-4:00 PM',30,8
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MGT401-06');
+
+-- FIN401 – Investment Analysis (Final: Dec 19, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN401-01','FIN401','01','Investment Analysis','Dr. Mahbub Ahmed','SUN-TUE 08:00 AM-09:20 AM','BBB-801','Dec 19, 2026 9:00 AM-11:00 AM',25,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN401-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN401-02','FIN401','02','Investment Analysis','Dr. Mahbub Ahmed','MON-WED 08:00 AM-09:20 AM','BBB-802','Dec 19, 2026 9:00 AM-11:00 AM',25,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN401-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN401-03','FIN401','03','Investment Analysis','Ms. Tasneem Ali','TUE-THU 09:30 AM-10:50 AM','BBB-803','Dec 19, 2026 9:00 AM-11:00 AM',25,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN401-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN401-04','FIN401','04','Investment Analysis','Ms. Tasneem Ali','SUN-TUE 12:30 PM-01:50 PM','BBB-901','Dec 19, 2026 9:00 AM-11:00 AM',25,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN401-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN401-05','FIN401','05','Investment Analysis','Dr. Mahbub Ahmed','MON-WED 12:30 PM-01:50 PM','BBB-902','Dec 19, 2026 9:00 AM-11:00 AM',25,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN401-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'FIN401-06','FIN401','06','Investment Analysis','Ms. Tasneem Ali','TUE-THU 02:00 PM-03:20 PM','BBB-903','Dec 19, 2026 9:00 AM-11:00 AM',25,6
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'FIN401-06');
+
+-- MKT402 – Digital Marketing & E-Commerce (Final: Dec 20, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT402-01','MKT402','01','Digital Marketing & E-Commerce','Dr. Mujib Rahman','SUN-TUE 09:30 AM-10:50 AM','BBC-101','Dec 20, 2026 9:00 AM-11:00 AM',25,24
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT402-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT402-02','MKT402','02','Digital Marketing & E-Commerce','Dr. Mujib Rahman','MON-WED 09:30 AM-10:50 AM','BBC-102','Dec 20, 2026 9:00 AM-11:00 AM',25,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT402-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT402-03','MKT402','03','Digital Marketing & E-Commerce','Ms. Tasneem Ali','TUE-THU 08:00 AM-09:20 AM','BBC-103','Dec 20, 2026 9:00 AM-11:00 AM',25,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT402-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT402-04','MKT402','04','Digital Marketing & E-Commerce','Ms. Tasneem Ali','SUN-TUE 11:00 AM-12:20 PM','BBC-201','Dec 20, 2026 9:00 AM-11:00 AM',25,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT402-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT402-05','MKT402','05','Digital Marketing & E-Commerce','Dr. Mujib Rahman','MON-WED 02:00 PM-03:20 PM','BBC-202','Dec 20, 2026 9:00 AM-11:00 AM',25,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT402-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MKT402-06','MKT402','06','Digital Marketing & E-Commerce','Ms. Tasneem Ali','TUE-THU 03:30 PM-04:50 PM','BBC-203','Dec 20, 2026 9:00 AM-11:00 AM',25,6
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MKT402-06');
+
+-- ENG102 – English & Communication Skills II (Final: Dec 24, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ENG102-01','ENG102','01','English & Communication Skills II','Dr. Niaz Zaman','SUN-TUE 08:00 AM-09:20 AM','GED-101','Dec 24, 2026 9:00 AM-11:00 AM',40,38
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG102-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ENG102-02','ENG102','02','English & Communication Skills II','Dr. Niaz Zaman','MON-WED 08:00 AM-09:20 AM','GED-102','Dec 24, 2026 9:00 AM-11:00 AM',40,28
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG102-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ENG102-03','ENG102','03','Ms. Farhana Akter','Ms. Farhana Akter','TUE-THU 09:30 AM-10:50 AM','GED-103','Dec 24, 2026 9:00 AM-11:00 AM',40,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG102-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ENG102-04','ENG102','04','English & Communication Skills II','Ms. Farhana Akter','SUN-TUE 11:00 AM-12:20 PM','GED-201','Dec 24, 2026 9:00 AM-11:00 AM',40,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG102-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ENG102-05','ENG102','05','English & Communication Skills II','Dr. Niaz Zaman','MON-WED 12:30 PM-01:50 PM','GED-202','Dec 24, 2026 9:00 AM-11:00 AM',40,35
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG102-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'ENG102-06','ENG102','06','English & Communication Skills II','Ms. Farhana Akter','TUE-THU 02:00 PM-03:20 PM','GED-203','Dec 24, 2026 9:00 AM-11:00 AM',40,15
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'ENG102-06');
+
+-- MAT120 – Mathematics II (Final: Dec 22, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT120-01','MAT120','01','Mathematics II','Dr. M. A. Rashid','SUN-TUE 08:00 AM-09:20 AM','GED-301','Dec 22, 2026 2:00 PM-4:00 PM',45,42
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT120-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT120-02','MAT120','02','Mathematics II','Dr. M. A. Rashid','MON-WED 08:00 AM-09:20 AM','GED-302','Dec 22, 2026 2:00 PM-4:00 PM',45,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT120-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT120-03','MAT120','03','Mathematics II','Ms. Sharmin Sultana','TUE-THU 09:30 AM-10:50 AM','GED-303','Dec 22, 2026 2:00 PM-4:00 PM',45,45
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT120-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT120-04','MAT120','04','Mathematics II','Ms. Sharmin Sultana','SUN-TUE 11:00 AM-12:20 PM','GED-401','Dec 22, 2026 2:00 PM-4:00 PM',45,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT120-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT120-05','MAT120','05','Mathematics II','Dr. M. A. Rashid','MON-WED 02:00 PM-03:20 PM','GED-402','Dec 22, 2026 2:00 PM-4:00 PM',45,36
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT120-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT120-06','MAT120','06','Mathematics II','Ms. Sharmin Sultana','TUE-THU 03:30 PM-04:50 PM','GED-403','Dec 22, 2026 2:00 PM-4:00 PM',45,14
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT120-06');
+
+-- MAT215 – Mathematics III / Linear Algebra (Final: Dec 23, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT215-01','MAT215','01','Mathematics III (Linear Algebra)','Dr. Satya Ranjan Chakrabarty','SUN-TUE 09:30 AM-10:50 AM','GED-501','Dec 23, 2026 9:00 AM-11:00 AM',40,36
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT215-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT215-02','MAT215','02','Mathematics III (Linear Algebra)','Dr. Satya Ranjan Chakrabarty','MON-WED 09:30 AM-10:50 AM','GED-502','Dec 23, 2026 9:00 AM-11:00 AM',40,24
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT215-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT215-03','MAT215','03','Mathematics III (Linear Algebra)','Ms. Sharmin Sultana','TUE-THU 08:00 AM-09:20 AM','GED-503','Dec 23, 2026 9:00 AM-11:00 AM',40,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT215-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT215-04','MAT215','04','Mathematics III (Linear Algebra)','Ms. Sharmin Sultana','SUN-TUE 12:30 PM-01:50 PM','GED-601','Dec 23, 2026 9:00 AM-11:00 AM',40,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT215-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT215-05','MAT215','05','Mathematics III (Linear Algebra)','Dr. Satya Ranjan Chakrabarty','MON-WED 02:00 PM-03:20 PM','GED-602','Dec 23, 2026 9:00 AM-11:00 AM',40,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT215-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT215-06','MAT215','06','Mathematics III (Linear Algebra)','Ms. Sharmin Sultana','TUE-THU 03:30 PM-04:50 PM','GED-603','Dec 23, 2026 9:00 AM-11:00 AM',40,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT215-06');
+
+-- MAT216 – Mathematics IV / Statistics (Final: Dec 23, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT216-01','MAT216','01','Mathematics IV (Statistics)','Dr. Satya Ranjan Chakrabarty','SUN-TUE 08:00 AM-09:20 AM','GED-701','Dec 23, 2026 2:00 PM-4:00 PM',40,38
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT216-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT216-02','MAT216','02','Mathematics IV (Statistics)','Dr. Satya Ranjan Chakrabarty','MON-WED 08:00 AM-09:20 AM','GED-702','Dec 23, 2026 2:00 PM-4:00 PM',40,25
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT216-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT216-03','MAT216','03','Mathematics IV (Statistics)','Ms. Sharmin Sultana','TUE-THU 09:30 AM-10:50 AM','GED-703','Dec 23, 2026 2:00 PM-4:00 PM',40,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT216-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT216-04','MAT216','04','Mathematics IV (Statistics)','Ms. Sharmin Sultana','SUN-TUE 11:00 AM-12:20 PM','GED-801','Dec 23, 2026 2:00 PM-4:00 PM',40,20
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT216-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT216-05','MAT216','05','Mathematics IV (Statistics)','Dr. Satya Ranjan Chakrabarty','MON-WED 12:30 PM-01:50 PM','GED-802','Dec 23, 2026 2:00 PM-4:00 PM',40,32
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT216-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'MAT216-06','MAT216','06','Mathematics IV (Statistics)','Ms. Sharmin Sultana','TUE-THU 02:00 PM-03:20 PM','GED-803','Dec 23, 2026 2:00 PM-4:00 PM',40,12
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'MAT216-06');
+
+-- PHY111 – Physics I / Mechanics (Final: Dec 11, 9:00 AM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY111-01','PHY111','01','Physics I (Mechanics)','Dr. Zahirul Islam','SUN-TUE 08:00 AM-09:20 AM','GED-901','Dec 11, 2026 9:00 AM-11:00 AM',45,42
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY111-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY111-02','PHY111','02','Physics I (Mechanics)','Dr. Zahirul Islam','MON-WED 08:00 AM-09:20 AM','GED-902','Dec 11, 2026 9:00 AM-11:00 AM',45,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY111-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY111-03','PHY111','03','Physics I (Mechanics)','Mr. Iftekhar Uddin','TUE-THU 09:30 AM-10:50 AM','GEE-101','Dec 11, 2026 9:00 AM-11:00 AM',45,45
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY111-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY111-04','PHY111','04','Physics I (Mechanics)','Mr. Iftekhar Uddin','SUN-TUE 11:00 AM-12:20 PM','GEE-102','Dec 11, 2026 9:00 AM-11:00 AM',45,22
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY111-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY111-05','PHY111','05','Physics I (Mechanics)','Dr. Zahirul Islam','MON-WED 12:30 PM-01:50 PM','GEE-103','Dec 11, 2026 9:00 AM-11:00 AM',45,38
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY111-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY111-06','PHY111','06','Physics I (Mechanics)','Mr. Iftekhar Uddin','TUE-THU 02:00 PM-03:20 PM','GEE-201','Dec 11, 2026 9:00 AM-11:00 AM',45,16
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY111-06');
+
+-- PHY112 – Physics II / Electromagnetism (Final: Dec 11, 2:00 PM)
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY112-01','PHY112','01','Physics II (Electromagnetism)','Dr. Zahirul Islam','SUN-TUE 09:30 AM-10:50 AM','GEE-202','Dec 11, 2026 2:00 PM-4:00 PM',40,36
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY112-01');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY112-02','PHY112','02','Physics II (Electromagnetism)','Dr. Zahirul Islam','MON-WED 09:30 AM-10:50 AM','GEE-203','Dec 11, 2026 2:00 PM-4:00 PM',40,24
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY112-02');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY112-03','PHY112','03','Physics II (Electromagnetism)','Mr. Iftekhar Uddin','TUE-THU 08:00 AM-09:20 AM','GEE-301','Dec 11, 2026 2:00 PM-4:00 PM',40,40
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY112-03');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY112-04','PHY112','04','Physics II (Electromagnetism)','Mr. Iftekhar Uddin','SUN-TUE 12:30 PM-01:50 PM','GEE-302','Dec 11, 2026 2:00 PM-4:00 PM',40,18
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY112-04');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY112-05','PHY112','05','Physics II (Electromagnetism)','Dr. Zahirul Islam','MON-WED 02:00 PM-03:20 PM','GEE-303','Dec 11, 2026 2:00 PM-4:00 PM',40,30
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY112-05');
+INSERT INTO course_section (id, code, section, title, faculty, time, room, exam_day, total_seats, booked)
+SELECT 'PHY112-06','PHY112','06','Physics II (Electromagnetism)','Mr. Iftekhar Uddin','TUE-THU 03:30 PM-04:50 PM','GEE-401','Dec 11, 2026 2:00 PM-4:00 PM',40,10
+WHERE NOT EXISTS (SELECT 1 FROM course_section WHERE id = 'PHY112-06');
+
+
+-- ============================================================
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Sarah Ahmed','Associate Professor & Academic Advisor','cse','Computer Science & Engineering','9:00 AM - 3:00 PM','s.ahmed@campusconnect.edu','Dr. Ahmed has 10+ years of experience advising CSE students on course selection, research opportunities, and career pathways in software and AI.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 's.ahmed@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Prof. Tariq Hassan','Senior Lecturer & Academic Advisor','cse','Computer Science & Engineering','10:00 AM - 4:00 PM','t.hassan@campusconnect.edu','Prof. Hassan specializes in guiding students through advanced CSE coursework and graduate admissions.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 't.hassan@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Ayan Das','Associate Professor & Academic Advisor','eee','Electrical & Electronic Engineering','11:00 AM - 5:00 PM','a.das@campusconnect.edu','Dr. Das advises EEE students on lab-intensive courses and industry placements.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'a.das@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Meena Akter','Professor & Academic Advisor','bba','Business Administration','10:00 AM - 2:00 PM','m.akter@campusconnect.edu','Dr. Akter guides BBA students in selecting electives aligned with their career goals.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'm.akter@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Prof. Dina Alam','Head of Academic Affairs','arch','Architecture & Planning','9:00 AM - 1:00 PM','d.alam@campusconnect.edu','Prof. Alam helps Architecture students balance studio workloads and build portfolios.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'd.alam@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Karim Hossain','Academic Advisor & Research Mentor','math','Mathematics & Physics','8:00 AM - 12:00 PM','k.hossain@campusconnect.edu','Dr. Hossain advises Math & Physics students on research projects and graduate admissions.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'k.hossain@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Prof. Jabir Khan','Academic Advisor','eco','Economics','1:00 PM - 5:00 PM','j.khan@campusconnect.edu','Prof. Khan guides Economics students in research and career preparation.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 'j.khan@campusconnect.edu');
+
+INSERT INTO advisors (name, title, department, department_label, available_hours, email, bio)
+SELECT 'Dr. Sonia Rahman','Academic Advisor & Career Counsellor','eng','English & Literature','11:00 AM - 3:00 PM','s.rahman@campusconnect.edu','Dr. Rahman supports English students with course planning and career paths.'
+WHERE NOT EXISTS (SELECT 1 FROM advisors WHERE email = 's.rahman@campusconnect.edu');
+
+-- Advisor specialties
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Software Engineering'),('Machine Learning'),('Career Planning')) AS v(spec) ON true
+WHERE a.email = 's.ahmed@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Data Structures'),('Competitive Programming'),('Graduate School')) AS v(spec) ON true
+WHERE a.email = 't.hassan@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Circuit Design'),('Embedded Systems'),('Power Electronics')) AS v(spec) ON true
+WHERE a.email = 'a.das@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Marketing'),('Entrepreneurship'),('International Business')) AS v(spec) ON true
+WHERE a.email = 'm.akter@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+INSERT INTO advisor_specialties (advisor_id, specialty)
+SELECT a.id, v.spec FROM advisors a
+JOIN (VALUES ('Applied Mathematics'),('Research Methods'),('Graduate Admissions')) AS v(spec) ON true
+WHERE a.email = 'k.hossain@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_specialties WHERE advisor_id = a.id);
+
+-- Advisor available days
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Wednesday'),('Friday')) AS v(d) ON true
+WHERE a.email = 's.ahmed@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Tuesday'),('Thursday')) AS v(d) ON true
+WHERE a.email = 't.hassan@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Tuesday'),('Thursday')) AS v(d) ON true
+WHERE a.email = 'a.das@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Wednesday'),('Friday')) AS v(d) ON true
+WHERE a.email = 'm.akter@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Wednesday'),('Thursday'),('Friday')) AS v(d) ON true
+WHERE a.email = 'k.hossain@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Tuesday'),('Thursday'),('Saturday')) AS v(d) ON true
+WHERE a.email = 'd.alam@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Monday'),('Tuesday'),('Friday')) AS v(d) ON true
+WHERE a.email = 'j.khan@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+INSERT INTO advisor_available_days (advisor_id, day_name)
+SELECT a.id, v.d FROM advisors a
+JOIN (VALUES ('Wednesday'),('Thursday'),('Friday')) AS v(d) ON true
+WHERE a.email = 's.rahman@campusconnect.edu'
+  AND NOT EXISTS (SELECT 1 FROM advisor_available_days WHERE advisor_id = a.id);
+
+-- ============================================================
+-- Student Profiles (Phase 3 – Neon PostgreSQL)
+-- completedCourses: CSV of codes the student has already passed
+-- ============================================================
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU001','Eusha Kayenat','eusha@campusconnect.edu','Computer Science & Engineering',2,3.45,48,false,'CSE110,CSE111,MAT110,ENG101,PHY101,CSE220,CSE260'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU001');
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU002','Arham Hossain','arham@campusconnect.edu','Computer Science & Engineering',3,1.85,90,true,'CSE110,CSE111,MAT110,ENG101,PHY101,CSE220,CSE260,CSE321,CSE330,CSE331,CSE340,CSE370,EEE101'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU002');
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU003','Nafiz Rahman','nafiz@campusconnect.edu','Electrical & Electronic Engineering',2,3.72,54,false,'EEE101,MAT110,ENG101,PHY101,EEE201,EEE203'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU003');
+
+INSERT INTO student_profiles (student_id, student_name, email, department, year, cgpa, completed_credits, on_probation, completed_courses)
+SELECT 'STU004','Sadia Islam','sadia@campusconnect.edu','Business Administration',1,2.10,18,false,'BUS101,ENG101,MAT110'
+WHERE NOT EXISTS (SELECT 1 FROM student_profiles WHERE student_id = 'STU004');
+
+-- ============================================================
+-- Prerequisite codes for CourseSection rows
+-- Applied safely: only updates rows where prereq is not yet set
+-- ============================================================
+
+UPDATE course_section SET prerequisite_codes = 'CSE110'     WHERE code = 'CSE111' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE111'     WHERE code = 'CSE220' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220'     WHERE code = 'CSE221' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE111'     WHERE code = 'CSE260' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220,CSE260' WHERE code = 'CSE321' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220'     WHERE code = 'CSE330' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE221'     WHERE code = 'CSE331' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE260'     WHERE code = 'CSE340' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE220'     WHERE code = 'CSE370' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE221,CSE321' WHERE code = 'CSE420' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE321'     WHERE code = 'CSE421' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE221'     WHERE code = 'CSE422' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'CSE370'     WHERE code = 'CSE470' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE101'     WHERE code = 'EEE201' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE101'     WHERE code = 'EEE203' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE203'     WHERE code = 'EEE308' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+UPDATE course_section SET prerequisite_codes = 'EEE208'     WHERE code = 'EEE321' AND (prerequisite_codes IS NULL OR prerequisite_codes = '');
+
