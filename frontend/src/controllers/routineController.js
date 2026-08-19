@@ -69,6 +69,28 @@ export function detectConflicts(selected) {
   return conflicts
 }
 
+/**
+ * Sorts courses by course code, and by section number in ascending numerical order.
+ * e.g. CSE110-01, CSE110-02, ..., CSE110-10, CSE111-01, ...
+ */
+export function sortCoursesByCodeAndSection(a, b) {
+  const codeA = (a.code || '').toUpperCase()
+  const codeB = (b.code || '').toUpperCase()
+  const codeCmp = codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: 'base' })
+  if (codeCmp !== 0) return codeCmp
+
+  const secA = parseInt(a.section, 10)
+  const secB = parseInt(b.section, 10)
+
+  if (isNaN(secA) && isNaN(secB)) {
+    return (a.section || '').localeCompare(b.section || '')
+  }
+  if (isNaN(secA)) return 1
+  if (isNaN(secB)) return -1
+
+  return secA - secB
+}
+
 /* ── Normaliser: maps DB fields to frontend shape ────────────── */
 /**
  * Merges live exam dates from examScheduleMap into a section or catalog entry.
@@ -137,7 +159,7 @@ export function useRoutineController() {
           const merged = [
             ...sectionsData.map(s => normaliseSection(s, scheduleMap)),
             ...catalogOnly.map(c => normaliseSection(c, scheduleMap)),
-          ]
+          ].sort(sortCoursesByCodeAndSection)
 
           setAllSections(merged)
           setLoading(false)
@@ -154,7 +176,7 @@ export function useRoutineController() {
     return () => { cancelled = true }
   }, [])
 
-  /* Derived: available sections with isTaken flag */
+  /* Derived: available sections with isTaken flag, sorted strictly section-number wise */
   const available = useMemo(() => {
     const selectedCodes = new Set(selected.map(s => s.code))
     const selectedIds   = new Set(selected.map(s => s.id))
@@ -168,6 +190,7 @@ export function useRoutineController() {
           c.title.toLowerCase().includes(q)   ||
           c.section.includes(q)
       })
+      .sort(sortCoursesByCodeAndSection)
   }, [allSections, selected, availSearch])
 
   /* Derived: filtered selected courses */

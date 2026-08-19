@@ -51,7 +51,7 @@ public class CourseController {
     public ResponseEntity<List<CourseSection>> getSections(
             @RequestParam(value = "q", required = false, defaultValue = "") String q) {
         if (q.isBlank()) {
-            return ResponseEntity.ok(sectionRepo.findAll());
+            return ResponseEntity.ok(sectionRepo.findAllOrderByCodeAndSection());
         }
         return ResponseEntity.ok(sectionRepo.search(q));
     }
