@@ -99,29 +99,13 @@ export function useCoursesController() {
     return () => { cancelled = true }
   }, [])
 
-  // ── Hydrate enrolledIds from DB on mount ──────────────────────
-  useEffect(() => {
-    courseService.getEnrolledIds(CURRENT_USER.id)
-      .then(ids => {
-        const dbSet = new Set(ids.map(String))
-        setEnrolledIds(prev => {
-          const merged = new Set([...prev, ...dbSet])
-          try {
-            localStorage.setItem(ENROLLED_IDS_KEY, JSON.stringify(Array.from(merged)))
-          } catch (e) { /* ignore */ }
-          return merged
-        })
-      })
-      .catch(() => { /* use localStorage cache if DB is unavailable */ })
-  }, [])
-
   /**
-   * handleEnroll – persists to Neon DB AND updates localStorage cache.
+   * handleEnroll – joins the course discussion channel (persisted in localStorage).
+   * Official course registration is performed via the Advising module.
    */
   const handleEnroll = useCallback(async (course) => {
-    if (enrolledIds.has(String(course.id))) return   // already enrolled
+    if (enrolledIds.has(String(course.id))) return
 
-    // Optimistic local update
     setEnrolledIds(prev => {
       const next = new Set([...prev, String(course.id)])
       try {
@@ -131,16 +115,10 @@ export function useCoursesController() {
     })
 
     try {
-      await courseService.enroll(CURRENT_USER.id, course.id)
-    } catch (err) {
-      console.warn('[CoursesController] DB enroll failed (using cache):', err.message)
-    }
-
-    try {
       const channel = await channelService.onEnrollment({ userId: CURRENT_USER.id, course })
-      setEnrollToast(`✅ Enrolled in ${course.code} · Channel ${channel.name} ready!`)
+      setEnrollToast(`✅ Joined ${course.code} discussion · Channel ${channel.name} ready!`)
     } catch {
-      setEnrollToast(`✅ Enrolled in ${course.code}!`)
+      setEnrollToast(`✅ Joined ${course.code}!`)
     }
     setTimeout(() => setEnrollToast(null), 4000)
   }, [enrolledIds])

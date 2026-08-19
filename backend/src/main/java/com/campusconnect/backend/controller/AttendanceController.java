@@ -108,4 +108,18 @@ public class AttendanceController {
             "data",    data
         ));
     }
+
+    // ── GET /api/attendance/student/{studentId} ───────────────────
+    /**
+     * Returns student-specific attendance report across all classes.
+     */
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<Map<String, Object>> getStudentAttendance(
+            @PathVariable String studentId) {
+        Map<String, Object> data = attendanceService.getStudentAttendanceReport(studentId);
+        return ResponseEntity.ok(Map.of(
+            "success", true,
+            "data",    data
+        ));
+    }
 }

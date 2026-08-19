@@ -204,10 +204,11 @@ export default function RoutineView() {
   )
 }
 
-/* ── Sub-component: Course Info Block ─────────────────────── */
+/* ── Sub-component: Course Info Block ───────────────── */
 function CourseInfoBlock({ course, conflicts, isTaken = false }) {
   const remaining  = remainingSeats(course)
   const isConflict = conflicts.has(course.id)
+
   return (
     <div className="course-info-block">
       {isTaken && (
@@ -222,18 +223,47 @@ function CourseInfoBlock({ course, conflicts, isTaken = false }) {
         <span className="cib-value cib-title">{course.title}</span></p>
       <p className="cib-row"><span className="cib-label">Faculty:</span>
         <span className="cib-value">{course.faculty}</span></p>
-      <p className="cib-row"><span className="cib-label">Section:</span>
-        <span className="cib-value">{course.section.toString().padStart(2, '0')}</span></p>
+      {course.credits && (
+        <p className="cib-row"><span className="cib-label">Credits:</span>
+          <span className="cib-value">{course.credits}</span></p>
+      )}
       <p className="cib-row"><span className="cib-label">Time:</span>
-        <span className="cib-value cib-time">{course.time} · {course.room}</span></p>
-      <p className="cib-row"><span className="cib-label">Exam Day:</span>
-        <span className="cib-value">{course.examDay}</span></p>
-      <p className="cib-row"><span className="cib-label">Total Seats:</span>
-        <span className="cib-value">{course.totalSeats}</span></p>
-      <p className="cib-row"><span className="cib-label">Seats Booked:</span>
-        <span className="cib-value">{course.booked}</span></p>
-      <p className="cib-row"><span className="cib-label">Remaining:</span>
-        <span className={`cib-value ${remaining <= 0 ? 'cib-danger' : remaining <= 5 ? 'cib-warn' : 'cib-safe'}`}>{remaining}</span></p>
+        <span className="cib-value cib-time">
+          {course.time === 'TBA'
+            ? <em style={{ color: 'var(--color-text-sub)' }}>Schedule TBA</em>
+            : `${course.time} · ${course.room}`}
+        </span></p>
+      {course.midtermDay && (
+        <p className="cib-row"><span className="cib-label">Midterm:</span>
+          <span className="cib-value" style={{ color: '#B45309', fontWeight: 500 }}>{course.midtermDay}</span></p>
+      )}
+      <p className="cib-row"><span className="cib-label">Final Exam:</span>
+        <span className="cib-value">{course.examDay || 'TBA'}</span></p>
+      {course.totalSeats > 0 && (
+        <>
+          <p className="cib-row"><span className="cib-label">Total Seats:</span>
+            <span className="cib-value">{course.totalSeats}</span></p>
+          <p className="cib-row"><span className="cib-label">Seats Booked:</span>
+            <span className="cib-value">{course.booked}</span></p>
+          <p className="cib-row"><span className="cib-label">Remaining:</span>
+            <span className={`cib-value ${remaining <= 0 ? 'cib-danger' : remaining <= 5 ? 'cib-warn' : 'cib-safe'}`}>{remaining}</span></p>
+        </>
+      )}
+      {course.tags && course.tags.length > 0 && (
+        <p className="cib-row"><span className="cib-label">Tags:</span>
+          <span className="cib-value" style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {course.tags.map(t => (
+              <span key={t} style={{ background: '#EFF6FF', color: '#1D4ED8', borderRadius: 4, padding: '1px 7px', fontSize: '0.7rem', fontWeight: 600 }}>{t}</span>
+            ))}
+          </span>
+        </p>
+      )}
+      {course.description && (
+        <p className="cib-row" style={{ alignItems: 'flex-start' }}>
+          <span className="cib-label" style={{ marginTop: 2 }}>About:</span>
+          <span className="cib-value" style={{ fontSize: '0.75rem', lineHeight: 1.5, color: 'var(--color-text-sub)' }}>{course.description}</span>
+        </p>
+      )}
     </div>
   )
 }

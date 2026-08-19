@@ -43,4 +43,20 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
      * @return The matching record, or null if not found
      */
     AttendanceRecord findByCourseIdAndStudentIdAndDate(String courseId, String studentId, String date);
+
+    /**
+     * Find all attendance records for a specific student, sorted by date descending.
+     *
+     * @param studentId Student identifier
+     * @return List of AttendanceRecord entities
+     */
+    List<AttendanceRecord> findByStudentIdOrderByDateDesc(String studentId);
+
+    /**
+     * Find all attendance records for a student across all courses.
+     *
+     * @param studentId Student identifier
+     * @return List of AttendanceRecord entities
+     */
+    List<AttendanceRecord> findByStudentId(String studentId);
 }
