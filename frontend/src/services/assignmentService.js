@@ -14,7 +14,6 @@
  *   DELETE /api/assignments/{id}/submit?studentId=   → unsubmitWork(id, studentId)
  *   GET    /api/assignments/{id}/submission?studentId= → getSubmission(id, studentId)
  *   GET    /api/assignments/{id}/submissions          → getSubmissions(id)
- *   POST   /api/assignments/submissions/{subId}/grade → gradeSubmission(subId, grade, feedback)
  */
 
 const API_BASE = 'http://localhost:8080/api/assignments'
@@ -115,23 +114,7 @@ export async function getSubmissions(assignmentId) {
   return json.data || []
 }
 
-/**
- * Teacher grades a submission.
- * @param {number} submissionId
- * @param {number} grade
- * @param {string} feedback
- * @returns {Promise<Object>}
- */
-export async function gradeSubmission(submissionId, grade, feedback) {
-  const res = await fetch(`${API_BASE}/submissions/${submissionId}/grade`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ grade, feedback }),
-  })
-  const json = await res.json()
-  if (!res.ok) throw new Error(json.message || `Failed to grade: ${res.status}`)
-  return json.data
-}
+
 
 /**
  * Returns the download URL for a teacher's question file attachment.

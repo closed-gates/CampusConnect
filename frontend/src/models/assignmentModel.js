@@ -12,7 +12,6 @@ export const ASSIGNMENT_STATUS = {
   TURNED_IN: 'TURNED_IN',
   LATE:      'LATE',
   MISSING:   'MISSING',
-  GRADED:    'GRADED',
   DRAFT:     'DRAFT',
 }
 
@@ -22,7 +21,6 @@ export const STATUS_CONFIG = {
   TURNED_IN: { label: 'Turned in', color: '#059669', bg: '#ECFDF5' },
   LATE:      { label: 'Late',      color: '#D97706', bg: '#FFFBEB' },
   MISSING:   { label: 'Missing',   color: '#DC2626', bg: '#FEF2F2' },
-  GRADED:    { label: 'Graded',    color: '#7C3AED', bg: '#F5F3FF' },
   DRAFT:     { label: 'Draft',     color: '#9CA3AF', bg: '#F9FAFB' },
 }
 
@@ -91,7 +89,6 @@ export const EMPTY_CREATE_FORM = {
   courseName:  '',
   title:       '',
   description: '',
-  totalPoints: 100,
   deadline:    '',
   createdBy:   '',
 }
@@ -196,7 +193,6 @@ export function getCourseConfig(code) {
  * @returns {string} — one of ASSIGNMENT_STATUS values
  */
 export function deriveStatus(submission, deadline) {
-  if (submission && submission.status === 'GRADED')    return ASSIGNMENT_STATUS.GRADED
   if (submission && submission.status === 'TURNED_IN') return ASSIGNMENT_STATUS.TURNED_IN
   if (submission && submission.status === 'DRAFT')     return ASSIGNMENT_STATUS.ASSIGNED
 
