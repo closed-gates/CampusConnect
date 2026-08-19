@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { CREDITS_PER_COURSE } from '../models/advisingModel.js'
+import { channelService } from '../services/channelService.js'
 
 const API_BASE = '/api/advisors'
 
@@ -121,6 +122,13 @@ export function useAdvisorController() {
       if (data.success) {
         setProfile(data.profile)
         if (data.seatUpdates) setSeatUpdates(data.seatUpdates)
+        channelService.onEnrollment({
+          userId: 'usr_eusha_001',
+          course: {
+            code: course.courseCode || course.code,
+            name: course.courseTitle || course.title || course.name || 'Course'
+          }
+        })
         showToast(data.message, 'success')
       } else {
         showToast(data.message, 'error')

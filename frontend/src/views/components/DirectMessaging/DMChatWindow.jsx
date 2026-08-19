@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { formatMessageTime } from '../../../utils/dmUtils.js';
 import UserAvatar from './UserAvatar.jsx';
 

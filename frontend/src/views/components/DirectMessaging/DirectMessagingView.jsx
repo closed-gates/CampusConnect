@@ -1,9 +1,10 @@
 import { useMessagingController } from '../../../controllers/messagingController.js'
+import { usePresenceController } from '../../../controllers/usePresenceController.js'
 import DMConversationList from './DMConversationList.jsx'
 import DMHeader from './DMHeader.jsx'
 import DMChatWindow from './DMChatWindow.jsx'
 import DMInputArea from './DMInputArea.jsx'
-import CourseChannelView from './CourseChannelView.jsx'
+import CourseChatPanel from '../CourseChat/CourseChatPanel.jsx'
 import './DirectMessaging.css'
 
 /**
@@ -39,6 +40,9 @@ export default function DirectMessagingView({ user, onMessageSent }) {
     handleSelectConversation,
     handleStartNewDM,
   } = useMessagingController(user, onMessageSent)
+
+  // Global presence map — feeds live dots in DMConversationList + CourseChatPanel
+  const { onlineUsers } = usePresenceController(currentUser)
 
   // Is the active conversation a course channel?
   const isChannel = activeConvId?.startsWith('ch_')
@@ -77,11 +81,12 @@ export default function DirectMessagingView({ user, onMessageSent }) {
         onSelectConversation={handleSelectConversation}
         availableUsers={availableUsers}
         onStartNewDM={handleStartNewDM}
+        onlineUsers={onlineUsers}
       />
 
-      {/* Column 2 – Active chat OR course channel view */}
+      {/* Column 2 – Active chat OR course channel view (real-time WebSocket) */}
       {isChannel && activeChannel ? (
-        <CourseChannelView channel={activeChannel} />
+        <CourseChatPanel channel={activeChannel} />
       ) : (
         <main className="univ-message-window">
           <DMHeader
