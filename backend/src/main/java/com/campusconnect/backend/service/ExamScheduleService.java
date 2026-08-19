@@ -55,17 +55,16 @@ public class ExamScheduleService {
     // ── Seeding ───────────────────────────────────────────────────────────────
 
     /**
-     * Seeds all 43 BRACU course exam dates on first startup.
-     * Guard: skips only if the table already has ≥ 43 rows.
-     * If partial data exists from an older run (e.g., 8 rows), it will
-     * delete all and reseed to ensure all courses are covered.
+     * Seeds BRACU course exam dates on first startup if not already seeded via data.sql.
+     * Guard: skips if the table already has >= 500 rows from data.sql.
      */
     @PostConstruct
     public void seedExamSchedules() {
-        if (examRepo.count() >= 43) return;
-        // Delete any stale partial data before re-seeding
-        examRepo.deleteAll();
-        doSeed();
+        if (examRepo.count() >= 500) return;
+        // If data.sql didn't run, seed fallback records
+        if (examRepo.count() == 0) {
+            doSeed();
+        }
     }
 
     /**

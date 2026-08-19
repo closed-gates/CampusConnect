@@ -21,29 +21,66 @@ export function isSoldOut(c)      { return remainingSeats(c) <= 0 }
 
 /**
  * Extracts the time-slot string from a course's time field.
- * e.g. "SUN-TUE 08:00 AM-09:20 AM" → "08:00 AM-09:20 AM"
+ * Handles two formats:
+ *   Old (static): "SUN-TUE 08:00 AM-09:20 AM"
+ *   New (BRACU):  "SATURDAY(8:00 AM-9:20 AM-07A-05C) ; THURSDAY(8:00 AM-9:20 AM-07A-05C)"
+ * Returns the first time slot found.
  */
 export function courseToSlots(c) {
+  if (!c.time) return []
+
+  // New BRACU format: DAY(TIME-ROOM) ; DAY(TIME-ROOM)
+  const bracuMatch = c.time.match(/\((\d+:\d+\s*[AP]M-\d+:\d+\s*[AP]M)/)
+  if (bracuMatch) {
+    // Normalise to "H:MM AM-H:MM PM" → find closest TIME_SLOTS entry
+    const rawSlot = bracuMatch[1].replace('-', '-') // already has both times
+    const slot = TIME_SLOTS.find(s => {
+      // strip leading 0 for comparison (BRACU uses 8:00, we may store 08:00)
+      const normalised = s.replace(/^0/, '')
+      return rawSlot.startsWith(normalised.split('-')[0].replace(/^0/, ''))
+    })
+    return slot ? [slot] : [rawSlot]
+  }
+
+  // Old format: "SUN-TUE 08:00 AM-09:20 AM"
   const parts = c.time.split(' ')
-  const timePart = parts.slice(1).join(' ')           // everything after day prefix
+  const timePart = parts.slice(1).join(' ')
   const slot = TIME_SLOTS.find(s => s === timePart)
   return slot ? [slot] : []
 }
 
 /**
  * Extracts the day names from a course's time field.
- * e.g. "SUN-TUE 08:00 AM-09:20 AM" → ["Sunday", "Tuesday"]
+ * Handles both old and new BRACU formats.
+ * e.g. "SATURDAY(8:00 AM-9:20 AM-07A-05C) ; THURSDAY(8:00 AM-9:20 AM-07A-05C)"
+ *   → ["Saturday", "Thursday"]
  */
 export function courseToDays(c) {
-  const parts   = c.time.split(' ')
-  const dayStr  = parts[0].toUpperCase()
+  if (!c.time) return []
+
   const map = {
     SUN: 'Sunday', MON: 'Monday', TUE: 'Tuesday',
     WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday', SAT: 'Saturday',
+    SUNDAY: 'Sunday', MONDAY: 'Monday', TUESDAY: 'Tuesday',
+    WEDNESDAY: 'Wednesday', THURSDAY: 'Thursday', FRIDAY: 'Friday', SATURDAY: 'Saturday',
   }
+
   const result = new Set()
+
+  // New BRACU format: extract day names before '('
+  if (c.time.includes('(')) {
+    const segments = c.time.split(';')
+    segments.forEach(seg => {
+      const dayPart = seg.trim().split('(')[0].trim().toUpperCase()
+      if (map[dayPart]) result.add(map[dayPart])
+    })
+    return [...result]
+  }
+
+  // Old format: "SUN-TUE 08:00 AM–09:20 AM"
+  const dayStr = c.time.split(' ')[0].toUpperCase()
   Object.entries(map).forEach(([abbr, full]) => {
-    if (dayStr.includes(abbr)) result.add(full)
+    if (abbr.length <= 3 && dayStr.includes(abbr)) result.add(full)
   })
   return [...result]
 }
@@ -103,9 +140,9 @@ function normaliseSection(s, examScheduleMap) {
     totalSeats: Number(s.totalSeats || 0),
     booked:     Number(s.booked     || 0),
     // Overwrite examDay with DB-sourced final exam date (formatted string)
-    examDay:    schedule ? formatExamDate(schedule.finalDate)   : (s.examDay || 'TBA'),
+    examDay:    schedule ? formatExamDate(schedule.finalDate)   : (s.examDay && s.examDay !== 'TBA' ? s.examDay : 'TBA'),
     // Add midtermDay for display in CourseInfoBlock
-    midtermDay: schedule ? formatExamDate(schedule.midtermDate) : null,
+    midtermDay: schedule ? formatExamDate(schedule.midtermDate) : (s.midtermExam && s.midtermExam !== 'TBA' ? s.midtermExam : null),
   }
 }
 
@@ -209,7 +246,7 @@ export function useRoutineController() {
   const highlightedCourse     = useMemo(() => allSections.find(c => c.id === highlighted), [allSections, highlighted])
   const isHighlightedSelected  = selected.some(c => c.id === highlighted)
   const isHighlightedAvailable = available.some(c => c.id === highlighted && !c.isTaken)
-  const totalCredits           = selected.length * 3
+  const totalCredits = selected.reduce((sum, c) => sum + Number(c.credits || 3), 0)
 
   /* Derived: schedule grid map { "Day|Slot" → [course, ...] } */
   const scheduleGrid = useMemo(() => {

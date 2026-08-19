@@ -31,7 +31,7 @@ export default function CoursesView() {
         <div className="courses-page-header">
           <div>
             <h1 className="dashboard-greeting">Course Catalog 📚</h1>
-            <p className="dashboard-date">Browse {totalCourses} courses across {FACULTIES.length} faculties</p>
+            <p className="dashboard-date">Browse {totalCourses} courses across {FACULTIES.length} departments</p>
           </div>
           <div className="view-toggle" role="group" aria-label="View mode">
             <button id="view-grid-btn" className={'view-toggle-btn' + (viewMode === 'grid' ? ' active' : '')} onClick={() => setViewMode('grid')} title="Grid view">⊞</button>
@@ -46,7 +46,7 @@ export default function CoursesView() {
             id="courses-search-input"
             type="search"
             className="courses-search-input"
-            placeholder="Search by course name, code, instructor or keyword…"
+            placeholder="Search by course name, code, department or keyword…"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             aria-label="Search courses"
@@ -58,8 +58,8 @@ export default function CoursesView() {
 
         {/* Filters */}
         <div className="courses-filter-row">
-          <div className="filter-group" role="group" aria-label="Filter by faculty">
-            <button id="filter-faculty-all" className={'filter-pill' + (activeFaculty === 'all' ? ' active' : '')} onClick={() => setActiveFaculty('all')}>All Faculties</button>
+          <div className="filter-group" role="group" aria-label="Filter by department">
+            <button id="filter-faculty-all" className={'filter-pill' + (activeFaculty === 'all' ? ' active' : '')} onClick={() => setActiveFaculty('all')}>All Departments</button>
             {FACULTIES.map(fac => (
               <button
                 key={fac.id}
@@ -67,7 +67,7 @@ export default function CoursesView() {
                 className={'filter-pill' + (activeFaculty === fac.id ? ' active' : '')}
                 onClick={() => setActiveFaculty(fac.id)}
               >
-                {fac.icon} {fac.label.split(' ')[0]}
+                {fac.icon} {fac.shortLabel || fac.label.split(' ')[0]}
               </button>
             ))}
           </div>
@@ -131,14 +131,17 @@ function StarRating({ rating }) {
 function CourseCard({ course, faculty }) {
   const [bookmarked,   setBookmarked]   = useState(false)
   const [showDetails,  setShowDetails]  = useState(false)
-  const avail   = getAvailability(course.enrolled, course.capacity)
-  const fillPct = Math.round((course.enrolled / course.capacity) * 100)
+  // Use real BRACU seat data; fallback to legacy enrolled/capacity
+  const booked   = course.totalBooked ?? course.enrolled ?? 0
+  const capacity = course.totalSeats  ?? course.capacity ?? 1
+  const avail    = getAvailability(booked, capacity)
+  const fillPct  = Math.round((booked / Math.max(capacity, 1)) * 100)
 
   return (
     <>
       <div className="course-card" id={'course-card-' + course.id}>
-        <div className="course-card-header" style={{ background: faculty.color }}>
-          <span className="course-card-emoji" aria-hidden="true">{faculty.icon}</span>
+        <div className="course-card-header" style={{ background: faculty?.color || '#F1F5F9' }}>
+          <span className="course-card-emoji" aria-hidden="true">{faculty?.icon || '📚'}</span>
           <div className="course-card-header-right">
             <span className="course-card-code">{course.code}</span>
             <button
@@ -154,38 +157,38 @@ function CourseCard({ course, faculty }) {
 
         <div className="course-card-body">
           <h3 className="course-card-name">{course.name}</h3>
-          <p className="course-card-instructor">👤 {course.instructor}</p>
-          <p className="course-card-desc">{course.desc}</p>
-
-          <div className="course-card-tags">
-            {course.tags.map(tag => <span key={tag} className="course-tag">{tag}</span>)}
-          </div>
+          <p className="course-card-instructor">🏫 {course.department || faculty?.label || 'BRACU'}</p>
+          {course.isGenEd && <span className="course-tag" style={{ background: '#EDE9FE', color: '#6D28D9' }}>GenEd</span>}
 
           <div className="course-card-stats">
-            <span>📅 {course.semester}</span>
-            <span>🎓 Year {course.year}</span>
             <span>📋 {course.credits} cr.</span>
+            <span>📅 {course.totalSections || 0} sections</span>
+            <span>{booked}/{capacity} seats</span>
           </div>
 
-          <StarRating rating={course.rating} />
+          {course.prereqs && course.prereqs !== 'None' && (
+            <p style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
+              Pre: {course.prereqs}
+            </p>
+          )}
 
           <div className="course-card-footer">
             <div className="course-enrollment">
               <div className="enrollment-bar-track">
                 <div className="enrollment-bar-fill" style={{ width: fillPct + '%', background: avail.color }} />
               </div>
-              <span className="enrollment-text">{course.enrolled}/{course.capacity}</span>
+              <span className="enrollment-text">{booked}/{capacity}</span>
             </div>
             <span className="course-avail-badge" style={{ color: avail.color, background: avail.bg }}>
               {avail.label}
             </span>
           </div>
 
-          {/* View Details button — replaces old Enroll Now */}
+          {/* View Details button */}
           <button
             className="course-enroll-btn"
             id={'view-details-btn-' + course.id}
-            style={{ background: faculty.accent }}
+            style={{ background: faculty?.accent || '#2563EB' }}
             onClick={() => setShowDetails(true)}
           >
             📋 View Details
@@ -205,8 +208,8 @@ function CourseCard({ course, faculty }) {
         >
           <div className="course-details-modal">
             {/* Modal header */}
-            <div className="course-details-header" style={{ background: faculty.color }}>
-              <span className="course-details-emoji">{faculty.icon}</span>
+            <div className="course-details-header" style={{ background: faculty?.color || '#F1F5F9' }}>
+              <span className="course-details-emoji">{faculty?.icon || '📚'}</span>
               <div className="course-details-title-wrap">
                 <span className="course-details-code">{course.code}</span>
                 <h2 className="course-details-name">{course.name}</h2>
@@ -223,42 +226,52 @@ function CourseCard({ course, faculty }) {
             <div className="course-details-body">
               <div className="course-details-grid">
                 <div className="course-details-item">
-                  <span className="course-details-label">Instructor</span>
-                  <span className="course-details-value">👤 {course.instructor}</span>
+                  <span className="course-details-label">Department</span>
+                  <span className="course-details-value">🏫 {course.department || 'N/A'}</span>
                 </div>
                 <div className="course-details-item">
-                  <span className="course-details-label">Faculty</span>
-                  <span className="course-details-value">{faculty.icon} {faculty.label}</span>
+                  <span className="course-details-label">School</span>
+                  <span className="course-details-value">{faculty?.icon} {course.school || faculty?.label || 'BRACU'}</span>
                 </div>
                 <div className="course-details-item">
                   <span className="course-details-label">Credits</span>
                   <span className="course-details-value">📋 {course.credits} credit{course.credits !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="course-details-item">
-                  <span className="course-details-label">Year / Semester</span>
-                  <span className="course-details-value">🎓 Year {course.year} · {course.semester}</span>
+                  <span className="course-details-label">Sections Offered</span>
+                  <span className="course-details-value">📅 {course.totalSections || 0} section{(course.totalSections || 0) !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="course-details-item">
                   <span className="course-details-label">Enrollment</span>
                   <span className="course-details-value" style={{ color: avail.color }}>
-                    {course.enrolled} / {course.capacity} &nbsp;·&nbsp;
+                    {booked} / {capacity} seats&nbsp;·&nbsp;
                     <strong>{avail.label}</strong>
                   </span>
                 </div>
                 <div className="course-details-item">
-                  <span className="course-details-label">Rating</span>
-                  <span className="course-details-value"><StarRating rating={course.rating} /></span>
+                  <span className="course-details-label">GenEd</span>
+                  <span className="course-details-value">{course.isGenEd ? '✅ Yes' : '❌ No'}</span>
                 </div>
+                {course.midExamSchedule && course.midExamSchedule !== 'TBA' && (
+                  <div className="course-details-item">
+                    <span className="course-details-label">Midterm Exam</span>
+                    <span className="course-details-value">📝 {course.midExamSchedule}</span>
+                  </div>
+                )}
+                {course.finalExamSchedule && course.finalExamSchedule !== 'TBA' && (
+                  <div className="course-details-item">
+                    <span className="course-details-label">Final Exam</span>
+                    <span className="course-details-value">🎓 {course.finalExamSchedule}</span>
+                  </div>
+                )}
               </div>
 
-              <div className="course-details-desc">
-                <span className="course-details-label">About this course</span>
-                <p>{course.desc}</p>
-              </div>
-
-              <div className="course-details-tags">
-                {course.tags.map(tag => <span key={tag} className="course-tag">{tag}</span>)}
-              </div>
+              {course.prereqs && course.prereqs !== 'None' && course.prereqs !== '' && (
+                <div className="course-details-desc">
+                  <span className="course-details-label">Prerequisites</span>
+                  <p style={{ fontFamily: 'monospace', fontSize: '13px' }}>{course.prereqs}</p>
+                </div>
+              )}
 
               <div className="course-details-enrollment-bar">
                 <div className="enrollment-bar-track" style={{ height: 8 }}>

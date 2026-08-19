@@ -1219,13 +1219,13 @@ input {
 }
 
 .course-card-code {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--color-text-sub);
   letter-spacing: 0.8px;
   text-transform: uppercase;
   background: rgba(255,255,255,0.7);
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 100px;
 }
 
