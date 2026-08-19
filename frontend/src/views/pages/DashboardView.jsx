@@ -1,5 +1,10 @@
+import React from 'react'
 import Sidebar from '../components/Sidebar.jsx'
 import StatCard from '../components/StatCard.jsx'
+import ExamScheduleWidget from '../components/ExamScheduleWidget.jsx'
+import EnrolledCoursesModal from '../components/EnrolledCoursesModal.jsx'
+import StudentRoutineModal from '../components/StudentRoutineModal.jsx'
+import StudentAttendanceModal from '../components/StudentAttendanceModal.jsx'
 import { useDashboardController } from '../../controllers/dashboardController.js'
 
 /**
@@ -9,7 +14,16 @@ import { useDashboardController } from '../../controllers/dashboardController.js
  * Renders the dashboard layout. All data is provided by useDashboardController().
  */
 export default function DashboardView() {
-  const { today, continueLearning, stats } = useDashboardController()
+  const {
+    today,
+    stats,
+    courses,
+    attendanceReport,
+    weeklyClassCount,
+    routineGrid,
+    activeModal,
+    closeModal,
+  } = useDashboardController()
 
   return (
     <div className="dashboard-wrapper">
@@ -21,7 +35,6 @@ export default function DashboardView() {
         {/* Header */}
         <div className="dashboard-header">
           <h1 className="dashboard-greeting">
-            {/* TODO (Phase 2): replace "Student" with authenticated user's name */}
             Welcome back, Student!
           </h1>
           <p className="dashboard-date">{today}</p>
@@ -38,75 +51,34 @@ export default function DashboardView() {
               label={stat.label}
               linkText={stat.linkText}
               isActive={stat.isActive}
+              onLinkClick={stat.onClick}
             />
           ))}
         </div>
 
-        {/* ── Continue Learning ───────────────────────── */}
-        <div className="section-card">
-          <div className="section-header">
-            <h2 className="section-title">Continue Learning</h2>
-            {/* TODO: link to /courses */}
-            <button className="section-see-all">See All</button>
-          </div>
+        {/* ── Upcoming Exams Widget ─────────────────── */}
+        <ExamScheduleWidget />
 
-          <table className="learning-table">
-            <thead>
-              <tr>
-                <th style={{ width: '40%' }}>Course Name</th>
-                <th style={{ width: '35%' }}>Progress</th>
-                <th style={{ width: '25%' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {continueLearning.map(course => (
-                <tr key={course.id}>
-                  {/* Course name */}
-                  <td>
-                    <div className="course-name-cell">
-                      <div
-                        className="course-icon"
-                        style={{ background: course.iconBg }}
-                        aria-hidden="true"
-                      >
-                        {course.icon}
-                      </div>
-                      <div>
-                        <div className="course-name">{course.name}</div>
-                        <div className="course-meta">{course.meta}</div>
-                      </div>
-                    </div>
-                  </td>
+        {/* ── Interactive Modals ────────────────────── */}
+        <EnrolledCoursesModal
+          isOpen={activeModal === 'details'}
+          onClose={closeModal}
+          courses={courses}
+        />
 
-                  {/* Progress bar */}
-                  <td>
-                    <div className="progress-cell">
-                      <div className="progress-bar-track">
-                        <div
-                          className="progress-bar-fill"
-                          style={{ width: `${course.progress}%` }}
-                          role="progressbar"
-                          aria-valuenow={course.progress}
-                          aria-valuemin={0}
-                          aria-valuemax={100}
-                        />
-                      </div>
-                      <span className="progress-pct">{course.progress}%</span>
-                    </div>
-                  </td>
+        <StudentRoutineModal
+          isOpen={activeModal === 'routine'}
+          onClose={closeModal}
+          courses={courses}
+          routineGrid={routineGrid}
+          weeklyClassCount={weeklyClassCount}
+        />
 
-                  {/* Status badge */}
-                  <td>
-                    <span className={`status-badge ${course.status === 'Completed' ? 'completed' : 'in-progress'}`}>
-                      {course.status === 'Completed' ? '✓' : '⏳'} {course.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
+        <StudentAttendanceModal
+          isOpen={activeModal === 'attendance'}
+          onClose={closeModal}
+          attendanceData={attendanceReport}
+        />
       </main>
     </div>
   )

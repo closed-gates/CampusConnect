@@ -4,12 +4,15 @@
  * MVC Role: Controller
  *
  * Manages all state and logic for course section selection, conflict detection,
- * and schedule grid computation. Fetches real BRACU sections from Neon DB.
+ * and schedule grid computation.
+ * Fetches real BRACU sections AND catalog from Neon DB so all 43 courses appear,
+ * with section-specific time/room data where available.
  */
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { TIME_SLOTS, DAYS } from '../models/routineModel.js'
 import { courseService } from '../services/courseService.js'
+import { formatExamDate } from '../models/examScheduleModel.js'
 
 /* ── Pure helper functions (no side effects) ─────────────────── */
 
@@ -68,15 +71,19 @@ export function detectConflicts(selected) {
 
 /* ── Normaliser: maps DB fields to frontend shape ────────────── */
 /**
- * Backend returns camelCase { totalSeats, ... }.
- * Frontend helpers use the same shape – no renaming needed,
- * but we ensure numeric types are correct.
+ * Merges live exam dates from examScheduleMap into a section or catalog entry.
+ * Works for both CourseSection (has time/room/seats) and catalog-only entries.
  */
-function normaliseSection(s) {
+function normaliseSection(s, examScheduleMap) {
+  const schedule = examScheduleMap ? examScheduleMap[s.code] : null
   return {
     ...s,
-    totalSeats: Number(s.totalSeats),
-    booked:     Number(s.booked),
+    totalSeats: Number(s.totalSeats || 0),
+    booked:     Number(s.booked     || 0),
+    // Overwrite examDay with DB-sourced final exam date (formatted string)
+    examDay:    schedule ? formatExamDate(schedule.finalDate)   : (s.examDay || 'TBA'),
+    // Add midtermDay for display in CourseInfoBlock
+    midtermDay: schedule ? formatExamDate(schedule.midtermDate) : null,
   }
 }
 
@@ -89,9 +96,10 @@ function normaliseSection(s) {
  */
 export function useRoutineController() {
   // ── Remote data state ─────────────────────────────────────────
-  const [allSections,  setAllSections]  = useState([])
-  const [loading,      setLoading]      = useState(true)
-  const [error,        setError]        = useState(null)
+  const [allSections,     setAllSections]     = useState([])
+  const [examScheduleMap, setExamScheduleMap] = useState({})
+  const [loading,         setLoading]         = useState(true)
+  const [error,           setError]           = useState(null)
 
   // ── UI state ──────────────────────────────────────────────────
   const [availSearch,  setAvailSearch]  = useState('')
@@ -99,23 +107,46 @@ export function useRoutineController() {
   const [selected,     setSelected]     = useState([])
   const [highlighted,  setHighlighted]  = useState(null)
 
-  // ── Fetch sections from Neon DB on mount ─────────────────────
+  // ── Fetch sections + catalog + exam schedules in parallel ─────
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError(null)
 
-    courseService.getSections()
-      .then(data => {
+    // Fetch everything in parallel:
+    //   - sections:       CourseSection rows with real time/room/seat data
+    //   - catalogItems:   All 43 catalog courses (virtual TBA entries for those without sections)
+    //   - scheduleData:   All exam dates from exam_schedules table
+    Promise.all([
+      courseService.getSections(),
+      courseService.getCatalogForRoutine().catch(() => []),   // graceful fallback
+      courseService.getExamSchedules().catch(() => []),        // graceful fallback
+    ])
+      .then(([sectionsData, catalogData, scheduleData]) => {
         if (!cancelled) {
-          setAllSections(data.map(normaliseSection))
+          // Build exam schedule map: courseCode → ExamScheduleDTO
+          const scheduleMap = {}
+          scheduleData.forEach(s => { scheduleMap[s.courseCode] = s })
+          setExamScheduleMap(scheduleMap)
+
+          // Build set of course codes that already have real sections
+          const codesWithSections = new Set(sectionsData.map(s => s.code))
+
+          // Merge: keep all real sections + catalog entries for courses without sections
+          const catalogOnly = catalogData.filter(c => !codesWithSections.has(c.code))
+          const merged = [
+            ...sectionsData.map(s => normaliseSection(s, scheduleMap)),
+            ...catalogOnly.map(c => normaliseSection(c, scheduleMap)),
+          ]
+
+          setAllSections(merged)
           setLoading(false)
         }
       })
       .catch(err => {
         if (!cancelled) {
-          console.error('[RoutineController] Failed to fetch sections:', err)
-          setError('Could not load course sections. Please check the backend is running.')
+          console.error('[RoutineController] Failed to fetch data:', err)
+          setError('Could not load courses. Please check the backend is running.')
           setLoading(false)
         }
       })
