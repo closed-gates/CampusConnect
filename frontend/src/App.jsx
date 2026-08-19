@@ -11,6 +11,7 @@ import CoursesView          from './views/pages/CoursesView'
 import RoutineView          from './views/pages/RoutineView'
 import AttendanceView       from './views/pages/AttendanceView'
 import AdvisingView        from './views/pages/AdvisingView'
+import AssignmentView      from './views/pages/AssignmentView'
 
 /**
  * App – Root router
@@ -45,6 +46,7 @@ export default function App() {
       <Route path="/routine"           element={<RoutineView />} />
       <Route path="/attendance"        element={<AttendanceView />} />
       <Route path="/advising"          element={<AdvisingView />} />
+      <Route path="/assignments"       element={<AssignmentView />} />
       {/* Catch-all */}
       <Route path="*"                  element={<Navigate to="/" replace />} />
     </Routes>

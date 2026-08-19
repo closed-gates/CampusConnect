@@ -1,0 +1,952 @@
+/* ============================================================
+   AssignmentPage.css – Dedicated styles for Assignment Submission
+   ============================================================
+   MVC Role: View (styles)
+   Uses CSS variables from index.css design system.
+   ============================================================ */
+
+/* ── Page Header ───────────────────────────────────────────── */
+.asgn-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.asgn-page-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.4px;
+}
+
+.asgn-page-subtitle {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  margin-top: 4px;
+}
+
+.asgn-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
+}
+
+.asgn-create-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
+}
+
+.asgn-create-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Assignment List ───────────────────────────────────────── */
+.asgn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.asgn-card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.asgn-card:hover {
+  border-color: var(--color-teal);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.asgn-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.asgn-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.asgn-card-course {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 3px;
+}
+
+.asgn-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.asgn-card-meta {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.asgn-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.asgn-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.asgn-card-points {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ── Status Badge ──────────────────────────────────────────── */
+.asgn-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ── Deadline Badge ────────────────────────────────────────── */
+.asgn-deadline-badge {
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.asgn-deadline-badge.urgent {
+  color: #D97706;
+}
+
+.asgn-deadline-badge.overdue {
+  color: #DC2626;
+}
+
+.asgn-deadline-badge.normal {
+  color: var(--color-text-sub);
+}
+
+/* ── Detail Layout (Google Classroom Style) ────────────────── */
+.asgn-detail-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Back Button ───────────────────────────────────────────── */
+.asgn-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  background: transparent;
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: 16px;
+}
+
+.asgn-back-btn:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+  background: var(--color-teal-light);
+}
+
+.asgn-back-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Detail Left Panel ─────────────────────────────────────── */
+.asgn-detail-main {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  padding: 28px 32px;
+}
+
+.asgn-detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.asgn-detail-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.asgn-detail-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.asgn-detail-teacher {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  margin-bottom: 4px;
+}
+
+.asgn-detail-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-text-sub);
+  margin-top: 6px;
+}
+
+.asgn-detail-meta-row span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.asgn-detail-meta-row .points-label {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.asgn-detail-description {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  margin-bottom: 20px;
+}
+
+/* ── Attachment Card ───────────────────────────────────────── */
+.asgn-attachment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+
+.asgn-attachment:hover {
+  border-color: var(--color-teal);
+  background: var(--color-teal-light);
+}
+
+.asgn-attachment-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.asgn-attachment-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.asgn-attachment-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.asgn-attachment-type {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  text-transform: uppercase;
+}
+
+.asgn-attachment-download {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-teal);
+  flex-shrink: 0;
+}
+
+/* ── Right Panel: "Your Work" / Submissions ────────────────── */
+.asgn-work-panel {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  overflow: hidden;
+  position: sticky;
+  top: 32px;
+}
+
+.asgn-work-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.asgn-work-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.asgn-work-status {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.asgn-work-body {
+  padding: 20px;
+}
+
+/* ── File Drop Zone ────────────────────────────────────────── */
+.asgn-dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+  min-height: 120px;
+  position: relative;
+}
+
+.asgn-dropzone:hover {
+  border-color: var(--color-teal);
+  background: var(--color-teal-light);
+}
+
+.asgn-dropzone.drag-active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-light);
+  transform: scale(1.02);
+}
+
+.asgn-dropzone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.asgn-dropzone-icon {
+  font-size: 28px;
+  opacity: 0.6;
+}
+
+.asgn-dropzone-text {
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+.asgn-dropzone-text strong {
+  color: var(--color-teal);
+  font-weight: 600;
+}
+
+.asgn-dropzone-hint {
+  font-size: 11px;
+  color: var(--color-text-light);
+}
+
+.asgn-dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ── Uploaded File Preview ─────────────────────────────────── */
+.asgn-file-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  margin-top: 12px;
+  animation: asgnSlideIn 0.3s ease;
+}
+
+.asgn-file-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.asgn-file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.asgn-file-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.asgn-file-size {
+  font-size: 11px;
+  color: var(--color-text-sub);
+}
+
+.asgn-file-remove {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.asgn-file-remove:hover {
+  background: #FEF2F2;
+  color: var(--color-error);
+}
+
+/* ── Submitted File Card ───────────────────────────────────── */
+.asgn-submitted-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--color-teal);
+  border-radius: var(--radius-sm);
+  background: var(--color-teal-light);
+  margin-bottom: 12px;
+}
+
+.asgn-submitted-file .asgn-file-name {
+  color: var(--color-teal-dark, #147A68);
+}
+
+/* ── Turn In / Unsubmit Buttons ────────────────────────────── */
+.asgn-turnin-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-top: 14px;
+}
+
+.asgn-turnin-btn.primary {
+  background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+  color: white;
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
+}
+
+.asgn-turnin-btn.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
+}
+
+.asgn-turnin-btn.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.asgn-turnin-btn.secondary {
+  background: var(--color-white);
+  color: var(--color-text-sub);
+  border: 1.5px solid var(--color-border);
+}
+
+.asgn-turnin-btn.secondary:hover:not(:disabled) {
+  border-color: var(--color-text-sub);
+  color: var(--color-text);
+}
+
+.asgn-turnin-btn.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Deadline Warning ──────────────────────────────────────── */
+.asgn-deadline-warning {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  text-align: center;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: #FEF2F2;
+  color: #DC2626;
+  font-style: italic;
+}
+
+/* ── Grade Display ─────────────────────────────────────────── */
+.asgn-grade-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: #F5F3FF;
+  margin-top: 12px;
+}
+
+.asgn-grade-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #7C3AED;
+}
+
+.asgn-grade-total {
+  font-size: 16px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+}
+
+.asgn-grade-feedback {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  line-height: 1.6;
+}
+
+.asgn-grade-feedback strong {
+  color: var(--color-text);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ── Teacher Create Form ───────────────────────────────────── */
+.asgn-create-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: asgnFadeIn 0.2s ease;
+}
+
+.asgn-create-modal {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: asgnSlideUp 0.3s ease;
+}
+
+.asgn-create-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.asgn-create-modal-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.asgn-create-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all var(--transition);
+}
+
+.asgn-create-close:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.asgn-create-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.asgn-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.asgn-form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.asgn-form-group input,
+.asgn-form-group textarea,
+.asgn-form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-white);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.asgn-form-group input:focus,
+.asgn-form-group textarea:focus,
+.asgn-form-group select:focus {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.12);
+}
+
+.asgn-form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.asgn-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.asgn-create-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.asgn-create-cancel-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-text-sub);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.asgn-create-cancel-btn:hover {
+  border-color: var(--color-text-sub);
+  color: var(--color-text);
+}
+
+.asgn-create-submit-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
+}
+
+.asgn-create-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
+}
+
+.asgn-create-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Teacher Submissions Table ─────────────────────────────── */
+.asgn-submissions-section {
+  margin-top: 24px;
+}
+
+.asgn-submissions-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 16px;
+}
+
+.asgn-submissions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.asgn-submissions-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 0 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.asgn-submissions-table td {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.asgn-submissions-table tr:last-child td {
+  border-bottom: none;
+}
+
+.asgn-grade-input {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.asgn-grade-input:focus {
+  border-color: var(--color-teal);
+}
+
+.asgn-feedback-input {
+  width: 140px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.asgn-feedback-input:focus {
+  border-color: var(--color-teal);
+}
+
+.asgn-grade-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: var(--color-teal);
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.asgn-grade-btn:hover {
+  background: var(--color-teal-dark);
+}
+
+.asgn-download-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-teal);
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.asgn-download-link:hover {
+  opacity: 0.75;
+}
+
+/* ── Toast ─────────────────────────────────────────────────── */
+.asgn-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 14px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  z-index: 2000;
+  animation: asgnSlideIn 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.asgn-toast.success {
+  background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+}
+
+.asgn-toast.error {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+/* ── Loading Skeleton ──────────────────────────────────────── */
+.asgn-skeleton {
+  background: linear-gradient(90deg, var(--color-bg) 25%, #E8EBF0 50%, var(--color-bg) 75%);
+  background-size: 200% 100%;
+  animation: asgnShimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.asgn-skeleton-card {
+  height: 80px;
+  margin-bottom: 12px;
+}
+
+.asgn-skeleton-detail {
+  height: 400px;
+}
+
+/* ── Empty State ───────────────────────────────────────────── */
+.asgn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.asgn-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.asgn-empty-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.asgn-empty-hint {
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+/* ── Animations ────────────────────────────────────────────── */
+@keyframes asgnFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes asgnSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes asgnSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes asgnShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .asgn-detail-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .asgn-work-panel {
+    position: static;
+  }
+}
