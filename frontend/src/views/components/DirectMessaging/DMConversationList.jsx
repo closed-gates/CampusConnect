@@ -8,7 +8,8 @@ export default function DMConversationList({
   activeConversationId,
   onSelectConversation,
   availableUsers,
-  onStartNewDM
+  onStartNewDM,
+  onlineUsers,          // Map<userId, presence> from usePresenceController
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTab, setFilterTab] = useState('ALL');
@@ -141,7 +142,7 @@ export default function DMConversationList({
                 <div className="univ-category-label">
                   <span>🎓 Faculty Members ({facultyConvs.length})</span>
                 </div>
-                {facultyConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation))}
+                {facultyConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation, onlineUsers))}
               </>
             )}
 
@@ -150,7 +151,7 @@ export default function DMConversationList({
                 <div className="univ-category-label" style={{ marginTop: facultyConvs.length > 0 ? 12 : 0 }}>
                   <span>👥 Classmates & Students ({studentConvs.length})</span>
                 </div>
-                {studentConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation))}
+                {studentConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation, onlineUsers))}
               </>
             )}
 
@@ -169,10 +170,12 @@ export default function DMConversationList({
   );
 }
 
-function renderChatItem(conv, activeConvId, onSelectConversation) {
+function renderChatItem(conv, activeConvId, onSelectConversation, onlineUsers) {
   const isActive = conv.id === activeConvId;
   const recipient = conv.recipient;
-  const presenceColor = getPresenceColor(recipient?.status);
+  // Live presence if available, fall back to static mock status
+  const isOnline = onlineUsers?.has(recipient?.id) ?? (recipient?.status?.toUpperCase() === 'ONLINE');
+  const presenceColor = isOnline ? '#10b981' : '#94a3b8';
   const isFaculty = recipient?.role === 'FACULTY';
 
   return (

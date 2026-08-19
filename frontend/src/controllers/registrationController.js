@@ -22,6 +22,7 @@ import {
   CURRENT_TERM,
   getStatusConfig,
 } from '../models/registrationModel.js'
+import { channelService } from '../services/channelService.js'
 
 const API_BASE   = '/api/registration'
 const STUDENT_ID = 'STU001'   // Phase 1: hardcoded; Phase 3: read from JWT
@@ -205,6 +206,16 @@ export function useRegistrationController() {
       const data = await res.json()
 
       if (data.success) {
+        const sec = sections.find(s => s.id === sectionId)
+        if (sec) {
+          channelService.onEnrollment({
+            userId: 'usr_eusha_001',
+            course: {
+              code: sec.courseCode || sec.code || `SEC-${sectionId}`,
+              name: sec.courseTitle || sec.name || sec.title || `Section ${sectionId}`
+            }
+          })
+        }
         showToast(`✅ ${data.message}`, 'success')
       } else {
         // Roll back optimistic update
