@@ -33,7 +33,7 @@ public class ExamSchedule {
     private Long id;
 
     /** Unique course code, e.g. "CSE110", "MAT201". */
-    @Column(name = "course_code", nullable = false, unique = true, length = 20)
+    @Column(name = "course_code", nullable = false, unique = true, length = 30)
     private String courseCode;
 
     /** Full course title, e.g. "Programming Language I". */

@@ -11,6 +11,8 @@ export default function StudentRoutineModal({ isOpen, onClose, courses, routineG
 
   // Always include all standard university lecture days including Saturday
   const activeDays = ROUTINE_DAYS
+  const gridSlots = Object.keys(routineGrid).map(k => k.split('|')[1]).filter(Boolean)
+  const activeSlots = [...new Set([...ROUTINE_TIME_SLOTS, ...gridSlots])]
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
@@ -48,7 +50,7 @@ export default function StudentRoutineModal({ isOpen, onClose, courses, routineG
                   </tr>
                 </thead>
                 <tbody>
-                  {ROUTINE_TIME_SLOTS.map(slot => (
+                  {activeSlots.map(slot => (
                     <tr key={slot}>
                       <td className="routine-slot-cell">{slot}</td>
                       {activeDays.map(day => {

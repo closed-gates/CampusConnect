@@ -19,10 +19,15 @@ public interface CourseSectionRepository extends JpaRepository<CourseSection, St
 
     List<CourseSection> findByCode(String code);
 
-    /** Case-insensitive search across code and title */
+    /** Returns all course sections sorted by course code then section number ascending */
+    @Query("SELECT s FROM CourseSection s ORDER BY s.code ASC, s.section ASC")
+    List<CourseSection> findAllOrderByCodeAndSection();
+
+    /** Case-insensitive search across code, title, and section, sorted by code then section */
     @Query("SELECT s FROM CourseSection s WHERE " +
            "LOWER(s.code) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
            "LOWER(s.title) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
-           "LOWER(s.section) LIKE LOWER(CONCAT('%', :q, '%'))")
+           "LOWER(s.section) LIKE LOWER(CONCAT('%', :q, '%')) " +
+           "ORDER BY s.code ASC, s.section ASC")
     List<CourseSection> search(@Param("q") String query);
 }

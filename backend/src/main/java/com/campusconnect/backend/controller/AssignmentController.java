@@ -97,7 +97,6 @@ public class AssignmentController {
             @RequestParam("courseName")  String courseName,
             @RequestParam("title")       String title,
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam("totalPoints") int totalPoints,
             @RequestParam("deadline")    String deadline,
             @RequestParam(value = "createdBy", required = false) String createdBy,
             @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -110,7 +109,7 @@ public class AssignmentController {
 
             Assignment created = assignmentService.createAssignment(
                 courseCode, courseName, title, description,
-                totalPoints, deadlineDt, createdBy,
+                deadlineDt, createdBy,
                 fileName, fileType, fileData
             );
 
@@ -262,32 +261,6 @@ public class AssignmentController {
             .body(s.getFileData());
     }
 
-    // ── POST /api/assignments/submissions/{subId}/grade ───────────
-    /**
-     * Teacher grades a submission.
-     */
-    @PostMapping("/submissions/{subId}/grade")
-    public ResponseEntity<Map<String, Object>> gradeSubmission(
-            @PathVariable Long subId,
-            @RequestBody Map<String, Object> body) {
-
-        try {
-            int grade = Integer.parseInt(body.get("grade").toString());
-            String feedback = body.get("feedback") != null ? body.get("feedback").toString() : null;
-            Submission graded = assignmentService.gradeSubmission(subId, grade, feedback);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Submission graded successfully.");
-            response.put("data", toSubmissionMap(graded));
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("success", false, "message", e.getMessage()));
-        }
-    }
-
     // ── Private helper: Assignment → JSON map (summary, no binary) ──
     private Map<String, Object> toSummaryMap(Assignment a) {
         Map<String, Object> map = new HashMap<>();
@@ -295,7 +268,6 @@ public class AssignmentController {
         map.put("courseCode",     a.getCourseCode());
         map.put("courseName",    a.getCourseName());
         map.put("title",         a.getTitle());
-        map.put("totalPoints",   a.getTotalPoints());
         map.put("deadline",      a.getDeadline() != null ? a.getDeadline().toString() : null);
         map.put("createdBy",     a.getCreatedBy());
         map.put("createdAt",     a.getCreatedAt() != null ? a.getCreatedAt().toString() : null);
@@ -324,8 +296,6 @@ public class AssignmentController {
         map.put("fileName",     s.getFileName());
         map.put("fileType",     s.getFileType());
         map.put("hasFile",      s.getFileData() != null);
-        map.put("grade",        s.getGrade());
-        map.put("feedback",     s.getFeedback());
         return map;
     }
 }
