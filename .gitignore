@@ -4,6 +4,7 @@
 .env.*.local
 backend/.env
 frontend/.env
+backend/run-backend.bat
 
 # === Build outputs ===
 backend/target/
