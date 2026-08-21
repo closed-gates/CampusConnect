@@ -14,8 +14,8 @@
  *   GET  /api/exam-schedule/all             → getExamSchedules()
  */
 
-const API_BASE      = 'http://localhost:8080/api/courses'
-const EXAM_API_BASE = 'http://localhost:8080/api/exam-schedule'
+const API_BASE      = '/api/courses'
+const EXAM_API_BASE = '/api/exam-schedule'
 
 /**
  * Fetch all catalog courses from the Neon database.
