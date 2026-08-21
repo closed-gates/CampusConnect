@@ -1,0 +1,561 @@
+/* ============================================================
+   RegistrationPage.css – Styles for the embedded Course Registration
+   section inside AdvisingView (StudentPanel only).
+   All class names prefixed .reg- to avoid collision with adv-, sidebar-.
+   ============================================================ */
+
+/* Root wrapper — used when embedded inside AdvisingView */
+.reg-root {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* WebSocket live status row */
+.reg-ws-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+
+.reg-ws-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.reg-ws-dot--live {
+  background: #10B981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  animation: reg-pulse-green 2s infinite;
+}
+
+.reg-ws-dot--off {
+  background: #F59E0B;
+  animation: reg-blink 1.2s ease-in-out infinite;
+}
+
+.reg-ws-label { font-weight: 500; }
+
+@keyframes reg-pulse-green {
+  0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes reg-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Advising Window Banner ──────────────────────────────────── */
+.reg-window-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  border: 1.5px solid transparent;
+  animation: reg-fade-in 0.4s ease;
+}
+
+.reg-window-banner--open {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-color: #6EE7B7;
+}
+
+.reg-window-banner--closed {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FDE68A 60%, #FEF3C7 100%);
+  border-color: #FCD34D;
+}
+
+.reg-window-icon { font-size: 32px; flex-shrink: 0; }
+
+.reg-window-content { flex: 1; }
+
+.reg-window-tier {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #374151;
+  margin-bottom: 3px;
+}
+
+.reg-window-msg {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.reg-window-meta {
+  font-size: 12px;
+  color: #6B7280;
+}
+
+.reg-window-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.reg-window-badge--open   { background: #10B981; color: #fff; }
+.reg-window-badge--closed { background: #F59E0B; color: #fff; }
+
+/* ── My Registered Courses Card ──────────────────────────────── */
+.reg-my-card { margin-bottom: 20px; }
+
+.reg-credit-badge {
+  padding: 4px 12px;
+  background: #EFF6FF;
+  color: #2563EB;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.reg-credit-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.reg-credit-bar {
+  flex: 1;
+  height: 8px;
+  background: #E5E7EB;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.reg-credit-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease, background 0.3s ease;
+}
+
+.reg-credit-pct {
+  font-size: 12px;
+  color: #6B7280;
+  white-space: nowrap;
+}
+
+.reg-empty-state {
+  text-align: center;
+  padding: 32px 0 20px;
+  color: #9CA3AF;
+}
+
+.reg-empty-icon { font-size: 36px; display: block; margin-bottom: 8px; }
+
+/* ── My Courses Table ────────────────────────────────────────── */
+.reg-my-table-wrap { overflow-x: auto; }
+
+.reg-my-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.reg-my-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6B7280;
+  border-bottom: 1.5px solid #E5E7EB;
+}
+
+.reg-my-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #F3F4F6;
+  vertical-align: middle;
+}
+
+.reg-my-row:last-child td { border-bottom: none; }
+.reg-my-row:hover td { background: #F9FAFB; }
+
+.reg-time-cell { font-size: 12px; color: #4B5563; }
+
+.reg-seat-mini { font-size: 12px; font-weight: 600; }
+
+/* ── Section Browser ─────────────────────────────────────────── */
+.reg-browser-card { margin-bottom: 20px; }
+
+.reg-count-badge {
+  font-size: 12px;
+  color: #6B7280;
+  background: #F3F4F6;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── Filters Row ─────────────────────────────────────────────── */
+.reg-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.reg-search-wrap {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+}
+
+.reg-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.reg-search-input {
+  width: 100%;
+  padding: 9px 12px 9px 36px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #FAFAFA;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.reg-search-input:focus {
+  outline: none;
+  border-color: #1A9882;
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.12);
+}
+
+.reg-select {
+  padding: 9px 14px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #FAFAFA;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.reg-select:focus {
+  outline: none;
+  border-color: #1A9882;
+}
+
+/* ── Section Grid ────────────────────────────────────────────── */
+.reg-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 16px;
+}
+
+/* ── Section Card ────────────────────────────────────────────── */
+.reg-section-card {
+  background: #fff;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 18px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+
+.reg-section-card:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+  transform: translateY(-2px);
+}
+
+.reg-section-card--registered {
+  border-color: #6EE7B7;
+  background: linear-gradient(135deg, #FAFFFE 0%, #F0FDF9 100%);
+}
+
+.reg-section-card--full {
+  opacity: 0.7;
+}
+
+/* Card Header */
+.reg-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reg-card-codes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reg-code-badge {
+  background: #1A9882;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.reg-section-num {
+  font-size: 12px;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.reg-status-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Card Title */
+.reg-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+/* Card Meta */
+.reg-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  color: #4B5563;
+}
+
+/* ── Live Seat Meter ─────────────────────────────────────────── */
+.reg-seat-meter-wrap { display: flex; flex-direction: column; gap: 5px; }
+
+.reg-seat-bar-track {
+  height: 8px;
+  background: #F3F4F6;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.reg-seat-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.4s ease;
+}
+
+.reg-seat-bar-fill--open        { background: #10B981; }
+.reg-seat-bar-fill--almost-full { background: #F59E0B; }
+.reg-seat-bar-fill--full        { background: #EF4444; }
+
+.reg-seat-counts {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reg-seat-remaining {
+  font-size: 13px;
+  font-weight: 700;
+  transition: color 0.4s ease;
+  animation: reg-seat-flash 0.5s ease when-updated;
+}
+
+.reg-seat-remaining--full { color: #EF4444 !important; }
+
+.reg-seat-total { font-size: 11px; color: #9CA3AF; }
+
+@keyframes reg-seat-flash {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Prerequisite Badge ──────────────────────────────────────── */
+.reg-prereq-badge {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.reg-prereq-badge--met {
+  background: #ECFDF5;
+  color: #065F46;
+}
+
+.reg-prereq-badge--unmet {
+  background: #FEF2F2;
+  color: #991B1B;
+}
+
+/* ── Exam Date ────────────────────────────────────────────────── */
+.reg-exam-date {
+  font-size: 11px;
+  color: #9CA3AF;
+}
+
+/* ── Action Buttons ──────────────────────────────────────────── */
+.reg-card-actions { margin-top: auto; }
+
+.reg-btn-register {
+  width: 100%;
+  padding: 9px 0;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  background: linear-gradient(135deg, #1A9882 0%, #0D7A68 100%);
+  color: #fff;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.reg-btn-register:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
+}
+
+.reg-btn-register:disabled {
+  background: #E5E7EB;
+  color: #9CA3AF;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.reg-btn-drop {
+  padding: 6px 14px;
+  border: 1.5px solid #EF4444;
+  background: transparent;
+  color: #EF4444;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.reg-btn-drop:hover {
+  background: #FEF2F2;
+  color: #B91C1C;
+}
+
+/* My-registrations table drop button — full width */
+.reg-my-table .reg-btn-drop { width: auto; }
+
+/* ── Skeleton Loading ────────────────────────────────────────── */
+.reg-skeleton-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 16px;
+}
+
+.reg-skeleton-card {
+  height: 200px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+  background-size: 200% 100%;
+  animation: reg-shimmer 1.4s infinite;
+}
+
+@keyframes reg-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Error state ─────────────────────────────────────────────── */
+.reg-error-state {
+  text-align: center;
+  padding: 32px;
+  color: #EF4444;
+}
+
+.reg-retry-btn {
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: #1A9882;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ── Toast Notification ──────────────────────────────────────── */
+.reg-toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 9999;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  animation: reg-slide-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reg-toast--success { background: #111827; color: #fff; }
+.reg-toast--error   { background: #EF4444; color: #fff; }
+.reg-toast--warning { background: #F59E0B; color: #fff; }
+
+@keyframes reg-slide-up {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@keyframes reg-fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .reg-section-grid {
+    grid-template-columns: 1fr;
+  }
+  .reg-filters {
+    flex-direction: column;
+  }
+  .reg-window-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* ── Course-already-taken card state ─────────────────────────── */
+.reg-section-card--taken {
+  opacity: 0.65;
+  border-color: #F59E0B !important;
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.reg-taken-notice {
+  font-size: 11.5px;
+  color: #92400E;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  border-radius: 7px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+}

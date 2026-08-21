@@ -2,27 +2,27 @@ package com.campusconnect.backend.controller;
 
 import com.campusconnect.backend.model.CourseCatalog;
 import com.campusconnect.backend.model.CourseSection;
-import com.campusconnect.backend.model.Enrollment;
 import com.campusconnect.backend.repository.CourseCatalogRepository;
 import com.campusconnect.backend.repository.CourseSectionRepository;
-import com.campusconnect.backend.repository.EnrollmentRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
- * CourseController – REST API for BRACU course catalog, sections, and enrollment.
+ * CourseController – REST API for BRACU course catalog and routine sections.
  *
  * MVC Role: Controller
  *
  * Endpoints:
- *   GET  /api/courses/catalog               – All catalog courses (client-side filtered)
- *   GET  /api/courses/sections?q=           – All sections (optional search)
- *   POST /api/courses/enroll                – Enroll student in a catalog course
- *   GET  /api/courses/enrolled?studentId=   – Get enrolled course IDs for a student
+ *   GET /api/courses/catalog              – All catalog courses (no filter)
+ *   GET /api/courses/catalog?q=           – Keyword search across code/name/dept/school
+ *   GET /api/courses/catalog?dept=        – Filter by department
+ *   GET /api/courses/catalog?school=      – Filter by school
+ *   GET /api/courses/catalog?genEd=true   – Filter by GenEd flag
+ *   GET /api/courses/departments          – All distinct department names
+ *   GET /api/courses/schools              – All distinct school names
+ *   GET /api/courses/sections?q=          – All sections for routine builder & advising
  */
 @RestController
 @RequestMapping("/api/courses")
@@ -31,85 +31,79 @@ public class CourseController {
 
     private final CourseCatalogRepository catalogRepo;
     private final CourseSectionRepository sectionRepo;
-    private final EnrollmentRepository    enrollmentRepo;
 
     public CourseController(CourseCatalogRepository catalogRepo,
-                            CourseSectionRepository sectionRepo,
-                            EnrollmentRepository enrollmentRepo) {
-        this.catalogRepo    = catalogRepo;
-        this.sectionRepo    = sectionRepo;
-        this.enrollmentRepo = enrollmentRepo;
+                            CourseSectionRepository sectionRepo) {
+        this.catalogRepo = catalogRepo;
+        this.sectionRepo = sectionRepo;
     }
 
     // ── GET /api/courses/catalog ──────────────────────────────────────────────
+
     /**
-     * Returns all courses in the catalog.
-     * Filtering is handled client-side (58 BRACU courses, small dataset).
+     * Returns courses from the catalog with optional server-side filtering.
+     * Priority: keyword search > department > school > genEd > all.
+     * All 564 BRACU courses are loaded; client-side pagination is optional.
      */
     @GetMapping("/catalog")
-    public ResponseEntity<List<CourseCatalog>> getCatalog() {
+    public ResponseEntity<List<CourseCatalog>> getCatalog(
+            @RequestParam(value = "q",      required = false, defaultValue = "") String q,
+            @RequestParam(value = "dept",   required = false, defaultValue = "") String dept,
+            @RequestParam(value = "school", required = false, defaultValue = "") String school,
+            @RequestParam(value = "genEd",  required = false, defaultValue = "") String genEd) {
+
+        if (!q.isBlank()) {
+            return ResponseEntity.ok(catalogRepo.searchByKeyword(q));
+        }
+        if (!dept.isBlank()) {
+            return ResponseEntity.ok(catalogRepo.findByDepartmentIgnoreCase(dept));
+        }
+        if (!school.isBlank()) {
+            return ResponseEntity.ok(catalogRepo.findBySchoolIgnoreCase(school));
+        }
+        if ("true".equalsIgnoreCase(genEd)) {
+            return ResponseEntity.ok(catalogRepo.findByIsGenEd(true));
+        }
+        if ("false".equalsIgnoreCase(genEd)) {
+            return ResponseEntity.ok(catalogRepo.findByIsGenEd(false));
+        }
         return ResponseEntity.ok(catalogRepo.findAll());
     }
 
-    // ── GET /api/courses/sections ─────────────────────────────────────────────
+    // ── GET /api/courses/departments ──────────────────────────────────────────
+
     /**
-     * Returns all course sections for the Routine Builder.
+     * Returns all distinct department names sorted alphabetically.
+     * Used to populate filter dropdowns in the frontend.
+     */
+    @GetMapping("/departments")
+    public ResponseEntity<List<String>> getDepartments() {
+        return ResponseEntity.ok(catalogRepo.findDistinctDepartments());
+    }
+
+    // ── GET /api/courses/schools ──────────────────────────────────────────────
+
+    /**
+     * Returns all distinct school names sorted alphabetically.
+     * Used to populate school/faculty filter tabs in the frontend.
+     */
+    @GetMapping("/schools")
+    public ResponseEntity<List<String>> getSchools() {
+        return ResponseEntity.ok(catalogRepo.findDistinctSchools());
+    }
+
+    // ── GET /api/courses/sections ─────────────────────────────────────────────
+
+    /**
+     * Returns all 2,298 course sections for the Routine Builder.
      * Supports optional ?q= search param (code, title, section number).
      */
     @GetMapping("/sections")
     public ResponseEntity<List<CourseSection>> getSections(
             @RequestParam(value = "q", required = false, defaultValue = "") String q) {
         if (q.isBlank()) {
-            return ResponseEntity.ok(sectionRepo.findAll());
+            return ResponseEntity.ok(sectionRepo.findAllOrderByCodeAndSection());
         }
         return ResponseEntity.ok(sectionRepo.search(q));
-    }
-
-    // ── POST /api/courses/enroll ──────────────────────────────────────────────
-    /**
-     * Enrolls a student in a catalog course.
-     * Body: { "studentId": "...", "courseId": 1 }
-     * Returns 409 if already enrolled, 404 if course not found.
-     */
-    @PostMapping("/enroll")
-    public ResponseEntity<?> enroll(@RequestBody Map<String, Object> body) {
-        String studentId = (String) body.get("studentId");
-        Long courseId    = Long.valueOf(body.get("courseId").toString());
-
-        if (enrollmentRepo.existsByStudentIdAndCourse_Id(studentId, courseId)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", "Already enrolled in this course."));
-        }
-
-        CourseCatalog course = catalogRepo.findById(courseId)
-                .orElse(null);
-        if (course == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Course not found."));
-        }
-
-        Enrollment enrollment = Enrollment.builder()
-                .studentId(studentId)
-                .course(course)
-                .build();
-        enrollmentRepo.save(enrollment);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "Enrolled successfully.", "courseCode", course.getCode()));
-    }
-
-    // ── GET /api/courses/enrolled ─────────────────────────────────────────────
-    /**
-     * Returns the list of course IDs a student is enrolled in.
-     * Used to sync localStorage cache with the database on page load.
-     */
-    @GetMapping("/enrolled")
-    public ResponseEntity<List<Long>> getEnrolled(
-            @RequestParam("studentId") String studentId) {
-        List<Long> ids = enrollmentRepo.findByStudentId(studentId)
-                .stream()
-                .map(e -> e.getCourse().getId())
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ids);
     }
 }

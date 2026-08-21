@@ -100,6 +100,7 @@ mvn spring-boot:run   # starts at http://localhost:8080
 | Advising Feature       | ⏳ TBD         | Add page + API |
 | Messaging Board        | ⏳ TBD         | Add page + API |
 | Bookmarks Feature      | ⏳ TBD         | Add page + API |
+| Payments & Receipt     | ✅ Done        | `frontend/src/views/pages/PaymentView.jsx` · `backend/.../PaymentController.java` |
 
 ---
 

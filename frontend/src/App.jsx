@@ -11,6 +11,8 @@ import CoursesView          from './views/pages/CoursesView'
 import RoutineView          from './views/pages/RoutineView'
 import AttendanceView       from './views/pages/AttendanceView'
 import AdvisingView        from './views/pages/AdvisingView'
+import AssignmentView      from './views/pages/AssignmentView'
+import PaymentView         from './views/pages/PaymentView'
 
 /**
  * App – Root router
@@ -27,6 +29,7 @@ import AdvisingView        from './views/pages/AdvisingView'
  *   /courses            → CoursesView
  *   /routine            → RoutineView
  *   /attendance         → AttendanceView        ← Phase 2 (Arham)
+ *   /payments           → PaymentView           ← Payments & Fee Clearance
  *   *                   → redirect to /
  *
  * NOTE (Phase 3): Replace the wildcard redirect with a
@@ -45,6 +48,8 @@ export default function App() {
       <Route path="/routine"           element={<RoutineView />} />
       <Route path="/attendance"        element={<AttendanceView />} />
       <Route path="/advising"          element={<AdvisingView />} />
+      <Route path="/assignments"       element={<AssignmentView />} />
+      <Route path="/payments"          element={<PaymentView />} />
       {/* Catch-all */}
       <Route path="*"                  element={<Navigate to="/" replace />} />
     </Routes>

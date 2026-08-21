@@ -540,3 +540,10 @@
 .cc-member-item:hover .cc-member-name { color: #e6edf3; }
 
 .cc-member-name.faculty { color: #f59e0b; }
+
+/* -- Presence pulse animation (used by PresenceDot) --------------- */
+@keyframes presencePulse {
+  0%,100% { box-shadow: 0 0 4px #10b98188; }
+  50%      { box-shadow: 0 0 10px #10b981cc; }
+}
+

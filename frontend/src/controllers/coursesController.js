@@ -36,11 +36,20 @@ export function getAvailability(enrolled, capacity) {
 function normaliseCourse(c) {
   return {
     ...c,
-    faculty: c.facultyId,
-    desc:    c.description,
-    tags:    typeof c.tags === 'string'
-               ? c.tags.split(',').map(t => t.trim()).filter(Boolean)
-               : (c.tags || []),
+    // Legacy alias (kept for backward compat)
+    faculty:    c.facultyId || 'bracu',
+    desc:       c.description || '',
+    tags:       typeof c.tags === 'string'
+                  ? c.tags.split(',').map(t => t.trim()).filter(Boolean)
+                  : (c.tags || []),
+    // New BRACU real fields
+    department:        c.department || '',
+    school:            c.school     || '',
+    isGenEd:           c.isGenEd    ?? false,
+    prereqs:           c.prerequisites || '',
+    instructor:        c.instructor   || 'TBA',
+    midExamSchedule:   c.midExamSchedule || '',
+    finalExamSchedule: c.finalExamSchedule || '',
   }
 }
 
@@ -99,29 +108,13 @@ export function useCoursesController() {
     return () => { cancelled = true }
   }, [])
 
-  // ── Hydrate enrolledIds from DB on mount ──────────────────────
-  useEffect(() => {
-    courseService.getEnrolledIds(CURRENT_USER.id)
-      .then(ids => {
-        const dbSet = new Set(ids.map(String))
-        setEnrolledIds(prev => {
-          const merged = new Set([...prev, ...dbSet])
-          try {
-            localStorage.setItem(ENROLLED_IDS_KEY, JSON.stringify(Array.from(merged)))
-          } catch (e) { /* ignore */ }
-          return merged
-        })
-      })
-      .catch(() => { /* use localStorage cache if DB is unavailable */ })
-  }, [])
-
   /**
-   * handleEnroll – persists to Neon DB AND updates localStorage cache.
+   * handleEnroll – joins the course discussion channel (persisted in localStorage).
+   * Official course registration is performed via the Advising module.
    */
   const handleEnroll = useCallback(async (course) => {
-    if (enrolledIds.has(String(course.id))) return   // already enrolled
+    if (enrolledIds.has(String(course.id))) return
 
-    // Optimistic local update
     setEnrolledIds(prev => {
       const next = new Set([...prev, String(course.id)])
       try {
@@ -131,16 +124,10 @@ export function useCoursesController() {
     })
 
     try {
-      await courseService.enroll(CURRENT_USER.id, course.id)
-    } catch (err) {
-      console.warn('[CoursesController] DB enroll failed (using cache):', err.message)
-    }
-
-    try {
       const channel = await channelService.onEnrollment({ userId: CURRENT_USER.id, course })
-      setEnrollToast(`✅ Enrolled in ${course.code} · Channel ${channel.name} ready!`)
+      setEnrollToast(`✅ Joined ${course.code} discussion · Channel ${channel.name} ready!`)
     } catch {
-      setEnrollToast(`✅ Enrolled in ${course.code}!`)
+      setEnrollToast(`✅ Joined ${course.code}!`)
     }
     setTimeout(() => setEnrollToast(null), 4000)
   }, [enrolledIds])
@@ -148,7 +135,13 @@ export function useCoursesController() {
   /* Derived: client-side filtered courses */
   const filtered = useMemo(() => {
     let r = [...allCourses]
-    if (activeFaculty !== 'all')         r = r.filter(c => c.faculty === activeFaculty)
+    // Filter by school: match the school's `value` string against c.school
+    if (activeFaculty !== 'all') {
+      const schoolEntry = FACULTIES.find(f => f.id === activeFaculty)
+      if (schoolEntry) {
+        r = r.filter(c => c.school === schoolEntry.value)
+      }
+    }
     if (activeYear !== 'All Years') {
       const yr = parseInt(activeYear.replace('Year ', ''))
       r = r.filter(c => c.year === yr)
@@ -157,22 +150,24 @@ export function useCoursesController() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       r = r.filter(c =>
-        c.name.toLowerCase().includes(q)       ||
-        c.code.toLowerCase().includes(q)       ||
-        c.instructor.toLowerCase().includes(q) ||
-        c.desc?.toLowerCase().includes(q)      ||
+        c.name.toLowerCase().includes(q)           ||
+        c.code.toLowerCase().includes(q)           ||
+        (c.instructor || '').toLowerCase().includes(q) ||
+        (c.desc || '').toLowerCase().includes(q)   ||
+        (c.department || '').toLowerCase().includes(q) ||
+        (c.school || '').toLowerCase().includes(q) ||
         c.tags?.some(t => t.toLowerCase().includes(q))
       )
     }
     return r
   }, [allCourses, searchQuery, activeFaculty, activeYear, activeSemester])
 
-  /* Derived: grouped by faculty (only when showing all) */
+  /* Derived: grouped by school (only when showing all) */
   const grouped = useMemo(() => {
     if (activeFaculty !== 'all') return null
     const map = {}
     for (const fac of FACULTIES) {
-      const courses = filtered.filter(c => c.faculty === fac.id)
+      const courses = filtered.filter(c => c.school === fac.value)
       if (courses.length > 0) map[fac.id] = courses
     }
     return map

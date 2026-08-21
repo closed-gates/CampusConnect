@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
  *
  * MVC Role: Model
  * Maps to the `course_section` table in Neon PostgreSQL.
- * Represents a specific section of a course, e.g. CSE110-01.
+ * Represents a specific section of a course, e.g. CSE110-16.
+ *
+ * Schema v2: Added `credits` (FLOAT) and `midterm_exam` (VARCHAR) fields
+ * from real BRACU schedule data (Summer 2026).
  *
  * Used by: CourseSectionRepository, CourseController
  */
@@ -23,36 +26,42 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CourseSection {
 
-    /** e.g. "CSE110-01" */
+    /** e.g. "CSE110-16" */
     @Id
-    @Column(length = 30)
+    @Column(length = 60)
     private String id;
 
     /** e.g. "CSE110" */
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     private String code;
 
-    /** Section number, e.g. "01", "02" */
-    @Column(nullable = false, length = 5)
+    /** Section number, e.g. "01", "16", "S52- Online" */
+    @Column(nullable = false, length = 30)
     private String section;
 
-    /** e.g. "Programming Language I" */
+    /** e.g. "PROGRAMMING LANGUAGE I" */
     @Column(nullable = false)
     private String title;
 
-    /** Instructor name, e.g. "Dr. Ahmed" */
+    /**
+     * Instructor/faculty abbreviation or name, e.g. "ANT", "RKBR", "TBA".
+     * BRACU uses abbreviated faculty initials in section data.
+     */
     @Column(nullable = false)
     private String faculty;
 
-    /** e.g. "SUN-TUE 08:00 AM-09:20 AM" */
-    @Column(nullable = false)
+    /**
+     * Full schedule string from BRACU, e.g.
+     * "SUNDAY(8:00 AM-9:20 AM-09A-05C) ; TUESDAY(8:00 AM-9:20 AM-09A-05C)"
+     */
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String time;
 
-    /** Room, e.g. "NAC-09A-05C" */
-    @Column(nullable = false, length = 30)
+    /** Room/building code, e.g. "09A-04C", "11H-46L", "UB0000" */
+    @Column(nullable = false, length = 60)
     private String room;
 
-    /** Exam schedule string, e.g. "Dec 10, 2026 9:00 AM-11:00 AM" */
+    /** Final exam schedule string, e.g. "Sep 13, 2026 8:30 AM - 10:30 AM" */
     @Column(name = "exam_day")
     private String examDay;
 
@@ -63,4 +72,19 @@ public class CourseSection {
     /** Number of booked seats */
     @Column(nullable = false)
     private Integer booked;
+
+    /**
+     * Prerequisite course codes, e.g. "(CSE110)" or "(CSE110 AND CSE220)".
+     * Null/empty means no prerequisites.
+     */
+    @Column(name = "prerequisite_codes", columnDefinition = "TEXT")
+    private String prerequisiteCodes;
+
+    /** Credit hours for this course, e.g. 3.0, 1.5, 4.5 */
+    @Column
+    private Double credits;
+
+    /** Midterm exam schedule, e.g. "Jul 26, 2026 8:30 AM - 10:30 AM" */
+    @Column(name = "midterm_exam", length = 100)
+    private String midtermExam;
 }

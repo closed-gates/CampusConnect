@@ -11,9 +11,11 @@
  *   GET  /api/courses/sections?q=           → getSections(q)
  *   POST /api/courses/enroll                → enroll(studentId, courseId)
  *   GET  /api/courses/enrolled?studentId=   → getEnrolledIds(studentId)
+ *   GET  /api/exam-schedule/all             → getExamSchedules()
  */
 
-const API_BASE = 'http://localhost:8080/api/courses'
+const API_BASE      = '/api/courses'
+const EXAM_API_BASE = '/api/exam-schedule'
 
 /**
  * Fetch all catalog courses from the Neon database.
@@ -41,32 +43,51 @@ export async function getSections(q = '') {
 }
 
 /**
- * Enroll a student in a catalog course (persisted to Neon DB).
- * @param {string} studentId
- * @param {number} courseId - The DB primary key of the CourseCatalog row
- * @returns {Promise<{message: string, courseCode: string}>}
+ * Fetch exam schedules for ALL courses from the exam_schedules table.
+ * Used by the Routine Builder to display live midterm/final exam dates.
+ * @returns {Promise<Array>} Array of ExamScheduleDTO objects
  */
-export async function enroll(studentId, courseId) {
-  const res = await fetch(`${API_BASE}/enroll`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ studentId, courseId }),
-  })
-  if (res.status === 409) throw new Error('Already enrolled in this course.')
-  if (!res.ok) throw new Error(`Enrollment failed: ${res.status}`)
+export async function getExamSchedules() {
+  const res = await fetch(`${EXAM_API_BASE}/all`)
+  if (!res.ok) throw new Error(`Failed to load exam schedules: ${res.status}`)
   return res.json()
 }
 
 /**
- * Get the list of course IDs a student is enrolled in (from Neon DB).
- * Used to hydrate the localStorage cache on page load.
- * @param {string} studentId
- * @returns {Promise<number[]>} Array of course ID numbers
+ * Fetch the full course catalog and transform each entry into a shape
+ * compatible with the Routine Builder (adds virtual section/time fields
+ * for courses that don't have CourseSection rows in the DB).
+ *
+ * Catalog fields:  { code, name, facultyId, credits, instructor, enrolled, capacity, ... }
+ * Routine shape:   { id, code, section, title, faculty, time, room, examDay, totalSeats, booked }
+ *
+ * Used by: routineController.js to show ALL catalog courses on the Routine page.
+ * @returns {Promise<Array>}
  */
-export async function getEnrolledIds(studentId) {
-  const res = await fetch(`${API_BASE}/enrolled?studentId=${encodeURIComponent(studentId)}`)
-  if (!res.ok) throw new Error(`Failed to load enrolled courses: ${res.status}`)
-  return res.json()
+export async function getCatalogForRoutine() {
+  const res = await fetch(`${API_BASE}/catalog`)
+  if (!res.ok) throw new Error(`Failed to load catalog for routine: ${res.status}`)
+  const data = await res.json()
+  return data.map(c => ({
+    // Use code as unique ID for catalog-only courses (no DB section row)
+    id:         `${c.code}-CAT`,
+    code:       c.code,
+    section:    '—',
+    title:      c.name,
+    faculty:    c.instructor,
+    // Catalog courses have no time/room — shown as TBA
+    time:       'TBA',
+    room:       'TBA',
+    examDay:    null,            // will be filled by exam schedule merge
+    midtermDay: null,
+    totalSeats: c.capacity  || 0,
+    booked:     c.enrolled  || 0,
+    credits:    c.credits   || 3,
+    tags:       typeof c.tags === 'string'
+                  ? c.tags.split(',').map(t => t.trim()).filter(Boolean)
+                  : (c.tags || []),
+    description: c.description || '',
+  }))
 }
 
-export const courseService = { getCatalog, getSections, enroll, getEnrolledIds }
+export const courseService = { getCatalog, getSections, getExamSchedules, getCatalogForRoutine }

@@ -201,4 +201,66 @@ public class AttendanceService {
 
         return summary;
     }
+
+    // ── Student Attendance Report & History ───────────────────────
+
+    /**
+     * Computes comprehensive student-specific attendance report across all classes.
+     *
+     * @param studentId The student ID
+     * @return Map with overall stats, course breakdown, and detailed session history
+     */
+    public Map<String, Object> getStudentAttendanceReport(String studentId) {
+        List<AttendanceRecord> records = repo.findByStudentIdOrderByDateDesc(studentId);
+        // Fallback for STU001 or primary student alias
+        if (records.isEmpty() && ("STU001".equalsIgnoreCase(studentId) || "usr_eusha_001".equalsIgnoreCase(studentId))) {
+            records = repo.findByStudentIdOrderByDateDesc("21201001");
+        }
+
+        long totalSessions = records.size();
+        long presentCount  = records.stream().filter(r -> "PRESENT".equalsIgnoreCase(r.getStatus())).count();
+        long lateCount     = records.stream().filter(r -> "LATE".equalsIgnoreCase(r.getStatus())).count();
+        long absentCount   = records.stream().filter(r -> "ABSENT".equalsIgnoreCase(r.getStatus())).count();
+
+        double attendanceRate = totalSessions > 0
+                ? (double) (presentCount + lateCount) / totalSessions * 100.0
+                : 87.5;
+
+        // Group by course for individual course metrics
+        Map<String, List<AttendanceRecord>> byCourse = records.stream()
+                .collect(Collectors.groupingBy(AttendanceRecord::getCourseId, LinkedHashMap::new, Collectors.toList()));
+
+        List<Map<String, Object>> courseBreakdown = new ArrayList<>();
+        for (Map.Entry<String, List<AttendanceRecord>> entry : byCourse.entrySet()) {
+            String courseId = entry.getKey();
+            List<AttendanceRecord> cList = entry.getValue();
+            long cTotal   = cList.size();
+            long cPresent = cList.stream().filter(r -> "PRESENT".equalsIgnoreCase(r.getStatus())).count();
+            long cLate    = cList.stream().filter(r -> "LATE".equalsIgnoreCase(r.getStatus())).count();
+            long cAbsent  = cList.stream().filter(r -> "ABSENT".equalsIgnoreCase(r.getStatus())).count();
+            double cRate  = cTotal > 0 ? (double) (cPresent + cLate) / cTotal * 100.0 : 0.0;
+            String courseName = cList.isEmpty() ? courseId : cList.get(0).getCourseName();
+
+            Map<String, Object> cMap = new LinkedHashMap<>();
+            cMap.put("courseId",       courseId);
+            cMap.put("courseName",     courseName);
+            cMap.put("totalSessions",  cTotal);
+            cMap.put("presentCount",   cPresent);
+            cMap.put("lateCount",      cLate);
+            cMap.put("absentCount",    cAbsent);
+            cMap.put("attendanceRate", Math.round(cRate * 10.0) / 10.0);
+            courseBreakdown.add(cMap);
+        }
+
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("studentId",       studentId);
+        report.put("totalSessions",   totalSessions);
+        report.put("presentCount",    presentCount);
+        report.put("lateCount",       lateCount);
+        report.put("absentCount",     absentCount);
+        report.put("attendanceRate",  Math.round(attendanceRate * 10.0) / 10.0);
+        report.put("courseBreakdown", courseBreakdown);
+        report.put("history",         records);
+        return report;
+    }
 }

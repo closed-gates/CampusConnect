@@ -4,12 +4,15 @@
  * MVC Role: Controller
  *
  * Manages all state and logic for course section selection, conflict detection,
- * and schedule grid computation. Fetches real BRACU sections from Neon DB.
+ * and schedule grid computation.
+ * Fetches real BRACU sections AND catalog from Neon DB so all 43 courses appear,
+ * with section-specific time/room data where available.
  */
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { TIME_SLOTS, DAYS } from '../models/routineModel.js'
 import { courseService } from '../services/courseService.js'
+import { formatExamDate } from '../models/examScheduleModel.js'
 
 /* ── Pure helper functions (no side effects) ─────────────────── */
 
@@ -18,29 +21,66 @@ export function isSoldOut(c)      { return remainingSeats(c) <= 0 }
 
 /**
  * Extracts the time-slot string from a course's time field.
- * e.g. "SUN-TUE 08:00 AM-09:20 AM" → "08:00 AM-09:20 AM"
+ * Handles two formats:
+ *   Old (static): "SUN-TUE 08:00 AM-09:20 AM"
+ *   New (BRACU):  "SATURDAY(8:00 AM-9:20 AM-07A-05C) ; THURSDAY(8:00 AM-9:20 AM-07A-05C)"
+ * Returns the first time slot found.
  */
 export function courseToSlots(c) {
+  if (!c.time) return []
+
+  // New BRACU format: DAY(TIME-ROOM) ; DAY(TIME-ROOM)
+  const bracuMatch = c.time.match(/\((\d+:\d+\s*[AP]M-\d+:\d+\s*[AP]M)/)
+  if (bracuMatch) {
+    // Normalise to "H:MM AM-H:MM PM" → find closest TIME_SLOTS entry
+    const rawSlot = bracuMatch[1].replace('-', '-') // already has both times
+    const slot = TIME_SLOTS.find(s => {
+      // strip leading 0 for comparison (BRACU uses 8:00, we may store 08:00)
+      const normalised = s.replace(/^0/, '')
+      return rawSlot.startsWith(normalised.split('-')[0].replace(/^0/, ''))
+    })
+    return slot ? [slot] : [rawSlot]
+  }
+
+  // Old format: "SUN-TUE 08:00 AM-09:20 AM"
   const parts = c.time.split(' ')
-  const timePart = parts.slice(1).join(' ')           // everything after day prefix
+  const timePart = parts.slice(1).join(' ')
   const slot = TIME_SLOTS.find(s => s === timePart)
   return slot ? [slot] : []
 }
 
 /**
  * Extracts the day names from a course's time field.
- * e.g. "SUN-TUE 08:00 AM-09:20 AM" → ["Sunday", "Tuesday"]
+ * Handles both old and new BRACU formats.
+ * e.g. "SATURDAY(8:00 AM-9:20 AM-07A-05C) ; THURSDAY(8:00 AM-9:20 AM-07A-05C)"
+ *   → ["Saturday", "Thursday"]
  */
 export function courseToDays(c) {
-  const parts   = c.time.split(' ')
-  const dayStr  = parts[0].toUpperCase()
+  if (!c.time) return []
+
   const map = {
     SUN: 'Sunday', MON: 'Monday', TUE: 'Tuesday',
     WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday', SAT: 'Saturday',
+    SUNDAY: 'Sunday', MONDAY: 'Monday', TUESDAY: 'Tuesday',
+    WEDNESDAY: 'Wednesday', THURSDAY: 'Thursday', FRIDAY: 'Friday', SATURDAY: 'Saturday',
   }
+
   const result = new Set()
+
+  // New BRACU format: extract day names before '('
+  if (c.time.includes('(')) {
+    const segments = c.time.split(';')
+    segments.forEach(seg => {
+      const dayPart = seg.trim().split('(')[0].trim().toUpperCase()
+      if (map[dayPart]) result.add(map[dayPart])
+    })
+    return [...result]
+  }
+
+  // Old format: "SUN-TUE 08:00 AM–09:20 AM"
+  const dayStr = c.time.split(' ')[0].toUpperCase()
   Object.entries(map).forEach(([abbr, full]) => {
-    if (dayStr.includes(abbr)) result.add(full)
+    if (abbr.length <= 3 && dayStr.includes(abbr)) result.add(full)
   })
   return [...result]
 }
@@ -66,17 +106,43 @@ export function detectConflicts(selected) {
   return conflicts
 }
 
+/**
+ * Sorts courses by course code, and by section number in ascending numerical order.
+ * e.g. CSE110-01, CSE110-02, ..., CSE110-10, CSE111-01, ...
+ */
+export function sortCoursesByCodeAndSection(a, b) {
+  const codeA = (a.code || '').toUpperCase()
+  const codeB = (b.code || '').toUpperCase()
+  const codeCmp = codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: 'base' })
+  if (codeCmp !== 0) return codeCmp
+
+  const secA = parseInt(a.section, 10)
+  const secB = parseInt(b.section, 10)
+
+  if (isNaN(secA) && isNaN(secB)) {
+    return (a.section || '').localeCompare(b.section || '')
+  }
+  if (isNaN(secA)) return 1
+  if (isNaN(secB)) return -1
+
+  return secA - secB
+}
+
 /* ── Normaliser: maps DB fields to frontend shape ────────────── */
 /**
- * Backend returns camelCase { totalSeats, ... }.
- * Frontend helpers use the same shape – no renaming needed,
- * but we ensure numeric types are correct.
+ * Merges live exam dates from examScheduleMap into a section or catalog entry.
+ * Works for both CourseSection (has time/room/seats) and catalog-only entries.
  */
-function normaliseSection(s) {
+function normaliseSection(s, examScheduleMap) {
+  const schedule = examScheduleMap ? examScheduleMap[s.code] : null
   return {
     ...s,
-    totalSeats: Number(s.totalSeats),
-    booked:     Number(s.booked),
+    totalSeats: Number(s.totalSeats || 0),
+    booked:     Number(s.booked     || 0),
+    // Overwrite examDay with DB-sourced final exam date (formatted string)
+    examDay:    schedule ? formatExamDate(schedule.finalDate)   : (s.examDay && s.examDay !== 'TBA' ? s.examDay : 'TBA'),
+    // Add midtermDay for display in CourseInfoBlock
+    midtermDay: schedule ? formatExamDate(schedule.midtermDate) : (s.midtermExam && s.midtermExam !== 'TBA' ? s.midtermExam : null),
   }
 }
 
@@ -89,9 +155,10 @@ function normaliseSection(s) {
  */
 export function useRoutineController() {
   // ── Remote data state ─────────────────────────────────────────
-  const [allSections,  setAllSections]  = useState([])
-  const [loading,      setLoading]      = useState(true)
-  const [error,        setError]        = useState(null)
+  const [allSections,     setAllSections]     = useState([])
+  const [examScheduleMap, setExamScheduleMap] = useState({})
+  const [loading,         setLoading]         = useState(true)
+  const [error,           setError]           = useState(null)
 
   // ── UI state ──────────────────────────────────────────────────
   const [availSearch,  setAvailSearch]  = useState('')
@@ -99,23 +166,46 @@ export function useRoutineController() {
   const [selected,     setSelected]     = useState([])
   const [highlighted,  setHighlighted]  = useState(null)
 
-  // ── Fetch sections from Neon DB on mount ─────────────────────
+  // ── Fetch sections + catalog + exam schedules in parallel ─────
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError(null)
 
-    courseService.getSections()
-      .then(data => {
+    // Fetch everything in parallel:
+    //   - sections:       CourseSection rows with real time/room/seat data
+    //   - catalogItems:   All 43 catalog courses (virtual TBA entries for those without sections)
+    //   - scheduleData:   All exam dates from exam_schedules table
+    Promise.all([
+      courseService.getSections(),
+      courseService.getCatalogForRoutine().catch(() => []),   // graceful fallback
+      courseService.getExamSchedules().catch(() => []),        // graceful fallback
+    ])
+      .then(([sectionsData, catalogData, scheduleData]) => {
         if (!cancelled) {
-          setAllSections(data.map(normaliseSection))
+          // Build exam schedule map: courseCode → ExamScheduleDTO
+          const scheduleMap = {}
+          scheduleData.forEach(s => { scheduleMap[s.courseCode] = s })
+          setExamScheduleMap(scheduleMap)
+
+          // Build set of course codes that already have real sections
+          const codesWithSections = new Set(sectionsData.map(s => s.code))
+
+          // Merge: keep all real sections + catalog entries for courses without sections
+          const catalogOnly = catalogData.filter(c => !codesWithSections.has(c.code))
+          const merged = [
+            ...sectionsData.map(s => normaliseSection(s, scheduleMap)),
+            ...catalogOnly.map(c => normaliseSection(c, scheduleMap)),
+          ].sort(sortCoursesByCodeAndSection)
+
+          setAllSections(merged)
           setLoading(false)
         }
       })
       .catch(err => {
         if (!cancelled) {
-          console.error('[RoutineController] Failed to fetch sections:', err)
-          setError('Could not load course sections. Please check the backend is running.')
+          console.error('[RoutineController] Failed to fetch data:', err)
+          setError('Could not load courses. Please check the backend is running.')
           setLoading(false)
         }
       })
@@ -123,7 +213,7 @@ export function useRoutineController() {
     return () => { cancelled = true }
   }, [])
 
-  /* Derived: available sections with isTaken flag */
+  /* Derived: available sections with isTaken flag, sorted strictly section-number wise */
   const available = useMemo(() => {
     const selectedCodes = new Set(selected.map(s => s.code))
     const selectedIds   = new Set(selected.map(s => s.id))
@@ -137,6 +227,7 @@ export function useRoutineController() {
           c.title.toLowerCase().includes(q)   ||
           c.section.includes(q)
       })
+      .sort(sortCoursesByCodeAndSection)
   }, [allSections, selected, availSearch])
 
   /* Derived: filtered selected courses */
@@ -155,7 +246,7 @@ export function useRoutineController() {
   const highlightedCourse     = useMemo(() => allSections.find(c => c.id === highlighted), [allSections, highlighted])
   const isHighlightedSelected  = selected.some(c => c.id === highlighted)
   const isHighlightedAvailable = available.some(c => c.id === highlighted && !c.isTaken)
-  const totalCredits           = selected.length * 3
+  const totalCredits = selected.reduce((sum, c) => sum + Number(c.credits || 3), 0)
 
   /* Derived: schedule grid map { "Day|Slot" → [course, ...] } */
   const scheduleGrid = useMemo(() => {

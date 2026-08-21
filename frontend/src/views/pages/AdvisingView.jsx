@@ -1,8 +1,6 @@
-import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar.jsx'
-import { useStudentAdvisingController, useAdvisorController } from '../../controllers/advisingController.js'
-import { STATIC_COURSES } from '../../models/routineModel.js'
-import { CREDITS_PER_COURSE } from '../../models/advisingModel.js'
+import { useAdvisorController } from '../../controllers/advisingController.js'
+import RegistrationSection from './RegistrationView.jsx'
 
 /**
  * AdvisingView – Dual-role advising page.
@@ -27,148 +25,19 @@ export default function AdvisingView() {
 
 /* ═══════════════════════════════════════════════════════════════
    STUDENT PANEL
+   Shows ONLY the Course Registration feature.
+   No advising info, no assigned courses, no message advisor button.
 ═══════════════════════════════════════════════════════════════ */
 function StudentPanel() {
-  const navigate = useNavigate()
-  const { profile, loading, error, refetch } = useStudentAdvisingController()
-
-  // Use limits from backend profile (CGPA-based: >=3.5→5, >=2.0→4, probation→3)
-  const creditLimit  = profile?.creditLimit  ?? 12
-  const courseLimit  = profile?.courseLimit  ?? 4
-  const creditUsed   = (profile?.advisedCourses?.length ?? 0) * CREDITS_PER_COURSE
-  const courseCount  = profile?.advisedCourses?.length ?? 0
-  const creditPct    = creditLimit > 0 ? Math.round((creditUsed / creditLimit) * 100) : 0
-
   return (
     <>
-      {/* Header */}
       <div className="dashboard-header">
         <div>
-          <h1 className="dashboard-greeting">My Advising 🎓</h1>
-          <p className="dashboard-date">Courses assigned by your academic advisor this semester</p>
+          <h1 className="dashboard-greeting">Advising 🎓</h1>
+          <p className="dashboard-date">Browse open sections and register during your advising window</p>
         </div>
-        <button
-          id="advising-msg-advisor-btn"
-          className="adv-msg-btn"
-          onClick={() => navigate('/messaging')}
-        >
-          💬 Message Advisor
-        </button>
       </div>
-
-      {/* Status card */}
-      {!loading && !error && profile && (
-        <div className="section-card adv-status-card">
-          <div className="adv-status-row">
-            <div className="adv-status-item">
-              <span className="adv-status-label">Student</span>
-              <span className="adv-status-value">{profile.studentName}</span>
-            </div>
-            <div className="adv-status-item">
-              <span className="adv-status-label">Department</span>
-              <span className="adv-status-value">{profile.department}</span>
-            </div>
-            <div className="adv-status-item">
-              <span className="adv-status-label">CGPA</span>
-              <span className="adv-status-value">{profile.cgpa?.toFixed(2)}</span>
-            </div>
-            <div className="adv-status-item">
-              <span className="adv-status-label">Credits This Sem</span>
-              <span className="adv-status-value">{creditUsed} / {creditLimit}</span>
-            </div>
-            <div className="adv-status-item">
-              <span className="adv-status-label">Courses</span>
-              <span className="adv-status-value">{courseCount} / {courseLimit}</span>
-            </div>
-            {profile.onProbation && (
-              <div className="adv-probation-badge">⚠️ Probationary Status</div>
-            )}
-          </div>
-          {/* Credit meter */}
-          <div className="adv-credit-meter-wrap">
-            <div className="adv-credit-meter">
-              <div
-                className="adv-credit-fill"
-                style={{
-                  width: `${Math.min(creditPct, 100)}%`,
-                  background: creditPct >= 100 ? '#EF4444' : creditPct >= 80 ? '#F59E0B' : '#1A9882'
-                }}
-              />
-            </div>
-            <span className="adv-credit-pct-label">{creditPct}% of credit limit used</span>
-          </div>
-        </div>
-      )}
-
-      {/* Assigned courses */}
-      <div className="section-card">
-        <div className="section-header">
-          <h2 className="section-title">Assigned Courses</h2>
-          {!loading && profile && (
-            <span className="advising-match-badge">
-              {courseCount} course{courseCount !== 1 ? 's' : ''} · {creditUsed} credits
-            </span>
-          )}
-        </div>
-
-        {loading && (
-          <div className="advisor-cards-grid">
-            {[1,2,3].map(i => <div key={i} className="advisor-card advisor-card--skeleton">
-              <div className="skeleton-line skeleton-line--title" />
-              <div className="skeleton-line skeleton-line--body" />
-              <div className="skeleton-line skeleton-line--body" />
-            </div>)}
-          </div>
-        )}
-
-        {!loading && error && (
-          <div className="advising-empty-state" role="alert">
-            <span className="empty-icon">⚠️</span>
-            <h3>Could not load your courses</h3>
-            <p>{error}</p>
-            <button className="advisor-request-btn" onClick={refetch}>Try Again</button>
-          </div>
-        )}
-
-        {!loading && !error && (!profile?.advisedCourses || profile.advisedCourses.length === 0) && (
-          <div className="advising-empty-state">
-            <span className="empty-icon">📋</span>
-            <h3>No courses assigned yet</h3>
-            <p>Your advisor hasn't assigned any courses for this semester. Message them using the button above.</p>
-          </div>
-        )}
-
-        {!loading && !error && profile?.advisedCourses?.length > 0 && (
-          <div className="adv-course-table-wrap">
-            <table className="adv-course-table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Title</th>
-                  <th>Section</th>
-                  <th>Credits</th>
-                  <th>Schedule</th>
-                  <th>Room</th>
-                  <th>Faculty</th>
-                </tr>
-              </thead>
-              <tbody>
-                {profile.advisedCourses.map(c => (
-                  <tr key={c.id}>
-                    <td><span className="adv-course-code">{c.courseCode}</span></td>
-                    <td>{c.courseTitle}</td>
-                    <td>Sec {c.section}</td>
-                    <td>{c.credits} cr</td>
-                    <td className="adv-time-cell">{c.time}</td>
-                    <td>{c.room}</td>
-                    <td>{c.faculty}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      <RegistrationSection />
     </>
   )
 }
@@ -180,7 +49,8 @@ function AdvisorPanel() {
   const {
     students, selectedStudent, profile,
     courseSearch, setCourseSearch,
-    loading, profileLoading,
+    filteredCourses,
+    loading, profileLoading, coursesLoading,
     toast, toastType,
     creditUsed, creditLimit, courseCount, courseLimit,
     seatUpdates,
@@ -189,14 +59,7 @@ function AdvisorPanel() {
     handleRemove,
   } = useAdvisorController()
 
-  // Filter STATIC_COURSES by search and exclude already-assigned codes
   const assignedCodes = new Set(profile?.advisedCourses?.map(c => c.courseCode) ?? [])
-  const filteredCourses = STATIC_COURSES.filter(c => {
-    const q = courseSearch.toLowerCase()
-    const matchesSearch = !q || c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || c.section.includes(q)
-    return matchesSearch
-  })
-
   const creditPct = creditLimit > 0 ? Math.round((creditUsed / creditLimit) * 100) : 0
 
   return (
@@ -346,12 +209,25 @@ function AdvisorPanel() {
             </div>
 
             <div className="adv-catalog-list">
-              {filteredCourses.map(course => {
+              {coursesLoading && (
+                <div style={{ padding: '12px 0' }}>
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="skeleton-line" style={{ height: 52, marginBottom: 12, borderRadius: 8 }} />
+                  ))}
+                </div>
+              )}
+              {!coursesLoading && filteredCourses.length === 0 && (
+                <p style={{ marginTop: 24, fontSize: 13, color: 'var(--color-text-sub)', textAlign: 'center' }}>
+                  No courses found matching your search.
+                </p>
+              )}
+              {!coursesLoading && filteredCourses.map(course => {
                 const isAssigned     = assignedCodes.has(course.code)
                 // Subtract additional bookings made through the advisor panel this session
                 const extraBooked    = seatUpdates[course.id] ?? 0
-                const availableSeats = Math.max(0, course.totalSeats - course.booked - extraBooked)
+                const availableSeats = Math.max(0, (course.totalSeats || 0) - (course.booked || 0) - extraBooked)
                 const soldOut        = availableSeats <= 0
+                const credits        = course.credits || 3
                 return (
                   <div
                     key={course.id}
@@ -370,15 +246,15 @@ function AdvisorPanel() {
                         📅 {course.time} &nbsp;|&nbsp; 📍 {course.room} &nbsp;|&nbsp; 👤 {course.faculty}
                       </div>
                       <div className="adv-catalog-meta">
-                        🪑 {availableSeats} seat{availableSeats !== 1 ? 's' : ''} left · 3 credits
+                        🪑 {availableSeats} seat{availableSeats !== 1 ? 's' : ''} left · {credits} credit{credits !== 1 ? 's' : ''}
                       </div>
                     </div>
                     <button
                       id={`adv-assign-${course.id}`}
                       className="adv-assign-btn"
-                      disabled={isAssigned || !profile || courseCount >= courseLimit}
+                      disabled={isAssigned || !profile || courseCount >= courseLimit || soldOut}
                       onClick={() => handleAssign(course)}
-                      title={isAssigned ? 'Already assigned' : courseCount >= courseLimit ? 'Course limit reached' : 'Assign this course'}
+                      title={isAssigned ? 'Already assigned' : soldOut ? 'Section full' : courseCount >= courseLimit ? 'Course limit reached' : 'Assign this course'}
                     >
                       {isAssigned ? '✓' : 'Assign'}
                     </button>
