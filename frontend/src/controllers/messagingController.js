@@ -68,6 +68,39 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
     return () => unsubscribe()
   }, [activeConvId])
 
+  // Sync with backend enrolled/advised courses on mount
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/registration/my?studentId=STU001').then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch('/api/advisors/student/STU001').then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([regCourses, profile]) => {
+      let updated = false
+      if (Array.isArray(regCourses)) {
+        regCourses.forEach(r => {
+          const code = r.code || r.courseCode
+          const name = r.title || r.courseTitle || r.name || code
+          if (code) {
+            channelService.onEnrollment({ userId: user.id, course: { code, name } })
+            updated = true
+          }
+        })
+      }
+      if (profile && Array.isArray(profile.advisedCourses)) {
+        profile.advisedCourses.forEach(ac => {
+          const code = ac.courseCode || ac.code
+          const name = ac.courseTitle || ac.title || ac.name || code
+          if (code) {
+            channelService.onEnrollment({ userId: user.id, course: { code, name } })
+            updated = true
+          }
+        })
+      }
+      if (updated) {
+        setChannelConvs([ADVISOR_CHANNEL, ...channelService.getChannelsForUser(user.id)])
+      }
+    })
+  }, [user.id])
+
   // Subscribe to channelService – push new channel to conv list on enrollment
   useEffect(() => {
     const unsub = channelService.subscribe(({ event, payload }) => {
@@ -75,7 +108,7 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
         const { channel } = payload
         setChannelConvs(prev => {
           if (prev.find(c => c.id === channel.id)) return prev   // idempotent
-          return [channel, ...prev]
+          return [...prev, channel]
         })
         // Auto-select the newly joined channel
         setActiveConvId(channel.id)
