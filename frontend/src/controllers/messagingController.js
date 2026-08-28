@@ -11,6 +11,8 @@ import { CURRENT_USER, MOCK_USERS, MOCK_CONVERSATIONS, INITIAL_MESSAGES, ADVISOR
 import { getDeterministicRoomId } from '../utils/dmUtils.js'
 import { dmService } from '../services/dmService.js'
 import { channelService } from '../services/channelService.js'
+import { getStoredUser } from '../models/authModel.js'
+import apiClient from '../services/apiClient.js'
 
 /**
  * useMessagingController
@@ -70,9 +72,11 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
 
   // Sync with backend enrolled/advised courses on mount
   useEffect(() => {
+    const user = getStoredUser()
+    const studentId = user?.userId || 'STU001'
     Promise.all([
-      fetch('/api/registration/my?studentId=STU001').then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch('/api/advisors/student/STU001').then(r => r.ok ? r.json() : null).catch(() => null),
+      apiClient.get(`/api/registration/my?studentId=${studentId}`).then(r => r.ok ? r.json() : []).catch(() => []),
+      apiClient.get(`/api/advisors/student/${studentId}`).then(r => r.ok ? r.json() : null).catch(() => null),
     ]).then(([regCourses, profile]) => {
       let updated = false
       if (Array.isArray(regCourses)) {

@@ -20,13 +20,16 @@ import {
   VERIFIED_DHAKA_PARTNER_BRANCHES,
   geocodeBankWithNominatim
 } from '../models/paymentModel.js'
+import { getStoredUser } from '../models/authModel.js'
+import apiClient from '../services/apiClient.js'
 
 const API_BASE = '/api/payments'
 
 export function usePaymentController() {
-  const role = localStorage.getItem('userRole') || 'student'
-  const isAdmin = role.toLowerCase() === 'admin'
-  const studentId = localStorage.getItem('studentId') || 'STU001'
+  const storedUser = getStoredUser()
+  const role       = storedUser?.role?.toLowerCase() || localStorage.getItem('userRole') || 'student'
+  const isAdmin    = role.toLowerCase() === 'admin'
+  const studentId  = storedUser?.userId || localStorage.getItem('studentId') || 'STU001'
 
   // Top Tabs: 'receipt' (Current Term Clearance) | 'history' (Payment Records in DB)
   const [activeViewTab, setActiveViewTab] = useState('receipt')
@@ -67,7 +70,7 @@ export function usePaymentController() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`${API_BASE}/receipt/${studentId}`)
+      const res = await apiClient.get(`${API_BASE}/receipt/${encodeURIComponent(studentId)}`)
       if (!res.ok) {
         throw new Error(`Could not load your fee receipt. Please try again later. (${res.status})`)
       }
@@ -87,7 +90,9 @@ export function usePaymentController() {
   const fetchPaymentHistory = useCallback(async () => {
     setHistoryLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/history?studentId=${studentId}&role=${role}`)
+      const res = await apiClient.get(
+        `${API_BASE}/history?studentId=${encodeURIComponent(studentId)}&role=${encodeURIComponent(role)}`
+      )
       if (res.ok) {
         const data = await res.json()
         setPaymentHistory(data)
@@ -586,15 +591,11 @@ export function usePaymentController() {
       let txn = 'TXN_' + Math.random().toString(36).substring(2, 10).toUpperCase()
 
       // 1. Create Stripe PaymentIntent
-      const res = await fetch(`${API_BASE}/create-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const res = await apiClient.post(`${API_BASE}/create-intent`, {
           amount: Math.round(netAmount * 100),
           currency: 'bdt',
           studentId: studentId,
           description: `Fall 2026 Registration Fee - ${receipt?.studentName || studentId}`
-        })
       })
 
       let clientSecret = null
@@ -625,10 +626,7 @@ export function usePaymentController() {
       }
 
       // 2. Persist confirmed receipt into Database table payment_records
-      const confirmRes = await fetch(`${API_BASE}/confirm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const confirmRes = await apiClient.post(`${API_BASE}/confirm`, {
           studentId: receipt?.studentId || studentId,
           studentName: receipt?.studentName || 'Student',
           department: receipt?.department || 'CSE',
@@ -643,7 +641,6 @@ export function usePaymentController() {
           bankName: 'Online Payment',
           amountInWords: receipt?.amountInWords,
           items: receipt?.items || []
-        })
       })
 
       if (confirmRes.ok) {

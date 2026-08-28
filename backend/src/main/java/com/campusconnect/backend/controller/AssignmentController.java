@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -57,13 +59,17 @@ public class AssignmentController {
      * Excludes attachment data for performance.
      */
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllAssignments() {
-        List<Assignment> all = assignmentService.getAllAssignments();
+    public ResponseEntity<Map<String, Object>> getAllAssignments(
+            @RequestParam(defaultValue = "false") boolean includeOverdue,
+            Authentication authentication) {
+        String role = authenticatedRole(authentication);
+        List<Assignment> all = assignmentService.getAssignmentsForUser(authentication.getName(), role, includeOverdue);
         // Strip binary attachment data from list response for performance
         List<Map<String, Object>> data = all.stream().map(this::toSummaryMap).toList();
         return ResponseEntity.ok(Map.of(
             "success", true,
             "count",   data.size(),
+            "overdueCount", assignmentService.countOverdueAssignmentsForUser(authentication.getName(), role),
             "data",    data
         ));
     }
@@ -73,7 +79,10 @@ public class AssignmentController {
      * Returns a single assignment with full details (excludes binary attachment).
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getAssignment(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getAssignment(@PathVariable Long id, Authentication authentication) {
+        if (!assignmentService.canAccessAssignment(id, authentication.getName(), authenticatedRole(authentication))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have access to this assignment.");
+        }
         Optional<Assignment> opt = assignmentService.getAssignmentById(id);
         if (opt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -99,9 +108,11 @@ public class AssignmentController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("deadline")    String deadline,
             @RequestParam(value = "createdBy", required = false) String createdBy,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            Authentication authentication) {
 
         try {
+            requireAssignmentManager(authentication);
             LocalDateTime deadlineDt = LocalDateTime.parse(deadline);
             byte[] fileData   = (file != null && !file.isEmpty()) ? file.getBytes() : null;
             String fileName   = (file != null && !file.isEmpty()) ? file.getOriginalFilename() : null;
@@ -109,7 +120,7 @@ public class AssignmentController {
 
             Assignment created = assignmentService.createAssignment(
                 courseCode, courseName, title, description,
-                deadlineDt, createdBy,
+                deadlineDt, authenticatedName(authentication, createdBy),
                 fileName, fileType, fileData
             );
 
@@ -118,6 +129,36 @@ public class AssignmentController {
                 "message", "Assignment created successfully.",
                 "data",    toDetailMap(created)
             ));
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    /** Faculty and admins may revise the question, deadline, and optional attachment. */
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> updateAssignment(
+            @PathVariable Long id,
+            @RequestParam("courseCode") String courseCode,
+            @RequestParam("courseName") String courseName,
+            @RequestParam("title") String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam("deadline") String deadline,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            Authentication authentication) {
+        try {
+            requireAssignmentManager(authentication);
+            Assignment updated = assignmentService.updateAssignment(
+                id, courseCode, courseName, title, description, LocalDateTime.parse(deadline),
+                file != null && !file.isEmpty() ? file.getOriginalFilename() : null,
+                file != null && !file.isEmpty() ? file.getContentType() : null,
+                file != null && !file.isEmpty() ? file.getBytes() : null
+            );
+            return ResponseEntity.ok(Map.of("success", true, "message", "Assignment updated successfully.", "data", toDetailMap(updated)));
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("success", false, "message", e.getMessage()));
@@ -154,12 +195,14 @@ public class AssignmentController {
             @PathVariable Long id,
             @RequestParam("studentId")   String studentId,
             @RequestParam(value = "studentName", required = false) String studentName,
-            @RequestPart("file")         MultipartFile file) {
+            @RequestPart("file")         MultipartFile file,
+            Authentication authentication) {
 
         try {
+            requireSubmitter(authentication);
             byte[] fileData = file.getBytes();
             Submission submission = assignmentService.submitWork(
-                id, studentId, studentName,
+                id, authentication.getName(), authenticatedName(authentication, studentName),
                 file.getOriginalFilename(), file.getContentType(), fileData
             );
 
@@ -169,6 +212,8 @@ public class AssignmentController {
             response.put("data", toSubmissionMap(submission));
             return ResponseEntity.ok(response);
 
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (IllegalStateException e) {
             // Deadline passed
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -186,14 +231,18 @@ public class AssignmentController {
     @DeleteMapping("/{id}/submit")
     public ResponseEntity<Map<String, Object>> unsubmitWork(
             @PathVariable Long id,
-            @RequestParam("studentId") String studentId) {
+            @RequestParam("studentId") String studentId,
+            Authentication authentication) {
 
         try {
-            assignmentService.unsubmitWork(id, studentId);
+            requireSubmitter(authentication);
+            assignmentService.unsubmitWork(id, authentication.getName());
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Work unsubmitted successfully."
             ));
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Map.of("success", false, "message", e.getMessage()));
@@ -210,7 +259,10 @@ public class AssignmentController {
     @GetMapping("/{id}/submission")
     public ResponseEntity<Map<String, Object>> getSubmission(
             @PathVariable Long id,
-            @RequestParam("studentId") String studentId) {
+            @RequestParam("studentId") String studentId,
+            Authentication authentication) {
+
+        requireOwnSubmissionAccess(authentication, studentId);
 
         Optional<Submission> opt = assignmentService.getSubmission(id, studentId);
         if (opt.isEmpty()) {
@@ -230,7 +282,11 @@ public class AssignmentController {
      * Teacher: Get all submissions for an assignment (grading view).
      */
     @GetMapping("/{id}/submissions")
-    public ResponseEntity<Map<String, Object>> getSubmissions(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getSubmissions(@PathVariable Long id, Authentication authentication) {
+        requireAssignmentManager(authentication);
+        if (!assignmentService.canAccessAssignment(id, authentication.getName(), authenticatedRole(authentication))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have access to this assignment.");
+        }
         List<Submission> subs = assignmentService.getSubmissionsForAssignment(id);
         List<Map<String, Object>> data = subs.stream().map(this::toSubmissionMap).toList();
         return ResponseEntity.ok(Map.of(
@@ -245,10 +301,14 @@ public class AssignmentController {
      * Download a student's submitted file.
      */
     @GetMapping("/submissions/{subId}/file")
-    public ResponseEntity<byte[]> downloadSubmissionFile(@PathVariable Long subId) {
+    public ResponseEntity<byte[]> downloadSubmissionFile(@PathVariable Long subId, Authentication authentication) {
+        requireAssignmentManager(authentication);
         Optional<Submission> opt = assignmentService.getSubmissionById(subId);
         if (opt.isEmpty() || opt.get().getFileData() == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (!assignmentService.canAccessAssignment(opt.get().getAssignmentId(), authentication.getName(), authenticatedRole(authentication))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have access to this submission.");
         }
 
         Submission s = opt.get();
@@ -297,5 +357,45 @@ public class AssignmentController {
         map.put("fileType",     s.getFileType());
         map.put("hasFile",      s.getFileData() != null);
         return map;
+    }
+
+    private void requireAssignmentManager(Authentication authentication) {
+        requireRole(authentication, "FACULTY", "ADMIN");
+    }
+
+    private void requireSubmitter(Authentication authentication) {
+        requireRole(authentication, "STUDENT", "ADMIN");
+    }
+
+    private void requireOwnSubmissionAccess(Authentication authentication, String requestedStudentId) {
+        requireSubmitter(authentication);
+        if (!hasRole(authentication, "ADMIN") && !authentication.getName().equals(requestedStudentId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only view your own submission.");
+        }
+    }
+
+    private void requireRole(Authentication authentication, String... roles) {
+        for (String role : roles) {
+            if (hasRole(authentication, role)) return;
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to perform this action.");
+    }
+
+    private boolean hasRole(Authentication authentication, String role) {
+        return authentication != null && authentication.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + role));
+    }
+
+    private String authenticatedRole(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+            .map(authority -> authority.getAuthority())
+            .filter(authority -> authority.startsWith("ROLE_"))
+            .map(authority -> authority.substring("ROLE_".length()))
+            .findFirst()
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "No role is assigned to this user."));
+    }
+
+    private String authenticatedName(Authentication authentication, String fallback) {
+        return authentication != null && authentication.getName() != null ? authentication.getName() : fallback;
     }
 }

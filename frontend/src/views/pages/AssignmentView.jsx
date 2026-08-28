@@ -62,12 +62,12 @@ function AssignmentList({ ctrl }) {
         <div>
           <h1 className="asgn-page-title">Assignments</h1>
           <p className="asgn-page-subtitle">
-            {ctrl.isTeacher
+            {ctrl.canManageAssignments
               ? 'Manage and create assignments for your courses'
               : 'View and submit your course assignments'}
           </p>
         </div>
-        {ctrl.isTeacher && (
+        {ctrl.canManageAssignments && (
           <button
             className="asgn-create-btn"
             onClick={() => ctrl.setShowCreateForm(true)}
@@ -78,6 +78,18 @@ function AssignmentList({ ctrl }) {
           </button>
         )}
       </div>
+
+      {ctrl.overdueCount > 0 && (
+        <button
+          className="asgn-overdue-toggle"
+          onClick={() => ctrl.setShowOverdue(!ctrl.showOverdue)}
+          id="asgn-overdue-toggle"
+        >
+          {ctrl.showOverdue
+            ? 'Hide past-deadline assignments'
+            : `Show past-deadline assignments (${ctrl.overdueCount})`}
+        </button>
+      )}
 
       {/* Loading skeletons */}
       {ctrl.loading && (
@@ -102,7 +114,7 @@ function AssignmentList({ ctrl }) {
           <div className="asgn-empty-icon">📋</div>
           <div className="asgn-empty-text">No assignments yet</div>
           <div className="asgn-empty-hint">
-            {ctrl.isTeacher
+            {ctrl.canManageAssignments
               ? 'Create your first assignment using the button above.'
               : 'Your teachers haven\'t posted any assignments yet.'}
           </div>
@@ -235,12 +247,10 @@ function AssignmentDetail({ ctrl }) {
 
           {/* Attachment */}
           {a.hasAttachment && a.attachmentName && (
-            <a
-              href={assignmentService.getAttachmentUrl(a.id)}
+            <button
+              type="button"
+              onClick={() => ctrl.handleDownload(assignmentService.getAttachmentUrl(a.id), a.attachmentName)}
               className="asgn-attachment"
-              target="_blank"
-              rel="noopener noreferrer"
-              download
             >
               <span className="asgn-attachment-icon">
                 {getFileIcon(a.attachmentType)}
@@ -252,17 +262,23 @@ function AssignmentDetail({ ctrl }) {
                 </div>
               </div>
               <span className="asgn-attachment-download">Download ↓</span>
-            </a>
+            </button>
           )}
 
           {/* Teacher: Submissions table */}
-          {ctrl.isTeacher && (
+          {ctrl.canViewSubmissions && (
             <SubmissionsTable ctrl={ctrl} />
           )}
         </div>
 
         {/* ── Right: "Your Work" Panel (Student) ─────────── */}
-        {!ctrl.isTeacher && (
+        {ctrl.canManageAssignments && (
+          <button className="asgn-turnin-btn secondary" onClick={() => ctrl.openEditAssignment(a)}>
+            Edit assignment
+          </button>
+        )}
+
+        {ctrl.canSubmit && (
           <div className="asgn-work-panel">
             <div className="asgn-work-header">
               <span className="asgn-work-title">Your work</span>
@@ -443,13 +459,13 @@ function SubmissionsTable({ ctrl }) {
                   </td>
                   <td>
                     {sub.hasFile && sub.fileName ? (
-                      <a
-                        href={assignmentService.getSubmissionFileUrl(sub.id)}
+                      <button
+                        type="button"
+                        onClick={() => ctrl.handleDownload(assignmentService.getSubmissionFileUrl(sub.id), sub.fileName)}
                         className="asgn-download-link"
-                        download
                       >
                         {getFileIcon(sub.fileType)} {sub.fileName}
-                      </a>
+                      </button>
                     ) : (
                       <span style={{ color: 'var(--color-text-light)', fontSize: 12 }}>
                         No file
@@ -476,14 +492,14 @@ function CreateAssignmentModal({ ctrl }) {
   return (
     <div
       className="asgn-create-overlay"
-      onClick={(e) => e.target === e.currentTarget && ctrl.setShowCreateForm(false)}
+      onClick={(e) => e.target === e.currentTarget && ctrl.closeAssignmentForm()}
     >
       <div className="asgn-create-modal">
         <div className="asgn-create-modal-header">
-          <h2>Create Assignment</h2>
+          <h2>{ctrl.editingAssignmentId ? 'Edit Assignment' : 'Create Assignment'}</h2>
           <button
             className="asgn-create-close"
-            onClick={() => ctrl.setShowCreateForm(false)}
+            onClick={() => ctrl.closeAssignmentForm()}
             id="asgn-create-close"
           >
             ✕
@@ -594,7 +610,7 @@ function CreateAssignmentModal({ ctrl }) {
         <div className="asgn-create-actions">
           <button
             className="asgn-create-cancel-btn"
-            onClick={() => ctrl.setShowCreateForm(false)}
+            onClick={() => ctrl.closeAssignmentForm()}
           >
             Cancel
           </button>
@@ -604,7 +620,7 @@ function CreateAssignmentModal({ ctrl }) {
             disabled={ctrl.creating}
             id="asgn-create-submit"
           >
-            {ctrl.creating ? 'Creating...' : 'Create Assignment'}
+            {ctrl.creating ? 'Saving...' : ctrl.editingAssignmentId ? 'Save Changes' : 'Create Assignment'}
           </button>
         </div>
       </div>
