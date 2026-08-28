@@ -1,6 +1,7 @@
 com\campusconnect\backend\exception\GlobalExceptionHandler.class
 com\campusconnect\backend\model\Application.class
 com\campusconnect\backend\dto\ExamScheduleDTO$ExamScheduleDTOBuilder.class
+com\campusconnect\backend\config\PasswordEncoderConfig.class
 com\campusconnect\backend\model\SectionRegistration$SectionRegistrationBuilder.class
 com\campusconnect\backend\service\AuthService.class
 com\campusconnect\backend\model\CourseSection.class
@@ -49,10 +50,13 @@ com\campusconnect\backend\service\RegistrationService.class
 com\campusconnect\backend\model\StudentProfile$StudentProfileBuilder.class
 com\campusconnect\backend\dto\AdvisorMatchResponse.class
 com\campusconnect\backend\model\Advisor.class
+com\campusconnect\backend\security\JwtService.class
 com\campusconnect\backend\model\Assignment.class
 com\campusconnect\backend\repository\package-info.class
 com\campusconnect\backend\model\Submission.class
 com\campusconnect\backend\controller\AssignmentController.class
+com\campusconnect\backend\repository\AppUserRepository.class
+com\campusconnect\backend\security\JwtAuthFilter.class
 com\campusconnect\backend\model\ExamSchedule$ExamScheduleBuilder.class
 com\campusconnect\backend\controller\ClubController.class
 com\campusconnect\backend\service\AssignmentService.class
@@ -63,6 +67,7 @@ com\campusconnect\backend\repository\CourseSectionRepository.class
 com\campusconnect\backend\exception\ResourceNotFoundException.class
 com\campusconnect\backend\controller\AdvisorController.class
 com\campusconnect\backend\dto\ExamScheduleDTO.class
+com\campusconnect\backend\model\AppUser.class
 com\campusconnect\backend\model\CourseSection$CourseSectionBuilder.class
 com\campusconnect\backend\security\package-info.class
 com\campusconnect\backend\service\ExamScheduleService.class

@@ -1,16 +1,14 @@
 import { useNavigate } from 'react-router-dom'
+import { createLogoutHandler } from '../../controllers/authController.js'
+import { getStoredUser, ROLE_LABELS } from '../../models/authModel.js'
 
 /**
  * Sidebar – View layer component for the main navigation.
  *
  * MVC Role: View (shared component)
  *
- * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board
- *            | Academic Calendar | Club Activities | Create Routine
- *
- * TODO (Phase 3):
- *   - "Logout" should clear JWT from localStorage and call POST /api/auth/logout
- *   - Highlight activeItem based on current route (useLocation)
+ * Shows logged-in user info at the top (name + role badge).
+ * Logout calls createLogoutHandler which clears the JWT + navigates to login.
  */
 
 const NAV_ITEMS = [
@@ -27,21 +25,11 @@ const NAV_ITEMS = [
 ]
 
 export default function Sidebar({ activeItem = 'home' }) {
-  const navigate = useNavigate()
+  const navigate    = useNavigate()
+  const handleLogout = createLogoutHandler(navigate)
+  const user        = getStoredUser()
 
-  const handleLogout = () => {
-    /*
-     * ── Phase 3 stub ──────────────────────────────────────────
-     * await fetch('/api/auth/logout', { method: 'POST',
-     *   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-     * })
-     * localStorage.removeItem('token')
-     * localStorage.removeItem('userRole')
-     * ─────────────────────────────────────────────────────────
-     */
-    localStorage.removeItem('userRole')
-    navigate('/')
-  }
+  const roleLabel = user?.role ? (ROLE_LABELS[user.role] || user.role) : ''
 
   return (
     <aside className="sidebar" role="navigation" aria-label="Main navigation">
@@ -50,6 +38,19 @@ export default function Sidebar({ activeItem = 'home' }) {
         <div className="sidebar-logo-icon">🎓</div>
         <span className="sidebar-logo-text">CampusConnect</span>
       </div>
+
+      {/* User info badge */}
+      {user && (
+        <div className="sidebar-user-info">
+          <div className="sidebar-user-avatar">
+            {user.fullName ? user.fullName.charAt(0).toUpperCase() : '?'}
+          </div>
+          <div className="sidebar-user-details">
+            <span className="sidebar-user-name">{user.fullName}</span>
+            <span className="sidebar-user-role">{roleLabel}</span>
+          </div>
+        </div>
+      )}
 
       {/* Nav items */}
       <nav className="sidebar-nav">

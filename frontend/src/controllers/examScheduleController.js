@@ -14,6 +14,7 @@ import {
   FALLBACK_STUDENT_ID,
   EMPTY_EXAM_SCHEDULE,
 } from '../models/examScheduleModel.js'
+import apiClient from '../services/apiClient.js'
 
 /**
  * useExamScheduleController
@@ -43,7 +44,7 @@ export function useExamScheduleController() {
     setLoading(true)
     setError(null)
 
-    fetch(`${EXAM_SCHEDULE_API}?studentId=${encodeURIComponent(studentId)}`)
+    apiClient.get(`${EXAM_SCHEDULE_API}?studentId=${encodeURIComponent(studentId)}`)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()

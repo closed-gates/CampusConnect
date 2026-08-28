@@ -29,13 +29,17 @@ import * as assignmentService from '../services/assignmentService.js'
  * Single hook providing all state and actions for the Assignment Submission page.
  */
 export function useAssignmentController() {
-  const role      = localStorage.getItem('userRole') || 'student'
-  const isTeacher = role === 'teacher' || role === 'admin' || role === 'faculty'
-  const studentId = localStorage.getItem('studentId') || 'STU001'
-  const studentName = localStorage.getItem('studentName') || 'Eusha Kayenat'
+  const role = (localStorage.getItem('cc_role') || localStorage.getItem('userRole') || 'student').toLowerCase()
+  const canManageAssignments = role === 'faculty' || role === 'admin'
+  const canViewSubmissions = role === 'faculty' || role === 'admin'
+  const canSubmit = role === 'student' || role === 'admin'
+  const studentId = localStorage.getItem('cc_userId') || localStorage.getItem('studentId') || 'STU001'
+  const studentName = localStorage.getItem('cc_fullName') || localStorage.getItem('studentName') || 'Student'
 
   // ── Assignments list state ────────────────────────────────────
   const [assignments, setAssignments] = useState([])
+  const [showOverdue, setShowOverdue] = useState(false)
+  const [overdueCount, setOverdueCount] = useState(0)
   const [loading,     setLoading]     = useState(true)
   const [error,       setError]       = useState(null)
 
@@ -58,6 +62,7 @@ export function useAssignmentController() {
   const [createFile,     setCreateFile]     = useState(null) // File object
   const [creating,       setCreating]       = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [editingAssignmentId, setEditingAssignmentId] = useState(null)
 
   // ── Teacher: submissions list (grading view) ──────────────────
   const [allSubmissions,    setAllSubmissions]    = useState([])
@@ -73,15 +78,16 @@ export function useAssignmentController() {
 
   // ── Load assignments on mount ─────────────────────────────────
   useEffect(() => {
-    loadAssignments()
-  }, [])
+    loadAssignments(showOverdue)
+  }, [showOverdue])
 
-  async function loadAssignments() {
+  async function loadAssignments(includeOverdue = showOverdue) {
     setLoading(true)
     setError(null)
     try {
-      const data = await assignmentService.getAssignments()
-      setAssignments(data)
+      const data = await assignmentService.getAssignments(includeOverdue)
+      setAssignments(data.items)
+      setOverdueCount(data.overdueCount)
     } catch (err) {
       console.error('[AssignmentController] Failed to load assignments:', err)
       setError('Failed to load assignments. Please try again.')
@@ -104,7 +110,7 @@ export function useAssignmentController() {
       setSelectedAssignment(detail)
 
       // Load student's submission for this assignment
-      if (!isTeacher) {
+      if (canSubmit) {
         setSubmissionLoading(true)
         try {
           const sub = await assignmentService.getSubmission(id, studentId)
@@ -117,7 +123,7 @@ export function useAssignmentController() {
       }
 
       // Teacher: load all submissions
-      if (isTeacher) {
+      if (canViewSubmissions) {
         setSubmissionsLoading(true)
         try {
           const subs = await assignmentService.getSubmissions(id)
@@ -134,7 +140,7 @@ export function useAssignmentController() {
     } finally {
       setDetailLoading(false)
     }
-  }, [isTeacher, studentId])
+  }, [canSubmit, canViewSubmissions, studentId])
 
   // ── Back to list ──────────────────────────────────────────────
   const backToList = useCallback(() => {
@@ -253,13 +259,17 @@ export function useAssignmentController() {
         formData.append('file', createFile)
       }
 
-      await assignmentService.createAssignment(formData)
+      const updated = editingAssignmentId
+        ? await assignmentService.updateAssignment(editingAssignmentId, formData)
+        : await assignmentService.createAssignment(formData)
+      if (editingAssignmentId) setSelectedAssignment(updated)
       showToast('✅ Assignment created successfully!')
 
       // Reset form and reload list
       setCreateForm({ ...EMPTY_CREATE_FORM })
       setCreateFile(null)
       setShowCreateForm(false)
+      setEditingAssignmentId(null)
       await loadAssignments()
     } catch (err) {
       console.error('[AssignmentController] Create failed:', err)
@@ -267,7 +277,33 @@ export function useAssignmentController() {
     } finally {
       setCreating(false)
     }
-  }, [createForm, createFile])
+  }, [createForm, createFile, editingAssignmentId])
+
+  const openEditAssignment = useCallback((assignment) => {
+    setEditingAssignmentId(assignment.id)
+    setCreateForm({
+      courseCode: assignment.courseCode || '', courseName: assignment.courseName || '',
+      title: assignment.title || '', description: assignment.description || '',
+      deadline: assignment.deadline ? assignment.deadline.slice(0, 16) : '',
+      createdBy: assignment.createdBy || '',
+    })
+    setCreateFile(null)
+    setShowCreateForm(true)
+  }, [])
+
+  const handleDownload = useCallback(async (url, fileName) => {
+    try {
+      await assignmentService.downloadProtectedFile(url, fileName)
+    } catch (err) {
+      showToast(err.message, 'error')
+    }
+  }, [])
+
+  const closeAssignmentForm = useCallback(() => {
+    setShowCreateForm(false)
+    setEditingAssignmentId(null)
+    setCreateFile(null)
+  }, [])
 
   // ── Derived state ─────────────────────────────────────────────
   // Compute status for each assignment in the list (for student)
@@ -279,13 +315,18 @@ export function useAssignmentController() {
 
   return {
     // Role
-    isTeacher,
+    canManageAssignments,
+    canViewSubmissions,
+    canSubmit,
     studentId,
 
     // Assignments list
     assignments: assignmentsWithStatus,
     loading,
     error,
+    showOverdue,
+    setShowOverdue,
+    overdueCount,
 
     // Selected assignment
     selectedAssignment,
@@ -309,6 +350,7 @@ export function useAssignmentController() {
     removeFile,
     handleTurnIn,
     handleUnsubmit,
+    handleDownload,
 
     // Teacher: create form
     createForm,
@@ -316,6 +358,9 @@ export function useAssignmentController() {
     creating,
     showCreateForm,
     setShowCreateForm,
+    editingAssignmentId,
+    openEditAssignment,
+    closeAssignmentForm,
     updateCreateForm,
     handleCourseSelect,
     handleCreateFileSelect,
