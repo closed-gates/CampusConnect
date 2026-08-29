@@ -62,13 +62,16 @@ export const ADVISING_TIERS = [
 export function getStatusConfig(seatsRemaining, totalSeats) {
   if (!totalSeats || totalSeats === 0) return { label: 'N/A', color: '#6B7280', bg: '#F3F4F6', pct: 0, variant: 'full' }
   const pct = ((totalSeats - seatsRemaining) / totalSeats) * 100
-  if (seatsRemaining <= 0) {
-    return { label: 'Full',        color: '#EF4444', bg: '#FEF2F2', pct: 100,           variant: 'full'        }
+  if (seatsRemaining < 0) {
+    return { label: `Overenrolled (${seatsRemaining})`, color: '#DC2626', bg: '#FEE2E2', pct: 100, variant: 'overenrolled' }
+  }
+  if (seatsRemaining === 0) {
+    return { label: 'Full', color: '#EF4444', bg: '#FEF2F2', pct: 100, variant: 'full' }
   }
   if (pct >= 80) {
     return { label: 'Almost Full', color: '#F59E0B', bg: '#FFFBEB', pct: Math.round(pct), variant: 'almost-full' }
   }
-  return   { label: 'Open',        color: '#10B981', bg: '#ECFDF5', pct: Math.round(pct), variant: 'open'        }
+  return { label: 'Open', color: '#10B981', bg: '#ECFDF5', pct: Math.round(pct), variant: 'open' }
 }
 
 /** Single sort dropdown for the section browser */
