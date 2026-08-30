@@ -8,11 +8,10 @@ import { useLoginController } from '../../controllers/authController.js'
  * MVC Role: View
  * Renders the login form. All logic is provided by useLoginController().
  *
- * Accepts: userId OR email + password
- * Shows real error messages from the backend.
+ * Layout: Left = form (white) | Right = lavender illustration panel
  */
 export default function LoginView() {
-  const { formData, loading, error, handleChange, handleLogin } = useLoginController()
+  const { formData, loading, handleChange, handleLogin } = useLoginController()
 
   return (
     <div className="auth-wrapper">
@@ -30,26 +29,18 @@ export default function LoginView() {
         </p>
 
         <form onSubmit={handleLogin} noValidate>
-          {/* Error banner */}
-          {error && (
-            <div className="auth-error-banner" role="alert">
-              ⚠️ {error}
-            </div>
-          )}
-
-          {/* User ID or Email */}
+          {/* Username / Email */}
           <div className="form-group">
-            <label className="form-label" htmlFor="login-identifier">User ID or Email</label>
+            <label className="form-label" htmlFor="login-username">Username or Email</label>
             <input
-              id="login-identifier"
-              name="identifier"
+              id="login-username"
+              name="username"
               type="text"
-              className={`form-input ${error ? 'input-error' : ''}`}
-              placeholder="e.g. STU001 or student@campus.edu"
-              value={formData.identifier}
+              className="form-input"
+              placeholder="Enter your username or email"
+              value={formData.username}
               onChange={handleChange}
               autoComplete="username"
-              autoFocus
             />
           </div>
 
@@ -60,12 +51,29 @@ export default function LoginView() {
               id="login-password"
               name="password"
               type="password"
-              className={`form-input ${error ? 'input-error' : ''}`}
+              className="form-input"
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
               autoComplete="current-password"
             />
+          </div>
+
+          {/* Role selector – demo only, remove in Phase 3 when JWT carries role */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="login-role">I am a:</label>
+            <select
+              id="login-role"
+              name="role"
+              className="form-input"
+              value={formData.role}
+              onChange={handleChange}
+              style={{ cursor: 'pointer' }}
+            >
+              <option value="student">🎓 Student</option>
+              <option value="advisor">🧑‍🏫 Advisor</option>
+              <option value="admin">🛡️ Admin (Club/Faculty)</option>
+            </select>
           </div>
 
           {/* Remember me + Forgot password */}
@@ -80,6 +88,7 @@ export default function LoginView() {
               />
               Remember me
             </label>
+            {/* TODO Phase 2: wire to password reset flow */}
             <span className="form-link" style={{ cursor: 'pointer' }}>Forgot password?</span>
           </div>
 
@@ -95,7 +104,7 @@ export default function LoginView() {
 
           <div className="auth-divider">Or</div>
 
-          {/* Social login buttons (cosmetic — OAuth in a future phase) */}
+          {/* Social login buttons (cosmetic – Phase 2 to wire OAuth) */}
           <button type="button" className="btn btn-outline" id="login-google-btn">
             <GoogleIcon />
             Login with Google
@@ -108,17 +117,9 @@ export default function LoginView() {
         </form>
 
         <p className="auth-bottom">
-          Don't have an account?&nbsp;
+          Don't have an account?
           <Link to="/signup">Click here</Link>
         </p>
-
-        {/* Default credentials hint (dev/demo only) */}
-        <div className="auth-demo-hint">
-          <strong>Demo accounts:</strong>&nbsp;
-          STU001 / student123 &nbsp;·&nbsp;
-          FAC001 / faculty123 &nbsp;·&nbsp;
-          ADM001 / admin123
-        </div>
       </div>
 
       {/* ── Illustration Panel (right) ─────────────────── */}

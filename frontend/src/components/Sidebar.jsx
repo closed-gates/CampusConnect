@@ -21,7 +21,6 @@ const NAV_ITEMS = [
   { id: 'clubs',             label: 'Club Activities',   icon: <ClubIcon />,      route: '/club-activities' },
   { id: 'routine',           label: 'Create Routine',    icon: <RoutineIcon />,   route: '/routine' },
   { id: 'attendance',        label: 'Attendance',        icon: <AttendanceIcon />, route: '/attendance' },
-  { id: 'payments',          label: 'Payments',          icon: <PaymentIcon />,    route: '/payments' },
 ]
 
 export default function Sidebar({ activeItem = 'home' }) {
@@ -185,15 +184,4 @@ function AttendanceIcon() {
     </svg>
   )
 }
-
-function PaymentIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-      <line x1="1" y1="10" x2="23" y2="10"/>
-      <circle cx="6.5" cy="15.5" r="1.5" fill="currentColor"/>
-    </svg>
-  )
-}
-
 

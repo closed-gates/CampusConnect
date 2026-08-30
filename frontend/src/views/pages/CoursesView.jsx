@@ -131,6 +131,11 @@ function StarRating({ rating }) {
 function CourseCard({ course, faculty }) {
   const [bookmarked,   setBookmarked]   = useState(false)
   const [showDetails,  setShowDetails]  = useState(false)
+  // Use real BRACU seat data; fallback to legacy enrolled/capacity
+  const booked   = course.totalBooked ?? course.enrolled ?? 0
+  const capacity = course.totalSeats  ?? course.capacity ?? 1
+  const avail    = getAvailability(booked, capacity)
+  const fillPct  = Math.round((booked / Math.max(capacity, 1)) * 100)
 
   return (
     <>
@@ -158,22 +163,35 @@ function CourseCard({ course, faculty }) {
           <div className="course-card-stats">
             <span>📋 {course.credits} cr.</span>
             <span>📅 {course.totalSections || 0} sections</span>
+            <span>{booked}/{capacity} seats</span>
           </div>
 
           {course.prereqs && course.prereqs !== 'None' && (
-            <p style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
+            <p style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
               Pre: {course.prereqs}
             </p>
           )}
+
+          <div className="course-card-footer">
+            <div className="course-enrollment">
+              <div className="enrollment-bar-track">
+                <div className="enrollment-bar-fill" style={{ width: fillPct + '%', background: avail.color }} />
+              </div>
+              <span className="enrollment-text">{booked}/{capacity}</span>
+            </div>
+            <span className="course-avail-badge" style={{ color: avail.color, background: avail.bg }}>
+              {avail.label}
+            </span>
+          </div>
 
           {/* View Details button */}
           <button
             className="course-enroll-btn"
             id={'view-details-btn-' + course.id}
-            style={{ background: faculty?.accent || '#2563EB', marginTop: '12px' }}
+            style={{ background: faculty?.accent || '#2563EB' }}
             onClick={() => setShowDetails(true)}
           >
-            📋 View Course Details
+            📋 View Details
           </button>
         </div>
       </div>
@@ -224,6 +242,13 @@ function CourseCard({ course, faculty }) {
                   <span className="course-details-value">📅 {course.totalSections || 0} section{(course.totalSections || 0) !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="course-details-item">
+                  <span className="course-details-label">Enrollment</span>
+                  <span className="course-details-value" style={{ color: avail.color }}>
+                    {booked} / {capacity} seats&nbsp;·&nbsp;
+                    <strong>{avail.label}</strong>
+                  </span>
+                </div>
+                <div className="course-details-item">
                   <span className="course-details-label">GenEd</span>
                   <span className="course-details-value">{course.isGenEd ? '✅ Yes' : '❌ No'}</span>
                 </div>
@@ -248,14 +273,16 @@ function CourseCard({ course, faculty }) {
                 </div>
               )}
 
-              {course.desc && (
-                <div className="course-details-desc" style={{ marginTop: '12px' }}>
-                  <span className="course-details-label">Description</span>
-                  <p style={{ fontSize: '13px', lineHeight: 1.6, color: '#374151' }}>{course.desc}</p>
+              <div className="course-details-enrollment-bar">
+                <div className="enrollment-bar-track" style={{ height: 8 }}>
+                  <div className="enrollment-bar-fill" style={{ width: fillPct + '%', background: avail.color }} />
                 </div>
-              )}
+                <span style={{ fontSize: 12, color: '#6B7280', marginTop: 4, display: 'block' }}>
+                  {fillPct}% seats filled
+                </span>
+              </div>
 
-              <p className="course-details-note" style={{ marginTop: '16px' }}>
+              <p className="course-details-note">
                 💡 To register for a section of this course, go to <strong>Advising</strong> in the sidebar.
               </p>
             </div>
@@ -265,6 +292,7 @@ function CourseCard({ course, faculty }) {
     </>
   )
 }
+
 
 function FacultyHeader({ faculty, count }) {
   return (

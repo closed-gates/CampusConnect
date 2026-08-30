@@ -47,20 +47,20 @@ public class AdvisedCourse {
     @Column(name = "course_title", nullable = false)
     private String courseTitle;
 
-    /** Section number string, e.g. "01", "S52- Online" */
-    @Column(nullable = false, length = 30)
+    /** Section number string, e.g. "01" */
+    @Column(nullable = false, length = 5)
     private String section;
 
     /** Credits for this section (typically 3) */
     @Column(nullable = false)
     private int credits;
 
-    /** Schedule string, e.g. "SUNDAY(8:00 AM-9:20 AM-09A-05C) ; TUESDAY(8:00 AM-9:20 AM-09A-05C)" */
-    @Column(nullable = false, columnDefinition = "TEXT")
+    /** Schedule string, e.g. "SUN-TUE 08:00 AM–09:20 AM" */
+    @Column(nullable = false)
     private String time;
 
-    /** Room, e.g. "NAC-09A-05C", "UB0000" */
-    @Column(nullable = false, length = 60)
+    /** Room, e.g. "NAC-09A-05C" */
+    @Column(nullable = false, length = 30)
     private String room;
 
     /** Instructor name */

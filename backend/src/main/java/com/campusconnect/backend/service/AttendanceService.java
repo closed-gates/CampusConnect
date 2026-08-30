@@ -1,9 +1,7 @@
 package com.campusconnect.backend.service;
 
 import com.campusconnect.backend.model.AttendanceRecord;
-import com.campusconnect.backend.model.SectionRegistration;
 import com.campusconnect.backend.repository.AttendanceRecordRepository;
-import com.campusconnect.backend.repository.SectionRegistrationRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +22,10 @@ import java.util.stream.Collectors;
 @Service
 public class AttendanceService {
 
-    private final AttendanceRecordRepository      repo;
-    private final SectionRegistrationRepository   regRepo;
+    private final AttendanceRecordRepository repo;
 
-    public AttendanceService(AttendanceRecordRepository repo,
-                             SectionRegistrationRepository regRepo) {
-        this.repo    = repo;
-        this.regRepo = regRepo;
+    public AttendanceService(AttendanceRecordRepository repo) {
+        this.repo = repo;
     }
 
     // ── Seed data on first startup ────────────────────────────────
@@ -267,160 +262,5 @@ public class AttendanceService {
         report.put("courseBreakdown", courseBreakdown);
         report.put("history",         records);
         return report;
-    }
-
-    // ── Faculty Course List ────────────────────────────────────
-
-
-    /**
-     * Returns the distinct list of courses that a faculty member has taken attendance for.
-     * Each entry contains courseId, courseName, and studentCount.
-     *
-     * @param markedBy Faculty name identifier (stored in markedBy field)
-     * @return List of course summary maps
-     */
-    public List<Map<String, Object>> getFacultyCourses(String markedBy) {
-        List<AttendanceRecord> allRecords = repo.findByMarkedBy(markedBy);
-
-        // Collect distinct courseId → courseName
-        Map<String, String> courseNames = new LinkedHashMap<>();
-        for (AttendanceRecord r : allRecords) {
-            courseNames.putIfAbsent(r.getCourseId(), r.getCourseName());
-        }
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (Map.Entry<String, String> entry : courseNames.entrySet()) {
-            String courseId = entry.getKey();
-            // Count distinct students for this course
-            long studentCount = allRecords.stream()
-                    .filter(r -> courseId.equals(r.getCourseId()))
-                    .map(AttendanceRecord::getStudentId)
-                    .distinct()
-                    .count();
-
-            Map<String, Object> courseMap = new LinkedHashMap<>();
-            courseMap.put("courseId",      courseId);
-            courseMap.put("courseName",    entry.getValue());
-            courseMap.put("studentCount",  studentCount);
-            result.add(courseMap);
-        }
-        return result;
-    }
-
-    // ── Enrolled Students per Course ──────────────────────────
-
-    /**
-     * Returns the distinct list of students for a given course.
-     * Merges two sources:
-     *   1. Students who already have attendance records (attendance_records table)
-     *   2. Students registered for the section via the registration system
-     *      (section_registrations table — courseId = section.code, e.g. "CSE110")
-     *
-     * This ensures that when a student registers via the Advising feature, they
-     * immediately appear in the faculty's attendance marking list.
-     *
-     * @param courseId Course code, e.g. "CSE110"
-     * @return Deduplicated list of { studentId, studentName }
-     */
-    public List<Map<String, String>> getEnrolledStudents(String courseId) {
-        // Source 1: students with existing attendance records
-        List<AttendanceRecord> records = repo.findByCourseIdOrderByDateDesc(courseId);
-        Map<String, String> studentMap = new LinkedHashMap<>();
-        for (AttendanceRecord r : records) {
-            studentMap.putIfAbsent(r.getStudentId(), r.getStudentName());
-        }
-
-        // Source 2: students registered via the Registration/Advising feature
-        // section.code == courseId (e.g. "CSE110"), all terms
-        List<SectionRegistration> registrations = regRepo.findAll().stream()
-                .filter(sr -> sr.getSection() != null &&
-                              courseId.equalsIgnoreCase(sr.getSection().getCode()))
-                .collect(Collectors.toList());
-
-        for (SectionRegistration sr : registrations) {
-            // Use studentId as both key and fallback name if unknown
-            studentMap.putIfAbsent(sr.getStudentId(), sr.getStudentId());
-        }
-
-        List<Map<String, String>> result = new ArrayList<>();
-        for (Map.Entry<String, String> entry : studentMap.entrySet()) {
-            Map<String, String> s = new LinkedHashMap<>();
-            s.put("studentId",   entry.getKey());
-            s.put("studentName", entry.getValue());
-            result.add(s);
-        }
-        return result;
-    }
-
-    // ── Student course list (from registration) + attendance stats ─
-
-    /**
-     * Returns a student's registered courses merged with their attendance stats.
-     * Used by the student attendance view to show per-course attendance.
-     *
-     * For each registered course:
-     *   - courseId, courseName, section info (from section_registrations)
-     *   - totalSessions, presentCount, absentCount, lateCount, attendanceRate
-     *     (from attendance_records for that student + course)
-     *
-     * @param studentId Student identifier
-     * @param term      Academic term, e.g. "Fall2026" (optional; all terms if null)
-     * @return List of course attendance maps
-     */
-    public List<Map<String, Object>> getStudentCourses(String studentId, String term) {
-        // Fetch all registrations for this student
-        List<SectionRegistration> registrations;
-        if (term != null && !term.isBlank()) {
-            registrations = regRepo.findByStudentIdAndTerm(studentId, term);
-        } else {
-            registrations = regRepo.findAll().stream()
-                    .filter(sr -> studentId.equals(sr.getStudentId()))
-                    .collect(Collectors.toList());
-        }
-
-        // Fetch all attendance records for this student once
-        List<AttendanceRecord> allRecords = repo.findByStudentIdOrderByDateDesc(studentId);
-
-        // Fallback: STU001 maps to actual seeded student id 21201001
-        if (allRecords.isEmpty() &&
-                ("STU001".equalsIgnoreCase(studentId) || "usr_eusha_001".equalsIgnoreCase(studentId))) {
-            allRecords = repo.findByStudentIdOrderByDateDesc("21201001");
-        }
-
-        // Group attendance records by courseId
-        Map<String, List<AttendanceRecord>> byCourse = allRecords.stream()
-                .collect(Collectors.groupingBy(AttendanceRecord::getCourseId));
-
-        List<Map<String, Object>> result = new ArrayList<>();
-
-        // De-duplicate by course code so we don't show the same course twice
-        Set<String> seenCodes = new LinkedHashSet<>();
-        for (SectionRegistration sr : registrations) {
-            if (sr.getSection() == null) continue;
-            String code = sr.getSection().getCode();
-            if (!seenCodes.add(code)) continue;
-
-            String title = sr.getSection().getTitle();
-
-            List<AttendanceRecord> courseRecs = byCourse.getOrDefault(code, Collections.emptyList());
-            long total   = courseRecs.size();
-            long present = courseRecs.stream().filter(r -> "PRESENT".equalsIgnoreCase(r.getStatus())).count();
-            long late    = courseRecs.stream().filter(r -> "LATE".equalsIgnoreCase(r.getStatus())).count();
-            long absent  = courseRecs.stream().filter(r -> "ABSENT".equalsIgnoreCase(r.getStatus())).count();
-            double rate  = total > 0 ? (double)(present + late) / total * 100.0 : 0.0;
-
-            Map<String, Object> courseMap = new LinkedHashMap<>();
-            courseMap.put("courseId",       code);
-            courseMap.put("courseName",     title);
-            courseMap.put("section",        sr.getSection().getSection());
-            courseMap.put("faculty",        sr.getSection().getFaculty());
-            courseMap.put("totalSessions",  total);
-            courseMap.put("presentCount",   present);
-            courseMap.put("lateCount",      late);
-            courseMap.put("absentCount",    absent);
-            courseMap.put("attendanceRate", Math.round(rate * 10.0) / 10.0);
-            result.add(courseMap);
-        }
-        return result;
     }
 }

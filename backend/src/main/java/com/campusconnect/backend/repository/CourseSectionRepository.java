@@ -30,10 +30,4 @@ public interface CourseSectionRepository extends JpaRepository<CourseSection, St
            "LOWER(s.section) LIKE LOWER(CONCAT('%', :q, '%')) " +
            "ORDER BY s.code ASC, s.section ASC")
     List<CourseSection> search(@Param("q") String query);
-
-    /** Normalizes all legacy overbooked sections so booked does not exceed totalSeats unless force-enrolled */
-    @org.springframework.data.jpa.repository.Modifying
-    @org.springframework.transaction.annotation.Transactional
-    @Query("UPDATE CourseSection s SET s.booked = s.totalSeats WHERE s.booked > s.totalSeats")
-    int normalizeOverbookedSections();
 }

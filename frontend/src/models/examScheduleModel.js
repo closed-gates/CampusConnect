@@ -9,7 +9,7 @@
  */
 
 /** Base URL for exam schedule API */
-export const EXAM_SCHEDULE_API = '/api/exam-schedule'
+export const EXAM_SCHEDULE_API = 'http://localhost:8080/api/exam-schedule'
 
 /**
  * Fallback student ID when no auth token / localStorage entry exists.

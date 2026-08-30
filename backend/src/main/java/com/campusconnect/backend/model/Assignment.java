@@ -31,10 +31,6 @@ public class Assignment {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    /** Maximum score for the assignment. Existing database schema requires a value. */
-    @Column(name = "total_points", nullable = false)
-    private Integer totalPoints = 100;
-
 
 
     @Column(name = "deadline", nullable = false)
@@ -73,9 +69,6 @@ public class Assignment {
 
     public String getDescription()               { return description; }
     public void setDescription(String d)         { this.description = d; }
-
-    public Integer getTotalPoints()              { return totalPoints; }
-    public void setTotalPoints(Integer p)        { this.totalPoints = p; }
 
 
 
