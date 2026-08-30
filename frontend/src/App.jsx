@@ -11,9 +11,6 @@ import CoursesView          from './views/pages/CoursesView'
 import RoutineView          from './views/pages/RoutineView'
 import AttendanceView       from './views/pages/AttendanceView'
 import AdvisingView         from './views/pages/AdvisingView'
-import AssignAdvisorView   from './views/pages/AssignAdvisorView'
-import BypassCourseView    from './views/pages/BypassCourseView'
-import ViewRoutineView     from './views/pages/ViewRoutineView'
 import AssignmentView       from './views/pages/AssignmentView'
 import PaymentView          from './views/pages/PaymentView'
 
@@ -49,9 +46,6 @@ export default function App() {
         <Route path="/routine"           element={<RoutineView />} />
         <Route path="/attendance"        element={<AttendanceView />} />
         <Route path="/advising"          element={<AdvisingView />} />
-        <Route path="/view-routine"      element={<ViewRoutineView />} />
-        <Route path="/assign-advisor"    element={<AssignAdvisorView />} />
-        <Route path="/bypass-course"     element={<BypassCourseView />} />
         <Route path="/assignments"       element={<AssignmentView />} />
         <Route path="/payments"          element={<PaymentView />} />
       </Route>

@@ -114,7 +114,7 @@ function MyRegistrations({ myRegistrations = [], registeredCredits = 0, windowSt
             </thead>
             <tbody>
               {myRegistrations.map(sec => {
-                const remaining = sec.seatsRemaining ?? ((sec.totalSeats ?? 0) - (sec.booked ?? 0))
+                const remaining = sec.seatsRemaining ?? Math.max(0, (sec.totalSeats ?? 0) - (sec.booked ?? 0))
                 const cfg = getStatusConfig(remaining, sec.totalSeats ?? 0)
                 return (
                   <tr key={sec.id} className="reg-my-row">
@@ -219,7 +219,7 @@ function SectionBrowser({ ctrl }) {
 
 /* ─── Section Card ───────────────────────────────────────────── */
 function SectionCard({ section: sec, windowOpen, onRegister, onDrop }) {
-  const remaining           = sec.seatsRemaining ?? ((sec.totalSeats ?? 0) - (sec.booked ?? 0))
+  const remaining           = sec.seatsRemaining ?? Math.max(0, (sec.totalSeats ?? 0) - (sec.booked ?? 0))
   const cfg                 = getStatusConfig(remaining, sec.totalSeats ?? 0)
   const isFull              = remaining <= 0
   const isRegistered        = sec.registeredByStudent ?? false

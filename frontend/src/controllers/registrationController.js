@@ -245,21 +245,12 @@ export function useRegistrationController() {
   /* ── Drop ─────────────────────────────────────────────────── */
   const handleDrop = useCallback(async (sectionId) => {
     const studentId = getStudentId()
-    const sec = sections.find(s => s.id === sectionId)
-
     setSections(prev => prev.map(s =>
       s.id === sectionId
         ? { ...s, seatsRemaining: (s.seatsRemaining ?? 0) + 1, registeredByStudent: false }
         : s
     ))
     setMyRegistrations(prev => prev.filter(r => r.id !== sectionId))
-
-    if (sec) {
-      channelService.onDropCourse({
-        userId: studentId,
-        courseCode: sec.courseCode || sec.code
-      })
-    }
 
     try {
       const res = await apiClient.delete(`${API_BASE}/drop/${studentId}/${sectionId}`)
@@ -275,7 +266,7 @@ export function useRegistrationController() {
     }
 
     await refreshSeats()
-  }, [showToast, refreshSeats, sections])
+  }, [showToast, refreshSeats])
 
   /* ── Derived: filtered + sorted sections ─────────────────── */
   const displayedSections = useMemo(() => {

@@ -74,54 +74,48 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
   useEffect(() => {
     const user = getStoredUser()
     const studentId = user?.userId || 'STU001'
-
     Promise.all([
       apiClient.get(`/api/registration/my?studentId=${studentId}`).then(r => r.ok ? r.json() : []).catch(() => []),
       apiClient.get(`/api/advisors/student/${studentId}`).then(r => r.ok ? r.json() : null).catch(() => null),
     ]).then(([regCourses, profile]) => {
-      const activeCourses = []
-      const seen = new Set()
-
+      let updated = false
       if (Array.isArray(regCourses)) {
         regCourses.forEach(r => {
-          const code = (r.code || r.courseCode || '').toUpperCase().trim()
+          const code = r.code || r.courseCode
           const name = r.title || r.courseTitle || r.name || code
-          if (code && !seen.has(code)) {
-            seen.add(code)
-            activeCourses.push({ code, name })
+          if (code) {
+            channelService.onEnrollment({ userId: user.id, course: { code, name } })
+            updated = true
           }
         })
       }
-
       if (profile && Array.isArray(profile.advisedCourses)) {
         profile.advisedCourses.forEach(ac => {
-          const code = (ac.courseCode || ac.code || '').toUpperCase().trim()
+          const code = ac.courseCode || ac.code
           const name = ac.courseTitle || ac.title || ac.name || code
-          if (code && !seen.has(code)) {
-            seen.add(code)
-            activeCourses.push({ code, name })
+          if (code) {
+            channelService.onEnrollment({ userId: user.id, course: { code, name } })
+            updated = true
           }
         })
       }
-
-      const enrolledChannels = channelService.syncUserChannels(studentId, activeCourses)
-      setChannelConvs([ADVISOR_CHANNEL, ...enrolledChannels])
+      if (updated) {
+        setChannelConvs([ADVISOR_CHANNEL, ...channelService.getChannelsForUser(user.id)])
+      }
     })
-  }, [])
+  }, [user.id])
 
-  // Subscribe to channelService – push new channel or remove channel on change
+  // Subscribe to channelService – push new channel to conv list on enrollment
   useEffect(() => {
     const unsub = channelService.subscribe(({ event, payload }) => {
       if (event === 'CHANNEL_JOINED') {
         const { channel } = payload
         setChannelConvs(prev => {
-          if (prev.find(c => c.id === channel.id)) return prev
+          if (prev.find(c => c.id === channel.id)) return prev   // idempotent
           return [...prev, channel]
         })
+        // Auto-select the newly joined channel
         setActiveConvId(channel.id)
-      } else if (event === 'CHANNEL_LEFT') {
-        const { channelId } = payload
-        setChannelConvs(prev => prev.filter(c => c.id !== channelId))
       }
     })
     return () => unsub()

@@ -1,10 +1,8 @@
 package com.campusconnect.backend.service;
 
-import com.campusconnect.backend.model.AdvisedCourse;
 import com.campusconnect.backend.model.CourseSection;
 import com.campusconnect.backend.model.SectionRegistration;
 import com.campusconnect.backend.model.StudentProfile;
-import com.campusconnect.backend.repository.AdvisedCourseRepository;
 import com.campusconnect.backend.repository.CourseSectionRepository;
 import com.campusconnect.backend.repository.SectionRegistrationRepository;
 import com.campusconnect.backend.repository.StudentProfileRepository;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,22 +50,16 @@ public class RegistrationService {
     private final SectionRegistrationRepository regRepo;
     private final CourseSectionRepository       sectionRepo;
     private final StudentProfileRepository      studentRepo;
-    private final AdvisedCourseRepository       advisedCourseRepo;
     private final SimpMessagingTemplate         messaging;
-    private final ScheduleClashValidator        clashValidator;
 
     public RegistrationService(SectionRegistrationRepository regRepo,
                                CourseSectionRepository sectionRepo,
                                StudentProfileRepository studentRepo,
-                               AdvisedCourseRepository advisedCourseRepo,
-                               SimpMessagingTemplate messaging,
-                               ScheduleClashValidator clashValidator) {
-        this.regRepo           = regRepo;
-        this.sectionRepo       = sectionRepo;
-        this.studentRepo       = studentRepo;
-        this.advisedCourseRepo = advisedCourseRepo;
-        this.messaging         = messaging;
-        this.clashValidator    = clashValidator;
+                               SimpMessagingTemplate messaging) {
+        this.regRepo     = regRepo;
+        this.sectionRepo = sectionRepo;
+        this.studentRepo = studentRepo;
+        this.messaging   = messaging;
     }
 
     // ── Section listing ───────────────────────────────────────────
@@ -85,19 +76,15 @@ public class RegistrationService {
         Set<String> completedCodes = parseCompletedCourses(student);
 
         List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM);
-        List<AdvisedCourse> advisedCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
 
-        Set<String> registeredSectionIds = new HashSet<>();
-        Set<String> registeredCourseCodes = new HashSet<>();
+        Set<String> registeredSectionIds = myRegs.stream()
+                .map(r -> r.getSection().getId())
+                .collect(Collectors.toSet());
 
-        for (SectionRegistration r : myRegs) {
-            registeredSectionIds.add(r.getSection().getId());
-            registeredCourseCodes.add(r.getSection().getCode().toUpperCase());
-        }
-        for (AdvisedCourse ac : advisedCourses) {
-            registeredSectionIds.add(ac.getSectionId());
-            registeredCourseCodes.add(ac.getCourseCode().toUpperCase());
-        }
+        // Track which course codes the student has already registered (any section)
+        Set<String> registeredCourseCodes = myRegs.stream()
+                .map(r -> r.getSection().getCode().toUpperCase())
+                .collect(Collectors.toSet());
 
         return sectionRepo.findAll().stream()
                 .map(sec -> {
@@ -113,28 +100,8 @@ public class RegistrationService {
 
     /** Returns a student's registered sections for the current term. */
     public List<Map<String, Object>> getStudentRegistrations(String studentId) {
-        // Sync any advised_courses records into section_registrations if not yet present
-        List<AdvisedCourse> advisedCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
-        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM);
-        Set<String> existingSectionIds = myRegs.stream().map(r -> r.getSection().getId()).collect(Collectors.toSet());
-
-        for (AdvisedCourse ac : advisedCourses) {
-            if (!existingSectionIds.contains(ac.getSectionId())) {
-                Optional<CourseSection> secOpt = sectionRepo.findById(ac.getSectionId());
-                if (secOpt.isPresent()) {
-                    SectionRegistration reg = SectionRegistration.builder()
-                            .studentId(studentId)
-                            .section(secOpt.get())
-                            .term(CURRENT_TERM)
-                            .build();
-                    regRepo.save(reg);
-                    myRegs.add(reg);
-                    existingSectionIds.add(ac.getSectionId());
-                }
-            }
-        }
-
-        return myRegs.stream()
+        return regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM)
+                .stream()
                 .map(r -> enrichSection(r.getSection(), studentId, new HashSet<>(), new HashSet<>()))
                 .collect(Collectors.toList());
     }
@@ -242,47 +209,14 @@ public class RegistrationService {
         }
 
         // 4b. One-section-per-course rule — cannot take two sections of the same course code
-        String newCourseCode = section.getCode().toUpperCase();
+        String newCourseCode = section.getCode();
         boolean alreadyHasCourse = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM)
                 .stream()
-                .anyMatch(r -> r.getSection().getCode().equalsIgnoreCase(newCourseCode))
-                || advisedCourseRepo.existsByStudentProfile_StudentIdAndCourseCode(studentId, newCourseCode);
-
+                .anyMatch(r -> r.getSection().getCode().equalsIgnoreCase(newCourseCode));
         if (alreadyHasCourse) {
             result.put("success", false);
             result.put("message", "You are already registered in another section of " + newCourseCode
                     + ". You can only take one section per course.");
-            return result;
-        }
-
-        // 4c. Load existing sections for schedule & exam clash checks
-        List<CourseSection> existingSections = new ArrayList<>();
-        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM);
-        for (SectionRegistration r : myRegs) {
-            if (r.getSection() != null) existingSections.add(r.getSection());
-        }
-        List<AdvisedCourse> myAdvised = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
-        for (AdvisedCourse ac : myAdvised) {
-            sectionRepo.findById(ac.getSectionId()).ifPresent(s -> {
-                if (existingSections.stream().noneMatch(existing -> existing.getId().equalsIgnoreCase(s.getId()))) {
-                    existingSections.add(s);
-                }
-            });
-        }
-
-        // 4d. Class schedule time clash check
-        String timeClash = clashValidator.checkClassTimeClash(section.getTime(), section.getCode(), section.getSection(), existingSections);
-        if (timeClash != null) {
-            result.put("success", false);
-            result.put("message", timeClash);
-            return result;
-        }
-
-        // 4e. Exam schedule clash check (same day + overlapping exam timing)
-        String examClash = clashValidator.checkExamClash(section, existingSections);
-        if (examClash != null) {
-            result.put("success", false);
-            result.put("message", examClash);
             return result;
         }
 
@@ -330,26 +264,6 @@ public class RegistrationService {
                 .build();
         regRepo.save(reg);
 
-        // Also synchronize with advised_courses so Advisor panel and Student routine show this course
-        if (!advisedCourseRepo.existsByStudentProfile_StudentIdAndCourseCode(studentId, section.getCode())) {
-            AdvisedCourse ac = AdvisedCourse.builder()
-                    .sectionId(section.getId())
-                    .studentProfile(student)
-                    .courseCode(section.getCode())
-                    .courseTitle(section.getTitle())
-                    .section(section.getSection())
-                    .credits(section.getCredits() != null ? section.getCredits().intValue() : 3)
-                    .time(section.getTime())
-                    .room(section.getRoom())
-                    .faculty(section.getFaculty())
-                    .assignedAt(LocalDateTime.now().toString())
-                    .assignedBy("Self-Registered (Student)")
-                    .build();
-            advisedCourseRepo.save(ac);
-            student.getAdvisedCourses().add(ac);
-            studentRepo.save(student);
-        }
-
         // 9. Read authoritative seat count from DB and broadcast to all clients
         int seatsRemaining = broadcastSeatUpdate(sectionId);
 
@@ -382,19 +296,6 @@ public class RegistrationService {
         // 2. Delete the registration record
         regRepo.delete(regOpt.get());
 
-        // Also remove from advised_courses
-        StudentProfile student = studentRepo.findById(studentId).orElse(null);
-        if (student != null) {
-            advisedCourseRepo.findByStudentProfile_StudentId(studentId).stream()
-                    .filter(ac -> ac.getSectionId().equalsIgnoreCase(sectionId))
-                    .findFirst()
-                    .ifPresent(ac -> {
-                        student.getAdvisedCourses().remove(ac);
-                        advisedCourseRepo.delete(ac);
-                        studentRepo.save(student);
-                    });
-        }
-
         // 3. Atomically release the seat
         regRepo.tryReleaseSeat(sectionId);
 
@@ -418,7 +319,7 @@ public class RegistrationService {
     private int broadcastSeatUpdate(String sectionId) {
         CourseSection updated = sectionRepo.findById(sectionId).orElse(null);
         int remaining = (updated != null)
-                ? (updated.getTotalSeats() - updated.getBooked())
+                ? Math.max(0, updated.getTotalSeats() - updated.getBooked())
                 : 0;
 
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -447,7 +348,7 @@ public class RegistrationService {
         m.put("examDay",          sec.getExamDay());
         m.put("totalSeats",       sec.getTotalSeats());
         m.put("booked",           sec.getBooked());
-        m.put("seatsRemaining",   sec.getTotalSeats() - sec.getBooked());
+        m.put("seatsRemaining",   Math.max(0, sec.getTotalSeats() - sec.getBooked()));
 
         boolean isRegistered = registeredSectionIds.contains(sec.getId());
         m.put("registeredByStudent", isRegistered);

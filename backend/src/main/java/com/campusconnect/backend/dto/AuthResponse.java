@@ -20,7 +20,6 @@ public class AuthResponse {
     private String fullName;
     private String email;
     private long   expiresIn;   // token TTL in milliseconds
-    private boolean isAdvisor;
 
     // ── Constructors ──────────────────────────────────────────
     public AuthResponse() {}
@@ -36,13 +35,6 @@ public class AuthResponse {
                         String token, String role,
                         String userId, String fullName,
                         String email, long expiresIn) {
-        this(success, message, token, role, userId, fullName, email, expiresIn, false);
-    }
-
-    public AuthResponse(boolean success, String message,
-                        String token, String role,
-                        String userId, String fullName,
-                        String email, long expiresIn, boolean isAdvisor) {
         this.success   = success;
         this.message   = message;
         this.token     = token;
@@ -51,7 +43,6 @@ public class AuthResponse {
         this.fullName  = fullName;
         this.email     = email;
         this.expiresIn = expiresIn;
-        this.isAdvisor = isAdvisor;
     }
 
     // ── Getters & Setters ─────────────────────────────────────
@@ -78,7 +69,4 @@ public class AuthResponse {
 
     public long    getExpiresIn()           { return expiresIn; }
     public void    setExpiresIn(long ms)    { this.expiresIn = ms; }
-
-    public boolean getIsAdvisor()           { return isAdvisor; }
-    public void    setIsAdvisor(boolean a)  { this.isAdvisor = a; }
 }
