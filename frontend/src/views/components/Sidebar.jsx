@@ -30,6 +30,37 @@ export default function Sidebar({ activeItem = 'home' }) {
   const user        = getStoredUser()
 
   const roleLabel = user?.role ? (ROLE_LABELS[user.role] || user.role) : ''
+  const isAdmin   = user?.role === 'ADMIN'
+  const isStudent = !user?.role || user?.role === 'STUDENT'
+
+  // Build nav items dynamically: include "View Routine" below Advising for students, and Admin tools
+  const navItems = []
+  NAV_ITEMS.forEach(item => {
+    navItems.push(item)
+    if (item.id === 'advising' && isStudent) {
+      navItems.push({
+        id: 'view-routine',
+        label: 'View Routine',
+        icon: <ViewRoutineIcon />,
+        route: '/view-routine'
+      })
+    }
+  })
+
+  if (isAdmin) {
+    navItems.push({
+      id: 'assign-advisor',
+      label: 'Assign Advisor',
+      icon: <AdvisorAssignIcon />,
+      route: '/assign-advisor'
+    })
+    navItems.push({
+      id: 'bypass-course',
+      label: 'Bypass Course',
+      icon: <BypassCourseIcon />,
+      route: '/bypass-course'
+    })
+  }
 
   return (
     <aside className="sidebar" role="navigation" aria-label="Main navigation">
@@ -54,7 +85,7 @@ export default function Sidebar({ activeItem = 'home' }) {
 
       {/* Nav items */}
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map(item => (
+        {navItems.map(item => (
           <button
             key={item.id}
             id={`nav-${item.id}`}
@@ -193,6 +224,25 @@ function LogoutIcon() {
   )
 }
 
+function AdvisorAssignIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <polyline points="17 11 19 13 23 9" />
+    </svg>
+  )
+}
+
+function BypassCourseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="5 4 15 12 5 20 5 4" />
+      <line x1="19" y1="5" x2="19" y2="19" />
+    </svg>
+  )
+}
+
 function PaymentIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -202,4 +252,17 @@ function PaymentIcon() {
     </svg>
   )
 }
+
+function ViewRoutineIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  )
+}
+
 

@@ -82,6 +82,19 @@ public class StudentProfile {
     @Builder.Default
     private List<AdvisedCourse> advisedCourses = new ArrayList<>();
 
+    /** True if advising has been confirmed and saved for this semester */
+    @Column(name = "advising_confirmed")
+    @Builder.Default
+    private Boolean advisingConfirmed = false;
+
+    /** ISO timestamp when advising was confirmed */
+    @Column(name = "advising_confirmed_at")
+    private String advisingConfirmedAt;
+
+    public boolean isAdvisingConfirmed() {
+        return Boolean.TRUE.equals(advisingConfirmed);
+    }
+
     // ── Derived helpers (same logic as original POJO) ─────────────
 
     public int getCurrentCredits() {

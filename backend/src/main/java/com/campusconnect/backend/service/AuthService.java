@@ -109,7 +109,8 @@ public class AuthService {
             true, "Login successful.",
             token, user.getRole(), user.getUserId(),
             user.getFullName(), user.getEmail(),
-            jwtService.getExpiryMs()
+            jwtService.getExpiryMs(),
+            user.isAdvisor()
         );
     }
 
@@ -152,7 +153,8 @@ public class AuthService {
             request.getEmail().trim().toLowerCase(),
             passwordEncoder.encode(request.getPassword()),
             role,
-            LocalDateTime.now().toString()
+            LocalDateTime.now().toString(),
+            false
         );
         userRepo.save(newUser);
 
@@ -162,7 +164,8 @@ public class AuthService {
             true, "Account created successfully.",
             token, newUser.getRole(), newUser.getUserId(),
             newUser.getFullName(), newUser.getEmail(),
-            jwtService.getExpiryMs()
+            jwtService.getExpiryMs(),
+            newUser.isAdvisor()
         );
     }
 

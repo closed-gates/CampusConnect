@@ -45,35 +45,39 @@ export const INITIAL_SIGNUP_FORM = {
 // ── localStorage token helpers ────────────────────────────────────────────────
 
 const KEYS = {
-  TOKEN:     'cc_token',
-  ROLE:      'cc_role',
-  USER_ID:   'cc_userId',
-  FULL_NAME: 'cc_fullName',
-  EMAIL:     'cc_email',
-  EXPIRES:   'cc_expires',
+  TOKEN:      'cc_token',
+  ROLE:       'cc_role',
+  USER_ID:    'cc_userId',
+  FULL_NAME:  'cc_fullName',
+  EMAIL:      'cc_email',
+  EXPIRES:    'cc_expires',
+  IS_ADVISOR: 'cc_isAdvisor',
 }
 
 /**
  * Persist the full auth payload after a successful login / registration.
- * @param {{ token, role, userId, fullName, email, expiresIn }} payload
+ * @param {{ token, role, userId, fullName, email, expiresIn, isAdvisor }} payload
  */
 export function storeAuth(payload) {
-  localStorage.setItem(KEYS.TOKEN,     payload.token)
-  localStorage.setItem(KEYS.ROLE,      payload.role)
-  localStorage.setItem(KEYS.USER_ID,   payload.userId)
-  localStorage.setItem(KEYS.FULL_NAME, payload.fullName)
-  localStorage.setItem(KEYS.EMAIL,     payload.email)
+  localStorage.setItem(KEYS.TOKEN,      payload.token)
+  localStorage.setItem(KEYS.ROLE,       payload.role)
+  localStorage.setItem(KEYS.USER_ID,    payload.userId)
+  localStorage.setItem(KEYS.FULL_NAME,  payload.fullName)
+  localStorage.setItem(KEYS.EMAIL,      payload.email)
+  localStorage.setItem(KEYS.IS_ADVISOR, payload.isAdvisor ? 'true' : 'false')
   // Store absolute expiry timestamp
   const expiresAt = Date.now() + (payload.expiresIn || 86400000)
   localStorage.setItem(KEYS.EXPIRES, String(expiresAt))
   // Legacy key — kept for backward compatibility with existing code
   localStorage.setItem('userRole', payload.role)
+  localStorage.setItem('isAdvisor', payload.isAdvisor ? 'true' : 'false')
 }
 
 /** Remove all auth data from localStorage (used on logout / token expiry). */
 export function clearAuth() {
   Object.values(KEYS).forEach(k => localStorage.removeItem(k))
   localStorage.removeItem('userRole')
+  localStorage.removeItem('isAdvisor')
 }
 
 /** @returns {string|null} The stored JWT token, or null if not present. */
@@ -86,16 +90,22 @@ export function getStoredRole() {
   return localStorage.getItem(KEYS.ROLE)
 }
 
-/** @returns {{ userId, fullName, email, role }|null} Stored user info object. */
+/** @returns {{ userId, fullName, email, role, isAdvisor: boolean }|null} Stored user info object. */
 export function getStoredUser() {
   const token = getStoredToken()
   if (!token) return null
   return {
-    userId:   localStorage.getItem(KEYS.USER_ID)   || '',
-    fullName: localStorage.getItem(KEYS.FULL_NAME) || '',
-    email:    localStorage.getItem(KEYS.EMAIL)     || '',
-    role:     localStorage.getItem(KEYS.ROLE)      || '',
+    userId:    localStorage.getItem(KEYS.USER_ID)    || '',
+    fullName:  localStorage.getItem(KEYS.FULL_NAME)  || '',
+    email:     localStorage.getItem(KEYS.EMAIL)      || '',
+    role:      localStorage.getItem(KEYS.ROLE)       || '',
+    isAdvisor: localStorage.getItem(KEYS.IS_ADVISOR) === 'true',
   }
+}
+
+/** @returns {boolean} Whether the logged-in user has Advisor authorization */
+export function isUserAdvisor() {
+  return localStorage.getItem(KEYS.IS_ADVISOR) === 'true' || localStorage.getItem('isAdvisor') === 'true'
 }
 
 /**
