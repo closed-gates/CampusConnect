@@ -30,4 +30,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     /** Check if an email is already registered */
     boolean existsByEmail(String email);
+
+    /** Find all users by role, e.g. "FACULTY" */
+    java.util.List<AppUser> findByRole(String role);
 }
