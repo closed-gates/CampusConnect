@@ -2,6 +2,7 @@ com\campusconnect\backend\model\Advisor$AdvisorBuilder.class
 com\campusconnect\backend\model\Recruitment.class
 com\campusconnect\backend\exception\package-info.class
 com\campusconnect\backend\exception\GlobalExceptionHandler.class
+com\campusconnect\backend\model\WatchProgress.class
 com\campusconnect\backend\controller\CourseController.class
 com\campusconnect\backend\model\AdvisedCourse$AdvisedCourseBuilder.class
 com\campusconnect\backend\model\Application.class
@@ -13,6 +14,8 @@ com\campusconnect\backend\service\RegistrationService.class
 com\campusconnect\backend\model\StudentProfile$StudentProfileBuilder.class
 com\campusconnect\backend\dto\AdvisorMatchResponse.class
 com\campusconnect\backend\model\Advisor.class
+com\campusconnect\backend\service\VideoLectureService.class
+com\campusconnect\backend\controller\VideoLectureController.class
 com\campusconnect\backend\model\SectionRegistration$SectionRegistrationBuilder.class
 com\campusconnect\backend\service\AuthService.class
 com\campusconnect\backend\model\CourseSection.class
@@ -31,12 +34,16 @@ com\campusconnect\backend\repository\SectionRegistrationRepository.class
 com\campusconnect\backend\repository\AdvisedCourseRepository.class
 com\campusconnect\backend\repository\package-info.class
 com\campusconnect\backend\model\Submission.class
+com\campusconnect\backend\model\VideoLecture.class
 com\campusconnect\backend\model\ExamSchedule.class
 com\campusconnect\backend\controller\AssignmentController.class
 com\campusconnect\backend\controller\ExamScheduleController.class
+com\campusconnect\backend\repository\WatchProgressRepository.class
+com\campusconnect\backend\dto\WatchProgressDto.class
 com\campusconnect\backend\model\ExamSchedule$ExamScheduleBuilder.class
 com\campusconnect\backend\controller\ClubController.class
 com\campusconnect\backend\model\AdvisedCourse.class
+com\campusconnect\backend\dto\VideoLectureDto.class
 com\campusconnect\backend\model\AttendanceRecord.class
 com\campusconnect\backend\service\AssignmentService.class
 com\campusconnect\backend\service\package-info.class
@@ -57,6 +64,7 @@ com\campusconnect\backend\service\AttendanceService.class
 com\campusconnect\backend\exception\ResourceNotFoundException.class
 com\campusconnect\backend\model\CourseCatalog.class
 com\campusconnect\backend\repository\ClubNoticeRepository.class
+com\campusconnect\backend\repository\VideoLectureRepository.class
 com\campusconnect\backend\config\CorsConfig.class
 com\campusconnect\backend\controller\AdvisorController.class
 com\campusconnect\backend\repository\AssignmentRepository.class

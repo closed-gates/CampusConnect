@@ -12,6 +12,7 @@ import RoutineView          from './views/pages/RoutineView'
 import AttendanceView       from './views/pages/AttendanceView'
 import AdvisingView        from './views/pages/AdvisingView'
 import AssignmentView      from './views/pages/AssignmentView'
+import VideoLecturesView   from './views/pages/VideoLecturesView'
 
 /**
  * App – Root router
@@ -22,6 +23,7 @@ import AssignmentView      from './views/pages/AssignmentView'
  *   /                   → LoginView
  *   /signup             → SignupView
  *   /dashboard          → DashboardView
+ *   /video-lectures     → VideoLecturesView
  *   /club-activities    → ClubActivitiesView   ← Phase 2 (Arham)
  *   /academic-calendar  → AcademicCalendarView
  *   /messaging          → MessagingView
@@ -39,6 +41,7 @@ export default function App() {
       <Route path="/"                  element={<LoginView />} />
       <Route path="/signup"            element={<SignupView />} />
       <Route path="/dashboard"         element={<DashboardView />} />
+      <Route path="/video-lectures"    element={<VideoLecturesView />} />
       <Route path="/academic-calendar" element={<AcademicCalendarView />} />
       <Route path="/messaging"         element={<MessagingView />} />
       <Route path="/club-activities"   element={<ClubActivitiesView />} />

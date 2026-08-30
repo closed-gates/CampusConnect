@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 const NAV_ITEMS = [
   { id: 'home',              label: 'Home',             icon: <HomeIcon />,      route: '/dashboard' },
   { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: '/courses' },
+  { id: 'video-lectures',    label: 'Video Lectures',    icon: <VideoLecturesIcon />, route: '/video-lectures' },
   { id: 'assignments',       label: 'Assignments',       icon: <AssignmentIcon />, route: '/assignments' },
   { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: '/advising' },
   { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: '/messaging' },
@@ -187,6 +188,15 @@ function LogoutIcon() {
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
       <polyline points="16 17 21 12 16 7"/>
       <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+  )
+}
+
+function VideoLecturesIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="23 7 16 12 23 17 23 7"/>
+      <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
     </svg>
   )
 }
