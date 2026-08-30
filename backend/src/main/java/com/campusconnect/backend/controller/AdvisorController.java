@@ -105,6 +105,25 @@ public class AdvisorController {
         return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
 
+    // ── POST /api/advisors/confirm/{studentId} ────────────────────
+    /** Confirms and saves advising session for the student to the database. */
+    @PostMapping("/confirm/{studentId}")
+    public ResponseEntity<Map<String, Object>> confirmAdvising(
+            @PathVariable String studentId,
+            @RequestBody(required = false) Map<String, String> body) {
+        String advisorName = (body != null && body.containsKey("advisorName")) ? body.get("advisorName") : "Advisor";
+        Map<String, Object> result = advisorService.confirmAdvising(studentId, advisorName);
+        boolean success = Boolean.TRUE.equals(result.get("success"));
+        return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
+    }
+
+    // ── GET /api/advisors/status/{userId} ──────────────────────────
+    /** Returns user role & advisor authorization status. */
+    @GetMapping("/status/{userId}")
+    public ResponseEntity<Map<String, Object>> getAdvisorStatus(@PathVariable String userId) {
+        return ResponseEntity.ok(advisorService.getAdvisorStatus(userId));
+    }
+
     // ── GET /api/advisors/seat-updates ─────────────────────────────
     /** Returns sectionId → total booking count for live seat display in advisor panel. */
     @GetMapping("/seat-updates")
