@@ -103,7 +103,21 @@ sequenceDiagram
 
 ---
 
-## 3. Files Involved
+## 3. Role-Based Access Control
+
+| Role | Assignment permissions |
+| --- | --- |
+| Student | View questions and attachments; upload, replace, or unsubmit only their own file before the deadline. |
+| Faculty | Create and edit assignment questions and deadlines; view every submission and its protected file; cannot submit work. |
+| Admin | Create and edit assignments/deadlines, view submissions, and submit their own work before the deadline. |
+
+The frontend uses these three explicit capabilities: `canManageAssignments`, `canViewSubmissions`, and `canSubmit`. The API checks the authenticated JWT role again for every protected action; it derives a submitter's user ID from the JWT rather than trusting a request-supplied ID. The service remains the final authority for deadline enforcement on both submit and unsubmit actions.
+
+### Listing visibility and due-date ordering
+
+`GET /api/assignments` is sorted by the nearest deadline and scoped by the JWT identity: faculty receive only assignments they created, students receive assignments whose course is in their section registrations, and admins receive every assignment. Overdue assignments are excluded by default. When any exist for the current user, the UI provides a **Show past-deadline assignments** button, which calls the same endpoint with `includeOverdue=true`.
+
+## 4. Files Involved
 
 ### Frontend (React MVC)
 - **Model:** [assignmentModel.js](file:///e:/CampusConnect/frontend/src/models/assignmentModel.js) — Constants, status configs, deadline helpers, file formatters, course color mappings. Pure JS, no React.

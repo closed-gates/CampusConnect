@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import authIllustration from '../../assets/auth_illustration.png'
 import { useSignupController } from '../../controllers/authController.js'
+import { ROLE_LABELS } from '../../models/authModel.js'
 
 /**
  * SignupView – View layer for the Signup page.
@@ -8,10 +9,11 @@ import { useSignupController } from '../../controllers/authController.js'
  * MVC Role: View
  * Renders the signup form. All logic is provided by useSignupController().
  *
- * Layout: Left = lavender illustration panel | Right = form (white)
+ * Fields: fullName, userId, email, password, confirmPassword, role
+ * Shows real error messages from the backend.
  */
 export default function SignupView() {
-  const { formData, loading, handleChange, handleSignup } = useSignupController()
+  const { formData, loading, error, handleChange, handleSignup } = useSignupController()
 
   return (
     <div className="auth-wrapper signup">
@@ -34,6 +36,13 @@ export default function SignupView() {
         </p>
 
         <form onSubmit={handleSignup} noValidate>
+          {/* Error banner */}
+          {error && (
+            <div className="auth-error-banner" role="alert">
+              ⚠️ {error}
+            </div>
+          )}
+
           {/* Full Name */}
           <div className="form-group">
             <label className="form-label" htmlFor="signup-fullname">Full Name</label>
@@ -49,16 +58,19 @@ export default function SignupView() {
             />
           </div>
 
-          {/* Username */}
+          {/* User ID */}
           <div className="form-group">
-            <label className="form-label" htmlFor="signup-username">Username</label>
+            <label className="form-label" htmlFor="signup-userid">
+              User ID
+              <span className="form-label-hint"> (e.g. STU042, FAC012)</span>
+            </label>
             <input
-              id="signup-username"
-              name="username"
+              id="signup-userid"
+              name="userId"
               type="text"
               className="form-input"
-              placeholder="Choose a username"
-              value={formData.username}
+              placeholder="Choose a unique user ID"
+              value={formData.userId}
               onChange={handleChange}
               autoComplete="username"
             />
@@ -79,6 +91,23 @@ export default function SignupView() {
             />
           </div>
 
+          {/* Role */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="signup-role">I am a:</label>
+            <select
+              id="signup-role"
+              name="role"
+              className="form-input"
+              value={formData.role}
+              onChange={handleChange}
+              style={{ cursor: 'pointer' }}
+            >
+              {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Password */}
           <div className="form-group">
             <label className="form-label" htmlFor="signup-password">Password</label>
@@ -87,7 +116,7 @@ export default function SignupView() {
               name="password"
               type="password"
               className="form-input"
-              placeholder="Create a strong password"
+              placeholder="Minimum 6 characters"
               value={formData.password}
               onChange={handleChange}
               autoComplete="new-password"
@@ -121,7 +150,7 @@ export default function SignupView() {
         </form>
 
         <p className="auth-bottom">
-          Already have an account?
+          Already have an account?&nbsp;
           <Link to="/">Log in</Link>
         </p>
       </div>

@@ -1,22 +1,19 @@
 import { useNavigate } from 'react-router-dom'
+import { createLogoutHandler } from '../../controllers/authController.js'
+import { getStoredUser, ROLE_LABELS } from '../../models/authModel.js'
 
 /**
  * Sidebar – View layer component for the main navigation.
  *
  * MVC Role: View (shared component)
  *
- * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board
- *            | Academic Calendar | Club Activities | Create Routine
- *
- * TODO (Phase 3):
- *   - "Logout" should clear JWT from localStorage and call POST /api/auth/logout
- *   - Highlight activeItem based on current route (useLocation)
+ * Shows logged-in user info at the top (name + role badge).
+ * Logout calls createLogoutHandler which clears the JWT + navigates to login.
  */
 
 const NAV_ITEMS = [
   { id: 'home',              label: 'Home',             icon: <HomeIcon />,      route: '/dashboard' },
   { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: '/courses' },
-  { id: 'video-lectures',    label: 'Video Lectures',    icon: <VideoLecturesIcon />, route: '/video-lectures' },
   { id: 'assignments',       label: 'Assignments',       icon: <AssignmentIcon />, route: '/assignments' },
   { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: '/advising' },
   { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: '/messaging' },
@@ -24,23 +21,45 @@ const NAV_ITEMS = [
   { id: 'clubs',             label: 'Club Activities',   icon: <ClubIcon />,      route: '/club-activities' },
   { id: 'routine',           label: 'Create Routine',    icon: <RoutineIcon />,   route: '/routine' },
   { id: 'attendance',        label: 'Attendance',        icon: <AttendanceIcon />, route: '/attendance' },
+  { id: 'payments',          label: 'Payments',          icon: <PaymentIcon />,    route: '/payments' },
 ]
 
 export default function Sidebar({ activeItem = 'home' }) {
-  const navigate = useNavigate()
+  const navigate    = useNavigate()
+  const handleLogout = createLogoutHandler(navigate)
+  const user        = getStoredUser()
 
-  const handleLogout = () => {
-    /*
-     * ── Phase 3 stub ──────────────────────────────────────────
-     * await fetch('/api/auth/logout', { method: 'POST',
-     *   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-     * })
-     * localStorage.removeItem('token')
-     * localStorage.removeItem('userRole')
-     * ─────────────────────────────────────────────────────────
-     */
-    localStorage.removeItem('userRole')
-    navigate('/')
+  const roleLabel = user?.role ? (ROLE_LABELS[user.role] || user.role) : ''
+  const isAdmin   = user?.role === 'ADMIN'
+  const isStudent = !user?.role || user?.role === 'STUDENT'
+
+  // Build nav items dynamically: include "View Routine" below Advising for students, and Admin tools
+  const navItems = []
+  NAV_ITEMS.forEach(item => {
+    navItems.push(item)
+    if (item.id === 'advising' && isStudent) {
+      navItems.push({
+        id: 'view-routine',
+        label: 'View Routine',
+        icon: <ViewRoutineIcon />,
+        route: '/view-routine'
+      })
+    }
+  })
+
+  if (isAdmin) {
+    navItems.push({
+      id: 'assign-advisor',
+      label: 'Assign Advisor',
+      icon: <AdvisorAssignIcon />,
+      route: '/assign-advisor'
+    })
+    navItems.push({
+      id: 'bypass-course',
+      label: 'Bypass Course',
+      icon: <BypassCourseIcon />,
+      route: '/bypass-course'
+    })
   }
 
   return (
@@ -51,9 +70,22 @@ export default function Sidebar({ activeItem = 'home' }) {
         <span className="sidebar-logo-text">CampusConnect</span>
       </div>
 
+      {/* User info badge */}
+      {user && (
+        <div className="sidebar-user-info">
+          <div className="sidebar-user-avatar">
+            {user.fullName ? user.fullName.charAt(0).toUpperCase() : '?'}
+          </div>
+          <div className="sidebar-user-details">
+            <span className="sidebar-user-name">{user.fullName}</span>
+            <span className="sidebar-user-role">{roleLabel}</span>
+          </div>
+        </div>
+      )}
+
       {/* Nav items */}
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map(item => (
+        {navItems.map(item => (
           <button
             key={item.id}
             id={`nav-${item.id}`}
@@ -192,11 +224,45 @@ function LogoutIcon() {
   )
 }
 
-function VideoLecturesIcon() {
+function AdvisorAssignIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="23 7 16 12 23 17 23 7"/>
-      <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <polyline points="17 11 19 13 23 9" />
     </svg>
   )
 }
+
+function BypassCourseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="5 4 15 12 5 20 5 4" />
+      <line x1="19" y1="5" x2="19" y2="19" />
+    </svg>
+  )
+}
+
+function PaymentIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+      <line x1="1" y1="10" x2="23" y2="10"/>
+      <circle cx="6.5" cy="15.5" r="1.5" fill="currentColor"/>
+    </svg>
+  )
+}
+
+function ViewRoutineIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  )
+}
+
+

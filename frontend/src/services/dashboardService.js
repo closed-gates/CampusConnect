@@ -6,11 +6,15 @@
  * Provides functions to fetch:
  *   1. Student registered course sections from /api/registration/my or /api/advisors/student
  *   2. Student attendance metrics & session history from /api/attendance/student
+ *
+ * All requests go through apiClient which auto-attaches the JWT Bearer token.
  */
 
-const REGISTRATION_API_BASE = 'http://localhost:8080/api/registration'
-const ADVISOR_API_BASE      = 'http://localhost:8080/api/advisors'
-const ATTENDANCE_API_BASE   = 'http://localhost:8080/api/attendance'
+import apiClient from './apiClient.js'
+
+const REGISTRATION_API_BASE = '/api/registration'
+const ADVISOR_API_BASE      = '/api/advisors'
+const ATTENDANCE_API_BASE   = '/api/attendance'
 
 /**
  * Fetches the registered/advised course sections for a student.
@@ -22,7 +26,7 @@ const ATTENDANCE_API_BASE   = 'http://localhost:8080/api/attendance'
  */
 export async function getStudentRegisteredCourses(studentId = 'STU001') {
   try {
-    const res = await fetch(`${REGISTRATION_API_BASE}/my?studentId=${encodeURIComponent(studentId)}`)
+    const res = await apiClient.get(`${REGISTRATION_API_BASE}/my?studentId=${encodeURIComponent(studentId)}`)
     if (res.ok) {
       const data = await res.json()
       if (Array.isArray(data) && data.length > 0) {
@@ -35,7 +39,7 @@ export async function getStudentRegisteredCourses(studentId = 'STU001') {
 
   // Fallback to advisor assigned courses
   try {
-    const advRes = await fetch(`${ADVISOR_API_BASE}/student/${encodeURIComponent(studentId)}`)
+    const advRes = await apiClient.get(`${ADVISOR_API_BASE}/student/${encodeURIComponent(studentId)}`)
     if (advRes.ok) {
       const profile = await advRes.json()
       if (profile && Array.isArray(profile.advisedCourses)) {
@@ -66,7 +70,7 @@ export async function getStudentRegisteredCourses(studentId = 'STU001') {
  */
 export async function getStudentAttendanceSummary(studentId = 'STU001') {
   try {
-    const res = await fetch(`${ATTENDANCE_API_BASE}/student/${encodeURIComponent(studentId)}`)
+    const res = await apiClient.get(`${ATTENDANCE_API_BASE}/student/${encodeURIComponent(studentId)}`)
     if (!res.ok) throw new Error(`Attendance API returned ${res.status}`)
     const json = await res.json()
     return json.data || null

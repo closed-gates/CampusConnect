@@ -34,6 +34,9 @@ public interface SectionRegistrationRepository extends JpaRepository<SectionRegi
     /** All registrations for a student in a given term */
     List<SectionRegistration> findByStudentIdAndTerm(String studentId, String term);
 
+    /** All active and historical registrations for a student. */
+    List<SectionRegistration> findByStudentId(String studentId);
+
     /** Duplicate-registration check */
     boolean existsByStudentIdAndSection_IdAndTerm(String studentId, String sectionId, String term);
 

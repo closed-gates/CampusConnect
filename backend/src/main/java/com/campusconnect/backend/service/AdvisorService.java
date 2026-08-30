@@ -3,6 +3,8 @@ package com.campusconnect.backend.service;
 import com.campusconnect.backend.dto.AdvisorMatchResponse;
 import com.campusconnect.backend.model.AdvisedCourse;
 import com.campusconnect.backend.model.Advisor;
+import com.campusconnect.backend.model.AppUser;
+import com.campusconnect.backend.model.CourseSection;
 import com.campusconnect.backend.model.StudentProfile;
 import com.campusconnect.backend.repository.AdvisedCourseRepository;
 import com.campusconnect.backend.repository.AdvisorRepository;
@@ -13,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -39,15 +43,37 @@ public class AdvisorService {
     private final StudentProfileRepository  studentRepo;
     private final AdvisedCourseRepository   advisedCourseRepo;
     private final CourseSectionRepository   sectionRepo;
+    private final com.campusconnect.backend.repository.AppUserRepository userRepo;
+    private final com.campusconnect.backend.repository.SectionRegistrationRepository regRepo;
+    private final ScheduleClashValidator    clashValidator;
 
     public AdvisorService(AdvisorRepository advisorRepo,
                           StudentProfileRepository studentRepo,
                           AdvisedCourseRepository advisedCourseRepo,
-                          CourseSectionRepository sectionRepo) {
+                          CourseSectionRepository sectionRepo,
+                          com.campusconnect.backend.repository.AppUserRepository userRepo,
+                          com.campusconnect.backend.repository.SectionRegistrationRepository regRepo,
+                          ScheduleClashValidator clashValidator) {
         this.advisorRepo       = advisorRepo;
         this.studentRepo       = studentRepo;
         this.advisedCourseRepo = advisedCourseRepo;
         this.sectionRepo       = sectionRepo;
+        this.userRepo          = userRepo;
+        this.regRepo           = regRepo;
+        this.clashValidator    = clashValidator;
+    }
+
+    public Map<String, Object> getAdvisorStatus(String userId) {
+        if (userId == null) return Map.of("isAdvisor", false, "role", "GUEST");
+        return userRepo.findByUserId(userId)
+                .map(u -> Map.<String, Object>of(
+                        "userId",    u.getUserId(),
+                        "role",      u.getRole(),
+                        "isAdvisor", u.isAdvisor(),
+                        "fullName",  u.getFullName(),
+                        "email",     u.getEmail()
+                ))
+                .orElse(Map.of("isAdvisor", false, "role", "GUEST"));
     }
 
     // ── Advisor matching ──────────────────────────────────────────
@@ -88,7 +114,32 @@ public class AdvisorService {
 
     /** Returns all students as response maps (for AdvisorController). */
     public List<Map<String, Object>> getAllStudentsAsResponse() {
-        return studentRepo.findAllByPriority().stream()
+        List<StudentProfile> profiles = studentRepo.findAllByPriority();
+        List<AppUser> studentUsers = userRepo.findByRole("STUDENT");
+        Set<String> existingIds = profiles.stream().map(StudentProfile::getStudentId).collect(Collectors.toSet());
+
+        for (AppUser u : studentUsers) {
+            if (!existingIds.contains(u.getUserId())) {
+                StudentProfile sp = StudentProfile.builder()
+                        .studentId(u.getUserId())
+                        .studentName(u.getFullName())
+                        .email(u.getEmail())
+                        .department("Computer Science & Engineering")
+                        .year(1)
+                        .cgpa(3.50)
+                        .completedCredits(0)
+                        .onProbation(false)
+                        .build();
+                studentRepo.save(sp);
+                profiles.add(sp);
+                existingIds.add(u.getUserId());
+            }
+        }
+
+        // Sort by priority (completed credits descending)
+        profiles.sort((a, b) -> Integer.compare(b.getCompletedCredits(), a.getCompletedCredits()));
+
+        return profiles.stream()
                 .map(this::buildProfileResponse)
                 .collect(Collectors.toList());
     }
@@ -154,29 +205,67 @@ public class AdvisorService {
             return result;
         }
 
-        // Rule 4: Schedule clash
-        String clashWith = detectClash(time, current);
-        if (clashWith != null) {
+        // Fetch existing section entities for thorough clash validation
+        List<CourseSection> existingSections = new ArrayList<>();
+        for (AdvisedCourse ac : current) {
+            sectionRepo.findById(ac.getSectionId()).ifPresent(existingSections::add);
+        }
+
+        // Rule 4: Class schedule time clash
+        String timeClash = clashValidator.checkClassTimeClash(time, courseCode, section, existingSections);
+        if (timeClash != null) {
             result.put("success", false);
-            result.put("message", "Schedule clash with " + clashWith + ". Same day and time slot.");
+            result.put("message", timeClash);
             return result;
         }
+
+        // Rule 5: Exam schedule clash (same day + overlapping exam timing)
+        Optional<CourseSection> targetSecOpt = sectionRepo.findById(courseId);
+        if (targetSecOpt.isPresent()) {
+            String examClash = clashValidator.checkExamClash(targetSecOpt.get(), existingSections);
+            if (examClash != null) {
+                result.put("success", false);
+                result.put("message", examClash);
+                return result;
+            }
+        }
+
+        String finalFaculty = (faculty != null && !faculty.isBlank()) ? faculty : targetSecOpt.map(CourseSection::getFaculty).orElse("TBA");
+        String finalRoom    = (room != null && !room.isBlank()) ? room : targetSecOpt.map(CourseSection::getRoom).orElse("TBA");
+        String finalTitle   = (courseTitle != null && !courseTitle.isBlank()) ? courseTitle : targetSecOpt.map(CourseSection::getTitle).orElse(courseCode);
+        String finalTime    = (time != null && !time.isBlank()) ? time : targetSecOpt.map(CourseSection::getTime).orElse("TBA");
+        String finalSecNum  = (section != null && !section.isBlank()) ? section : targetSecOpt.map(CourseSection::getSection).orElse("01");
 
         // All checks passed — persist assignment
         AdvisedCourse ac = AdvisedCourse.builder()
                 .sectionId(courseId)
                 .studentProfile(profile)
                 .courseCode(courseCode)
-                .courseTitle(courseTitle)
-                .section(section)
+                .courseTitle(finalTitle)
+                .section(finalSecNum)
                 .credits(StudentProfile.CREDITS_PER_COURSE)
-                .time(time)
-                .room(room)
-                .faculty(faculty)
+                .time(finalTime)
+                .room(finalRoom)
+                .faculty(finalFaculty)
                 .assignedAt(LocalDateTime.now().toString())
                 .assignedBy(advisorName != null ? advisorName : "Advisor")
                 .build();
         advisedCourseRepo.save(ac);
+
+        // Also synchronize to section_registrations so student profile and self-registration immediately show it
+        Optional<CourseSection> secOpt = targetSecOpt;
+        if (secOpt.isPresent()) {
+            CourseSection sec = secOpt.get();
+            if (!regRepo.existsByStudentIdAndSection_IdAndTerm(studentId, sec.getId(), "Fall2026")) {
+                com.campusconnect.backend.model.SectionRegistration sr = com.campusconnect.backend.model.SectionRegistration.builder()
+                        .studentId(studentId)
+                        .section(sec)
+                        .term("Fall2026")
+                        .build();
+                regRepo.save(sr);
+                regRepo.tryBookSeat(sec.getId());
+            }
+        }
 
         // Refresh profile so the returned object includes the new course
         StudentProfile refreshed = studentRepo.findById(studentId).orElse(profile);
@@ -203,27 +292,104 @@ public class AdvisorService {
             return result;
         }
 
-        // courseId is the Long PK of advised_courses row
-        Long acId;
+        // courseId can be the Long PK or sectionId
+        Long acId = null;
         try {
             acId = Long.parseLong(courseId);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {}
+
+        List<AdvisedCourse> existingCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
+        AdvisedCourse toRemove = null;
+
+        if (acId != null) {
+            for (AdvisedCourse ac : existingCourses) {
+                if (ac.getId().equals(acId)) {
+                    toRemove = ac;
+                    break;
+                }
+            }
+        }
+        if (toRemove == null) {
+            for (AdvisedCourse ac : existingCourses) {
+                if (courseId.equalsIgnoreCase(ac.getSectionId()) || courseId.equalsIgnoreCase(ac.getCourseCode())) {
+                    toRemove = ac;
+                    break;
+                }
+            }
+        }
+
+        if (toRemove != null) {
+            final String secId = toRemove.getSectionId();
+            final Long removeId = toRemove.getId();
+            advisedCourseRepo.delete(toRemove);
+            profile.getAdvisedCourses().removeIf(ac -> ac.getId().equals(removeId));
+
+            // Also clean up any matching section_registrations and release seat
+            try {
+                regRepo.findByStudentIdAndSection_IdAndTerm(studentId, secId, "Fall2026")
+                        .ifPresent(reg -> {
+                            regRepo.delete(reg);
+                            sectionRepo.findById(secId).ifPresent(sec -> {
+                                sec.setBooked(Math.max(0, sec.getBooked() - 1));
+                                sectionRepo.save(sec);
+                            });
+                        });
+            } catch (Exception ignored) {}
+
+            result.put("success", true);
+            result.put("message", "Course removed successfully.");
+            result.put("profile", buildProfileResponse(profile));
+            result.put("seatUpdates", buildSeatUpdates(profile));
+        } else {
+            final Long targetAcId = acId;
+            int deleted = targetAcId != null ? advisedCourseRepo.deleteByIdAndStudentId(targetAcId, studentId) : 0;
+            if (deleted > 0) {
+                profile.getAdvisedCourses().removeIf(ac -> ac.getId().equals(targetAcId));
+                result.put("success", true);
+                result.put("message", "Course removed successfully.");
+                result.put("profile", buildProfileResponse(profile));
+                result.put("seatUpdates", buildSeatUpdates(profile));
+            } else {
+                result.put("success", false);
+                result.put("message", "Course not found in student's assignment list.");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Confirms and persists the advising session for a student.
+     *
+     * @param studentId The student ID (e.g. "STU001")
+     * @param advisorName The advisor who confirmed (optional)
+     * @return Result map with success status and updated profile
+     */
+    @Transactional
+    public Map<String, Object> confirmAdvising(String studentId, String advisorName) {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        StudentProfile profile = studentRepo.findById(studentId).orElse(null);
+        if (profile == null) {
             result.put("success", false);
-            result.put("message", "Invalid course assignment ID.");
+            result.put("message", "Student not found: " + studentId);
             return result;
         }
 
-        int deleted = advisedCourseRepo.deleteByIdAndStudentId(acId, studentId);
-        if (deleted > 0) {
-            StudentProfile refreshed = studentRepo.findById(studentId).orElse(profile);
-            result.put("success", true);
-            result.put("message", "Course removed successfully.");
-            result.put("profile", buildProfileResponse(refreshed));
-            result.put("seatUpdates", buildSeatUpdates(refreshed));
-        } else {
+        List<AdvisedCourse> dbCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
+        if (dbCourses.isEmpty()) {
             result.put("success", false);
-            result.put("message", "Course not found in student's assignment list.");
+            result.put("message", "Cannot confirm advising with 0 courses selected.");
+            return result;
         }
+
+        profile.setAdvisingConfirmed(true);
+        profile.setAdvisingConfirmedAt(LocalDateTime.now().toString());
+        studentRepo.save(profile);
+
+        result.put("success", true);
+        result.put("message", "Advising confirmed and saved to database for " + profile.getStudentName() + " (" + dbCourses.size() + " courses).");
+        result.put("profile", buildProfileResponse(profile));
+        result.put("seatUpdates", buildSeatUpdates(profile));
         return result;
     }
 
@@ -232,7 +398,6 @@ public class AdvisorService {
      * of a given student (used by the advisor panel to show live seat counts).
      */
     public Map<String, Integer> getSeatUpdates() {
-        // Aggregate across all students: sectionId → count of assignments
         List<AdvisedCourse> all = advisedCourseRepo.findAll();
         Map<String, Integer> counts = new LinkedHashMap<>();
         for (AdvisedCourse ac : all) {
@@ -245,23 +410,51 @@ public class AdvisorService {
 
     /**
      * Builds the profile response DTO shape expected by the frontend.
-     * The frontend expects { studentId, studentName, cgpa, creditLimit, courseLimit,
-     * advisedCourses: [{id, courseCode, courseTitle, section, time, room, faculty}] }
+     * Queries database directly so it is never stale.
      */
     private Map<String, Object> buildProfileResponse(StudentProfile profile) {
         Map<String, Object> p = new LinkedHashMap<>();
-        p.put("studentId",       profile.getStudentId());
-        p.put("studentName",     profile.getStudentName());
-        p.put("email",           profile.getEmail());
-        p.put("department",      profile.getDepartment());
-        p.put("year",            profile.getYear());
-        p.put("cgpa",            profile.getCgpa());
-        p.put("completedCredits",profile.getCompletedCredits());
-        p.put("onProbation",     profile.isOnProbation());
-        p.put("courseLimit",     profile.getCourseLimit());
-        p.put("creditLimit",     profile.getCreditLimit());
+        p.put("studentId",           profile.getStudentId());
+        p.put("studentName",         profile.getStudentName());
+        p.put("email",               profile.getEmail());
+        p.put("department",          profile.getDepartment());
+        p.put("year",                profile.getYear());
+        p.put("cgpa",                profile.getCgpa());
+        p.put("completedCredits",    profile.getCompletedCredits());
+        p.put("onProbation",         profile.isOnProbation());
+        p.put("courseLimit",         profile.getCourseLimit());
+        p.put("creditLimit",         profile.getCreditLimit());
+        p.put("advisingConfirmed",   profile.isAdvisingConfirmed());
+        p.put("advisingConfirmedAt", profile.getAdvisingConfirmedAt());
 
-        List<Map<String, Object>> courses = profile.getAdvisedCourses().stream().map(ac -> {
+        List<AdvisedCourse> dbCourses = advisedCourseRepo.findByStudentProfile_StudentId(profile.getStudentId());
+        Set<String> existingCodes = dbCourses.stream().map(AdvisedCourse::getCourseCode).map(String::toUpperCase).collect(Collectors.toSet());
+
+        // Check if student has self-registered sections in section_registrations table
+        List<com.campusconnect.backend.model.SectionRegistration> selfRegs = regRepo.findByStudentIdAndTerm(profile.getStudentId(), "Fall2026");
+        for (com.campusconnect.backend.model.SectionRegistration sr : selfRegs) {
+            com.campusconnect.backend.model.CourseSection sec = sr.getSection();
+            if (sec != null && !existingCodes.contains(sec.getCode().toUpperCase())) {
+                AdvisedCourse ac = AdvisedCourse.builder()
+                        .sectionId(sec.getId())
+                        .studentProfile(profile)
+                        .courseCode(sec.getCode())
+                        .courseTitle(sec.getTitle())
+                        .section(sec.getSection())
+                        .credits(sec.getCredits() != null ? sec.getCredits().intValue() : 3)
+                        .time(sec.getTime())
+                        .room(sec.getRoom())
+                        .faculty(sec.getFaculty())
+                        .assignedAt(sr.getRegisteredAt() != null ? sr.getRegisteredAt().toString() : java.time.LocalDateTime.now().toString())
+                        .assignedBy("Self-Registered (Student)")
+                        .build();
+                advisedCourseRepo.save(ac);
+                dbCourses.add(ac);
+                existingCodes.add(sec.getCode().toUpperCase());
+            }
+        }
+
+        List<Map<String, Object>> courses = dbCourses.stream().map(ac -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("id",          ac.getId().toString()); // String for frontend compatibility
             m.put("sectionId",   ac.getSectionId());
@@ -283,7 +476,8 @@ public class AdvisorService {
     /** Builds the seatUpdates map for the advisor panel live seat display. */
     private Map<String, Integer> buildSeatUpdates(StudentProfile profile) {
         Map<String, Integer> su = new LinkedHashMap<>();
-        for (AdvisedCourse ac : profile.getAdvisedCourses()) {
+        List<AdvisedCourse> dbCourses = advisedCourseRepo.findByStudentProfile_StudentId(profile.getStudentId());
+        for (AdvisedCourse ac : dbCourses) {
             su.merge(ac.getSectionId(), 1, Integer::sum);
         }
         return su;
@@ -307,16 +501,46 @@ public class AdvisorService {
     private Set<String> timeToCells(String time) {
         Set<String> cells = new LinkedHashSet<>();
         if (time == null || time.isBlank()) return cells;
-        String[] parts = time.split(" ");
-        if (parts.length < 3) return cells;
-        String timeSlot = parts[parts.length - 3] + " " + parts[parts.length - 2] + " " + parts[parts.length - 1];
-        String dayStr   = parts[0];
+
         Map<String, String> dayMap = Map.of(
-                "SUN", "Sunday",  "MON", "Monday",   "TUE", "Tuesday",
+                "SUN", "Sunday", "MON", "Monday", "TUE", "Tuesday",
                 "WED", "Wednesday", "THU", "Thursday", "FRI", "Friday", "SAT", "Saturday");
-        for (Map.Entry<String, String> entry : dayMap.entrySet()) {
-            if (dayStr.contains(entry.getKey())) {
-                cells.add(entry.getValue() + "|" + timeSlot);
+
+        // Format 1: BRACU format "SUNDAY(8:00 AM-9:20 AM-09A-05C) ; TUESDAY(8:00 AM-9:20 AM-09A-05C)"
+        if (time.contains("(") && time.contains(")")) {
+            String[] segments = time.split(";");
+            Pattern timePattern = Pattern.compile("(\\d{1,2}:\\d{2}\\s*[AP]M\\s*-\\s*\\d{1,2}:\\d{2}\\s*[AP]M)");
+            for (String seg : segments) {
+                String trimmed = seg.trim();
+                int parenIdx = trimmed.indexOf('(');
+                if (parenIdx > 0) {
+                    String rawDay = trimmed.substring(0, parenIdx).trim().toUpperCase();
+                    String day = null;
+                    for (Map.Entry<String, String> entry : dayMap.entrySet()) {
+                        if (rawDay.contains(entry.getKey())) {
+                            day = entry.getValue();
+                            break;
+                        }
+                    }
+                    Matcher m = timePattern.matcher(trimmed);
+                    if (day != null && m.find()) {
+                        String slot = m.group(1).replaceAll("\\s+", " ").trim();
+                        cells.add(day + "|" + slot);
+                    }
+                }
+            }
+            if (!cells.isEmpty()) return cells;
+        }
+
+        // Format 2: Legacy format "SUN-TUE 08:00 AM-09:20 AM"
+        String[] parts = time.split(" ");
+        if (parts.length >= 3) {
+            String timeSlot = parts[parts.length - 3] + " " + parts[parts.length - 2] + " " + parts[parts.length - 1];
+            String dayStr = parts[0].toUpperCase();
+            for (Map.Entry<String, String> entry : dayMap.entrySet()) {
+                if (dayStr.contains(entry.getKey())) {
+                    cells.add(entry.getValue() + "|" + timeSlot);
+                }
             }
         }
         return cells;

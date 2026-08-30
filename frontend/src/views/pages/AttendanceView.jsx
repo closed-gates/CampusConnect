@@ -5,14 +5,18 @@ import {
   STATUS_CONFIG,
   calculateSummary,
 } from '../../models/attendanceModel.js'
+import StudentAttendancePanel from '../components/StudentAttendancePanel.jsx'
 import './AttendancePage.css'
 
 /**
- * AttendanceView – View layer for the Faculty Attendance Tracking page.
+ * AttendanceView – View layer for the Attendance Tracking page.
  *
  * MVC Role: View
- * Renders course selector, date picker, attendance marking table,
- * history, and summary statistics.
+ *
+ * Role-aware rendering:
+ *   - Student: shows StudentAttendancePanel with registered courses + per-course stats
+ *   - Faculty/Admin: shows the full attendance marking workflow
+ *
  * All state and logic is provided by useAttendanceController().
  */
 export default function AttendanceView() {
@@ -23,13 +27,14 @@ export default function AttendanceView() {
     activeTab, setActiveTab,
     currentMarks, markStudent, markAll, submitAttendance, submitting, hasSubmitted,
     courseSummary, historyByDate, historyDates,
+    loadingCourses, loadingStudents,
     toast,
   } = useAttendanceController()
 
   // Count marked students
-  const markedCount = Object.values(currentMarks).filter(Boolean).length
+  const markedCount   = Object.values(currentMarks).filter(Boolean).length
   const totalStudents = courseStudents.length
-  const allMarked = markedCount === totalStudents && totalStudents > 0
+  const allMarked     = markedCount === totalStudents && totalStudents > 0
 
   return (
     <div className="dashboard-wrapper">
@@ -38,9 +43,13 @@ export default function AttendanceView() {
       <main className="dashboard-main" aria-label="Attendance Tracking">
         {/* Header */}
         <div className="dashboard-header">
-          <h1 className="dashboard-greeting">📋 Faculty Attendance Tracking</h1>
+          <h1 className="dashboard-greeting">
+            {isFaculty ? '📋 Faculty Attendance Tracking' : '📊 My Attendance'}
+          </h1>
           <p className="dashboard-date">
-            Record and manage student attendance for your courses.
+            {isFaculty
+              ? 'Record and manage student attendance for your courses.'
+              : 'View attendance for your registered courses, synced from Advising.'}
           </p>
         </div>
 
@@ -51,68 +60,76 @@ export default function AttendanceView() {
           </span>
         </div>
 
-        {/* ── Course Selector ─────────────────────────────── */}
-        <div className="att-course-selector">
-          <h2 className="att-section-label">Select Course</h2>
-          <div className="att-course-grid">
-            {courses.map(course => (
-              <button
-                key={course.id}
-                id={`course-select-${course.id}`}
-                className={`att-course-card ${selectedCourse === course.id ? 'active' : ''}`}
-                onClick={() => selectCourse(course.id)}
-                style={{ '--course-color': course.color }}
-              >
-                <div className="att-course-card-accent" />
-                <div className="att-course-card-body">
-                  <div className="att-course-id">{course.id}</div>
-                  <div className="att-course-name">{course.name}</div>
-                  <div className="att-course-info">
-                    <span>{course.section}</span>
-                    <span>•</span>
-                    <span>{course.totalStudents} students</span>
-                  </div>
-                  <div className="att-course-schedule">{course.schedule}</div>
-                </div>
-              </button>
-            ))}
+        {/* ── Student view ─────────────────────────────────────── */}
+        {!isFaculty && <StudentAttendancePanel />}
+
+        {/* ── Faculty view: Course Selector ─────────────────────── */}
+        {isFaculty && (
+          <div className="att-course-selector">
+            <h2 className="att-section-label">Select Course</h2>
+            {loadingCourses ? (
+              <p className="text-muted" style={{ padding: '16px' }}>Loading your courses…</p>
+            ) : (
+              <div className="att-course-grid">
+                {courses.map(course => (
+                  <button
+                    key={course.id}
+                    id={`course-select-${course.id}`}
+                    className={`att-course-card ${selectedCourse === course.id ? 'active' : ''}`}
+                    onClick={() => selectCourse(course.id)}
+                    style={{ '--course-color': course.color }}
+                  >
+                    <div className="att-course-card-accent" />
+                    <div className="att-course-card-body">
+                      <div className="att-course-id">{course.id}</div>
+                      <div className="att-course-name">{course.name}</div>
+                      <div className="att-course-info">
+                        <span>{course.totalStudents} students enrolled</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
-        {/* ── Tab Navigation ──────────────────────────────── */}
-        <div className="att-tabs" role="tablist">
-          <button
-            id="att-tab-mark"
-            role="tab"
-            aria-selected={activeTab === 'mark'}
-            className={`att-tab ${activeTab === 'mark' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mark')}
-          >
-            ✏️ Mark Attendance
-          </button>
-          <button
-            id="att-tab-history"
-            role="tab"
-            aria-selected={activeTab === 'history'}
-            className={`att-tab ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            📅 History
-            <span className="att-tab-count">{historyDates.length}</span>
-          </button>
-          <button
-            id="att-tab-summary"
-            role="tab"
-            aria-selected={activeTab === 'summary'}
-            className={`att-tab ${activeTab === 'summary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('summary')}
-          >
-            📊 Summary
-          </button>
-        </div>
+        {/* ── Faculty view: Tab Navigation ──────────────────────── */}
+        {isFaculty && (
+          <div className="att-tabs" role="tablist">
+            <button
+              id="att-tab-mark"
+              role="tab"
+              aria-selected={activeTab === 'mark'}
+              className={`att-tab ${activeTab === 'mark' ? 'active' : ''}`}
+              onClick={() => setActiveTab('mark')}
+            >
+              ✏️ Mark Attendance
+            </button>
+            <button
+              id="att-tab-history"
+              role="tab"
+              aria-selected={activeTab === 'history'}
+              className={`att-tab ${activeTab === 'history' ? 'active' : ''}`}
+              onClick={() => setActiveTab('history')}
+            >
+              📅 History
+              <span className="att-tab-count">{historyDates.length}</span>
+            </button>
+            <button
+              id="att-tab-summary"
+              role="tab"
+              aria-selected={activeTab === 'summary'}
+              className={`att-tab ${activeTab === 'summary' ? 'active' : ''}`}
+              onClick={() => setActiveTab('summary')}
+            >
+              📊 Summary
+            </button>
+          </div>
+        )}
 
-        {/* ── Mark Attendance Tab ──────────────────────────── */}
-        {activeTab === 'mark' && (
+        {/* ── Faculty view: Mark Attendance Tab ─────────────────── */}
+        {isFaculty && activeTab === 'mark' && (
           <div className="att-tab-content">
             {/* Date selector + quick actions */}
             <div className="att-mark-header">
@@ -165,49 +182,53 @@ export default function AttendanceView() {
 
             {/* Attendance Table */}
             <div className="att-table-wrapper">
-              <table className="att-table" id="attendance-table">
-                <thead>
-                  <tr>
-                    <th className="att-th-num">#</th>
-                    <th className="att-th-id">Student ID</th>
-                    <th className="att-th-name">Student Name</th>
-                    <th className="att-th-status">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {courseStudents.map((student, index) => {
-                    const status = currentMarks[student.id] || null
-                    return (
-                      <tr key={student.id} className={status ? `att-row-${status.toLowerCase()}` : ''}>
-                        <td className="att-td-num">{index + 1}</td>
-                        <td className="att-td-id">{student.id}</td>
-                        <td className="att-td-name">
-                          <div className="att-student-avatar">
-                            {student.name.charAt(0)}
-                          </div>
-                          {student.name}
-                        </td>
-                        <td className="att-td-status">
-                          <div className="att-status-group">
-                            {['PRESENT', 'ABSENT', 'LATE'].map(s => (
-                              <button
-                                key={s}
-                                id={`mark-${student.id}-${s.toLowerCase()}`}
-                                className={`att-status-btn ${s.toLowerCase()} ${status === s ? 'active' : ''}`}
-                                onClick={() => markStudent(student.id, s)}
-                                title={STATUS_CONFIG[s].label}
-                              >
-                                <span className="att-status-icon">{STATUS_CONFIG[s].icon}</span>
-                                <span className="att-status-label">{STATUS_CONFIG[s].label}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+              {loadingStudents ? (
+                <p className="text-muted" style={{ padding: '24px', textAlign: 'center' }}>Loading students…</p>
+              ) : (
+                <table className="att-table" id="attendance-table">
+                  <thead>
+                    <tr>
+                      <th className="att-th-num">#</th>
+                      <th className="att-th-id">Student ID</th>
+                      <th className="att-th-name">Student Name</th>
+                      <th className="att-th-status">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {courseStudents.map((student, index) => {
+                      const status = currentMarks[student.id] || null
+                      return (
+                        <tr key={student.id} className={status ? `att-row-${status.toLowerCase()}` : ''}>
+                          <td className="att-td-num">{index + 1}</td>
+                          <td className="att-td-id">{student.id}</td>
+                          <td className="att-td-name">
+                            <div className="att-student-avatar">
+                              {student.name.charAt(0)}
+                            </div>
+                            {student.name}
+                          </td>
+                          <td className="att-td-status">
+                            <div className="att-status-group">
+                              {['PRESENT', 'ABSENT', 'LATE'].map(s => (
+                                <button
+                                  key={s}
+                                  id={`mark-${student.id}-${s.toLowerCase()}`}
+                                  className={`att-status-btn ${s.toLowerCase()} ${status === s ? 'active' : ''}`}
+                                  onClick={() => markStudent(student.id, s)}
+                                  title={STATUS_CONFIG[s].label}
+                                >
+                                  <span className="att-status-icon">{STATUS_CONFIG[s].icon}</span>
+                                  <span className="att-status-label">{STATUS_CONFIG[s].label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             {/* Submit button */}
@@ -229,8 +250,8 @@ export default function AttendanceView() {
           </div>
         )}
 
-        {/* ── History Tab ──────────────────────────────────── */}
-        {activeTab === 'history' && (
+        {/* ── Faculty view: History Tab ──────────────────────────── */}
+        {isFaculty && activeTab === 'history' && (
           <div className="att-tab-content">
             {historyDates.length === 0 ? (
               <div className="att-empty-state">
@@ -277,8 +298,8 @@ export default function AttendanceView() {
           </div>
         )}
 
-        {/* ── Summary Tab ─────────────────────────────────── */}
-        {activeTab === 'summary' && (
+        {/* ── Faculty view: Summary Tab ──────────────────────────── */}
+        {isFaculty && activeTab === 'summary' && (
           <div className="att-tab-content">
             <div className="att-summary-grid">
               {/* Attendance Rate */}
@@ -392,7 +413,7 @@ export default function AttendanceView() {
           </div>
         )}
 
-        {/* ── Toast ─────────────────────────────────────── */}
+        {/* ── Toast (all roles) ───────────────────────────────────── */}
         {toast && (
           <div className={`club-toast ${toast.type}`} role="alert" aria-live="polite">
             {toast.message}
