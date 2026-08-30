@@ -59,4 +59,13 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
      * @return List of AttendanceRecord entities
      */
     List<AttendanceRecord> findByStudentId(String studentId);
+
+    /**
+     * Find all attendance records marked by a specific faculty member.
+     * Used to derive the distinct list of courses a faculty teaches.
+     *
+     * @param markedBy Faculty name string stored during marking
+     * @return List of AttendanceRecord entities
+     */
+    List<AttendanceRecord> findByMarkedBy(String markedBy);
 }

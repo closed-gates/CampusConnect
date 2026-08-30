@@ -307,6 +307,49 @@ All other features (Dashboard, Courses, Routine, Advising, Auth) unchanged.
 
 ------------------------------------------------------------------------
 
+## Session 4 (2026-08-21)
+
+### Stripe Payment, Receipt Generator & Offline Partner Bank Locator
+
+**Goal:** Provide an official university course registration fee invoice dynamically computed from student database enrollments, online payment processing via Stripe, and offline payment with PDF download & live partner bank discovery map.
+
+**Security & Secrets Management:**
+- Extracted hardcoded Neon PostgreSQL database credentials from `application-prod.properties` into `backend/.env`.
+- Added `STRIPE_SECRET_KEY` and `VITE_STRIPE_PUBLISHABLE_KEY` environment variables.
+- Created `backend/.env.example` and `frontend/.env.example` templates for team collaboration.
+- Updated `.gitignore` to prevent any `.env` secrets from being committed to Git.
+
+**Backend (new files only):**
+- `model/PaymentRecord.java` — JPA Entity mapped to `payment_records` table in Neon PostgreSQL
+- `repository/PaymentRecordRepository.java` — Repository with student-isolated and admin-global queries
+- `dto/PaymentConfirmRequest.java` — Payload DTO for saving confirmed payments
+- `dto/PaymentReceiptItemDTO.java` — receipt course row DTO (courseId, title, credits, regDate, amount)
+- `dto/PaymentReceiptDTO.java` — full invoice breakdown with summary, bank info, and `noEnrollment` flag
+- `dto/BankInfoDTO.java` — university partner bank account details
+- `dto/PaymentIntentRequest.java` & `dto/PaymentIntentResponse.java` — Stripe intent payloads
+- `service/PaymentReceiptService.java` — computes fee breakdown from `SectionRegistrationRepository` and `StudentProfileRepository`, formats Bangladeshi Taka text, handles zero enrollment state
+- `service/PaymentService.java` — Stripe Java SDK (`PaymentIntent.create`) integration, DB receipt persistence, seeding, and role-isolated history lookup
+- `controller/PaymentReceiptController.java` — REST: `GET /api/payments/receipt/{studentId}`
+- `controller/PaymentController.java` — REST: `POST /api/payments/create-intent`, `POST /api/payments/confirm`, `GET /api/payments/history`, `GET /api/payments/receipt-record/{id}`
+- `pom.xml`: Added `com.stripe:stripe-java:24.0.0`
+
+**Frontend (new files only):**
+- `models/paymentModel.js` — `ACCEPTING_BANKS`, `DHAKA_STUDENT_AREAS`, `VERIFIED_DHAKA_PARTNER_BRANCHES`, `geocodeBankWithNominatim()`, Haversine formula, currency helpers
+- `controllers/usePaymentController.js` — `usePaymentController()` custom hook: fetch receipt, database receipt persistence, role-isolated history, PDF generation (`jsPDF` + `jspdf-autotable`), real OSM Overpass + Nominatim bank geocoding
+- `views/pages/PaymentView.jsx` — Two-tab interface (Current Term Fee Clearance & Payment History with PDF re-download), no-enrollment empty state, inline Stripe checkout, and Leaflet interactive partner bank map modal with neighborhood switcher & live GPS
+- `views/pages/PaymentView.css` — Scoped styling matching `index.css` tokens
+
+**Minimal wiring changes:**
+- `App.jsx`: added `/payments` route + `PaymentView` import
+- `Sidebar.jsx` (both `views/components/` and `components/`): added Payments nav item with payment card icon, route `/payments`
+
+**Workflow Documentation:**
+- Created `workflows/stripe_payment_workflow.md`
+
+**No other features changed.** Dashboard, Courses, Advising, Routine, Messaging, Attendance, Assignments, Auth — all untouched.
+
+------------------------------------------------------------------------
+
 # Instructions for AI
 
 Before any task on the shared project:

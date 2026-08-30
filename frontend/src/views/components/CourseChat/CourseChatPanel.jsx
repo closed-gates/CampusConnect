@@ -113,6 +113,14 @@ export default function CourseChatPanel({ channel }) {
   const messagesEndRef = useRef(null)
   const fileInputRef   = useRef(null)
 
+  // Reset activeSubId when switching channels
+  useEffect(() => {
+    const subs = channelService.getSubChannels(channel.id)
+    if (subs.length > 0 && !subs.some(s => s.id === activeSubId)) {
+      setActiveSubId(subs[0].id)
+    }
+  }, [channel.id])
+
   const activeSub = subChannels.find(s => s.id === activeSubId) || subChannels[0]
 
   // ── WebSocket controller hook ────────────────────────────────────
