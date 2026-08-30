@@ -69,7 +69,26 @@ export function useDashboardController(studentId = 'STU001') {
   const enrolledCount     = courses.length
   const weeklyClassCount  = useMemo(() => calculateWeeklyClassCount(courses), [courses])
   const routineGrid       = useMemo(() => buildRoutineGrid(courses), [courses])
-  const attendanceRateVal = attendanceReport?.attendanceRate ?? 87.5
+
+  // Show the LOWEST per-course attendance rate on the stat card so the
+  // student immediately sees which course needs attention.
+  // Falls back to the overall rate when no course breakdown is available.
+  const { lowestRate, lowestCourseName } = useMemo(() => {
+    const breakdown = attendanceReport?.courseBreakdown
+    if (!breakdown || breakdown.length === 0) {
+      return {
+        lowestRate:       attendanceReport?.attendanceRate ?? null,
+        lowestCourseName: null,
+      }
+    }
+    const worst = breakdown.reduce((min, c) =>
+      c.attendanceRate < min.attendanceRate ? c : min
+    )
+    return {
+      lowestRate:       worst.attendanceRate,
+      lowestCourseName: worst.courseId,
+    }
+  }, [attendanceReport])
 
   // Modal Handlers
   const openDetailsModal    = useCallback(() => setActiveModal('details'), [])
@@ -103,8 +122,14 @@ export function useDashboardController(studentId = 'STU001') {
       id: 'attendance',
       icon: '✅',
       iconColor: 'orange',
-      value: loading ? '...' : `${attendanceRateVal}%`,
-      label: 'Attendance Metrics',
+      value: loading
+        ? '...'
+        : lowestRate !== null
+          ? `${lowestRate}%`
+          : '—',
+      label: lowestCourseName
+        ? `Lowest Attendance · ${lowestCourseName}`
+        : 'Attendance (Lowest Course)',
       linkText: 'View report',
       isActive: false,
       onClick: openAttendanceModal,
@@ -113,7 +138,8 @@ export function useDashboardController(studentId = 'STU001') {
     loading,
     enrolledCount,
     weeklyClassCount,
-    attendanceRateVal,
+    lowestRate,
+    lowestCourseName,
     openDetailsModal,
     openRoutineModal,
     openAttendanceModal,

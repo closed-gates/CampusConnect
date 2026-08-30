@@ -1,56 +1,69 @@
 package com.campusconnect.backend.config;
 
-import com.campusconnect.backend.config.CorsConfig;
+import com.campusconnect.backend.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * SecurityConfig — Phase 1 Stub
+ * SecurityConfig – JWT-based stateless security configuration.
  *
- * Temporarily permits all requests during Phase 1 so we can
- * verify the server starts and the health endpoint responds.
+ * MVC Role: Config
  *
- * ⚠️  THIS WILL BE REPLACED in Phase 2 with full JWT-based
- *     authentication and Role-Based Access Control (RBAC).
+ * Public endpoints (no token required):
+ *   POST /api/auth/login
+ *   POST /api/auth/register
+ *   GET  /api/health
+ *   WS   /ws/**
  *
- * Phase 2 changes:
- * - Add JwtAuthFilter before UsernamePasswordAuthenticationFilter
- * - Restrict endpoints by role (STUDENT, FACULTY, STAFF, ADMIN)
- * - Configure stateless session management
+ * All other endpoints require a valid JWT Bearer token.
+ * Roles are encoded in the token and enforced at the controller level.
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CorsConfig corsConfig;
+    private final CorsConfig     corsConfig;
+    private final JwtAuthFilter  jwtAuthFilter;
 
-    public SecurityConfig(CorsConfig corsConfig) {
-        this.corsConfig = corsConfig;
+    public SecurityConfig(CorsConfig corsConfig, JwtAuthFilter jwtAuthFilter) {
+        this.corsConfig    = corsConfig;
+        this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    /**
-     * Security filter chain.
-     * Phase 1: All requests permitted (no auth enforced yet).
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Apply CORS configuration from CorsConfig bean
+            // Apply CORS from CorsConfig bean
             .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
 
-            // Disable CSRF — using JWT (stateless), CSRF protection not needed
+            // Disable CSRF — stateless JWT API, no session cookies
             .csrf(AbstractHttpConfigurer::disable)
 
-            // Phase 1: permit all requests; Phase 3 will add JWT role checks
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/ws/**").permitAll()   // WebSocket handshake
-                .anyRequest().permitAll()
-            );
+            // Stateless session — never create an HTTP session
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+            // Route authorization rules
+            .authorizeHttpRequests(auth -> auth
+                // Public — authentication endpoints
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/register").permitAll()
+                .requestMatchers("/api/auth/logout").permitAll()
+                // Public — health check
+                .requestMatchers("/api/health").permitAll()
+                // Public — WebSocket handshake
+                .requestMatchers("/ws/**").permitAll()
+                // Everything else requires a valid JWT
+                .anyRequest().authenticated()
+            )
+
+            // Register JWT filter before Spring's username/password filter
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

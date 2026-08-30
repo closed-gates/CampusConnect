@@ -43,27 +43,17 @@ public class AppUser {
     @Column(name = "created_at", length = 40)
     private String createdAt;
 
-    /** Flag indicating if this faculty member has been designated as an Advisor by Admin */
-    @Column(name = "is_advisor")
-    private Boolean isAdvisor = false;
-
     // ── Constructors ──────────────────────────────────────────
     public AppUser() {}
 
     public AppUser(String userId, String fullName, String email,
                    String passwordHash, String role, String createdAt) {
-        this(userId, fullName, email, passwordHash, role, createdAt, false);
-    }
-
-    public AppUser(String userId, String fullName, String email,
-                   String passwordHash, String role, String createdAt, Boolean isAdvisor) {
         this.userId       = userId;
         this.fullName     = fullName;
         this.email        = email;
         this.passwordHash = passwordHash;
         this.role         = role;
         this.createdAt    = createdAt;
-        this.isAdvisor    = isAdvisor != null ? isAdvisor : false;
     }
 
     // ── Getters & Setters ─────────────────────────────────────
@@ -87,8 +77,4 @@ public class AppUser {
 
     public String getCreatedAt()                    { return createdAt; }
     public void   setCreatedAt(String createdAt)    { this.createdAt = createdAt; }
-
-    public Boolean getIsAdvisor()                   { return isAdvisor; }
-    public void    setIsAdvisor(Boolean isAdvisor)  { this.isAdvisor = isAdvisor != null ? isAdvisor : false; }
-    public boolean isAdvisor()                      { return Boolean.TRUE.equals(isAdvisor); }
 }

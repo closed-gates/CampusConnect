@@ -1,6 +1,5 @@
 import Sidebar from '../components/Sidebar.jsx'
 import { useAdvisorController } from '../../controllers/advisingController.js'
-import { STATIC_COURSES } from '../../models/routineModel.js'
 import RegistrationSection from './RegistrationView.jsx'
 
 /**
@@ -50,7 +49,8 @@ function AdvisorPanel() {
   const {
     students, selectedStudent, profile,
     courseSearch, setCourseSearch,
-    loading, profileLoading,
+    filteredCourses,
+    loading, profileLoading, coursesLoading,
     toast, toastType,
     creditUsed, creditLimit, courseCount, courseLimit,
     seatUpdates,
@@ -59,14 +59,7 @@ function AdvisorPanel() {
     handleRemove,
   } = useAdvisorController()
 
-  // Filter STATIC_COURSES by search and exclude already-assigned codes
   const assignedCodes = new Set(profile?.advisedCourses?.map(c => c.courseCode) ?? [])
-  const filteredCourses = STATIC_COURSES.filter(c => {
-    const q = courseSearch.toLowerCase()
-    const matchesSearch = !q || c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || c.section.includes(q)
-    return matchesSearch
-  })
-
   const creditPct = creditLimit > 0 ? Math.round((creditUsed / creditLimit) * 100) : 0
 
   return (
@@ -216,12 +209,25 @@ function AdvisorPanel() {
             </div>
 
             <div className="adv-catalog-list">
-              {filteredCourses.map(course => {
+              {coursesLoading && (
+                <div style={{ padding: '12px 0' }}>
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="skeleton-line" style={{ height: 52, marginBottom: 12, borderRadius: 8 }} />
+                  ))}
+                </div>
+              )}
+              {!coursesLoading && filteredCourses.length === 0 && (
+                <p style={{ marginTop: 24, fontSize: 13, color: 'var(--color-text-sub)', textAlign: 'center' }}>
+                  No courses found matching your search.
+                </p>
+              )}
+              {!coursesLoading && filteredCourses.map(course => {
                 const isAssigned     = assignedCodes.has(course.code)
                 // Subtract additional bookings made through the advisor panel this session
                 const extraBooked    = seatUpdates[course.id] ?? 0
-                const availableSeats = Math.max(0, course.totalSeats - course.booked - extraBooked)
+                const availableSeats = Math.max(0, (course.totalSeats || 0) - (course.booked || 0) - extraBooked)
                 const soldOut        = availableSeats <= 0
+                const credits        = course.credits || 3
                 return (
                   <div
                     key={course.id}
@@ -240,15 +246,15 @@ function AdvisorPanel() {
                         📅 {course.time} &nbsp;|&nbsp; 📍 {course.room} &nbsp;|&nbsp; 👤 {course.faculty}
                       </div>
                       <div className="adv-catalog-meta">
-                        🪑 {availableSeats} seat{availableSeats !== 1 ? 's' : ''} left · 3 credits
+                        🪑 {availableSeats} seat{availableSeats !== 1 ? 's' : ''} left · {credits} credit{credits !== 1 ? 's' : ''}
                       </div>
                     </div>
                     <button
                       id={`adv-assign-${course.id}`}
                       className="adv-assign-btn"
-                      disabled={isAssigned || !profile || courseCount >= courseLimit}
+                      disabled={isAssigned || !profile || courseCount >= courseLimit || soldOut}
                       onClick={() => handleAssign(course)}
-                      title={isAssigned ? 'Already assigned' : courseCount >= courseLimit ? 'Course limit reached' : 'Assign this course'}
+                      title={isAssigned ? 'Already assigned' : soldOut ? 'Section full' : courseCount >= courseLimit ? 'Course limit reached' : 'Assign this course'}
                     >
                       {isAssigned ? '✓' : 'Assign'}
                     </button>

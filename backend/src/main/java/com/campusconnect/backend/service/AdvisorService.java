@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -307,16 +309,46 @@ public class AdvisorService {
     private Set<String> timeToCells(String time) {
         Set<String> cells = new LinkedHashSet<>();
         if (time == null || time.isBlank()) return cells;
-        String[] parts = time.split(" ");
-        if (parts.length < 3) return cells;
-        String timeSlot = parts[parts.length - 3] + " " + parts[parts.length - 2] + " " + parts[parts.length - 1];
-        String dayStr   = parts[0];
+
         Map<String, String> dayMap = Map.of(
-                "SUN", "Sunday",  "MON", "Monday",   "TUE", "Tuesday",
+                "SUN", "Sunday", "MON", "Monday", "TUE", "Tuesday",
                 "WED", "Wednesday", "THU", "Thursday", "FRI", "Friday", "SAT", "Saturday");
-        for (Map.Entry<String, String> entry : dayMap.entrySet()) {
-            if (dayStr.contains(entry.getKey())) {
-                cells.add(entry.getValue() + "|" + timeSlot);
+
+        // Format 1: BRACU format "SUNDAY(8:00 AM-9:20 AM-09A-05C) ; TUESDAY(8:00 AM-9:20 AM-09A-05C)"
+        if (time.contains("(") && time.contains(")")) {
+            String[] segments = time.split(";");
+            Pattern timePattern = Pattern.compile("(\\d{1,2}:\\d{2}\\s*[AP]M\\s*-\\s*\\d{1,2}:\\d{2}\\s*[AP]M)");
+            for (String seg : segments) {
+                String trimmed = seg.trim();
+                int parenIdx = trimmed.indexOf('(');
+                if (parenIdx > 0) {
+                    String rawDay = trimmed.substring(0, parenIdx).trim().toUpperCase();
+                    String day = null;
+                    for (Map.Entry<String, String> entry : dayMap.entrySet()) {
+                        if (rawDay.contains(entry.getKey())) {
+                            day = entry.getValue();
+                            break;
+                        }
+                    }
+                    Matcher m = timePattern.matcher(trimmed);
+                    if (day != null && m.find()) {
+                        String slot = m.group(1).replaceAll("\\s+", " ").trim();
+                        cells.add(day + "|" + slot);
+                    }
+                }
+            }
+            if (!cells.isEmpty()) return cells;
+        }
+
+        // Format 2: Legacy format "SUN-TUE 08:00 AM-09:20 AM"
+        String[] parts = time.split(" ");
+        if (parts.length >= 3) {
+            String timeSlot = parts[parts.length - 3] + " " + parts[parts.length - 2] + " " + parts[parts.length - 1];
+            String dayStr = parts[0].toUpperCase();
+            for (Map.Entry<String, String> entry : dayMap.entrySet()) {
+                if (dayStr.contains(entry.getKey())) {
+                    cells.add(entry.getValue() + "|" + timeSlot);
+                }
             }
         }
         return cells;
