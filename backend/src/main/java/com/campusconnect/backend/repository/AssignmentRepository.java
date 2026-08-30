@@ -25,4 +25,10 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
      * Assignments for a specific course.
      */
     List<Assignment> findByCourseCode(String courseCode);
+
+    /** Assignments created by one faculty member, ordered by nearest deadline. */
+    List<Assignment> findByCreatedByOrderByDeadlineAsc(String createdBy);
+
+    /** Assignments for a student's registered courses, ordered by nearest deadline. */
+    List<Assignment> findByCourseCodeInOrderByDeadlineAsc(List<String> courseCodes);
 }

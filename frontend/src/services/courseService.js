@@ -14,8 +14,10 @@
  *   GET  /api/exam-schedule/all             → getExamSchedules()
  */
 
-const API_BASE      = 'http://localhost:8080/api/courses'
-const EXAM_API_BASE = 'http://localhost:8080/api/exam-schedule'
+import apiClient from './apiClient.js'
+
+const API_BASE      = '/api/courses'
+const EXAM_API_BASE = '/api/exam-schedule'
 
 /**
  * Fetch all catalog courses from the Neon database.
@@ -23,7 +25,7 @@ const EXAM_API_BASE = 'http://localhost:8080/api/exam-schedule'
  * @returns {Promise<Array>} Array of CourseCatalog objects
  */
 export async function getCatalog() {
-  const res = await fetch(`${API_BASE}/catalog`)
+  const res = await apiClient.get(`${API_BASE}/catalog`)
   if (!res.ok) throw new Error(`Failed to load course catalog: ${res.status}`)
   return res.json()
 }
@@ -37,7 +39,7 @@ export async function getSections(q = '') {
   const url = q.trim()
     ? `${API_BASE}/sections?q=${encodeURIComponent(q)}`
     : `${API_BASE}/sections`
-  const res = await fetch(url)
+  const res = await apiClient.get(url)
   if (!res.ok) throw new Error(`Failed to load course sections: ${res.status}`)
   return res.json()
 }
@@ -48,7 +50,7 @@ export async function getSections(q = '') {
  * @returns {Promise<Array>} Array of ExamScheduleDTO objects
  */
 export async function getExamSchedules() {
-  const res = await fetch(`${EXAM_API_BASE}/all`)
+  const res = await apiClient.get(`${EXAM_API_BASE}/all`)
   if (!res.ok) throw new Error(`Failed to load exam schedules: ${res.status}`)
   return res.json()
 }
@@ -65,7 +67,7 @@ export async function getExamSchedules() {
  * @returns {Promise<Array>}
  */
 export async function getCatalogForRoutine() {
-  const res = await fetch(`${API_BASE}/catalog`)
+  const res = await apiClient.get(`${API_BASE}/catalog`)
   if (!res.ok) throw new Error(`Failed to load catalog for routine: ${res.status}`)
   const data = await res.json()
   return data.map(c => ({

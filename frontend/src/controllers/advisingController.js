@@ -13,11 +13,34 @@
  *   Probationary → 3 courses,  9 credits
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { CREDITS_PER_COURSE } from '../models/advisingModel.js'
+import { courseService } from '../services/courseService.js'
 import { channelService } from '../services/channelService.js'
 
 const API_BASE = '/api/advisors'
+
+/**
+ * Sorts courses by course code, and by section number in ascending numerical order.
+ * e.g. CSE110-01, CSE110-02, ..., CSE110-10, CSE111-01, ...
+ */
+function sortCoursesByCodeAndSection(a, b) {
+  const codeA = (a.code || '').toUpperCase()
+  const codeB = (b.code || '').toUpperCase()
+  const codeCmp = codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: 'base' })
+  if (codeCmp !== 0) return codeCmp
+
+  const secA = parseInt(a.section, 10)
+  const secB = parseInt(b.section, 10)
+
+  if (isNaN(secA) && isNaN(secB)) {
+    return (a.section || '').localeCompare(b.section || '')
+  }
+  if (isNaN(secA)) return 1
+  if (isNaN(secB)) return -1
+
+  return secA - secB
+}
 
 /* ═══════════════════════════════════════════════════════════════
    STUDENT HOOK — view assigned courses
@@ -55,9 +78,11 @@ export function useAdvisorController() {
   const [students,        setStudents]        = useState([])
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [profile,         setProfile]         = useState(null)
+  const [allCourses,      setAllCourses]      = useState([])
   const [courseSearch,    setCourseSearch]     = useState('')
   const [loading,         setLoading]         = useState(false)
   const [profileLoading,  setProfileLoading]  = useState(false)
+  const [coursesLoading,  setCoursesLoading]  = useState(false)
   const [toast,           setToast]           = useState(null)
   const [toastType,       setToastType]       = useState('success')
   /**
@@ -67,20 +92,26 @@ export function useAdvisorController() {
    */
   const [seatUpdates, setSeatUpdates] = useState({})
 
-  /* Load all students + initial seat state on mount */
+  /* Load all students + initial seat state + course sections on mount */
   useEffect(() => {
     setLoading(true)
+    setCoursesLoading(true)
     Promise.all([
       fetch(`${API_BASE}/students`).then(r => r.json()),
       fetch(`${API_BASE}/seat-updates`).then(r => r.json()).catch(() => ({})),
+      courseService.getSections().catch(() => fetch('/api/courses/sections').then(r => r.json()).catch(() => [])),
     ])
-      .then(([studentsData, seatData]) => {
-        setStudents(studentsData)
+      .then(([studentsData, seatData, coursesData]) => {
+        setStudents(studentsData || [])
         setSeatUpdates(seatData || {})
-        if (studentsData.length > 0) loadStudent(studentsData[0].studentId)
+        setAllCourses(coursesData || [])
+        if (studentsData && studentsData.length > 0) loadStudent(studentsData[0].studentId)
       })
-      .catch(() => showToast('Could not load students', 'error'))
-      .finally(() => setLoading(false))
+      .catch(() => showToast('Could not load advising data', 'error'))
+      .finally(() => {
+        setLoading(false)
+        setCoursesLoading(false)
+      })
   }, [])
 
   /* Load a specific student's profile */
@@ -168,10 +199,26 @@ export function useAdvisorController() {
   const creditUsed   = (profile?.advisedCourses?.length ?? 0) * CREDITS_PER_COURSE
   const courseCount  = profile?.advisedCourses?.length ?? 0
 
+  /* Derived: filtered & sorted course sections */
+  const filteredCourses = useMemo(() => {
+    let list = [...allCourses]
+    if (courseSearch.trim()) {
+      const q = courseSearch.toLowerCase()
+      list = list.filter(c =>
+        (c.code && c.code.toLowerCase().includes(q)) ||
+        (c.title && c.title.toLowerCase().includes(q)) ||
+        (c.section && String(c.section).toLowerCase().includes(q)) ||
+        (c.faculty && c.faculty.toLowerCase().includes(q))
+      )
+    }
+    return list.sort(sortCoursesByCodeAndSection)
+  }, [allCourses, courseSearch])
+
   return {
     students, selectedStudent, profile,
     courseSearch, setCourseSearch,
-    loading, profileLoading,
+    filteredCourses,
+    loading, profileLoading, coursesLoading,
     toast, toastType,
     creditUsed, creditLimit, courseCount, courseLimit,
     seatUpdates,

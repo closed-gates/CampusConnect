@@ -23,9 +23,16 @@ import {
   getStatusConfig,
 } from '../models/registrationModel.js'
 import { channelService } from '../services/channelService.js'
+import { getStoredUser } from '../models/authModel.js'
+import apiClient from '../services/apiClient.js'
 
-const API_BASE   = '/api/registration'
-const STUDENT_ID = 'STU001'   // Phase 1: hardcoded; Phase 3: read from JWT
+const API_BASE = '/api/registration'
+
+// Read the student ID from the JWT token at runtime.
+// Falls back to 'STU001' for backward compatibility.
+function getStudentId() {
+  return getStoredUser()?.userId || 'STU001'
+}
 
 /** Sort sections by the selected order */
 function sortSections(sections, order) {
@@ -64,11 +71,12 @@ export function useRegistrationController() {
 
   /* ── REST: fetch all sections + my registrations + window ─── */
   const fetchAll = useCallback(async () => {
+    const studentId = getStudentId()
     try {
       const [secRes, myRes, winRes] = await Promise.all([
-        fetch(`${API_BASE}/sections?studentId=${STUDENT_ID}`),
-        fetch(`${API_BASE}/my?studentId=${STUDENT_ID}`),
-        fetch(`${API_BASE}/window/${STUDENT_ID}`),
+        apiClient.get(`${API_BASE}/sections?studentId=${studentId}`),
+        apiClient.get(`${API_BASE}/my?studentId=${studentId}`),
+        apiClient.get(`${API_BASE}/window/${studentId}`),
       ])
       if (!secRes.ok) throw new Error(`API ${secRes.status}`)
       const [secData, myData, winData] = await Promise.all([
@@ -76,7 +84,6 @@ export function useRegistrationController() {
         myRes.json().catch(() => []),
         winRes.json().catch(() => null),
       ])
-      // Always replace with authoritative DB data
       setSections(secData)
       setMyRegistrations(myData)
       setWindowStatus(winData)
@@ -89,12 +96,13 @@ export function useRegistrationController() {
 
   /* ── Fetch only the seat counts (fast refresh after change) ── */
   const refreshSeats = useCallback(async () => {
+    const studentId = getStudentId()
     try {
-      const res = await fetch(`${API_BASE}/sections?studentId=${STUDENT_ID}`)
+      const res = await apiClient.get(`${API_BASE}/sections?studentId=${studentId}`)
       if (!res.ok) return
       const data = await res.json()
       setSections(data)
-      const myRes = await fetch(`${API_BASE}/my?studentId=${STUDENT_ID}`)
+      const myRes = await apiClient.get(`${API_BASE}/my?studentId=${studentId}`)
       if (myRes.ok) setMyRegistrations(await myRes.json())
     } catch { /* silent */ }
   }, [])
@@ -190,7 +198,7 @@ export function useRegistrationController() {
 
   /* ── Register ────────────────────────────────────────────── */
   const handleRegister = useCallback(async (sectionId) => {
-    // 1. Optimistic: immediately show -1 seat
+    const studentId = getStudentId()
     setSections(prev => prev.map(s =>
       s.id === sectionId
         ? { ...s, seatsRemaining: Math.max(0, (s.seatsRemaining ?? 0) - 1), registeredByStudent: true }
@@ -198,18 +206,14 @@ export function useRegistrationController() {
     ))
 
     try {
-      const res = await fetch(`${API_BASE}/register`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ studentId: STUDENT_ID, sectionId }),
-      })
+      const res = await apiClient.post(`${API_BASE}/register`, { studentId, sectionId })
       const data = await res.json()
 
       if (data.success) {
         const sec = sections.find(s => s.id === sectionId)
         if (sec) {
           channelService.onEnrollment({
-            userId: 'usr_eusha_001',
+            userId: studentId,
             course: {
               code: sec.courseCode || sec.code || `SEC-${sectionId}`,
               name: sec.courseTitle || sec.name || sec.title || `Section ${sectionId}`
@@ -218,7 +222,6 @@ export function useRegistrationController() {
         }
         showToast(`✅ ${data.message}`, 'success')
       } else {
-        // Roll back optimistic update
         setSections(prev => prev.map(s =>
           s.id === sectionId
             ? { ...s, seatsRemaining: (s.seatsRemaining ?? 0) + 1, registeredByStudent: false }
@@ -236,13 +239,12 @@ export function useRegistrationController() {
       showToast('⚠️ Network error. Could not register.', 'error')
     }
 
-    // 2. Always re-fetch authoritative state from DB after the action
     await refreshSeats()
-  }, [showToast, refreshSeats])
+  }, [showToast, refreshSeats, sections])
 
   /* ── Drop ─────────────────────────────────────────────────── */
   const handleDrop = useCallback(async (sectionId) => {
-    // 1. Optimistic: immediately show +1 seat
+    const studentId = getStudentId()
     setSections(prev => prev.map(s =>
       s.id === sectionId
         ? { ...s, seatsRemaining: (s.seatsRemaining ?? 0) + 1, registeredByStudent: false }
@@ -251,7 +253,7 @@ export function useRegistrationController() {
     setMyRegistrations(prev => prev.filter(r => r.id !== sectionId))
 
     try {
-      const res = await fetch(`${API_BASE}/drop/${STUDENT_ID}/${sectionId}`, { method: 'DELETE' })
+      const res = await apiClient.delete(`${API_BASE}/drop/${studentId}/${sectionId}`)
       const data = await res.json()
 
       if (data.success) {
@@ -263,7 +265,6 @@ export function useRegistrationController() {
       showToast('⚠️ Network error. Could not drop.', 'error')
     }
 
-    // 2. Always re-fetch authoritative state from DB after the action
     await refreshSeats()
   }, [showToast, refreshSeats])
 
@@ -298,7 +299,7 @@ export function useRegistrationController() {
     handleRegister,
     handleDrop,
     fetchAll,
-    STUDENT_ID,
+    STUDENT_ID: getStudentId(),
     CURRENT_TERM,
   }
 }

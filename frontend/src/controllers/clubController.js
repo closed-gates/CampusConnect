@@ -18,8 +18,9 @@ import {
   RECRUITMENT_FORM_STEPS,
   EMPTY_RECRUITMENT_FORM,
 } from '../models/clubModel.js'
+import apiClient from '../services/apiClient.js'
 
-const API_BASE = 'http://localhost:8080/api'
+const API_BASE = '/api'
 
 /**
  * useClubController
@@ -61,8 +62,8 @@ export function useClubController() {
       setLoading(true)
       try {
         const [noticesRes, recruitmentsRes] = await Promise.all([
-          fetch(`${API_BASE}/clubs/notices`),
-          fetch(`${API_BASE}/clubs/recruitment`),
+          apiClient.get(`${API_BASE}/clubs/notices`),
+          apiClient.get(`${API_BASE}/clubs/recruitment`),
         ])
 
         if (noticesRes.ok) {
@@ -106,11 +107,7 @@ export function useClubController() {
     setNoticeSubmitting(true)
 
     try {
-      const res = await fetch(`${API_BASE}/clubs/notices`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(noticeForm),
-      })
+      const res = await apiClient.post(`${API_BASE}/clubs/notices`, noticeForm)
       if (res.ok) {
         const json = await res.json()
         // Prepend new notice to the list
@@ -135,13 +132,9 @@ export function useClubController() {
     setRecruitSubmitting(true)
 
     try {
-      const res = await fetch(`${API_BASE}/clubs/recruitment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...recruitForm,
-          slots: String(recruitForm.slots || 5),
-        }),
+      const res = await apiClient.post(`${API_BASE}/clubs/recruitment`, {
+        ...recruitForm,
+        slots: String(recruitForm.slots || 5),
       })
       if (res.ok) {
         const json = await res.json()

@@ -19,10 +19,6 @@ public interface CourseSectionRepository extends JpaRepository<CourseSection, St
 
     List<CourseSection> findByCode(String code);
 
-    @org.springframework.data.jpa.repository.Modifying
-    @Query("UPDATE CourseSection s SET s.booked = s.totalSeats WHERE s.booked > s.totalSeats")
-    void normalizeOverbookedSections();
-
     /** Returns all course sections sorted by course code then section number ascending */
     @Query("SELECT s FROM CourseSection s ORDER BY s.code ASC, s.section ASC")
     List<CourseSection> findAllOrderByCodeAndSection();
