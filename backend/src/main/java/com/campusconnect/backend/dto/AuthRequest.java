@@ -1,52 +1,47 @@
 package com.campusconnect.backend.dto;
 
 /**
- * AuthRequest – DTO for login and registration requests.
+ * AuthRequest – DTO for login and register requests.
  *
- * MVC Role: DTO
+ * Phase 1: Plain POJO with no validation (used as stub).
  *
- * Login fields:   identifier (userId OR email) + password
- * Register fields: userId + fullName + email + password + role
+ * TODO (Phase 2):
+ *   - Add @NotBlank, @Email, @Size annotations
+ *   - Add role field for registration: String role
+ *   - Consider separating into LoginRequest / RegisterRequest
  */
 public class AuthRequest {
 
-    /** userId (e.g. "STU001") OR email — used as login identifier */
-    private String identifier;
+    /** Username or email (used for login) */
+    private String username;
 
-    /** Plain-text password (BCrypt-hashed before storage) */
+    /** Plain-text password (will be BCrypt-hashed in Phase 2) */
     private String password;
 
-    /** Full display name — registration only */
+    /** Full name — used only for registration, null on login */
     private String fullName;
 
-    /** Unique user ID chosen at registration (e.g. "STU042") */
-    private String userId;
-
-    /** Email address — registration only */
+    /** Email address — used only for registration */
     private String email;
-
-    /** Role — registration only: STUDENT | FACULTY | ADMIN */
-    private String role;
 
     // ── Constructors ──────────────────────────────────────────
     public AuthRequest() {}
 
+    public AuthRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     // ── Getters & Setters ─────────────────────────────────────
-    public String getIdentifier()              { return identifier; }
-    public void   setIdentifier(String i)      { this.identifier = i; }
+    public String getUsername()            { return username; }
+    public void   setUsername(String u)    { this.username = u; }
 
-    public String getPassword()                { return password; }
-    public void   setPassword(String p)        { this.password = p; }
+    public String getPassword()            { return password; }
+    public void   setPassword(String p)    { this.password = p; }
 
-    public String getFullName()                { return fullName; }
-    public void   setFullName(String fn)       { this.fullName = fn; }
+    public String getFullName()            { return fullName; }
+    public void   setFullName(String fn)   { this.fullName = fn; }
 
-    public String getUserId()                  { return userId; }
-    public void   setUserId(String uid)        { this.userId = uid; }
-
-    public String getEmail()                   { return email; }
-    public void   setEmail(String e)           { this.email = e; }
-
-    public String getRole()                    { return role; }
-    public void   setRole(String r)            { this.role = r; }
+    public String getEmail()               { return email; }
+    public void   setEmail(String e)       { this.email = e; }
 }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * channelService.js - Course Channel Provisioning Service
  * Includes localStorage persistence across page reloads.
  */
@@ -79,55 +79,6 @@ function buildSubChannels(courseCode, courseName, instructorName) {
   ]
 }
 
-function buildAdvisorSubChannels() {
-  return [
-    {
-      id: 'general-advising', name: 'general-advising', icon: '#', category: 'ADVISING CHANNELS',
-      description: 'General academic advising & semester guidance',
-      messages: [
-        { id: 'adv_m1', authorId: 'usr_advisor_001', authorName: 'Dr. Sarah Ahmed', authorRole: 'FACULTY', content: 'Welcome to Academic Advising! Please check your credit limits and priority windows before registering.', createdAt: ts(240) },
-        { id: 'adv_m2', authorId: 'usr_eusha_001',   authorName: 'Eusha Kayenat', authorRole: 'STUDENT', content: 'Hello Dr. Sarah, I have planned 4 courses (12 credits) for Summer 2026.', createdAt: ts(60) },
-        { id: 'adv_m3', authorId: 'usr_advisor_001', authorName: 'Dr. Sarah Ahmed', authorRole: 'FACULTY', content: 'Looks great! Make sure there are no schedule conflicts with your lab sections.', createdAt: ts(15) },
-      ]
-    },
-    {
-      id: 'announcements', name: 'announcements', icon: 'ANNOUNCE', category: 'ADVISING CHANNELS',
-      description: 'Official advising dates, credit caps & deadlines', readOnly: true,
-      messages: [
-        { id: 'adv_a1', authorId: 'usr_advisor_001', authorName: 'Dr. Sarah Ahmed', authorRole: 'FACULTY', content: '📢 Summer 2026 Advising Phase 1 is now open for students with >= 60 credits.', createdAt: ts(300) },
-        { id: 'adv_a2', authorId: 'usr_advisor_001', authorName: 'Dr. Sarah Ahmed', authorRole: 'FACULTY', content: '⚠️ Probationary students must maintain a maximum of 3 courses (9 credits).', createdAt: ts(180) },
-      ]
-    },
-    {
-      id: 'degree-audit', name: 'degree-audit', icon: 'AUDIT', category: 'ACADEMIC PLANNING',
-      description: 'Degree requirement verification and major/minor queries',
-      messages: [
-        { id: 'adv_d1', authorId: 'usr_advisor_001', authorName: 'Dr. Sarah Ahmed', authorRole: 'FACULTY', content: 'Need a graduation degree audit check? Post your completed credits count here.', createdAt: ts(120) },
-      ]
-    },
-    {
-      id: 'course-waivers', name: 'course-waivers', icon: 'WAIVER', category: 'ACADEMIC PLANNING',
-      description: 'Prerequisite waiver & credit overload requests',
-      messages: [
-        { id: 'adv_w1', authorId: 'usr_advisor_001', authorName: 'Dr. Sarah Ahmed', authorRole: 'FACULTY', content: 'For credit overloads (CGPA >= 3.5), please ensure your prerequisite courses are completed.', createdAt: ts(90) },
-      ]
-    },
-    {
-      id: 'office-hours', name: 'office-hours', icon: 'HOURS', category: 'ACADEMIC PLANNING',
-      description: 'Advisor physical & online consultation timings',
-      messages: [
-        { id: 'adv_o1', authorId: 'usr_advisor_001', authorName: 'Dr. Sarah Ahmed', authorRole: 'FACULTY', content: 'Office Hours: Sunday & Tuesday 10:00 AM – 12:00 PM (Room UB09-04A or via Google Meet).', createdAt: ts(150) },
-      ]
-    }
-  ]
-}
-
-const DEFAULT_ENROLLED_COURSES = [
-  { code: 'CSE110', name: 'Programming Language I', emoji: '💻' },
-  { code: 'CSE220', name: 'Data Structures', emoji: '🌲' },
-  { code: 'MAT110', name: 'Differential Calculus & Coordinate Geometry', emoji: '📐' },
-]
-
 class ChannelService {
   constructor() {
     this._channels  = new Map()
@@ -135,43 +86,7 @@ class ChannelService {
     this._subChMsgs = new Map()
     this._subChs    = new Map()
     this._listeners = new Set()
-    this._initAdvisorChannel()
     this._rehydrateFromStorage()
-  }
-
-  _initAdvisorChannel() {
-    const channelId = 'ch_advisor_001'
-    if (!this._channels.has(channelId)) {
-      const advChannel = {
-        id: channelId,
-        isChannel: true,
-        isAdvisorChannel: true,
-        name: '🎓 Advisor Channel',
-        displayName: 'Academic Advising — message your advisor here',
-        courseCode: 'ADVISING',
-        emoji: '🎓',
-        unreadCount: 0,
-        lastMessage: { content: 'Welcome to Academic Advising!' },
-      }
-      this._channels.set(channelId, advChannel)
-
-      const members = new Map()
-      MOCK_MEMBERS_POOL.forEach(m => members.set(m.id, m))
-      members.set('usr_advisor_001', {
-        id: 'usr_advisor_001',
-        username: 'dr_sarah',
-        displayName: 'Dr. Sarah Ahmed',
-        role: 'FACULTY',
-        status: 'ONLINE'
-      })
-      this._members.set(channelId, members)
-
-      const subs = buildAdvisorSubChannels()
-      this._subChs.set(channelId, subs)
-      subs.forEach(sub => {
-        this._subChMsgs.set(`${channelId}:${sub.id}`, [...sub.messages])
-      })
-    }
   }
 
   subscribe(callback) {
@@ -186,13 +101,11 @@ class ChannelService {
   _rehydrateFromStorage() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
-      const courses = raw ? JSON.parse(raw) : DEFAULT_ENROLLED_COURSES
+      if (!raw) return
+      const courses = JSON.parse(raw)
       courses.forEach(course => {
         this._provisionChannel(course, 'usr_eusha_001', false)
       })
-      if (!raw) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_ENROLLED_COURSES))
-      }
     } catch (e) {
       console.warn('Could not restore enrolled channels from localStorage', e)
     }
@@ -257,9 +170,7 @@ class ChannelService {
   getChannelsForUser(userId) {
     const result = []
     for (const [channelId, members] of this._members.entries()) {
-      if (channelId !== 'ch_advisor_001' && members.has(userId)) {
-        result.push(this._channels.get(channelId))
-      }
+      if (members.has(userId)) result.push(this._channels.get(channelId))
     }
     return result
   }

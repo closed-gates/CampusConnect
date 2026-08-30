@@ -3,70 +3,39 @@ package com.campusconnect.backend.dto;
 /**
  * AuthResponse – DTO returned by login, register, and logout endpoints.
  *
- * MVC Role: DTO
+ * Phase 1: Returns success flag + message only.
  *
- * On success: success=true + JWT token + user metadata
- * On failure: success=false + error message
+ * TODO (Phase 2):
+ *   - Add String token  (JWT access token)
+ *   - Add String role   (user role: STUDENT | FACULTY | STAFF | ADMIN)
+ *   - Add Long   userId
+ *   - Add String username
+ *   - Add long   expiresIn (token TTL in seconds)
  */
 public class AuthResponse {
 
     private boolean success;
     private String  message;
 
-    // ── Auth payload (populated on successful login/register) ─
-    private String token;
-    private String role;
-    private String userId;
-    private String fullName;
-    private String email;
-    private long   expiresIn;   // token TTL in milliseconds
+    // ── Phase 2 fields (uncomment when ready) ────────────────
+    // private String token;
+    // private String role;
+    // private Long   userId;
+    // private String username;
+    // private long   expiresIn;
 
     // ── Constructors ──────────────────────────────────────────
     public AuthResponse() {}
 
-    /** Error response */
     public AuthResponse(boolean success, String message) {
         this.success = success;
         this.message = message;
     }
 
-    /** Success response with full auth payload */
-    public AuthResponse(boolean success, String message,
-                        String token, String role,
-                        String userId, String fullName,
-                        String email, long expiresIn) {
-        this.success   = success;
-        this.message   = message;
-        this.token     = token;
-        this.role      = role;
-        this.userId    = userId;
-        this.fullName  = fullName;
-        this.email     = email;
-        this.expiresIn = expiresIn;
-    }
-
     // ── Getters & Setters ─────────────────────────────────────
-    public boolean isSuccess()              { return success; }
-    public void    setSuccess(boolean s)    { this.success = s; }
+    public boolean isSuccess()            { return success; }
+    public void    setSuccess(boolean s)  { this.success = s; }
 
-    public String  getMessage()             { return message; }
-    public void    setMessage(String m)     { this.message = m; }
-
-    public String  getToken()               { return token; }
-    public void    setToken(String t)       { this.token = t; }
-
-    public String  getRole()                { return role; }
-    public void    setRole(String r)        { this.role = r; }
-
-    public String  getUserId()              { return userId; }
-    public void    setUserId(String uid)    { this.userId = uid; }
-
-    public String  getFullName()            { return fullName; }
-    public void    setFullName(String fn)   { this.fullName = fn; }
-
-    public String  getEmail()               { return email; }
-    public void    setEmail(String e)       { this.email = e; }
-
-    public long    getExpiresIn()           { return expiresIn; }
-    public void    setExpiresIn(long ms)    { this.expiresIn = ms; }
+    public String  getMessage()           { return message; }
+    public void    setMessage(String m)   { this.message = m; }
 }

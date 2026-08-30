@@ -1,19 +1,22 @@
 import { useNavigate } from 'react-router-dom'
-import { createLogoutHandler } from '../../controllers/authController.js'
-import { getStoredUser, ROLE_LABELS } from '../../models/authModel.js'
 
 /**
  * Sidebar – View layer component for the main navigation.
  *
  * MVC Role: View (shared component)
  *
- * Shows logged-in user info at the top (name + role badge).
- * Logout calls createLogoutHandler which clears the JWT + navigates to login.
+ * Nav items: Home | Courses | Bookmarks | Advising | Messaging Board
+ *            | Academic Calendar | Club Activities | Create Routine
+ *
+ * TODO (Phase 3):
+ *   - "Logout" should clear JWT from localStorage and call POST /api/auth/logout
+ *   - Highlight activeItem based on current route (useLocation)
  */
 
 const NAV_ITEMS = [
   { id: 'home',              label: 'Home',             icon: <HomeIcon />,      route: '/dashboard' },
   { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: '/courses' },
+  { id: 'video-lectures',    label: 'Video Lectures',    icon: <VideoLecturesIcon />, route: '/video-lectures' },
   { id: 'assignments',       label: 'Assignments',       icon: <AssignmentIcon />, route: '/assignments' },
   { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: '/advising' },
   { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: '/messaging' },
@@ -21,15 +24,24 @@ const NAV_ITEMS = [
   { id: 'clubs',             label: 'Club Activities',   icon: <ClubIcon />,      route: '/club-activities' },
   { id: 'routine',           label: 'Create Routine',    icon: <RoutineIcon />,   route: '/routine' },
   { id: 'attendance',        label: 'Attendance',        icon: <AttendanceIcon />, route: '/attendance' },
-  { id: 'payments',          label: 'Payments',          icon: <PaymentIcon />,    route: '/payments' },
 ]
 
 export default function Sidebar({ activeItem = 'home' }) {
-  const navigate    = useNavigate()
-  const handleLogout = createLogoutHandler(navigate)
-  const user        = getStoredUser()
+  const navigate = useNavigate()
 
-  const roleLabel = user?.role ? (ROLE_LABELS[user.role] || user.role) : ''
+  const handleLogout = () => {
+    /*
+     * ── Phase 3 stub ──────────────────────────────────────────
+     * await fetch('/api/auth/logout', { method: 'POST',
+     *   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+     * })
+     * localStorage.removeItem('token')
+     * localStorage.removeItem('userRole')
+     * ─────────────────────────────────────────────────────────
+     */
+    localStorage.removeItem('userRole')
+    navigate('/')
+  }
 
   return (
     <aside className="sidebar" role="navigation" aria-label="Main navigation">
@@ -38,19 +50,6 @@ export default function Sidebar({ activeItem = 'home' }) {
         <div className="sidebar-logo-icon">🎓</div>
         <span className="sidebar-logo-text">CampusConnect</span>
       </div>
-
-      {/* User info badge */}
-      {user && (
-        <div className="sidebar-user-info">
-          <div className="sidebar-user-avatar">
-            {user.fullName ? user.fullName.charAt(0).toUpperCase() : '?'}
-          </div>
-          <div className="sidebar-user-details">
-            <span className="sidebar-user-name">{user.fullName}</span>
-            <span className="sidebar-user-role">{roleLabel}</span>
-          </div>
-        </div>
-      )}
 
       {/* Nav items */}
       <nav className="sidebar-nav">
@@ -193,13 +192,11 @@ function LogoutIcon() {
   )
 }
 
-function PaymentIcon() {
+function VideoLecturesIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-      <line x1="1" y1="10" x2="23" y2="10"/>
-      <circle cx="6.5" cy="15.5" r="1.5" fill="currentColor"/>
+      <polygon points="23 7 16 12 23 17 23 7"/>
+      <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
     </svg>
   )
 }
-

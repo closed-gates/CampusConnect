@@ -4,7 +4,6 @@ import com.campusconnect.backend.model.Assignment;
 import com.campusconnect.backend.model.Submission;
 import com.campusconnect.backend.repository.AssignmentRepository;
 import com.campusconnect.backend.repository.SubmissionRepository;
-import com.campusconnect.backend.repository.SectionRegistrationRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,14 +28,11 @@ public class AssignmentService {
 
     private final AssignmentRepository assignmentRepo;
     private final SubmissionRepository submissionRepo;
-    private final SectionRegistrationRepository registrationRepo;
 
     public AssignmentService(AssignmentRepository assignmentRepo,
-                             SubmissionRepository submissionRepo,
-                             SectionRegistrationRepository registrationRepo) {
+                             SubmissionRepository submissionRepo) {
         this.assignmentRepo = assignmentRepo;
         this.submissionRepo = submissionRepo;
-        this.registrationRepo = registrationRepo;
     }
 
     // ── Seed data on first startup ────────────────────────────────
@@ -136,43 +132,6 @@ public class AssignmentService {
         return assignmentRepo.findAllByOrderByDeadlineAsc();
     }
 
-    /** Returns only assignments the authenticated role is entitled to see. */
-    @Transactional(readOnly = true)
-    public List<Assignment> getAssignmentsForUser(String userId, String role, boolean includeOverdue) {
-        List<Assignment> visible;
-        if ("ADMIN".equals(role)) {
-            visible = assignmentRepo.findAllByOrderByDeadlineAsc();
-        } else if ("FACULTY".equals(role)) {
-            visible = assignmentRepo.findByCreatedByOrderByDeadlineAsc(userId);
-        } else if ("STUDENT".equals(role)) {
-            List<String> courseCodes = registrationRepo.findByStudentId(userId).stream()
-                .map(registration -> registration.getSection().getCode())
-                .distinct()
-                .toList();
-            visible = courseCodes.isEmpty()
-                ? List.of()
-                : assignmentRepo.findByCourseCodeInOrderByDeadlineAsc(courseCodes);
-        } else {
-            visible = List.of();
-        }
-        if (includeOverdue) return visible;
-        LocalDateTime now = LocalDateTime.now();
-        return visible.stream().filter(assignment -> !assignment.getDeadline().isBefore(now)).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public long countOverdueAssignmentsForUser(String userId, String role) {
-        return getAssignmentsForUser(userId, role, true).stream()
-            .filter(assignment -> assignment.getDeadline().isBefore(LocalDateTime.now()))
-            .count();
-    }
-
-    @Transactional(readOnly = true)
-    public boolean canAccessAssignment(Long assignmentId, String userId, String role) {
-        return getAssignmentsForUser(userId, role, true).stream()
-            .anyMatch(assignment -> assignment.getId().equals(assignmentId));
-    }
-
     /**
      * Returns a single assignment by ID.
      */
@@ -195,33 +154,12 @@ public class AssignmentService {
         assignment.setCourseName(courseName != null ? courseName : "General");
         assignment.setTitle(title != null ? title : "Untitled Assignment");
         assignment.setDescription(description != null ? description : "");
-        assignment.setTotalPoints(100);
         assignment.setDeadline(deadline != null ? deadline : LocalDateTime.now().plusWeeks(1));
         assignment.setCreatedBy(createdBy != null ? createdBy : "Teacher");
         assignment.setCreatedAt(LocalDateTime.now());
         assignment.setAttachmentName(attachmentName);
         assignment.setAttachmentType(attachmentType);
         assignment.setAttachmentData(attachmentData);
-        return assignmentRepo.save(assignment);
-    }
-
-    /** Update assignment content and deadline. An omitted attachment keeps the current question file. */
-    @Transactional
-    public Assignment updateAssignment(Long id, String courseCode, String courseName,
-                                       String title, String description, LocalDateTime deadline,
-                                       String attachmentName, String attachmentType, byte[] attachmentData) {
-        Assignment assignment = assignmentRepo.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Assignment not found: " + id));
-        assignment.setCourseCode(courseCode);
-        assignment.setCourseName(courseName);
-        assignment.setTitle(title);
-        assignment.setDescription(description != null ? description : "");
-        assignment.setDeadline(deadline);
-        if (attachmentData != null) {
-            assignment.setAttachmentName(attachmentName);
-            assignment.setAttachmentType(attachmentType);
-            assignment.setAttachmentData(attachmentData);
-        }
         return assignmentRepo.save(assignment);
     }
 

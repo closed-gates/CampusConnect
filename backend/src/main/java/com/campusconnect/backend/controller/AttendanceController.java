@@ -15,17 +15,21 @@ import java.util.Map;
  *
  * Base URL: /api/attendance
  *
- * All business logic is in AttendanceService.
+ * All business logic and data management is in {@link AttendanceService}.
+ * This controller is responsible only for:
+ *   1. Accepting HTTP requests and extracting parameters
+ *   2. Delegating to AttendanceService
+ *   3. Returning HTTP responses
  *
  * Endpoints:
- *   GET  /api/attendance?courseId=X&date=Y     → get attendance for a course/date
- *   POST /api/attendance                        → mark/update attendance
- *   GET  /api/attendance/summary?courseId=X    → attendance summary stats
- *   GET  /api/attendance/history?courseId=X    → full attendance history
- *   GET  /api/attendance/student/{studentId}   → student attendance report
- *   GET  /api/attendance/faculty-courses       → faculty course list
- *   GET  /api/attendance/enrolled-students     → students enrolled in a course
- *   GET  /api/attendance/student-courses       → student's registered courses + attendance stats
+ *   GET  /api/attendance?courseId=X&date=Y  → get attendance for a course/date
+ *   POST /api/attendance                    → mark/update attendance
+ *   GET  /api/attendance/summary?courseId=X  → attendance summary stats
+ *   GET  /api/attendance/history?courseId=X  → full attendance history
+ *
+ * TODO (Phase 3 – Auth & RBAC):
+ *   - Validate JWT from Authorization header
+ *   - Restrict endpoints to FACULTY role only
  */
 @RestController
 @RequestMapping("/api/attendance")
@@ -56,6 +60,7 @@ public class AttendanceController {
     // ── POST /api/attendance ──────────────────────────────────────
     /**
      * Mark or update attendance for a student.
+     * Faculty only (Phase 3: validate FACULTY role from JWT).
      */
     @PostMapping
     public ResponseEntity<Map<String, Object>> markAttendance(@RequestBody Map<String, String> body) {
@@ -115,65 +120,6 @@ public class AttendanceController {
         return ResponseEntity.ok(Map.of(
             "success", true,
             "data",    data
-        ));
-    }
-
-    // ── GET /api/attendance/faculty-courses ────────────────────────
-    /**
-     * Returns the distinct list of courses a faculty member has taken attendance for.
-     * Each entry: { courseId, courseName, studentCount }
-     *
-     * @param markedBy Faculty name stored during attendance marking
-     */
-    @GetMapping("/faculty-courses")
-    public ResponseEntity<Map<String, Object>> getFacultyCourses(
-            @RequestParam String markedBy) {
-        var courses = attendanceService.getFacultyCourses(markedBy);
-        return ResponseEntity.ok(Map.of(
-            "success", true,
-            "count",   courses.size(),
-            "data",    courses
-        ));
-    }
-
-    // ── GET /api/attendance/enrolled-students ──────────────────────
-    /**
-     * Returns the distinct list of students for a course.
-     * Merges attendance records AND section_registrations so that
-     * newly registered students appear immediately for faculty.
-     *
-     * @param courseId Course code, e.g. "CSE110"
-     */
-    @GetMapping("/enrolled-students")
-    public ResponseEntity<Map<String, Object>> getEnrolledStudents(
-            @RequestParam String courseId) {
-        var students = attendanceService.getEnrolledStudents(courseId);
-        return ResponseEntity.ok(Map.of(
-            "success", true,
-            "count",   students.size(),
-            "data",    students
-        ));
-    }
-
-    // ── GET /api/attendance/student-courses ────────────────────────
-    /**
-     * Returns a student's registered courses with per-course attendance stats.
-     * Synced from the Registration/Advising system — adding a course there
-     * immediately makes it appear here.
-     *
-     * Query params:
-     *   studentId  – required
-     *   term       – optional (omit to get all terms)
-     */
-    @GetMapping("/student-courses")
-    public ResponseEntity<Map<String, Object>> getStudentCourses(
-            @RequestParam String studentId,
-            @RequestParam(required = false) String term) {
-        var courses = attendanceService.getStudentCourses(studentId, term);
-        return ResponseEntity.ok(Map.of(
-            "success", true,
-            "count",   courses.size(),
-            "data",    courses
         ));
     }
 }

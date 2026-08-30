@@ -3,10 +3,8 @@
  *
  * MVC Role: Service (API layer)
  *
- * Wraps all API calls to the backend AssignmentController.
+ * Wraps all fetch() calls to the backend AssignmentController.
  * Used by: assignmentController.js
- *
- * All requests go through apiClient which auto-attaches the JWT Bearer token.
  *
  * Endpoints:
  *   GET    /api/assignments                          → getAssignments()
@@ -18,19 +16,17 @@
  *   GET    /api/assignments/{id}/submissions          → getSubmissions(id)
  */
 
-import apiClient from './apiClient.js'
-
-const API_BASE = '/api/assignments'
+const API_BASE = 'http://localhost:8080/api/assignments'
 
 /**
  * Fetch all assignments (summary, no binary data).
  * @returns {Promise<Array>}
  */
-export async function getAssignments(includeOverdue = false) {
-  const res = await apiClient.get(`${API_BASE}?includeOverdue=${includeOverdue}`)
+export async function getAssignments() {
+  const res = await fetch(API_BASE)
   if (!res.ok) throw new Error(`Failed to load assignments: ${res.status}`)
   const json = await res.json()
-  return { items: json.data || [], overdueCount: json.overdueCount || 0 }
+  return json.data || []
 }
 
 /**
@@ -39,7 +35,7 @@ export async function getAssignments(includeOverdue = false) {
  * @returns {Promise<Object>}
  */
 export async function getAssignment(id) {
-  const res = await apiClient.get(`${API_BASE}/${id}`)
+  const res = await fetch(`${API_BASE}/${id}`)
   if (!res.ok) throw new Error(`Failed to load assignment: ${res.status}`)
   const json = await res.json()
   return json.data
@@ -51,17 +47,12 @@ export async function getAssignment(id) {
  * @returns {Promise<Object>}
  */
 export async function createAssignment(formData) {
-  const res = await apiClient.upload(API_BASE, formData)
+  const res = await fetch(API_BASE, {
+    method: 'POST',
+    body:   formData,
+  })
   const json = await res.json()
   if (!res.ok) throw new Error(json.message || `Failed to create assignment: ${res.status}`)
-  return json.data
-}
-
-/** Faculty/admin updates an assignment question or deadline. */
-export async function updateAssignment(assignmentId, formData) {
-  const res = await apiClient.upload(`${API_BASE}/${assignmentId}`, formData, 'PUT')
-  const json = await res.json()
-  if (!res.ok) throw new Error(json.message || `Failed to update assignment: ${res.status}`)
   return json.data
 }
 
@@ -72,7 +63,10 @@ export async function updateAssignment(assignmentId, formData) {
  * @returns {Promise<Object>}
  */
 export async function submitWork(assignmentId, formData) {
-  const res = await apiClient.upload(`${API_BASE}/${assignmentId}/submit`, formData)
+  const res = await fetch(`${API_BASE}/${assignmentId}/submit`, {
+    method: 'POST',
+    body:   formData,
+  })
   const json = await res.json()
   if (!res.ok) throw new Error(json.message || `Failed to submit work: ${res.status}`)
   return json.data
@@ -85,8 +79,9 @@ export async function submitWork(assignmentId, formData) {
  * @returns {Promise<void>}
  */
 export async function unsubmitWork(assignmentId, studentId) {
-  const res = await apiClient.delete(
-    `${API_BASE}/${assignmentId}/submit?studentId=${encodeURIComponent(studentId)}`
+  const res = await fetch(
+    `${API_BASE}/${assignmentId}/submit?studentId=${encodeURIComponent(studentId)}`,
+    { method: 'DELETE' }
   )
   const json = await res.json()
   if (!res.ok) throw new Error(json.message || `Failed to unsubmit: ${res.status}`)
@@ -99,7 +94,7 @@ export async function unsubmitWork(assignmentId, studentId) {
  * @returns {Promise<Object|null>}
  */
 export async function getSubmission(assignmentId, studentId) {
-  const res = await apiClient.get(
+  const res = await fetch(
     `${API_BASE}/${assignmentId}/submission?studentId=${encodeURIComponent(studentId)}`
   )
   if (!res.ok) throw new Error(`Failed to load submission: ${res.status}`)
@@ -113,11 +108,13 @@ export async function getSubmission(assignmentId, studentId) {
  * @returns {Promise<Array>}
  */
 export async function getSubmissions(assignmentId) {
-  const res = await apiClient.get(`${API_BASE}/${assignmentId}/submissions`)
+  const res = await fetch(`${API_BASE}/${assignmentId}/submissions`)
   if (!res.ok) throw new Error(`Failed to load submissions: ${res.status}`)
   const json = await res.json()
   return json.data || []
 }
+
+
 
 /**
  * Returns the download URL for a teacher's question file attachment.
@@ -135,18 +132,4 @@ export function getAttachmentUrl(assignmentId) {
  */
 export function getSubmissionFileUrl(submissionId) {
   return `${API_BASE}/submissions/${submissionId}/file`
-}
-
-/** Download a protected file while preserving the JWT authorization header. */
-export async function downloadProtectedFile(url, fileName) {
-  const res = await apiClient.get(url)
-  if (!res.ok) throw new Error('Unable to download file.')
-  const objectUrl = URL.createObjectURL(await res.blob())
-  const link = document.createElement('a')
-  link.href = objectUrl
-  link.download = fileName || 'download'
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  URL.revokeObjectURL(objectUrl)
 }

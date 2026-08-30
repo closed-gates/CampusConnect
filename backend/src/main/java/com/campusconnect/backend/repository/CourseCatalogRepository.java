@@ -19,6 +19,8 @@ public interface CourseCatalogRepository extends JpaRepository<CourseCatalog, Lo
 
     // ── Legacy queries (kept for backward compatibility) ──────────────────────
 
+    java.util.Optional<com.campusconnect.backend.model.CourseCatalog> findByCode(String code);
+
     List<CourseCatalog> findByFacultyId(String facultyId);
 
     List<CourseCatalog> findByYear(Integer year);
