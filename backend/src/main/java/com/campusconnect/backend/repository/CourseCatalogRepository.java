@@ -62,4 +62,7 @@ public interface CourseCatalogRepository extends JpaRepository<CourseCatalog, Lo
     /** Returns all distinct school names (sorted alphabetically) */
     @Query("SELECT DISTINCT c.school FROM CourseCatalog c WHERE c.school IS NOT NULL ORDER BY c.school ASC")
     List<String> findDistinctSchools();
+
+    /** Find a catalog course by its unique code (e.g. "CSE110" or "CST301") */
+    java.util.Optional<CourseCatalog> findByCode(String code);
 }

@@ -31,5 +31,9 @@ export const PROBATION_CREDIT_LIMIT = 9
 export const ROLE_ADVISOR = 'advisor'
 export const ROLE_STUDENT = 'student'
 
+// Advising confirmation states
+export const ADVISING_STATUS_CONFIRMED = 'CONFIRMED'
+export const ADVISING_STATUS_PENDING   = 'PENDING'
+
 // localStorage key for persisting assignments (Phase 1)
 export const ADVISING_STORE_KEY = 'cc_advising_assignments_v1'

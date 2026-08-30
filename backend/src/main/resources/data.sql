@@ -16,11 +16,10 @@ ALTER TABLE course_section ALTER COLUMN midterm_exam TYPE VARCHAR(255);
 ALTER TABLE course_catalog ALTER COLUMN code TYPE VARCHAR(30);
 ALTER TABLE course_catalog ALTER COLUMN final_exam_schedule TYPE VARCHAR(255);
 ALTER TABLE exam_schedules ALTER COLUMN course_code TYPE VARCHAR(30);
-
--- TRUNCATE existing data and re-seed with real BRACU data
-TRUNCATE TABLE course_catalog RESTART IDENTITY CASCADE;
-TRUNCATE TABLE course_section CASCADE;
-TRUNCATE TABLE exam_schedules RESTART IDENTITY CASCADE;
+ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS advising_confirmed BOOLEAN DEFAULT FALSE;
+ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS advising_confirmed_at VARCHAR(255);
+ALTER TABLE app_users ADD COLUMN IF NOT EXISTS is_advisor BOOLEAN DEFAULT FALSE;
+ALTER TABLE test_faculties ADD COLUMN IF NOT EXISTS is_advisor BOOLEAN DEFAULT FALSE;
 
 -- ============================================================
 -- PART A: Course Catalog (564 unique courses - batched inserts)
