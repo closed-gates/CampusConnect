@@ -60,7 +60,7 @@ public class AdvisedCourse {
     private String time;
 
     /** Room, e.g. "NAC-09A-05C" */
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 100)
     private String room;
 
     /** Instructor name */
