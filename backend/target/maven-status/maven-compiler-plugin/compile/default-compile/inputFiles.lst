@@ -6,6 +6,7 @@ G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\Security
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\WebSocketConfig.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AdminAdvisingController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AdvisorController.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AiChatController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AssignmentController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AttendanceController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AuthController.java
@@ -24,6 +25,7 @@ G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\Pres
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\RegistrationController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\TestCourseController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AdvisorMatchResponse.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AiChatRequest.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AttachmentDto.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AuthRequest.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AuthResponse.java
@@ -91,6 +93,7 @@ G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\JwtSer
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\package-info.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AdminAdvisingService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AdvisorService.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AiChatService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AssignmentService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AttendanceService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AuthService.java
@@ -107,3 +110,4 @@ G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\Registr
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ScheduleClashValidator.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\TestCourseDataSeeder.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\TestCourseService.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\TopicClassifier.java
