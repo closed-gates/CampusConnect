@@ -12,6 +12,7 @@ com\campusconnect\backend\service\AdvisorService.class
 com\campusconnect\backend\config\SecurityConfig.class
 com\campusconnect\backend\controller\GpaController.class
 com\campusconnect\backend\repository\ApplicationRepository.class
+com\campusconnect\backend\service\AiChatService$1.class
 com\campusconnect\backend\repository\AdvisorRepository.class
 com\campusconnect\backend\controller\AuthController.class
 com\campusconnect\backend\repository\ExamScheduleRepository.class
@@ -22,17 +23,20 @@ com\campusconnect\backend\model\TestCourse$TestCourseBuilder.class
 com\campusconnect\backend\repository\SectionRegistrationRepository.class
 com\campusconnect\backend\repository\AdvisedCourseRepository.class
 com\campusconnect\backend\service\ScheduleClashValidator$TimeInterval.class
+com\campusconnect\backend\service\TopicClassifier.class
 com\campusconnect\backend\controller\TestCourseController.class
 com\campusconnect\backend\model\ExamSchedule.class
 com\campusconnect\backend\controller\ExamScheduleController.class
 com\campusconnect\backend\service\ScheduleClashValidator.class
 com\campusconnect\backend\model\TestFaculty.class
+com\campusconnect\backend\service\TopicClassifier$Topic.class
 com\campusconnect\backend\model\AdvisedCourse.class
 com\campusconnect\backend\model\AttendanceRecord.class
 com\campusconnect\backend\model\SectionRegistration.class
 com\campusconnect\backend\repository\SubmissionRepository.class
 com\campusconnect\backend\repository\AttendanceRecordRepository.class
 com\campusconnect\backend\controller\AttendanceController.class
+com\campusconnect\backend\dto\AiChatRequest.class
 com\campusconnect\backend\repository\TestSectionRepository.class
 com\campusconnect\backend\service\TestCourseDataSeeder$FacultySeedData.class
 com\campusconnect\backend\service\TestCourseDataSeeder.class
@@ -80,7 +84,9 @@ com\campusconnect\backend\security\JwtAuthFilter.class
 com\campusconnect\backend\model\ExamSchedule$ExamScheduleBuilder.class
 com\campusconnect\backend\controller\ClubController.class
 com\campusconnect\backend\service\AssignmentService.class
+com\campusconnect\backend\dto\AiChatRequest$Turn.class
 com\campusconnect\backend\service\package-info.class
+com\campusconnect\backend\controller\AiChatController.class
 com\campusconnect\backend\service\AdminAdvisingService.class
 com\campusconnect\backend\dto\AuthRequest.class
 com\campusconnect\backend\service\BypassCourseService.class
@@ -92,6 +98,7 @@ com\campusconnect\backend\controller\BypassCourseController.class
 com\campusconnect\backend\service\ScheduleClashValidator$ExamSlot.class
 com\campusconnect\backend\exception\ResourceNotFoundException.class
 com\campusconnect\backend\repository\TestFacultyRepository.class
+com\campusconnect\backend\service\AiChatService.class
 com\campusconnect\backend\repository\TestCourseRepository.class
 com\campusconnect\backend\controller\AdvisorController.class
 com\campusconnect\backend\dto\ExamScheduleDTO.class

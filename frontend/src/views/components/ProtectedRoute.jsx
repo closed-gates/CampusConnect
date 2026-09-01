@@ -17,6 +17,7 @@
 
 import { Navigate, Outlet } from 'react-router-dom'
 import { isTokenValid } from '../../models/authModel.js'
+import ChatbotWidget from './ChatbotWidget.jsx'
 
 /**
  * ProtectedRoute
@@ -34,6 +35,11 @@ export default function ProtectedRoute() {
     return <Navigate to="/" replace />
   }
 
-  // Authenticated → render child routes
-  return <Outlet />
+  // Authenticated → render child routes + floating AI assistant
+  return (
+    <>
+      <Outlet />
+      <ChatbotWidget />
+    </>
+  )
 }
