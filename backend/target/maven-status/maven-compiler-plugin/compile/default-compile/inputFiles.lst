@@ -15,6 +15,7 @@ G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\Club
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\CourseController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\ExamScheduleController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\FileUploadController.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\GpaController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\HealthController.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\package-info.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\PaymentController.java
@@ -29,6 +30,8 @@ G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AuthRespons
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\BankInfoDTO.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\ChatMessageDto.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\ExamScheduleDTO.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\GpaPredictRequest.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\GpaRetakeRequest.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\package-info.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PaymentConfirmRequest.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PaymentIntentRequest.java
@@ -95,6 +98,7 @@ G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\BypassC
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ChatService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ClubService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ExamScheduleService.java
+G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\GpaService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\package-info.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\PaymentReceiptService.java
 G:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\PaymentService.java
