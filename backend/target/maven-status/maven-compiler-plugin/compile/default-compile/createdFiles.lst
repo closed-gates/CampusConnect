@@ -10,6 +10,7 @@ com\campusconnect\backend\model\CourseSection.class
 com\campusconnect\backend\repository\CourseCatalogRepository.class
 com\campusconnect\backend\service\AdvisorService.class
 com\campusconnect\backend\config\SecurityConfig.class
+com\campusconnect\backend\controller\GpaController.class
 com\campusconnect\backend\repository\ApplicationRepository.class
 com\campusconnect\backend\repository\AdvisorRepository.class
 com\campusconnect\backend\controller\AuthController.class
@@ -59,16 +60,19 @@ com\campusconnect\backend\model\AdvisedCourse$AdvisedCourseBuilder.class
 com\campusconnect\backend\BackendApplication.class
 com\campusconnect\backend\config\package-info.class
 com\campusconnect\backend\controller\AdminAdvisingController.class
+com\campusconnect\backend\dto\GpaPredictRequest$CourseGradePair.class
 com\campusconnect\backend\repository\RecruitmentRepository.class
 com\campusconnect\backend\service\RegistrationService.class
 com\campusconnect\backend\model\StudentProfile$StudentProfileBuilder.class
 com\campusconnect\backend\dto\AdvisorMatchResponse.class
 com\campusconnect\backend\model\Advisor.class
 com\campusconnect\backend\security\JwtService.class
+com\campusconnect\backend\service\GpaService.class
 com\campusconnect\backend\model\TestSection$TestSectionBuilder.class
 com\campusconnect\backend\model\Assignment.class
 com\campusconnect\backend\repository\StudentCompletedCourseRepository.class
 com\campusconnect\backend\repository\package-info.class
+com\campusconnect\backend\dto\GpaRetakeRequest.class
 com\campusconnect\backend\model\Submission.class
 com\campusconnect\backend\controller\AssignmentController.class
 com\campusconnect\backend\repository\AppUserRepository.class
@@ -83,6 +87,7 @@ com\campusconnect\backend\service\BypassCourseService.class
 com\campusconnect\backend\model\package-info.class
 com\campusconnect\backend\repository\CourseSectionRepository.class
 com\campusconnect\backend\model\StudentCompletedCourse.class
+com\campusconnect\backend\dto\GpaPredictRequest.class
 com\campusconnect\backend\controller\BypassCourseController.class
 com\campusconnect\backend\service\ScheduleClashValidator$ExamSlot.class
 com\campusconnect\backend\exception\ResourceNotFoundException.class
