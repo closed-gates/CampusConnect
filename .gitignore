@@ -6,6 +6,7 @@ backend/.env
 frontend/.env
 backend/run-backend.bat
 backend/run.cmd
+test_admin_payments.ps1
 
 # === Build outputs ===
 backend/target/
