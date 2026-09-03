@@ -60,6 +60,10 @@ public class SecurityConfig {
                 .requestMatchers("/ws/**").permitAll()
                 // Public — User directory for direct messaging
                 .requestMatchers("/api/users/**").permitAll()
+                // In-app notifications
+                .requestMatchers("/api/notifications/**").permitAll()
+                // Course channel access management
+                .requestMatchers("/api/channels/**").permitAll()
                 // Everything else requires a valid JWT
                 .anyRequest().authenticated()
             )

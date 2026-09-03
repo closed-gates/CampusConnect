@@ -17,8 +17,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useChatController } from '../../../controllers/useChatController.js'
+import { useChannelAccessController } from '../../../controllers/channelAccessController.js'
 import { getCurrentUser } from '../../../models/messagingModel.js'
 import { channelService } from '../../../services/channelService.js'
+import ChannelAccessModal from './ChannelAccessModal.jsx'
 import '../DirectMessaging/CourseChannelView.css'
 
 /* ── Tiny helpers ─────────────────────────────────────────────────── */
@@ -125,6 +127,10 @@ export default function CourseChatPanel({ channel }) {
 
   // Resolve the real logged-in user at render time (student / faculty / admin)
   const currentUser = getCurrentUser()
+  const isAdmin = currentUser?.role === 'ADMIN'
+
+  // ── Admin Channel Access Controller ───────────────────────────────
+  const accessController = useChannelAccessController(channel, currentUser)
 
   // ── WebSocket controller hook ────────────────────────────────────
   const { messages, connected, error, sendMessage } = useChatController(
@@ -228,9 +234,39 @@ export default function CourseChatPanel({ channel }) {
               <div className="cc-course-name">{channel.displayName}</div>
             </div>
           </div>
-          <div className="cc-member-count-pill">
-            <span>👥</span>
-            <span>{members.length} enrolled</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+            <div
+              className="cc-member-count-pill"
+              onClick={() => isAdmin && accessController.openModal()}
+              style={{ cursor: isAdmin ? 'pointer' : 'default', flex: 1 }}
+              title={isAdmin ? 'Click to manage channel members' : undefined}
+            >
+              <span>👥</span>
+              <span>{accessController.totalCount || members.length} members</span>
+            </div>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={accessController.openModal}
+                style={{
+                  backgroundColor: 'rgba(26, 152, 130, 0.18)',
+                  color: '#1A9882',
+                  border: '1px solid rgba(26, 152, 130, 0.4)',
+                  borderRadius: 6,
+                  padding: '3px 8px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  whiteSpace: 'nowrap',
+                }}
+                title="Manage channel access (Add/Remove members)"
+              >
+                ⚙️ Access
+              </button>
+            )}
           </div>
         </div>
 
@@ -274,6 +310,31 @@ export default function CourseChatPanel({ channel }) {
           )}
           {/* Live/Offline badge */}
           <ConnectionBadge connected={connected} />
+
+          {/* Admin Manage Access button */}
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={accessController.openModal}
+              style={{
+                backgroundColor: 'rgba(26, 152, 130, 0.18)',
+                color: '#1A9882',
+                border: '1px solid rgba(26, 152, 130, 0.4)',
+                borderRadius: 6,
+                padding: '4px 11px',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                marginLeft: 'auto',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+              title="Add or remove students and faculty from this course channel"
+            >
+              ⚙️ Manage Access
+            </button>
+          )}
         </div>
 
         {/* Optional error banner */}
@@ -449,6 +510,16 @@ export default function CourseChatPanel({ channel }) {
           )}
         </div>
       </main>
+
+      {/* Admin Channel Access Management Modal */}
+      {isAdmin && (
+        <ChannelAccessModal
+          isOpen={accessController.isModalOpen}
+          onClose={accessController.closeModal}
+          channel={channel}
+          controller={accessController}
+        />
+      )}
     </div>
   )
 }

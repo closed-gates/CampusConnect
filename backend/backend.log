@@ -12,15 +12,13 @@
 [INFO] Copying 1 resource from src\main\resources to target\classes
 [INFO] 
 [INFO] --- compiler:3.13.0:compile (default-compile) @ backend ---
-[INFO] Recompiling the module because of changed source code.
-[INFO] Compiling 118 source files with javac [debug parameters release 17] to target\classes
+[INFO] Nothing to compile - all classes are up to date.
 [INFO] 
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ backend ---
 [INFO] skip non existing resourceDirectory E:\CampusConnect\backend\src\test\resources
 [INFO] 
 [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ backend ---
-[INFO] Recompiling the module because of changed dependency.
-[INFO] Compiling 1 source file with javac [debug parameters release 17] to target\test-classes
+[INFO] Nothing to compile - all classes are up to date.
 [INFO] 
 [INFO] <<< spring-boot:3.3.2:run (default-cli) < test-compile @ backend <<<
 [INFO] 
@@ -37,97 +35,374 @@
 
  :: Spring Boot ::                (v3.3.2)
 
-2026-09-04T00:34:02.352+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 8700 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
-2026-09-04T00:34:02.361+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
-2026-09-04T00:34:02.570+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2026-09-04T00:34:02.570+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2026-09-04T00:34:04.232+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-09-04T00:34:04.566+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 307 ms. Found 22 JPA repository interfaces.
-2026-09-04T00:34:06.960+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-09-04T00:34:06.993+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-09-04T00:34:06.993+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
-2026-09-04T00:34:07.121+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-09-04T00:34:07.125+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4550 ms
-2026-09-04T00:34:07.519+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-09-04T00:34:07.645+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
-2026-09-04T00:34:07.731+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-09-04T00:34:08.421+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-09-04T00:34:08.487+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-09-04T00:34:09.781+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@74506f85
-2026-09-04T00:34:09.786+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-09-04T00:34:09.959+06:00  WARN 8700 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-09-04T00:34:14.199+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-09-04T00:34:17.222+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-09-04T00:34:17.935+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-09-04T00:34:21.176+06:00  WARN 8700 --- [campusconnect-backend] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-09-04T00:34:21.207+06:00  WARN 8700 --- [campusconnect-backend] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-09-04T02:17:05.097+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 4580 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-04T02:17:05.101+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-04T02:17:05.180+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-04T02:17:05.180+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-04T02:17:06.227+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-04T02:17:06.415+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 164 ms. Found 23 JPA repository interfaces.
+2026-09-04T02:17:08.042+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-04T02:17:08.066+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-04T02:17:08.067+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-04T02:17:08.169+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-04T02:17:08.172+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2990 ms
+2026-09-04T02:17:08.374+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-04T02:17:08.475+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-09-04T02:17:08.558+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-04T02:17:09.171+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-04T02:17:09.206+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-04T02:17:11.602+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@35ee40ea
+2026-09-04T02:17:11.606+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-04T02:17:11.791+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-04T02:17:15.311+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-04T02:17:18.416+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:17:18.982+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-04T02:17:22.263+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-04T02:17:22.326+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 49ff266e-fb6f-4e5b-b7f6-3b616ca9e38a
+Using generated security password: ab66a47c-c12c-4ec9-9524-4c41e9b0a760
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-09-04T00:34:22.252+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2026-09-04T00:34:22.310+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-2026-09-04T00:34:22.315+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
-2026-09-04T00:34:22.316+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f193a5f]]
-2026-09-04T00:34:22.317+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
-2026-09-04T00:34:22.348+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Started BackendApplication in 21.377 seconds (process running for 22.735)
-2026-09-04T00:34:22.428+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Initializing test course catalogue and faculty dataset...
-2026-09-04T00:34:25.291+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
-2026-09-04T00:34:25.292+06:00  INFO 8700 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
-2026-09-04T00:34:34.963+06:00  INFO 8700 --- [campusconnect-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-09-04T00:34:34.964+06:00  INFO 8700 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-09-04T00:34:34.969+06:00  INFO 8700 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
-2026-09-04T00:35:22.313+06:00  INFO 8700 --- [campusconnect-backend] [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[2 current WS(2)-HttpStream(0)-HttpPoll(0), 6 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(6)-CONNECTED(6)-DISCONNECT(4)], stompBrokerRelay[null], inboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 81], outboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 23], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 4, completed tasks = 13]
-2026-09-04T00:53:44.742+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@74506f85 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.744+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@10097689 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.746+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@1a8b1513 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.747+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@19c3817 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.748+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@6f629430 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.749+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@34040a6b (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.751+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@76e5a275 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.752+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@16d9603e (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.753+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@6de1a5c1 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T00:53:44.753+06:00  WARN 8700 --- [campusconnect-backend] [boundChannel-84] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@79a2ad44 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.263+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@153c7277 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.267+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@46436ad2 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.269+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@3f18c4f (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.272+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@75a8e98c (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.274+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@431af10a (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.276+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@1e521641 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.279+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@114e7230 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.279+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@23180d1c (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.281+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@371e3ad4 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:04:05.284+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-7] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@3970d268 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:05:22.315+06:00  INFO 8700 --- [campusconnect-backend] [MessageBroker-3] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[1 current WS(1)-HttpStream(0)-HttpPoll(0), 24 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(24)-CONNECTED(24)-DISCONNECT(18)], stompBrokerRelay[null], inboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 555], outboundChannel[pool size = 4, active threads = 0, queued tasks = 0, completed tasks = 109], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 3, completed tasks = 555]
-2026-09-04T01:13:07.844+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@4e3127ba (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.847+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@762d00ad (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.848+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@32b8b805 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.849+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@7573451f (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.850+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@ea38c1c (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.850+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@1095cd0d (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.851+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@671a278a (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.852+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@82eddcb (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.853+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@1aff63be (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:13:07.855+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@24bc2849 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.490+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@7b29f438 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.494+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@25f34774 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.496+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@f876f36 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.497+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@3b3bc2ca (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.497+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@271ca2db (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.497+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@186b99ab (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.499+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@2c21bb4f (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.500+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@49691193 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.501+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@b21781f (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:21:06.502+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-9] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@4fc30e11 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.949+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@6fa1231f (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.949+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@132ca34 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.949+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@4f4c7780 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.949+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@29131cad (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.957+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@516db832 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.959+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@4619ab41 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.960+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@6ac53475 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.961+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@5b02abf4 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.961+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@6712348e (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:31:31.961+06:00  WARN 8700 --- [campusconnect-backend] [nio-8080-exec-5] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@6c5ad88e (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
-2026-09-04T01:35:22.321+06:00  INFO 8700 --- [campusconnect-backend] [MessageBroker-7] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[1 current WS(1)-HttpStream(0)-HttpPoll(0), 56 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(56)-CONNECTED(56)-DISCONNECT(41)], stompBrokerRelay[null], inboundChannel[pool size = 9, active threads = 0, queued tasks = 0, completed tasks = 1203], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 243], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 3, completed tasks = 1048]
+2026-09-04T02:17:23.308+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-09-04T02:17:23.361+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-04T02:17:23.367+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-09-04T02:17:23.368+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@416ea06]]
+2026-09-04T02:17:23.368+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-09-04T02:17:23.391+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Started BackendApplication in 19.035 seconds (process running for 20.107)
+2026-09-04T02:17:23.438+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Initializing test course catalogue and faculty dataset...
+2026-09-04T02:17:26.454+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
+2026-09-04T02:17:26.454+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
+2026-09-04T02:17:41.742+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-04T02:17:41.743+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-04T02:17:41.746+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-09-04T02:18:23.352+06:00  INFO 4580 --- [campusconnect-backend] [MessageBroker-3] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[1 current WS(1)-HttpStream(0)-HttpPoll(0), 1 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(1)-CONNECTED(1)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 9, active threads = 0, queued tasks = 0, completed tasks = 9], outboundChannel[pool size = 1, active threads = 0, queued tasks = 0, completed tasks = 1], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 4, completed tasks = 14]
+2026-09-04T02:19:05.366+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-9] c.c.backend.service.NotificationService  : [NotificationService] Dispatched GRADE_PUBLISHED to user=STU007 id=1
+2026-09-04T02:19:13.653+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] c.c.backend.service.NotificationService  : [NotificationService] Dispatched DEADLINE_APPROACHING to user=STU007 id=2
+2026-09-04T02:19:23.090+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-6] c.c.backend.service.NotificationService  : [NotificationService] Dispatched ANNOUNCEMENT_POSTED to user=STU001 id=3
+2026-09-04T02:19:23.198+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-6] c.c.backend.service.NotificationService  : [NotificationService] Dispatched ANNOUNCEMENT_POSTED to user=STU0067 id=4
+2026-09-04T02:19:23.312+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-6] c.c.backend.service.NotificationService  : [NotificationService] Dispatched ANNOUNCEMENT_POSTED to user=STU007 id=5
+2026-09-04T02:19:58.450+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] c.c.backend.service.NotificationService  : [NotificationService] Dispatched GRADE_PUBLISHED to user=STU007 id=6
+2026-09-04T02:29:16.649+06:00  INFO 4580 --- [campusconnect-backend] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 151 class path changes (0 additions, 151 deletions, 0 modifications)
+2026-09-04T02:29:16.665+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-09-04T02:29:16.666+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@416ea06]]
+2026-09-04T02:29:16.666+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-09-04T02:29:16.911+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-5] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:29:16.913+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-04T02:29:17.421+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-09-04T02:29:17.591+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 4580 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-04T02:29:17.591+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-04T02:29:17.889+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-04T02:29:17.903+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 12 ms. Found 2 JPA repository interfaces.
+2026-09-04T02:29:18.243+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-04T02:29:18.245+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-04T02:29:18.245+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-04T02:29:18.278+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-04T02:29:18.278+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 681 ms
+2026-09-04T02:29:18.362+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-04T02:29:18.371+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-04T02:29:18.387+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-04T02:29:18.389+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-09-04T02:29:19.003+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@65c37878
+2026-09-04T02:29:19.003+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-09-04T02:29:19.060+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-04T02:29:19.263+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-04T02:29:19.549+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:29:19.566+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userController' defined in file [E:\CampusConnect\backend\target\classes\com\campusconnect\backend\controller\UserController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userService': Lookup method resolution failed
+2026-09-04T02:29:19.566+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:29:19.566+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-09-04T02:29:19.708+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2026-09-04T02:29:19.709+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-09-04T02:29:19.719+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-09-04T02:29:19.761+06:00 ERROR 4580 --- [campusconnect-backend] [  restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userController' defined in file [E:\CampusConnect\backend\target\classes\com\campusconnect\backend\controller\UserController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userService': Lookup method resolution failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:795) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1375) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1212) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971) ~[spring-context-6.1.11.jar:6.1.11]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625) ~[spring-context-6.1.11.jar:6.1.11]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.2.jar:3.3.2]
+	at com.campusconnect.backend.BackendApplication.main(BackendApplication.java:20) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.3.2.jar:3.3.2]
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userService': Lookup method resolution failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.checkLookupMethods(AutowiredAnnotationBeanPostProcessor.java:497) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:367) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1314) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1209) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782) ~[spring-beans-6.1.11.jar:6.1.11]
+	... 24 common frames omitted
+Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.campusconnect.backend.service.UserService] from ClassLoader [org.springframework.boot.devtools.restart.classloader.RestartClassLoader@68d27b06]
+	at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:483) ~[spring-core-6.1.11.jar:6.1.11]
+	at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:320) ~[spring-core-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.checkLookupMethods(AutowiredAnnotationBeanPostProcessor.java:475) ~[spring-beans-6.1.11.jar:6.1.11]
+	... 38 common frames omitted
+Caused by: java.lang.NoClassDefFoundError: com/campusconnect/backend/model/AppUser
+	at java.base/java.lang.Class.getDeclaredMethods0(Native Method) ~[na:na]
+	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3402) ~[na:na]
+	at java.base/java.lang.Class.getDeclaredMethods(Class.java:2504) ~[na:na]
+	at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:465) ~[spring-core-6.1.11.jar:6.1.11]
+	... 40 common frames omitted
+Caused by: java.lang.ClassNotFoundException: com.campusconnect.backend.model.AppUser
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641) ~[na:na]
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188) ~[na:na]
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[na:na]
+	at java.base/java.lang.Class.forName0(Native Method) ~[na:na]
+	at java.base/java.lang.Class.forName(Class.java:467) ~[na:na]
+	at org.springframework.boot.devtools.restart.classloader.RestartClassLoader.loadClass(RestartClassLoader.java:121) ~[spring-boot-devtools-3.3.2.jar:3.3.2]
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[na:na]
+	... 44 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-09-04T02:29:25.866+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 4580 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-04T02:29:25.866+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-04T02:29:27.239+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-04T02:29:27.310+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 55 ms. Found 23 JPA repository interfaces.
+2026-09-04T02:29:27.469+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-04T02:29:27.476+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-04T02:29:27.476+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-04T02:29:27.481+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2026-09-04T02:29:27.481+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1602 ms
+2026-09-04T02:29:27.533+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-04T02:29:27.533+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-04T02:29:27.546+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-04T02:29:27.546+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-09-04T02:29:28.143+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@5499836e
+2026-09-04T02:29:28.145+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-09-04T02:29:28.201+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-04T02:29:28.825+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-04T02:29:31.617+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:29:33.470+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-04T02:29:33.489+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: c32b452c-d059-4ab6-8e79-863588b5f535
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-04T02:29:33.677+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-09-04T02:29:33.691+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-04T02:29:33.691+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-09-04T02:29:33.691+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@17ac1682]]
+2026-09-04T02:29:33.691+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-09-04T02:29:33.697+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Started BackendApplication in 7.89 seconds (process running for 750.414)
+2026-09-04T02:29:33.699+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Initializing test course catalogue and faculty dataset...
+2026-09-04T02:29:36.457+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
+2026-09-04T02:29:36.457+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
+2026-09-04T02:29:36.514+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-09-04T02:29:38.633+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-04T02:29:38.633+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-04T02:29:38.636+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-09-04T02:29:49.251+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-9] c.c.backend.service.NotificationService  : [NotificationService] Dispatched ADVISING_CONFIRMED to user=STU007 id=7
+2026-09-04T02:30:33.691+06:00  INFO 4580 --- [campusconnect-backend] [MessageBroker-4] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[2 current WS(2)-HttpStream(0)-HttpPoll(0), 2 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(2)-CONNECTED(2)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 18], outboundChannel[pool size = 4, active threads = 0, queued tasks = 0, completed tasks = 4], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 5, completed tasks = 19]
+2026-09-04T02:39:04.911+06:00  INFO 4580 --- [campusconnect-backend] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 151 class path changes (0 additions, 151 deletions, 0 modifications)
+2026-09-04T02:39:04.919+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-8] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-09-04T02:39:04.920+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-8] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@17ac1682]]
+2026-09-04T02:39:04.920+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-8] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-09-04T02:39:05.270+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-8] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:39:05.271+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2026-09-04T02:39:05.805+06:00  INFO 4580 --- [campusconnect-backend] [       Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-09-04T02:39:05.994+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 4580 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-04T02:39:05.995+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-04T02:39:06.295+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-04T02:39:06.312+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 2 JPA repository interfaces.
+2026-09-04T02:39:07.193+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-04T02:39:07.195+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-04T02:39:07.195+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-04T02:39:07.304+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2026-09-04T02:39:07.304+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1305 ms
+2026-09-04T02:39:07.457+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-04T02:39:07.485+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-04T02:39:07.508+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-04T02:39:07.511+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2026-09-04T02:39:08.146+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection org.postgresql.jdbc.PgConnection@654413bb
+2026-09-04T02:39:08.146+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2026-09-04T02:39:08.204+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-04T02:39:08.387+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-04T02:39:08.685+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:39:08.697+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userController' defined in file [E:\CampusConnect\backend\target\classes\com\campusconnect\backend\controller\UserController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userService': Lookup method resolution failed
+2026-09-04T02:39:08.697+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:39:08.697+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2026-09-04T02:39:08.864+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+2026-09-04T02:39:08.864+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-09-04T02:39:08.885+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-09-04T02:39:08.892+06:00 ERROR 4580 --- [campusconnect-backend] [  restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userController' defined in file [E:\CampusConnect\backend\target\classes\com\campusconnect\backend\controller\UserController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userService': Lookup method resolution failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:795) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1375) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1212) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971) ~[spring-context-6.1.11.jar:6.1.11]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625) ~[spring-context-6.1.11.jar:6.1.11]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.2.jar:3.3.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.2.jar:3.3.2]
+	at com.campusconnect.backend.BackendApplication.main(BackendApplication.java:20) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.3.2.jar:3.3.2]
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userService': Lookup method resolution failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.checkLookupMethods(AutowiredAnnotationBeanPostProcessor.java:497) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:367) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1314) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1209) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904) ~[spring-beans-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782) ~[spring-beans-6.1.11.jar:6.1.11]
+	... 24 common frames omitted
+Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.campusconnect.backend.service.UserService] from ClassLoader [org.springframework.boot.devtools.restart.classloader.RestartClassLoader@6de9c9d9]
+	at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:483) ~[spring-core-6.1.11.jar:6.1.11]
+	at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:320) ~[spring-core-6.1.11.jar:6.1.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.checkLookupMethods(AutowiredAnnotationBeanPostProcessor.java:475) ~[spring-beans-6.1.11.jar:6.1.11]
+	... 38 common frames omitted
+Caused by: java.lang.NoClassDefFoundError: com/campusconnect/backend/model/AppUser
+	at java.base/java.lang.Class.getDeclaredMethods0(Native Method) ~[na:na]
+	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3402) ~[na:na]
+	at java.base/java.lang.Class.getDeclaredMethods(Class.java:2504) ~[na:na]
+	at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:465) ~[spring-core-6.1.11.jar:6.1.11]
+	... 40 common frames omitted
+Caused by: java.lang.ClassNotFoundException: com.campusconnect.backend.model.AppUser
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641) ~[na:na]
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188) ~[na:na]
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[na:na]
+	at java.base/java.lang.Class.forName0(Native Method) ~[na:na]
+	at java.base/java.lang.Class.forName(Class.java:467) ~[na:na]
+	at org.springframework.boot.devtools.restart.classloader.RestartClassLoader.loadClass(RestartClassLoader.java:121) ~[spring-boot-devtools-3.3.2.jar:3.3.2]
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[na:na]
+	... 44 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-09-04T02:39:17.225+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 4580 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-04T02:39:17.225+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-04T02:39:18.897+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-04T02:39:18.996+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 98 ms. Found 24 JPA repository interfaces.
+2026-09-04T02:39:19.478+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-04T02:39:19.478+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-04T02:39:19.479+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-04T02:39:19.526+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat-2].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2026-09-04T02:39:19.526+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2297 ms
+2026-09-04T02:39:19.660+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-04T02:39:19.663+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-04T02:39:19.673+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-04T02:39:19.675+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Starting...
+2026-09-04T02:39:20.256+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-5 - Added connection org.postgresql.jdbc.PgConnection@18179760
+2026-09-04T02:39:20.258+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Start completed.
+2026-09-04T02:39:20.312+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-04T02:39:21.054+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-04T02:39:22.445+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-09-04T02:39:22.445+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk_channel_member" of relation "course_channel_members" does not exist, skipping
+2026-09-04T02:39:24.070+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-04T02:39:25.839+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-04T02:39:25.892+06:00  WARN 4580 --- [campusconnect-backend] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 80c786e4-899f-41b6-bab5-ed6ac2e08985
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-04T02:39:26.155+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-09-04T02:39:26.173+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-04T02:39:26.174+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-09-04T02:39:26.174+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6bf6f78a]]
+2026-09-04T02:39:26.174+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-09-04T02:39:26.183+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Started BackendApplication in 8.994 seconds (process running for 1342.899)
+2026-09-04T02:39:26.184+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Initializing test course catalogue and faculty dataset...
+2026-09-04T02:39:26.643+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat-2].[localhost].[/]     : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-04T02:39:26.644+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-04T02:39:26.649+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
+2026-09-04T02:39:28.757+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
+2026-09-04T02:39:28.757+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
+2026-09-04T02:39:28.810+06:00  INFO 4580 --- [campusconnect-backend] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-09-04T02:39:36.509+06:00  INFO 4580 --- [campusconnect-backend] [io-8080-exec-10] c.c.b.service.ChannelAccessService       : [ChannelAccessService] Admin ADMIN removed STU001 from channel ch_cse110
+2026-09-04T02:40:26.204+06:00  INFO 4580 --- [campusconnect-backend] [MessageBroker-3] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[4 current WS(4)-HttpStream(0)-HttpPoll(0), 4 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(4)-CONNECTED(4)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 51], outboundChannel[pool size = 8, active threads = 0, queued tasks = 0, completed tasks = 8], sockJsScheduler[pool size = 8, active threads = 2, queued tasks = 6, completed tasks = 23]
+2026-09-04T02:41:12.750+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-1] c.c.b.service.ChannelAccessService       : [ChannelAccessService] Admin ADMIN added Alex Johnson (STUDENT) to channel ch_cse110
+2026-09-04T02:46:06.692+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-4] c.c.b.service.ChannelAccessService       : [ChannelAccessService] Admin ADM001 added Dr. Mahbubur Rahman (FACULTY) to channel ch_cse110
+2026-09-04T02:46:14.040+06:00  INFO 4580 --- [campusconnect-backend] [nio-8080-exec-3] c.c.b.service.ChannelAccessService       : [ChannelAccessService] Admin ADM001 removed FAC104 from channel ch_cse110

@@ -29,16 +29,17 @@ import apiClient from '../services/apiClient.js'
  */
 export function useMessagingController(user = getCurrentUser(), onMessageSent) {
   // ── Persisted state: load from localStorage on first render ──────
-  const userId = user?.id || 'guest'
+  const userId = user?.id || user?.userId || 'guest'
+  const userRole = user?.role || ''
 
   const [conversations,    setConversations]    = useState(() => loadConversations(userId))
   const [activeConvId,     setActiveConvId]     = useState(() => loadActiveConvId(userId))
   const [messagesMap,      setMessagesMap]      = useState(() => loadMessagesMap(userId))
   const [typingState,      setTypingState]      = useState({})
   const [notificationToast, setNotificationToast] = useState(null)
-  /** Channels: advisor channel always first, then enrollment-based course channels */
+  /** Channels: advisor channel always first, then enrollment/access-based course channels */
   const [channelConvs, setChannelConvs] = useState(
-    () => [ADVISOR_CHANNEL, ...channelService.getChannelsForUser(user.id)]
+    () => [ADVISOR_CHANNEL, ...channelService.getChannelsForUser(userId, userRole)]
   )
   const [availableUsers, setAvailableUsers] = useState(MOCK_USERS)
   const [loadingUsers,   setLoadingUsers]   = useState(false)
@@ -54,9 +55,9 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
       const lastActive = loadActiveConvId(userId)
       setActiveConvId(lastActive || userConvs[0]?.id || null)
       setMessagesMap(loadMessagesMap(userId))
-      setChannelConvs([ADVISOR_CHANNEL, ...channelService.getChannelsForUser(userId)])
+      setChannelConvs([ADVISOR_CHANNEL, ...channelService.getChannelsForUser(userId, userRole)])
     }
-  }, [userId])
+  }, [userId, userRole])
 
   // ── Persist to localStorage whenever state changes (for the current user) ──
   useEffect(() => {
@@ -194,8 +195,13 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
 
   // Sync with backend enrolled/advised courses on mount
   useEffect(() => {
-    const user = getStoredUser()
-    const studentId = user?.userId || 'STU001'
+    if (user?.role === 'ADMIN') {
+      const all = channelService.getAllChannels()
+      setChannelConvs([ADVISOR_CHANNEL, ...all])
+      return
+    }
+
+    const studentId = user?.userId || user?.id || 'STU001'
 
     Promise.all([
       apiClient.get(`/api/registration/my?studentId=${studentId}`).then(r => r.ok ? r.json() : []).catch(() => []),
@@ -229,7 +235,7 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
       const enrolledChannels = channelService.syncUserChannels(studentId, activeCourses)
       setChannelConvs([ADVISOR_CHANNEL, ...enrolledChannels])
     })
-  }, [])
+  }, [userId, userRole])
 
   // Fetch real registered users from backend database for Direct Messaging
   useEffect(() => {
@@ -244,32 +250,24 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
         if (Array.isArray(users) && users.length > 0) {
           const formatted = users.map(u => ({
             id: u.userId,
-            username: u.userId,
+            username: u.email || u.userId,
             displayName: u.fullName,
             role: u.role,
-            email: u.email,
-            isAdvisor: u.isAdvisor,
             status: 'ONLINE',
+            isAdvisor: u.isAdvisor,
           }))
           setAvailableUsers(formatted)
-        } else {
-          setAvailableUsers(MOCK_USERS.filter(u => u.id !== currentId))
         }
       })
-      .catch(err => {
-        console.warn('Could not fetch real users, falling back to mock users:', err)
-        if (isMounted) {
-          setAvailableUsers(MOCK_USERS.filter(u => u.id !== currentId))
-        }
-      })
+      .catch(() => {})
       .finally(() => {
         if (isMounted) setLoadingUsers(false)
       })
 
     return () => { isMounted = false }
-  }, [user?.id, user?.userId])
+  }, [userId, userRole])
 
-  // Subscribe to channelService – push new channel or remove channel on change
+  // Subscribe to channelService and BroadcastChannel for live channel access updates
   useEffect(() => {
     const unsub = channelService.subscribe(({ event, payload }) => {
       if (event === 'CHANNEL_JOINED') {
@@ -282,10 +280,42 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
       } else if (event === 'CHANNEL_LEFT') {
         const { channelId } = payload
         setChannelConvs(prev => prev.filter(c => c.id !== channelId))
+      } else if (event === 'CHANNEL_ACCESS_CHANGED') {
+        const { channelId, userId: targetUserId, action } = payload
+        if (targetUserId === userId) {
+          if (action === 'REMOVE') {
+            setChannelConvs(prev => prev.filter(c => c.id !== channelId))
+            setActiveConvId(prev => (prev === channelId ? ADVISOR_CHANNEL.id : prev))
+          } else if (action === 'ADD') {
+            const allChs = channelService.getChannelsForUser(userId, userRole)
+            setChannelConvs([ADVISOR_CHANNEL, ...allChs])
+          }
+        }
       }
     })
-    return () => unsub()
-  }, [])
+
+    let bc
+    try {
+      bc = new BroadcastChannel('campusconnect_channel_access')
+      bc.onmessage = (e) => {
+        const { channelId, userId: targetUserId, action } = e.data || {}
+        if (targetUserId === userId) {
+          if (action === 'REMOVE') {
+            setChannelConvs(prev => prev.filter(c => c.id !== channelId))
+            setActiveConvId(prev => (prev === channelId ? ADVISOR_CHANNEL.id : prev))
+          } else if (action === 'ADD') {
+            const allChs = channelService.getChannelsForUser(userId, userRole)
+            setChannelConvs([ADVISOR_CHANNEL, ...allChs])
+          }
+        }
+      }
+    } catch (ignored) {}
+
+    return () => {
+      unsub()
+      try { bc?.close() } catch (ignored) {}
+    }
+  }, [userId, userRole])
 
   /* ── Handlers ─────────────────────────────────────────────── */
 
