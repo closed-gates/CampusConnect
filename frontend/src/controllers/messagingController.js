@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { CURRENT_USER, MOCK_USERS, MOCK_CONVERSATIONS, INITIAL_MESSAGES, ADVISOR_CHANNEL } from '../models/messagingModel.js'
+import { CURRENT_USER, getCurrentUser, MOCK_USERS, MOCK_CONVERSATIONS, INITIAL_MESSAGES, ADVISOR_CHANNEL } from '../models/messagingModel.js'
 import { getDeterministicRoomId } from '../utils/dmUtils.js'
 import { dmService } from '../services/dmService.js'
 import { channelService } from '../services/channelService.js'
@@ -21,7 +21,7 @@ import apiClient from '../services/apiClient.js'
  * @param {object} user - The current authenticated user (defaults to CURRENT_USER)
  * @param {function} onMessageSent - Optional callback when a message is sent
  */
-export function useMessagingController(user = CURRENT_USER, onMessageSent) {
+export function useMessagingController(user = getCurrentUser(), onMessageSent) {
   const [conversations,    setConversations]    = useState(MOCK_CONVERSATIONS)
   const [activeConvId,     setActiveConvId]     = useState(MOCK_CONVERSATIONS[0].id)
   const [messagesMap,      setMessagesMap]      = useState(INITIAL_MESSAGES)
@@ -31,6 +31,8 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
   const [channelConvs, setChannelConvs] = useState(
     () => [ADVISOR_CHANNEL, ...channelService.getChannelsForUser(user.id)]
   )
+  const [availableUsers, setAvailableUsers] = useState(MOCK_USERS)
+  const [loadingUsers,   setLoadingUsers]   = useState(false)
 
   const activeConversation = conversations.find(c => c.id === activeConvId)
     || channelConvs.find(c => c.id === activeConvId)
@@ -108,6 +110,44 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
       setChannelConvs([ADVISOR_CHANNEL, ...enrolledChannels])
     })
   }, [])
+
+  // Fetch real registered users from backend database for Direct Messaging
+  useEffect(() => {
+    let isMounted = true
+    setLoadingUsers(true)
+    const currentId = user?.id || user?.userId || ''
+
+    apiClient.get(`/api/users?excludeUserId=${encodeURIComponent(currentId)}`)
+      .then(r => r.ok ? r.json() : [])
+      .then(users => {
+        if (!isMounted) return
+        if (Array.isArray(users) && users.length > 0) {
+          const formatted = users.map(u => ({
+            id: u.userId,
+            username: u.userId,
+            displayName: u.fullName,
+            role: u.role,
+            email: u.email,
+            isAdvisor: u.isAdvisor,
+            status: 'ONLINE',
+          }))
+          setAvailableUsers(formatted)
+        } else {
+          setAvailableUsers(MOCK_USERS.filter(u => u.id !== currentId))
+        }
+      })
+      .catch(err => {
+        console.warn('Could not fetch real users, falling back to mock users:', err)
+        if (isMounted) {
+          setAvailableUsers(MOCK_USERS.filter(u => u.id !== currentId))
+        }
+      })
+      .finally(() => {
+        if (isMounted) setLoadingUsers(false)
+      })
+
+    return () => { isMounted = false }
+  }, [user?.id, user?.userId])
 
   // Subscribe to channelService – push new channel or remove channel on change
   useEffect(() => {
@@ -187,8 +227,9 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
     // Derived
     activeConversation,
     activeRecipient,
-    // Static data passed through for the View
-    availableUsers: MOCK_USERS,
+    // Dynamic database users for New DM
+    availableUsers,
+    loadingUsers,
     currentUser: user,
     // Handlers
     handleSendMessage,
