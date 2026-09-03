@@ -134,3 +134,72 @@ This generated password is for development use only. Your security configuration
 2026-09-03T13:16:29.110+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
 2026-09-03T13:16:29.110+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
 2026-09-03T13:16:29.161+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-09-03T13:17:26.466+06:00  INFO 10424 --- [campusconnect-backend] [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 5, active threads = 1, queued tasks = 1, completed tasks = 3]
+2026-09-03T13:18:04.664+06:00  INFO 10424 --- [campusconnect-backend] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-09-03T13:18:04.666+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-9] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-09-03T13:18:04.667+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-9] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@11e9777e]]
+2026-09-03T13:18:04.667+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-9] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-09-03T13:18:04.825+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-9] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-03T13:18:04.826+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-9] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-09-03T13:18:05.329+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-9] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-09-03T13:18:05.435+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 10424 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-03T13:18:05.435+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-03T13:18:05.612+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-03T13:18:05.646+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 22 JPA repository interfaces.
+2026-09-03T13:18:05.810+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-03T13:18:05.811+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-03T13:18:05.811+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-03T13:18:05.827+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-03T13:18:05.827+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 390 ms
+2026-09-03T13:18:05.869+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-03T13:18:05.872+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-03T13:18:05.879+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-03T13:18:05.880+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-09-03T13:18:06.461+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@6b50df80
+2026-09-03T13:18:06.461+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-09-03T13:18:06.515+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-03T13:18:06.864+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-03T13:18:09.247+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-03T13:18:10.555+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-03T13:18:10.564+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: f7717ad1-939c-4416-a640-ed2482cca7fa
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-03T13:18:10.735+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-09-03T13:18:10.750+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-03T13:18:10.750+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-09-03T13:18:10.751+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@45f426b3]]
+2026-09-03T13:18:10.751+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-09-03T13:18:10.757+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Started BackendApplication in 5.359 seconds (process running for 361.321)
+2026-09-03T13:18:10.758+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Initializing test course catalogue and faculty dataset...
+2026-09-03T13:18:13.245+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
+2026-09-03T13:18:13.245+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
+2026-09-03T13:18:13.295+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-09-03T13:19:01.939+06:00  INFO 10424 --- [campusconnect-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-03T13:19:01.939+06:00  INFO 10424 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-03T13:19:01.944+06:00  INFO 10424 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-09-03T13:19:08.279+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/ai/chat.]
+2026-09-03T13:19:10.757+06:00  INFO 10424 --- [campusconnect-backend] [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 5, active threads = 1, queued tasks = 1, completed tasks = 3]
+2026-09-03T13:20:40.689+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:20:40.701+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:20:44.436+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/current-courses.]
+2026-09-03T13:21:05.835+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:21:05.842+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:21:07.127+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/current-courses.]
+2026-09-03T13:21:51.501+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:21:51.521+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:21:54.920+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:21:54.940+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/transcript.]
+2026-09-03T13:22:02.530+06:00  WARN 10424 --- [campusconnect-backend] [nio-8080-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/student/gpa/current-courses.]
