@@ -15,6 +15,7 @@ import {
   EMPTY_EXAM_SCHEDULE,
 } from '../models/examScheduleModel.js'
 import apiClient from '../services/apiClient.js'
+import { getStoredUser } from '../models/authModel.js'
 
 /**
  * useExamScheduleController
@@ -34,8 +35,11 @@ export function useExamScheduleController() {
   const [loading,      setLoading]      = useState(true)
   const [error,        setError]        = useState(null)
 
-  // Resolve studentId – prefer localStorage, fall back to demo ID
+  // Resolve studentId — prefer cc_userId (auth model), fall back to legacy
+  // 'studentId' key, then the demo FALLBACK_STUDENT_ID
+  const storedUser = getStoredUser()
   const studentId =
+    storedUser?.userId ||
     (typeof localStorage !== 'undefined' && localStorage.getItem('studentId')) ||
     FALLBACK_STUDENT_ID
 

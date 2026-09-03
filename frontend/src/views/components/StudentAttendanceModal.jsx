@@ -59,8 +59,17 @@ export default function StudentAttendanceModal({ isOpen, onClose, attendanceData
           {/* Summary Stat Cards */}
           <div className="attendance-summary-banner">
             <div className="attendance-rate-box">
-              <span className="rate-number">{report.attendanceRate}%</span>
-              <span className="rate-label">Overall Attendance Rate</span>
+              {report.totalSessions === 0 ? (
+                <>
+                  <span className="rate-number" style={{ fontSize: '1.4rem', opacity: 0.75 }}>No Data</span>
+                  <span className="rate-label">No classes have been conducted yet</span>
+                </>
+              ) : (
+                <>
+                  <span className="rate-number">{report.attendanceRate}%</span>
+                  <span className="rate-label">Overall Attendance Rate</span>
+                </>
+              )}
             </div>
             <div className="attendance-stat-items">
               <div className="stat-pill present-pill">

@@ -9,6 +9,7 @@ backend/run.cmd
 
 # === Build outputs ===
 backend/target/
+backend/backend.log
 frontend/dist/
 frontend/node_modules/
 

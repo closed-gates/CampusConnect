@@ -31,11 +31,22 @@ export default function Sidebar({ activeItem = 'home' }) {
 
   const roleLabel = user?.role ? (ROLE_LABELS[user.role] || user.role) : ''
   const isAdmin   = user?.role === 'ADMIN'
+  const isFaculty = user?.role === 'FACULTY'
   const isStudent = !user?.role || user?.role === 'STUDENT'
 
   // Build nav items dynamically: include "View Routine" below Advising for students, and Admin tools
   const navItems = []
   NAV_ITEMS.forEach(item => {
+    // Access control:
+    // 1. Create Routine is student-only (hidden from admin and faculty)
+    if (item.id === 'routine' && !isStudent) {
+      return
+    }
+    // 2. Payments tab is hidden from faculty (visible to students and admins)
+    if (item.id === 'payments' && isFaculty) {
+      return
+    }
+
     navItems.push(item)
     if (item.id === 'advising' && isStudent) {
       navItems.push({

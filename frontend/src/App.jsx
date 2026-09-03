@@ -20,6 +20,21 @@ import GpaView             from './views/pages/GpaView'
 
 // ── Route guard ──────────────────────────────────────────────
 import ProtectedRoute       from './views/components/ProtectedRoute'
+import { getStoredUser }    from './models/authModel'
+
+/** Guard: only students can access */
+function StudentOnlyRoute({ children }) {
+  const user = getStoredUser()
+  const isStudent = !user?.role || user?.role === 'STUDENT'
+  return isStudent ? children : <Navigate to="/dashboard" replace />
+}
+
+/** Guard: faculty cannot access (students and admins allowed) */
+function NonFacultyRoute({ children }) {
+  const user = getStoredUser()
+  const isFaculty = user?.role === 'FACULTY'
+  return !isFaculty ? children : <Navigate to="/dashboard" replace />
+}
 
 /**
  * App – Root router
@@ -47,14 +62,14 @@ export default function App() {
         <Route path="/messaging"         element={<MessagingView />} />
         <Route path="/club-activities"   element={<ClubActivitiesView />} />
         <Route path="/courses"           element={<CoursesView />} />
-        <Route path="/routine"           element={<RoutineView />} />
+        <Route path="/routine"           element={<StudentOnlyRoute><RoutineView /></StudentOnlyRoute>} />
         <Route path="/attendance"        element={<AttendanceView />} />
         <Route path="/advising"          element={<AdvisingView />} />
         <Route path="/view-routine"      element={<ViewRoutineView />} />
         <Route path="/assign-advisor"    element={<AssignAdvisorView />} />
         <Route path="/bypass-course"     element={<BypassCourseView />} />
         <Route path="/assignments"       element={<AssignmentView />} />
-        <Route path="/payments"          element={<PaymentView />} />
+        <Route path="/payments"          element={<NonFacultyRoute><PaymentView /></NonFacultyRoute>} />
         <Route path="/gpa-calculator"    element={<GpaView />} />
       </Route>
 

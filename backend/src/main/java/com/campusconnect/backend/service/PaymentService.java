@@ -1,12 +1,17 @@
 package com.campusconnect.backend.service;
 
+import com.campusconnect.backend.dto.PaymentBypassRequest;
 import com.campusconnect.backend.dto.PaymentConfirmRequest;
 import com.campusconnect.backend.dto.PaymentIntentRequest;
 import com.campusconnect.backend.dto.PaymentIntentResponse;
+import com.campusconnect.backend.dto.PaymentReceiptDTO;
+import com.campusconnect.backend.dto.PaymentUpdateRequest;
 import com.campusconnect.backend.exception.ForbiddenException;
 import com.campusconnect.backend.exception.ResourceNotFoundException;
 import com.campusconnect.backend.model.PaymentRecord;
+import com.campusconnect.backend.model.StudentProfile;
 import com.campusconnect.backend.repository.PaymentRecordRepository;
+import com.campusconnect.backend.repository.StudentProfileRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
@@ -38,10 +43,19 @@ public class PaymentService {
 
     private final PaymentRecordRepository paymentRecordRepo;
     private final ObjectMapper objectMapper;
+    private final PaymentReceiptService paymentReceiptService;
+    private final StudentProfileRepository studentProfileRepo;
 
-    public PaymentService(PaymentRecordRepository paymentRecordRepo, ObjectMapper objectMapper) {
+    public PaymentService(
+            PaymentRecordRepository paymentRecordRepo,
+            ObjectMapper objectMapper,
+            PaymentReceiptService paymentReceiptService,
+            StudentProfileRepository studentProfileRepo
+    ) {
         this.paymentRecordRepo = paymentRecordRepo;
         this.objectMapper = objectMapper;
+        this.paymentReceiptService = paymentReceiptService;
+        this.studentProfileRepo = studentProfileRepo;
     }
 
     /**
@@ -206,6 +220,9 @@ public class PaymentService {
     public List<PaymentRecord> getPaymentHistory(String studentId, String role) {
         boolean isAdmin = role != null && role.equalsIgnoreCase("ADMIN");
         if (isAdmin) {
+            if (studentId != null && !studentId.isBlank() && !studentId.equalsIgnoreCase("ALL")) {
+                return paymentRecordRepo.findByStudentIdOrderByPaidAtDesc(studentId);
+            }
             return paymentRecordRepo.findAllByOrderByPaidAtDesc();
         } else {
             return paymentRecordRepo.findByStudentIdOrderByPaidAtDesc(studentId);
@@ -225,6 +242,114 @@ public class PaymentService {
         }
 
         return record;
+    }
+
+    /**
+     * Returns all distinct student IDs from StudentProfile for the admin selector.
+     */
+    public List<String> getAllStudentIds() {
+        return studentProfileRepo.findAll().stream()
+                .map(StudentProfile::getStudentId)
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    /**
+     * Bypasses current term payment for a student and saves a PAID/ADMIN_BYPASS receipt.
+     */
+    @Transactional
+    public PaymentRecord bypassPayment(PaymentBypassRequest req) {
+        String studentId = req.getStudentId();
+        PaymentReceiptDTO receipt = paymentReceiptService.getReceipt(studentId);
+
+        String term = (req.getTerm() != null && !req.getTerm().isBlank())
+                ? req.getTerm()
+                : (receipt.getTerm() != null ? receipt.getTerm() : "Fall2026");
+
+        String receiptNo = "REC-BYPASS-" + String.format("%04d", (int)(Math.random() * 9000) + 1000);
+        String txnId = "BYPASS_" + UUID.randomUUID().toString().substring(0, 10).toUpperCase();
+
+        String itemsJson = "[]";
+        if (receipt.getItems() != null && !receipt.getItems().isEmpty()) {
+            try {
+                itemsJson = objectMapper.writeValueAsString(receipt.getItems());
+            } catch (JsonProcessingException e) {
+                log.warn("Failed to serialize items to JSON: {}", e.getMessage());
+            }
+        }
+
+        String reason = (req.getReason() != null && !req.getReason().isBlank())
+                ? req.getReason()
+                : "Administrative Fee Waiver / Bypass";
+
+        PaymentRecord record = PaymentRecord.builder()
+                .receiptNumber(receiptNo)
+                .transactionId(txnId)
+                .studentId(studentId)
+                .studentName(receipt.getStudentName() != null ? receipt.getStudentName() : "Student (" + studentId + ")")
+                .department(receipt.getDepartment() != null ? receipt.getDepartment() : "General")
+                .term(term)
+                .totalCourseFee(receipt.getTotalCourseFee())
+                .semesterFee(receipt.getSemesterFee())
+                .grossPayable(receipt.getGrossPayable())
+                .netPayable(receipt.getNetPayable())
+                .paymentMethod("ADMIN_BYPASS")
+                .paymentStatus("PAID")
+                .bankName("Administrative Waiver (" + reason + ")")
+                .itemsJson(itemsJson)
+                .amountInWords("Waived by University Administration: " + reason)
+                .paidAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return paymentRecordRepo.save(record);
+    }
+
+    /**
+     * Updates an existing payment record in database.
+     */
+    @Transactional
+    public PaymentRecord updatePaymentRecord(Long id, PaymentUpdateRequest req) {
+        PaymentRecord record = paymentRecordRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment record not found with id: " + id));
+
+        if (req.getTerm() != null && !req.getTerm().isBlank()) {
+            record.setTerm(req.getTerm());
+        }
+        if (req.getNetPayable() != null) {
+            record.setNetPayable(req.getNetPayable());
+            record.setGrossPayable(req.getNetPayable());
+        }
+        if (req.getPaymentStatus() != null && !req.getPaymentStatus().isBlank()) {
+            record.setPaymentStatus(req.getPaymentStatus());
+        }
+        if (req.getPaymentMethod() != null && !req.getPaymentMethod().isBlank()) {
+            record.setPaymentMethod(req.getPaymentMethod());
+        }
+        if (req.getBankName() != null) {
+            record.setBankName(req.getBankName());
+        }
+        if (req.getTransactionId() != null && !req.getTransactionId().isBlank()) {
+            record.setTransactionId(req.getTransactionId());
+        }
+        if (req.getAmountInWords() != null && !req.getAmountInWords().isBlank()) {
+            record.setAmountInWords(req.getAmountInWords());
+        }
+
+        return paymentRecordRepo.save(record);
+    }
+
+    /**
+     * Deletes an existing payment record by ID from database.
+     */
+    @Transactional
+    public void deletePaymentRecord(Long id) {
+        if (!paymentRecordRepo.existsById(id)) {
+            throw new ResourceNotFoundException("Payment record not found with id: " + id);
+        }
+        paymentRecordRepo.deleteById(id);
     }
 
     /**

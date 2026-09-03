@@ -1,18 +1,21 @@
 package com.campusconnect.backend.controller;
 
+import com.campusconnect.backend.dto.PaymentBypassRequest;
 import com.campusconnect.backend.dto.PaymentConfirmRequest;
 import com.campusconnect.backend.dto.PaymentIntentRequest;
 import com.campusconnect.backend.dto.PaymentIntentResponse;
+import com.campusconnect.backend.dto.PaymentUpdateRequest;
 import com.campusconnect.backend.model.PaymentRecord;
 import com.campusconnect.backend.service.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * PaymentController – REST endpoints for Stripe payments, database receipt confirmations,
- * and role-isolated payment history.
+ * role-isolated payment history, and administrative fee bypass / edits.
  *
  * MVC Role: Controller
  */
@@ -25,6 +28,15 @@ public class PaymentController {
 
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
+    }
+
+    /**
+     * GET /api/payments/students
+     * Returns list of available student IDs for admin selector.
+     */
+    @GetMapping("/students")
+    public ResponseEntity<List<String>> getStudentIds() {
+        return ResponseEntity.ok(paymentService.getAllStudentIds());
     }
 
     /**
@@ -45,6 +57,39 @@ public class PaymentController {
     public ResponseEntity<PaymentRecord> confirmPayment(@RequestBody PaymentConfirmRequest request) {
         PaymentRecord record = paymentService.confirmAndSavePayment(request);
         return ResponseEntity.ok(record);
+    }
+
+    /**
+     * POST /api/payments/bypass
+     * Admin endpoint to bypass current term payment for a student.
+     */
+    @PostMapping("/bypass")
+    public ResponseEntity<PaymentRecord> bypassPayment(@RequestBody PaymentBypassRequest request) {
+        PaymentRecord record = paymentService.bypassPayment(request);
+        return ResponseEntity.ok(record);
+    }
+
+    /**
+     * PUT /api/payments/{id}
+     * Admin endpoint to edit an existing payment record.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<PaymentRecord> updatePaymentRecord(
+            @PathVariable Long id,
+            @RequestBody PaymentUpdateRequest request
+    ) {
+        PaymentRecord record = paymentService.updatePaymentRecord(id, request);
+        return ResponseEntity.ok(record);
+    }
+
+    /**
+     * DELETE /api/payments/{id}
+     * Admin endpoint to delete an existing payment record.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deletePaymentRecord(@PathVariable Long id) {
+        paymentService.deletePaymentRecord(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Payment record deleted successfully"));
     }
 
     /**
