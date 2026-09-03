@@ -5,11 +5,13 @@
 backend/.env
 frontend/.env
 backend/run-backend.bat
+backend/run.cmd
 
 # === Build outputs ===
 backend/target/
 frontend/dist/
 frontend/node_modules/
+
 
 # === IDE ===
 .vscode/
