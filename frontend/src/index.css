@@ -2619,6 +2619,7 @@ input {
 
 .modal-md { width: 100%; max-width: 640px; }
 .modal-lg { width: 100%; max-width: 900px; }
+.modal-xl { width: 100%; max-width: 1150px; }
 
 .modal-header {
   padding: 20px 24px;
@@ -2807,6 +2808,7 @@ input {
   color: #4B5563;
   white-space: nowrap;
   vertical-align: middle;
+  min-width: 135px;
 }
 
 .routine-cell {

@@ -16,12 +16,18 @@ import {
   buildRoutineGrid,
 } from '../models/dashboardModel.js'
 import { dashboardService } from '../services/dashboardService.js'
+import { getStoredUser } from '../models/authModel.js'
 
 /**
  * useDashboardController
  * Custom React hook powering DashboardView.
+ * Resolves the authenticated student's ID from localStorage (cc_userId).
+ * Falls back to 'STU001' only for unauthenticated / demo sessions.
  */
-export function useDashboardController(studentId = 'STU001') {
+export function useDashboardController() {
+  const storedUser = getStoredUser()
+  const studentId  = storedUser?.userId || 'STU001'
+  const fullName   = storedUser?.fullName || 'Student'
   const [courses,          setCourses]          = useState([])
   const [attendanceReport, setAttendanceReport] = useState(null)
   const [loading,          setLoading]          = useState(true)
@@ -72,16 +78,23 @@ export function useDashboardController(studentId = 'STU001') {
 
   // Show the LOWEST per-course attendance rate on the stat card so the
   // student immediately sees which course needs attention.
-  // Falls back to the overall rate when no course breakdown is available.
+  // Shows '—' when no classes have been conducted yet (totalSessions === 0).
   const { lowestRate, lowestCourseName } = useMemo(() => {
-    const breakdown = attendanceReport?.courseBreakdown
-    if (!breakdown || breakdown.length === 0) {
+    // No classes conducted yet → do not show a phantom percentage
+    if (!attendanceReport || attendanceReport.totalSessions === 0) {
+      return { lowestRate: null, lowestCourseName: null }
+    }
+    const breakdown = attendanceReport.courseBreakdown
+    // Only consider courses that have actually had sessions recorded
+    const activeCourses = (breakdown || []).filter(c => (c.totalSessions ?? 0) > 0)
+    if (activeCourses.length === 0) {
+      // Classes conducted overall but no per-course breakdown yet → use overall rate
       return {
-        lowestRate:       attendanceReport?.attendanceRate ?? null,
+        lowestRate:       attendanceReport.attendanceRate ?? null,
         lowestCourseName: null,
       }
     }
-    const worst = breakdown.reduce((min, c) =>
+    const worst = activeCourses.reduce((min, c) =>
       c.attendanceRate < min.attendanceRate ? c : min
     )
     return {
@@ -127,9 +140,11 @@ export function useDashboardController(studentId = 'STU001') {
         : lowestRate !== null
           ? `${lowestRate}%`
           : '—',
-      label: lowestCourseName
-        ? `Lowest Attendance · ${lowestCourseName}`
-        : 'Attendance (Lowest Course)',
+      label: loading
+        ? 'Attendance Metrics'
+        : lowestRate !== null
+          ? (lowestCourseName ? `Lowest Attendance · ${lowestCourseName}` : 'Attendance (Lowest Course)')
+          : 'No classes conducted yet',
       linkText: 'View report',
       isActive: false,
       onClick: openAttendanceModal,
@@ -147,6 +162,7 @@ export function useDashboardController(studentId = 'STU001') {
 
   return {
     today,
+    fullName,
     stats,
     courses,
     attendanceReport,

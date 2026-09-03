@@ -63,46 +63,52 @@ export function buildRoutineMatrix(courses = []) {
     if (!rawTime) return
 
     // Format A: "SUNDAY(8:00 AM-9:20 AM-09C-16T) ; TUESDAY(8:00 AM-9:20 AM-09C-16T)"
+    // or complex multi-room: "MONDAY(3:30 PM-4:50 PM-MON 3:30PM: 09G-31T; WED 3:30PM: 07A-07C) ; WEDNESDAY(...)"
     if (rawTime.includes('(') && rawTime.includes(')')) {
-      const parts = rawTime.split(';')
-      parts.forEach(part => {
-        const trimmed = part.trim()
-        const parenStart = trimmed.indexOf('(')
-        const parenEnd = trimmed.lastIndexOf(')')
-        if (parenStart > 0 && parenEnd > parenStart) {
-          const rawDay = trimmed.substring(0, parenStart).trim().toUpperCase()
-          const matchedDay = DAYS_OF_WEEK.find(d => rawDay.includes(d))
+      const regex = /([A-Za-z]+)\s*\(([\s\S]*?)\)/g
+      let match
+      while ((match = regex.exec(rawTime)) !== null) {
+        const rawDay = match[1].trim().toUpperCase()
+        const matchedDay = DAYS_OF_WEEK.find(d => rawDay.includes(d))
 
-          if (matchedDay) {
-            const inner = trimmed.substring(parenStart + 1, parenEnd)
-            // inner format: "8:00 AM-9:20 AM-09C-16T" or "8:00 AM-9:20 AM"
-            const segments = inner.split('-')
-            let timeStr = ''
-            let roomStr = defaultRoom
+        if (matchedDay) {
+          const inner = match[2].trim()
+          const timeMatch = inner.match(/(\d{1,2}:\d{2}\s*[AP]M\s*[-–]\s*\d{1,2}:\d{2}\s*[AP]M)/i)
+          const timeStr = timeMatch ? timeMatch[1] : inner
+          let roomStr = defaultRoom
 
-            if (segments.length >= 3) {
-              // segments: ["8:00 AM", "9:20 AM", "09C", "16T"]
-              timeStr = `${segments[0].trim()} - ${segments[1].trim()}`
-              roomStr = segments.slice(2).join('-').trim()
-            } else if (segments.length === 2) {
-              timeStr = `${segments[0].trim()} - ${segments[1].trim()}`
-            } else {
-              timeStr = inner
+          if (timeMatch) {
+            const afterTime = inner.substring(inner.indexOf(timeMatch[0]) + timeMatch[0].length).replace(/^[-–\s]+/, '')
+            if (afterTime) {
+              const dayAbbr = rawDay.substring(0, 3)
+              if (afterTime.includes(';')) {
+                const parts = afterTime.split(';')
+                for (const part of parts) {
+                  if (part.toUpperCase().includes(dayAbbr)) {
+                    roomStr = part.split(':').pop().trim()
+                    break
+                  }
+                }
+              } else if (afterTime.toUpperCase().includes(dayAbbr) && afterTime.includes(':')) {
+                roomStr = afterTime.split(':').pop().trim()
+              } else {
+                roomStr = afterTime.trim()
+              }
             }
-
-            const normSlot = normalizeTimeSlot(timeStr)
-            if (!matrix[matchedDay][normSlot]) {
-              matrix[matchedDay][normSlot] = []
-            }
-            matrix[matchedDay][normSlot].push({
-              code,
-              section,
-              faculty,
-              room: roomStr || defaultRoom
-            })
           }
+
+          const normSlot = normalizeTimeSlot(timeStr)
+          if (!matrix[matchedDay][normSlot]) {
+            matrix[matchedDay][normSlot] = []
+          }
+          matrix[matchedDay][normSlot].push({
+            code,
+            section,
+            faculty,
+            room: roomStr || defaultRoom
+          })
         }
-      })
+      }
     }
     // Format B: "SUN-TUE 08:00 AM-09:20 AM" or "MW 11:00 AM-12:20 PM"
     else {

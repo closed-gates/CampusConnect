@@ -38,6 +38,14 @@ if %errorlevel% equ 0 (
     set "MVN_CMD=mvn"
 )
 if not defined MVN_CMD (
+    if exist "E:\CS\maven\apache-maven-3.9.16\bin\mvn.cmd" set "MVN_CMD=E:\CS\maven\apache-maven-3.9.16\bin\mvn.cmd"
+)
+if not defined MVN_CMD (
+    for /d %%m in ("E:\CS\maven\apache-maven*") do (
+        if exist "%%m\bin\mvn.cmd" set "MVN_CMD=%%m\bin\mvn.cmd"
+    )
+)
+if not defined MVN_CMD (
     if exist "%USERPROFILE%\.maven\apache-maven-3.9.16\bin\mvn.cmd" set "MVN_CMD=%USERPROFILE%\.maven\apache-maven-3.9.16\bin\mvn.cmd"
 )
 if not defined MVN_CMD (

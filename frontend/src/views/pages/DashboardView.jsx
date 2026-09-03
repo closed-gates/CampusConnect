@@ -16,6 +16,7 @@ import { useDashboardController } from '../../controllers/dashboardController.js
 export default function DashboardView() {
   const {
     today,
+    fullName,
     stats,
     courses,
     attendanceReport,
@@ -35,7 +36,7 @@ export default function DashboardView() {
         {/* Header */}
         <div className="dashboard-header">
           <h1 className="dashboard-greeting">
-            Welcome back, Student!
+            Welcome back, {fullName}!
           </h1>
           <p className="dashboard-date">{today}</p>
         </div>

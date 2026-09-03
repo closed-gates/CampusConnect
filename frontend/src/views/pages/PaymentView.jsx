@@ -5,7 +5,7 @@
  * Strictly driven by usePaymentController(). No independent state or fetch logic.
  */
 
-import React, { useEffect, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import {
   Elements,
@@ -35,8 +35,28 @@ export default function PaymentView() {
     loading,
     error,
     studentId,
-    role,
     isAdmin,
+    // Admin Student Selector State
+    studentIds,
+    studentIdsLoading,
+    selectedStudentId,
+    setSelectedStudentId,
+    // Admin Bypass Payment State & Handlers
+    bypassModalOpen,
+    setBypassModalOpen,
+    bypassReason,
+    setBypassReason,
+    bypassSubmitting,
+    handleBypassPayment,
+    // Admin Edit & Delete State & Handlers
+    editingRecord,
+    setEditingRecord,
+    editSubmitting,
+    handleSaveEditPayment,
+    deletingRecord,
+    setDeletingRecord,
+    deleteSubmitting,
+    handleDeletePayment,
     // Tab State
     activeViewTab,
     setActiveViewTab,
@@ -73,16 +93,20 @@ export default function PaymentView() {
   } = usePaymentController()
 
   const displayedHistory = useMemo(() => {
-    if (!historyFilter) return paymentHistory
+    let list = paymentHistory
+    if (isAdmin && selectedStudentId) {
+      list = list.filter(p => p.studentId === selectedStudentId)
+    }
+    if (!historyFilter) return list
     const q = historyFilter.toLowerCase()
-    return paymentHistory.filter(
+    return list.filter(
       p =>
         p.studentId?.toLowerCase().includes(q) ||
         p.receiptNumber?.toLowerCase().includes(q) ||
         p.studentName?.toLowerCase().includes(q) ||
         p.term?.toLowerCase().includes(q)
     )
-  }, [paymentHistory, historyFilter])
+  }, [paymentHistory, historyFilter, isAdmin, selectedStudentId])
 
   return (
     <div className="payment-page-container">
@@ -103,15 +127,19 @@ export default function PaymentView() {
           </div>
 
           <div className="payment-header-badges">
-            <span className="payment-badge term-badge">
-              Term: {receipt?.term || 'Fall 2026'}
-            </span>
-            <span className="payment-badge">
-              Student ID: <strong>{studentId}</strong>
-            </span>
-            <span className={`payment-badge ${paymentSuccess ? 'status-badge-paid' : 'status-badge-pending'}`}>
-              Status: <strong>{paymentSuccess ? 'PAID (CLEARED) ✅' : 'PENDING PAYMENT'}</strong>
-            </span>
+            {(!isAdmin || selectedStudentId) && (
+              <>
+                <span className="payment-badge term-badge">
+                  Term: {receipt?.term || 'Fall 2026'}
+                </span>
+                <span className="payment-badge">
+                  Student ID: <strong>{studentId}</strong>
+                </span>
+                <span className={`payment-badge ${paymentSuccess ? 'status-badge-paid' : 'status-badge-pending'}`}>
+                  Status: <strong>{paymentSuccess ? 'PAID (CLEARED) ✅' : 'PENDING PAYMENT'}</strong>
+                </span>
+              </>
+            )}
             {isAdmin && (
               <span className="payment-badge admin-badge">
                 👑 <strong>Admin Portal View</strong>
@@ -120,21 +148,68 @@ export default function PaymentView() {
           </div>
         </header>
 
-        {/* ── Navigation Tab Bar ───────────────────────────────── */}
-        <div className="payment-tab-bar">
-          <button
-            className={`payment-tab-btn ${activeViewTab === 'receipt' ? 'active' : ''}`}
-            onClick={() => setActiveViewTab('receipt')}
-          >
-            <span>📋</span> Current Term Fee Clearance
-          </button>
-          <button
-            className={`payment-tab-btn ${activeViewTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveViewTab('history')}
-          >
-            <span>📜</span> Payment History & Database Receipts ({paymentHistory.length})
-          </button>
-        </div>
+        {/* ── Admin Student Selection (Inside Payment Tab) ── */}
+        {isAdmin && (
+          <div className="admin-student-selector-card">
+            <div className="admin-selector-title-row">
+              <span className="admin-selector-badge">👑 Select Student ID</span>
+              <span className="admin-selector-instruction">
+                Choose a Student ID to view fee clearance, bypass payments, or manage database receipts:
+              </span>
+            </div>
+            <div className="admin-selector-control-row">
+              <select
+                id="admin-student-id-select"
+                className="admin-student-select-dropdown"
+                value={selectedStudentId}
+                onChange={e => setSelectedStudentId(e.target.value)}
+                disabled={studentIdsLoading}
+              >
+                <option value="">-- Select Student ID --</option>
+                {studentIds.map(id => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+              {selectedStudentId && (
+                <button
+                  type="button"
+                  className="btn-clear-student-select"
+                  onClick={() => setSelectedStudentId('')}
+                  title="Clear student selection"
+                >
+                  ✕ Clear
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Without selecting any student, Admin view should not show anything */}
+        {isAdmin && !selectedStudentId ? (
+          <div className="admin-empty-selection-placeholder">
+            <div className="admin-empty-icon">📂</div>
+            <h3>No Student Selected</h3>
+            <p>Please select a Student ID from the dropdown above to view current fee clearance, payment history, and administrative actions.</p>
+          </div>
+        ) : (
+          <>
+            {/* ── Navigation Tab Bar ───────────────────────────────── */}
+            <div className="payment-tab-bar">
+              <button
+                className={`payment-tab-btn ${activeViewTab === 'receipt' ? 'active' : ''}`}
+                onClick={() => setActiveViewTab('receipt')}
+              >
+                <span>📋</span> Current Term Fee Clearance
+              </button>
+              <button
+                className={`payment-tab-btn ${activeViewTab === 'history' ? 'active' : ''}`}
+                onClick={() => setActiveViewTab('history')}
+              >
+                <span>📜</span> Payment History & Database Receipts ({displayedHistory.length})
+              </button>
+            </div>
 
         {/* ── TAB 1: Current Term Receipt & Payment ─────────────── */}
         {activeViewTab === 'receipt' && (
@@ -337,38 +412,55 @@ export default function PaymentView() {
 
                   {/* Action Toolbar */}
                   <div className="receipt-action-toolbar">
-                    <button
-                      id="btn-offline-payment"
-                      className="btn-offline-download"
-                      onClick={handleOfflineDownload}
-                      title="Download PDF receipt and view nearby partner bank branches on live map"
-                    >
-                      <DownloadIcon />
-                      Download (Offline Payment)
-                    </button>
+                    {/* Student-only payment actions: Admins do NOT have Pay Now or offline bank deposit options */}
+                    {!isAdmin && (
+                      <>
+                        <button
+                          id="btn-offline-payment"
+                          className="btn-offline-download"
+                          onClick={handleOfflineDownload}
+                          title="Download PDF receipt and view nearby partner bank branches on live map"
+                        >
+                          <DownloadIcon />
+                          Download (Offline Payment)
+                        </button>
 
-                    {!paymentSuccess ? (
+                        {!paymentSuccess ? (
+                          <button
+                            id="btn-pay-now-stripe"
+                            className={`btn-pay-now ${payNowOpen ? 'active-pay' : ''}`}
+                            onClick={handlePayNowToggle}
+                          >
+                            <CreditCardIcon />
+                            {payNowOpen ? 'Close Online Payment' : 'Pay Now'}
+                          </button>
+                        ) : (
+                          <button
+                            className="btn-pay-now active-pay"
+                            style={{ background: '#059669', color: '#FFFFFF', cursor: 'default' }}
+                          >
+                            <span>✓</span> Payment Completed
+                          </button>
+                        )}
+                      </>
+                    )}
+
+                    {/* Admin Bypass Current Payment Button */}
+                    {isAdmin && !paymentSuccess && (
                       <button
-                        id="btn-pay-now-stripe"
-                        className={`btn-pay-now ${payNowOpen ? 'active-pay' : ''}`}
-                        onClick={handlePayNowToggle}
+                        id="btn-admin-bypass-payment"
+                        className="btn-admin-bypass"
+                        onClick={() => setBypassModalOpen(true)}
+                        title="Admin Action: Bypass and clear this student's tuition fee in database"
                       >
-                        <CreditCardIcon />
-                        {payNowOpen ? 'Close Online Payment' : 'Pay Now'}
-                      </button>
-                    ) : (
-                      <button
-                        className="btn-pay-now active-pay"
-                        style={{ background: '#059669', color: '#FFFFFF', cursor: 'default' }}
-                      >
-                        <span>✓</span> Payment Completed
+                        👑 Bypass Current Payment
                       </button>
                     )}
 
                     <button
                       id="btn-cancel-receipt"
                       className="btn-cancel"
-                      onClick={() => window.location.reload()}
+                      onClick={() => fetchReceipt()}
                     >
                       Refresh
                     </button>
@@ -404,7 +496,9 @@ export default function PaymentView() {
                 </h2>
                 <p>
                   {isAdmin
-                    ? 'Administrator Access: Showing all student fee clearance records persisted in the database.'
+                    ? (selectedStudentId
+                        ? `Administrator Access: Showing confirmed fee clearance records for student ${selectedStudentId}.`
+                        : 'Administrator Access: Showing all student fee clearance records persisted in the database.')
                     : `Showing confirmed payment receipts for student ${studentId}. Access is strictly private to your account.`}
                 </p>
               </div>
@@ -446,6 +540,7 @@ export default function PaymentView() {
                       <th style={{ textAlign: 'right' }}>Amount Paid</th>
                       <th style={{ textAlign: 'center' }}>Status</th>
                       <th style={{ textAlign: 'center' }}>Official Receipt</th>
+                      {isAdmin && <th style={{ textAlign: 'center' }}>Admin Actions</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -513,6 +608,28 @@ export default function PaymentView() {
                             <DownloadIcon /> PDF Receipt
                           </button>
                         </td>
+
+                        {/* Admin Action Buttons: Edit and Delete */}
+                        {isAdmin && (
+                          <td style={{ textAlign: 'center' }}>
+                            <div className="admin-history-actions-row">
+                              <button
+                                className="btn-history-edit"
+                                onClick={() => setEditingRecord(item)}
+                                title="Edit this payment record"
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button
+                                className="btn-history-delete"
+                                onClick={() => setDeletingRecord(item)}
+                                title="Delete this payment record from database"
+                              >
+                                🗑️ Delete
+                              </button>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -521,6 +638,8 @@ export default function PaymentView() {
             )}
           </div>
         )}
+      </>
+    )}
 
         {/* ── Bank Live Map Modal (Offline Option) ───────────────────── */}
         {mapVisible && (
@@ -537,6 +656,32 @@ export default function PaymentView() {
             onClose={handleCloseMap}
           />
         )}
+
+        {/* ── Admin Modals ─────────────────────────────────────────── */}
+        <BypassPaymentModal
+          isOpen={bypassModalOpen}
+          onClose={() => setBypassModalOpen(false)}
+          studentId={studentId}
+          netPayable={receipt?.netPayable}
+          reason={bypassReason}
+          onReasonChange={setBypassReason}
+          onConfirm={handleBypassPayment}
+          submitting={bypassSubmitting}
+        />
+
+        <EditPaymentModal
+          record={editingRecord}
+          onClose={() => setEditingRecord(null)}
+          onSave={handleSaveEditPayment}
+          submitting={editSubmitting}
+        />
+
+        <DeletePaymentModal
+          record={deletingRecord}
+          onClose={() => setDeletingRecord(null)}
+          onConfirm={handleDeletePayment}
+          submitting={deleteSubmitting}
+        />
       </main>
     </div>
   )
@@ -890,5 +1035,282 @@ function CreditCardIcon() {
       <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
       <line x1="1" y1="10" x2="23" y2="10"/>
     </svg>
+  )
+}
+
+/* ── Admin Modals ───────────────────────────────────────────── */
+
+function BypassPaymentModal({
+  isOpen,
+  onClose,
+  studentId,
+  netPayable,
+  reason,
+  onReasonChange,
+  onConfirm,
+  submitting
+}) {
+  if (!isOpen) return null
+
+  return (
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="modal-content" style={{ maxWidth: '480px' }} onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>👑</span> Bypass Current Payment
+          </h2>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <div className="modal-body" style={{ padding: '20px' }}>
+          <p style={{ fontSize: '14px', color: '#374151', marginBottom: '14px' }}>
+            You are granting administrative fee clearance for student: <strong>{studentId}</strong>.
+          </p>
+          <div style={{ background: '#EEF2FF', padding: '14px 18px', borderRadius: '8px', border: '1px solid #C7D2FE', marginBottom: '16px' }}>
+            <div style={{ fontSize: '12px', color: '#4F46E5', fontWeight: '600' }}>TOTAL AMOUNT CLEARED / WAIVED</div>
+            <div style={{ fontSize: '22px', fontWeight: '700', color: '#312E81', marginTop: '2px' }}>
+              ৳{formatCurrency(netPayable)}
+            </div>
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: '#374151' }}>
+              Bypass Reason / Note:
+            </label>
+            <input
+              type="text"
+              className="admin-edit-input"
+              value={reason}
+              onChange={e => onReasonChange(e.target.value)}
+              placeholder="e.g. Merit Scholarship / VC Approval / Wire verified"
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '13px' }}
+            />
+          </div>
+        </div>
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '16px 20px', borderTop: '1px solid #E5E7EB' }}>
+          <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>Cancel</button>
+          <button
+            type="button"
+            className="btn-admin-bypass-confirm"
+            onClick={() => onConfirm()}
+            disabled={submitting}
+            style={{
+              background: '#4F46E5',
+              color: '#FFFFFF',
+              padding: '8px 18px',
+              borderRadius: '6px',
+              fontWeight: '600',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {submitting ? 'Processing...' : '👑 Confirm & Clear Payment'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function EditPaymentModal({ record, onClose, onSave, submitting }) {
+  const [term, setTerm]                   = useState(record?.term || 'Fall2026')
+  const [netPayable, setNetPayable]       = useState(record?.netPayable ?? 0)
+  const [paymentStatus, setPaymentStatus] = useState(record?.paymentStatus || 'PAID')
+  const [paymentMethod, setPaymentMethod] = useState(record?.paymentMethod || 'STRIPE_ONLINE')
+  const [bankName, setBankName]           = useState(record?.bankName || '')
+  const [transactionId, setTransactionId] = useState(record?.transactionId || '')
+
+  useEffect(() => {
+    if (record) {
+      setTerm(record.term || 'Fall2026')
+      setNetPayable(record.netPayable ?? 0)
+      setPaymentStatus(record.paymentStatus || 'PAID')
+      setPaymentMethod(record.paymentMethod || 'STRIPE_ONLINE')
+      setBankName(record.bankName || '')
+      setTransactionId(record.transactionId || '')
+    }
+  }, [record])
+
+  if (!record) return null
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSave(record.id, {
+      term,
+      netPayable: parseFloat(netPayable) || 0,
+      paymentStatus,
+      paymentMethod,
+      bankName,
+      transactionId,
+      amountInWords: `In Words: Taka ${formatCurrency(netPayable)} Only.`
+    })
+  }
+
+  return (
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="modal-content" style={{ maxWidth: '520px' }} onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>✏️</span> Edit Payment Record
+          </h2>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-body" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#4B5563', marginBottom: '4px' }}>
+                Receipt Number (Permanent)
+              </label>
+              <input
+                type="text"
+                value={record.receiptNumber}
+                disabled
+                style={{ width: '100%', padding: '8px 10px', background: '#F3F4F6', border: '1px solid #D1D5DB', borderRadius: '6px', color: '#6B7280' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#4B5563', marginBottom: '4px' }}>
+                  Term
+                </label>
+                <input
+                  type="text"
+                  value={term}
+                  onChange={e => setTerm(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #D1D5DB', borderRadius: '6px' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#4B5563', marginBottom: '4px' }}>
+                  Amount Paid (BDT)
+                </label>
+                <input
+                  type="number"
+                  value={netPayable}
+                  onChange={e => setNetPayable(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #D1D5DB', borderRadius: '6px' }}
+                />
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#4B5563', marginBottom: '4px' }}>
+                  Payment Status
+                </label>
+                <select
+                  value={paymentStatus}
+                  onChange={e => setPaymentStatus(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #D1D5DB', borderRadius: '6px' }}
+                >
+                  <option value="PAID">PAID</option>
+                  <option value="CONFIRMED">CONFIRMED</option>
+                  <option value="PENDING_VERIFICATION">PENDING_VERIFICATION</option>
+                  <option value="WAIVED">WAIVED</option>
+                  <option value="REFUNDED">REFUNDED</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#4B5563', marginBottom: '4px' }}>
+                  Payment Method
+                </label>
+                <select
+                  value={paymentMethod}
+                  onChange={e => setPaymentMethod(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #D1D5DB', borderRadius: '6px' }}
+                >
+                  <option value="STRIPE_ONLINE">STRIPE_ONLINE</option>
+                  <option value="OFFLINE_BANK_DEPOSIT">OFFLINE_BANK_DEPOSIT</option>
+                  <option value="ADMIN_BYPASS">ADMIN_BYPASS</option>
+                  <option value="CASH">CASH</option>
+                  <option value="CHEQUE">CHEQUE</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#4B5563', marginBottom: '4px' }}>
+                Bank / Channel Name
+              </label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={e => setBankName(e.target.value)}
+                style={{ width: '100%', padding: '8px 10px', border: '1px solid #D1D5DB', borderRadius: '6px' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#4B5563', marginBottom: '4px' }}>
+                Transaction ID
+              </label>
+              <input
+                type="text"
+                value={transactionId}
+                onChange={e => setTransactionId(e.target.value)}
+                style={{ width: '100%', padding: '8px 10px', border: '1px solid #D1D5DB', borderRadius: '6px' }}
+              />
+            </div>
+          </div>
+          <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '16px 20px', borderTop: '1px solid #E5E7EB' }}>
+            <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>Cancel</button>
+            <button
+              type="submit"
+              disabled={submitting}
+              style={{
+                background: 'var(--color-teal, #1A9882)',
+                color: '#FFFFFF',
+                padding: '8px 18px',
+                borderRadius: '6px',
+                fontWeight: '600',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {submitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function DeletePaymentModal({ record, onClose, onConfirm, submitting }) {
+  if (!record) return null
+
+  return (
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="modal-content" style={{ maxWidth: '440px' }} onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#DC2626' }}>
+            <span>🗑️</span> Delete Payment Record
+          </h2>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <div className="modal-body" style={{ padding: '20px' }}>
+          <p style={{ fontSize: '14px', color: '#374151', marginBottom: '14px' }}>
+            Are you sure you want to permanently delete receipt <strong>{record.receiptNumber}</strong>?
+          </p>
+          <div style={{ background: '#FEE2E2', padding: '12px 16px', borderRadius: '8px', fontSize: '12px', color: '#991B1B', lineHeight: 1.5 }}>
+            ⚠️ This will permanently remove the receipt and payment details from the database. This action cannot be undone.
+          </div>
+        </div>
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '16px 20px', borderTop: '1px solid #E5E7EB' }}>
+          <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>Cancel</button>
+          <button
+            type="button"
+            onClick={() => onConfirm(record.id)}
+            disabled={submitting}
+            style={{
+              background: '#DC2626',
+              color: '#FFFFFF',
+              padding: '8px 18px',
+              borderRadius: '6px',
+              fontWeight: '600',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {submitting ? 'Deleting...' : 'Delete Permanently'}
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
