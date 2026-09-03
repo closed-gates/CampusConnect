@@ -17,6 +17,7 @@ import {
 } from '../models/dashboardModel.js'
 import { dashboardService } from '../services/dashboardService.js'
 import { getStoredUser } from '../models/authModel.js'
+import { loadPreferences, PREFERENCE_CHANGE_EVENT } from '../models/accountSettingsModel.js'
 
 /**
  * useDashboardController
@@ -33,6 +34,24 @@ export function useDashboardController() {
   const [loading,          setLoading]          = useState(true)
   const [error,            setError]            = useState(null)
   const [activeModal,      setActiveModal]      = useState(null) // 'details' | 'routine' | 'attendance' | null
+  const [showUpcomingExams, setShowUpcomingExams] = useState(
+    () => loadPreferences().academic.dashboardExams
+  )
+
+  // Keep the widget preference reactive without changing exam retrieval or
+  // any of the dashboard's academic data flows.
+  useEffect(() => {
+    const syncPreference = event => {
+      const preferences = event?.detail || loadPreferences()
+      setShowUpcomingExams(preferences.academic.dashboardExams)
+    }
+    window.addEventListener(PREFERENCE_CHANGE_EVENT, syncPreference)
+    window.addEventListener('storage', syncPreference)
+    return () => {
+      window.removeEventListener(PREFERENCE_CHANGE_EVENT, syncPreference)
+      window.removeEventListener('storage', syncPreference)
+    }
+  }, [])
 
   // Date formatting
   const today = useMemo(() => {
@@ -175,5 +194,6 @@ export function useDashboardController() {
     openRoutineModal,
     openAttendanceModal,
     closeModal,
+    showUpcomingExams,
   }
 }

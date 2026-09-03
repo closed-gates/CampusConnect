@@ -15,7 +15,6 @@ import {
   getRateColor,
   getRateGradient,
   getAttendanceStatus,
-  STATUS_CONFIG,
 } from '../../models/studentAttendanceModel.js'
 
 export default function StudentAttendancePanel() {
@@ -24,6 +23,7 @@ export default function StudentAttendancePanel() {
     overallRate,
     loading,
     error,
+    preferredSemester,
     selectedCourse,
     selectCourse,
     refresh,
@@ -61,7 +61,7 @@ export default function StudentAttendancePanel() {
         <div style={{ fontSize: 64, marginBottom: 16 }}>📚</div>
         <h3 style={{ color: 'var(--text-primary)', marginBottom: 8 }}>No Courses Registered</h3>
         <p style={{ color: 'var(--text-secondary)', maxWidth: 400, margin: '0 auto' }}>
-          You haven't registered for any courses yet. Head to the{' '}
+          You haven't registered for any courses in {preferredSemester}. Head to the{' '}
           <strong>Advising</strong> page to add courses — they'll appear here automatically.
         </p>
       </div>
@@ -104,7 +104,7 @@ export default function StudentAttendancePanel() {
 
         {/* Summary numbers */}
         <div className="student-att-summary-stats">
-          <h2 className="student-att-summary-title">My Attendance Overview</h2>
+          <h2 className="student-att-summary-title">My Attendance Overview · {preferredSemester}</h2>
           <p className="student-att-status-badge" style={{ color: status.color }}>
             ● {status.label}
           </p>

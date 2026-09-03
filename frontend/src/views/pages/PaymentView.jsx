@@ -36,6 +36,7 @@ export default function PaymentView() {
     error,
     studentId,
     isAdmin,
+    preferredSemester,
     // Admin Student Selector State
     studentIds,
     studentIdsLoading,
@@ -130,7 +131,7 @@ export default function PaymentView() {
             {(!isAdmin || selectedStudentId) && (
               <>
                 <span className="payment-badge term-badge">
-                  Term: {receipt?.term || 'Fall 2026'}
+                  Term: {receipt?.term || preferredSemester}
                 </span>
                 <span className="payment-badge">
                   Student ID: <strong>{studentId}</strong>

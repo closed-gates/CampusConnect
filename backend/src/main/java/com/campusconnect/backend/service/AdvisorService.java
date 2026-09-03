@@ -117,6 +117,11 @@ public class AdvisorService {
 
     /** Returns all students as response maps (for AdvisorController). */
     public List<Map<String, Object>> getAllStudentsAsResponse() {
+        return getAllStudentsAsResponse("Fall2026");
+    }
+
+    public List<Map<String, Object>> getAllStudentsAsResponse(String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         List<StudentProfile> profiles = studentRepo.findAllByPriority();
         List<AppUser> studentUsers = userRepo.findByRole("STUDENT");
         Set<String> existingIds = profiles.stream().map(StudentProfile::getStudentId).collect(Collectors.toSet());
@@ -143,7 +148,7 @@ public class AdvisorService {
         profiles.sort((a, b) -> Integer.compare(b.getCompletedCredits(), a.getCompletedCredits()));
 
         return profiles.stream()
-                .map(this::buildProfileResponse)
+                .map(profile -> buildProfileResponse(profile, term))
                 .collect(Collectors.toList());
     }
 
@@ -154,7 +159,12 @@ public class AdvisorService {
 
     /** Returns a single student as response map (for AdvisorController). */
     public Optional<Map<String, Object>> getStudentProfileAsResponse(String studentId) {
-        return studentRepo.findById(studentId).map(this::buildProfileResponse);
+        return getStudentProfileAsResponse(studentId, "Fall2026");
+    }
+
+    public Optional<Map<String, Object>> getStudentProfileAsResponse(String studentId, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
+        return studentRepo.findById(studentId).map(profile -> buildProfileResponse(profile, term));
     }
 
     // ── Course assignment ─────────────────────────────────────────
@@ -170,6 +180,16 @@ public class AdvisorService {
                                              String section,   String time,
                                              String room,      String faculty,
                                              String advisorName) {
+        return assignCourse(studentId, courseId, courseCode, courseTitle, section, time, room, faculty, advisorName, "Fall2026");
+    }
+
+    @Transactional
+    public Map<String, Object> assignCourse(String studentId, String courseId,
+                                             String courseCode, String courseTitle,
+                                             String section, String time, String room,
+                                             String faculty, String advisorName,
+                                             String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         Map<String, Object> result = new LinkedHashMap<>();
 
         StudentProfile profile = studentRepo.findById(studentId).orElse(null);
@@ -179,7 +199,7 @@ public class AdvisorService {
             return result;
         }
 
-        List<AdvisedCourse> current = profile.getAdvisedCourses();
+        List<AdvisedCourse> current = advisedCourseRepo.findForTerm(studentId, term);
 
         // Rule 1: Max course count
         if (current.size() >= profile.getCourseLimit()) {
@@ -194,7 +214,8 @@ public class AdvisorService {
         }
 
         // Rule 2: Credit limit
-        int newCredits = profile.getCurrentCredits() + StudentProfile.CREDITS_PER_COURSE;
+        int currentCredits = current.stream().mapToInt(AdvisedCourse::getCredits).sum();
+        int newCredits = currentCredits + StudentProfile.CREDITS_PER_COURSE;
         if (newCredits > profile.getCreditLimit()) {
             result.put("success", false);
             result.put("message", "Credit limit of " + profile.getCreditLimit() + " credits would be exceeded.");
@@ -202,7 +223,7 @@ public class AdvisorService {
         }
 
         // Rule 3: Duplicate course code
-        if (advisedCourseRepo.existsByStudentProfile_StudentIdAndCourseCode(studentId, courseCode)) {
+        if (advisedCourseRepo.existsForTerm(studentId, courseCode, term)) {
             result.put("success", false);
             result.put("message", "Student already has a section of " + courseCode + " assigned.");
             return result;
@@ -252,6 +273,7 @@ public class AdvisorService {
                 .faculty(finalFaculty)
                 .assignedAt(LocalDateTime.now().toString())
                 .assignedBy(advisorName != null ? advisorName : "Advisor")
+                .term(term)
                 .build();
         advisedCourseRepo.save(ac);
 
@@ -259,11 +281,11 @@ public class AdvisorService {
         Optional<CourseSection> secOpt = targetSecOpt;
         if (secOpt.isPresent()) {
             CourseSection sec = secOpt.get();
-            if (!regRepo.existsByStudentIdAndSection_IdAndTerm(studentId, sec.getId(), "Fall2026")) {
+            if (!regRepo.existsByStudentIdAndSection_IdAndTerm(studentId, sec.getId(), term)) {
                 com.campusconnect.backend.model.SectionRegistration sr = com.campusconnect.backend.model.SectionRegistration.builder()
                         .studentId(studentId)
                         .section(sec)
-                        .term("Fall2026")
+                        .term(term)
                         .build();
                 regRepo.save(sr);
                 regRepo.tryBookSeat(sec.getId());
@@ -275,7 +297,7 @@ public class AdvisorService {
 
         result.put("success", true);
         result.put("message", courseCode + " – " + courseTitle + " (Sec " + section + ") assigned successfully.");
-        result.put("profile", buildProfileResponse(refreshed));
+        result.put("profile", buildProfileResponse(refreshed, term));
         // seatUpdates: the advisor panel uses this to decrement seat counts in its UI
         result.put("seatUpdates", buildSeatUpdates(refreshed));
         return result;
@@ -286,6 +308,12 @@ public class AdvisorService {
      */
     @Transactional
     public Map<String, Object> removeCourse(String studentId, String courseId) {
+        return removeCourse(studentId, courseId, "Fall2026");
+    }
+
+    @Transactional
+    public Map<String, Object> removeCourse(String studentId, String courseId, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         Map<String, Object> result = new LinkedHashMap<>();
 
         StudentProfile profile = studentRepo.findById(studentId).orElse(null);
@@ -301,7 +329,7 @@ public class AdvisorService {
             acId = Long.parseLong(courseId);
         } catch (NumberFormatException ignored) {}
 
-        List<AdvisedCourse> existingCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
+        List<AdvisedCourse> existingCourses = advisedCourseRepo.findForTerm(studentId, term);
         AdvisedCourse toRemove = null;
 
         if (acId != null) {
@@ -329,7 +357,7 @@ public class AdvisorService {
 
             // Also clean up any matching section_registrations and release seat
             try {
-                regRepo.findByStudentIdAndSection_IdAndTerm(studentId, secId, "Fall2026")
+                regRepo.findByStudentIdAndSection_IdAndTerm(studentId, secId, term)
                         .ifPresent(reg -> {
                             regRepo.delete(reg);
                             sectionRepo.findById(secId).ifPresent(sec -> {
@@ -341,7 +369,7 @@ public class AdvisorService {
 
             result.put("success", true);
             result.put("message", "Course removed successfully.");
-            result.put("profile", buildProfileResponse(profile));
+            result.put("profile", buildProfileResponse(profile, term));
             result.put("seatUpdates", buildSeatUpdates(profile));
         } else {
             final Long targetAcId = acId;
@@ -350,7 +378,7 @@ public class AdvisorService {
                 profile.getAdvisedCourses().removeIf(ac -> ac.getId().equals(targetAcId));
                 result.put("success", true);
                 result.put("message", "Course removed successfully.");
-                result.put("profile", buildProfileResponse(profile));
+                result.put("profile", buildProfileResponse(profile, term));
                 result.put("seatUpdates", buildSeatUpdates(profile));
             } else {
                 result.put("success", false);
@@ -369,6 +397,12 @@ public class AdvisorService {
      */
     @Transactional
     public Map<String, Object> confirmAdvising(String studentId, String advisorName) {
+        return confirmAdvising(studentId, advisorName, "Fall2026");
+    }
+
+    @Transactional
+    public Map<String, Object> confirmAdvising(String studentId, String advisorName, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         Map<String, Object> result = new LinkedHashMap<>();
 
         StudentProfile profile = studentRepo.findById(studentId).orElse(null);
@@ -378,7 +412,7 @@ public class AdvisorService {
             return result;
         }
 
-        List<AdvisedCourse> dbCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
+        List<AdvisedCourse> dbCourses = advisedCourseRepo.findForTerm(studentId, term);
         if (dbCourses.isEmpty()) {
             result.put("success", false);
             result.put("message", "Cannot confirm advising with 0 courses selected.");
@@ -399,7 +433,7 @@ public class AdvisorService {
 
         result.put("success", true);
         result.put("message", "Advising confirmed and saved to database for " + profile.getStudentName() + " (" + dbCourses.size() + " courses).");
-        result.put("profile", buildProfileResponse(profile));
+        result.put("profile", buildProfileResponse(profile, term));
         result.put("seatUpdates", buildSeatUpdates(profile));
         return result;
     }
@@ -424,6 +458,11 @@ public class AdvisorService {
      * Queries database directly so it is never stale.
      */
     private Map<String, Object> buildProfileResponse(StudentProfile profile) {
+        return buildProfileResponse(profile, "Fall2026");
+    }
+
+    private Map<String, Object> buildProfileResponse(StudentProfile profile, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         Map<String, Object> p = new LinkedHashMap<>();
         p.put("studentId",           profile.getStudentId());
         p.put("studentName",         profile.getStudentName());
@@ -438,11 +477,11 @@ public class AdvisorService {
         p.put("advisingConfirmed",   profile.isAdvisingConfirmed());
         p.put("advisingConfirmedAt", profile.getAdvisingConfirmedAt());
 
-        List<AdvisedCourse> dbCourses = advisedCourseRepo.findByStudentProfile_StudentId(profile.getStudentId());
+        List<AdvisedCourse> dbCourses = new ArrayList<>(advisedCourseRepo.findForTerm(profile.getStudentId(), term));
         Set<String> existingCodes = dbCourses.stream().map(AdvisedCourse::getCourseCode).map(String::toUpperCase).collect(Collectors.toSet());
 
         // Check if student has self-registered sections in section_registrations table
-        List<com.campusconnect.backend.model.SectionRegistration> selfRegs = regRepo.findByStudentIdAndTerm(profile.getStudentId(), "Fall2026");
+        List<com.campusconnect.backend.model.SectionRegistration> selfRegs = regRepo.findByStudentIdAndTerm(profile.getStudentId(), term);
         for (com.campusconnect.backend.model.SectionRegistration sr : selfRegs) {
             com.campusconnect.backend.model.CourseSection sec = sr.getSection();
             if (sec != null && !existingCodes.contains(sec.getCode().toUpperCase())) {
@@ -458,6 +497,7 @@ public class AdvisorService {
                         .faculty(sec.getFaculty())
                         .assignedAt(sr.getRegisteredAt() != null ? sr.getRegisteredAt().toString() : java.time.LocalDateTime.now().toString())
                         .assignedBy("Self-Registered (Student)")
+                        .term(term)
                         .build();
                 advisedCourseRepo.save(ac);
                 dbCourses.add(ac);
@@ -481,7 +521,14 @@ public class AdvisorService {
             return m;
         }).collect(Collectors.toList());
         p.put("advisedCourses", courses);
+        p.put("term", term);
         return p;
+    }
+
+    private String normalizeTerm(String term) {
+        if (term == null || term.isBlank()) return "Fall2026";
+        String normalized = term.replaceAll("\\s+", "");
+        return normalized.matches("(?i)(Spring|Summer|Fall)\\d{4}") ? normalized : "Fall2026";
     }
 
     /** Builds the seatUpdates map for the advisor panel live seat display. */

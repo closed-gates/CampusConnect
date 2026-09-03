@@ -10,13 +10,13 @@ import { useViewRoutineController } from '../../controllers/viewRoutineControlle
 export default function ViewRoutineView() {
   const {
     studentProfile,
-    courses,
     matrix,
     examSchedule,
     days,
     timeSlots,
     loading,
     error,
+    preferredSemester,
     handlePrint,
   } = useViewRoutineController()
 
@@ -36,7 +36,7 @@ export default function ViewRoutineView() {
               Official Class Routine 📄
             </h1>
             <p className="dashboard-date" style={{ margin: '4px 0 0' }}>
-              View and download your official Fall 2026 class & exam schedule
+              View and download your official {preferredSemester} class & exam schedule
             </p>
           </div>
           <button
@@ -111,7 +111,7 @@ export default function ViewRoutineView() {
 
               <div style={{ textAlign: 'right', fontSize: 13, lineHeight: '1.6' }}>
                 <div><strong>Program:</strong> <span style={{ textTransform: 'uppercase', marginLeft: 8 }}>{program}</span></div>
-                <div><strong>Session:</strong> <span style={{ marginLeft: 8 }}>FALL 2026</span></div>
+                <div><strong>Session:</strong> <span style={{ marginLeft: 8 }}>{preferredSemester.toUpperCase()}</span></div>
               </div>
             </div>
 
@@ -203,7 +203,7 @@ export default function ViewRoutineView() {
                     {examSchedule.length === 0 ? (
                       <tr>
                         <td colSpan={4} style={{ padding: '16px', fontStyle: 'italic', color: '#666666' }}>
-                          No active courses registered for the Fall 2026 term.
+                          No active courses registered for the {preferredSemester} term.
                         </td>
                       </tr>
                     ) : (

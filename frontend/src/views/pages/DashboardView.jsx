@@ -26,6 +26,7 @@ export default function DashboardView() {
     routineGrid,
     activeModal,
     closeModal,
+    showUpcomingExams,
   } = useDashboardController()
 
   const currentUser = getStoredUser()
@@ -68,7 +69,7 @@ export default function DashboardView() {
         </div>
 
         {/* ── Upcoming Exams Widget ─────────────────── */}
-        <ExamScheduleWidget />
+        {showUpcomingExams && <ExamScheduleWidget />}
 
         {/* ── Interactive Modals ────────────────────── */}
         <EnrolledCoursesModal

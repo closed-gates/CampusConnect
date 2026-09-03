@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * DeadlineNotificationWorker – Internal scheduled worker for DEADLINE_APPROACHING notifications.
  *
- * Checks for assignments with deadlines falling within the next 24 hours.
+ * Checks for assignments using each student's persisted reminder lead time.
  * Dispatches notifications to enrolled students who have not yet turned in their work.
  * Uses an in-memory set to prevent duplicate notifications within the same deadline window.
  */
@@ -45,7 +45,7 @@ public class DeadlineNotificationWorker {
     @Scheduled(fixedRate = 300000, initialDelay = 15000)
     public void checkApproachingDeadlines() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime windowEnd = now.plusHours(24);
+        LocalDateTime windowEnd = now.plusHours(48);
 
         try {
             List<Assignment> allAssignments = assignmentRepository.findAll();
@@ -55,7 +55,7 @@ public class DeadlineNotificationWorker {
 
                 // Check if deadline is within the next 24 hours
                 if (deadline.isAfter(now) && deadline.isBefore(windowEnd)) {
-                    processUpcomingAssignment(assignment);
+                    processUpcomingAssignment(assignment, now);
                 }
             }
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public class DeadlineNotificationWorker {
         }
     }
 
-    private void processUpcomingAssignment(Assignment assignment) {
+    private void processUpcomingAssignment(Assignment assignment, LocalDateTime now) {
         String courseCode = assignment.getCourseCode();
         Set<String> candidateStudents = findEnrolledStudents(courseCode);
 
@@ -75,6 +75,12 @@ public class DeadlineNotificationWorker {
         }
 
         for (String studentId : candidateStudents) {
+            int reminderHours = appUserRepository.findByUserId(studentId)
+                    .map(AppUser::getReminderHours)
+                    .orElse(24);
+            if (assignment.getDeadline().isAfter(now.plusHours(reminderHours))) {
+                continue;
+            }
             String cacheKey = studentId + "_" + assignment.getId();
             if (notifiedCache.contains(cacheKey)) {
                 continue; // Already notified

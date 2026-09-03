@@ -74,4 +74,14 @@ public class AdvisedCourse {
     /** Name of the advisor who made this assignment */
     @Column(name = "assigned_by", nullable = false)
     private String assignedBy;
+
+    /** Academic term this advising assignment belongs to, e.g. Fall2026. */
+    @Column(name = "term", length = 30)
+    @Builder.Default
+    private String term = "Fall2026";
+
+    @PrePersist
+    private void ensureTerm() {
+        if (term == null || term.isBlank()) term = "Fall2026";
+    }
 }

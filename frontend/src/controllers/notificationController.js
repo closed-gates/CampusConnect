@@ -17,6 +17,10 @@ import { Client as StompClient } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { getCurrentUser } from '../models/messagingModel.js';
 import { CHAT_WS_URL } from '../models/courseChatModel.js';
+import {
+  loadPreferences,
+  PREFERENCE_CHANGE_EVENT,
+} from '../models/accountSettingsModel.js';
 
 const API_NOTIFICATIONS = '/api/notifications';
 
@@ -35,6 +39,7 @@ export function useNotificationController(user = getCurrentUser()) {
 
   const stompRef = useRef(null);
   const toastTimerRef = useRef(null);
+  const notificationsMutedRef = useRef(loadPreferences().notificationsMuted);
   const userId = user?.id || user?.userId;
 
   // ── Initial Fetch ───────────────────────────────────────────────────────────
@@ -60,6 +65,24 @@ export function useNotificationController(user = getCurrentUser()) {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
+
+  // Keep the real-time toast behavior synchronized with Account Settings.
+  useEffect(() => {
+    const syncPreferences = (event) => {
+      const muted = event?.detail?.notificationsMuted ?? loadPreferences().notificationsMuted;
+      notificationsMutedRef.current = muted;
+      if (muted) {
+        if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+        setActiveToast(null);
+      }
+    };
+    window.addEventListener(PREFERENCE_CHANGE_EVENT, syncPreferences);
+    window.addEventListener('storage', syncPreferences);
+    return () => {
+      window.removeEventListener(PREFERENCE_CHANGE_EVENT, syncPreferences);
+      window.removeEventListener('storage', syncPreferences);
+    };
+  }, []);
 
   // ── Real-Time STOMP WebSocket Connection ────────────────────────────────────
   useEffect(() => {
@@ -93,12 +116,14 @@ export function useNotificationController(user = getCurrentUser()) {
         // Increment unread count
         setUnreadCount((c) => c + 1);
 
-        // Display floating toast alert for 5 seconds
-        setActiveToast(item);
-        if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-        toastTimerRef.current = setTimeout(() => {
-          setActiveToast(null);
-        }, 5000);
+        // Muting suppresses only the pop-up; the bell list and unread count remain active.
+        if (!notificationsMutedRef.current) {
+          setActiveToast(item);
+          if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+          toastTimerRef.current = setTimeout(() => {
+            setActiveToast(null);
+          }, 5000);
+        }
       } catch (e) {
         console.warn('[notificationController] Parse error on incoming notification:', e);
       }

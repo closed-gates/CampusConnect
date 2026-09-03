@@ -22,6 +22,7 @@ import {
 } from '../models/paymentModel.js'
 import { getStoredUser } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
+import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
 const API_BASE = '/api/payments'
 
@@ -29,6 +30,8 @@ export function usePaymentController() {
   const storedUser = getStoredUser()
   const role       = storedUser?.role?.toLowerCase() || localStorage.getItem('userRole') || 'student'
   const isAdmin    = role.toLowerCase() === 'admin'
+  const preferredSemester = getPreferredSemester()
+  const preferredTerm = toSemesterApiTerm(preferredSemester)
 
   // Admin student selector: list of available student IDs; starts empty so nothing is shown until selected
   const [studentIds, setStudentIds]                 = useState([])
@@ -115,7 +118,7 @@ export function usePaymentController() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get(`${API_BASE}/receipt/${encodeURIComponent(effectiveStudentId)}`)
+      const res = await apiClient.get(`${API_BASE}/receipt/${encodeURIComponent(effectiveStudentId)}?term=${encodeURIComponent(preferredTerm)}`)
       if (!res.ok) {
         throw new Error(`Could not load fee receipt (${res.status})`)
       }
@@ -127,7 +130,7 @@ export function usePaymentController() {
     } finally {
       setLoading(false)
     }
-  }, [isAdmin, selectedStudentId, effectiveStudentId])
+  }, [isAdmin, selectedStudentId, effectiveStudentId, preferredTerm])
 
   /**
    * Fetch payment records from database (role-isolated: student vs admin).
@@ -153,7 +156,7 @@ export function usePaymentController() {
         // Check if any payment in history is for the current term and already paid/bypassed
         const currentPaid = historyList.find(
           p => (p.studentId === effectiveStudentId) &&
-               (p.term === 'Fall2026' || p.term === 'Fall 2026') &&
+               toSemesterApiTerm(p.term) === preferredTerm &&
                (p.paymentStatus === 'PAID' || p.paymentStatus === 'CONFIRMED' || p.paymentMethod === 'ADMIN_BYPASS')
         )
         if (currentPaid) {
@@ -170,7 +173,7 @@ export function usePaymentController() {
     } finally {
       setHistoryLoading(false)
     }
-  }, [isAdmin, selectedStudentId, effectiveStudentId, role])
+  }, [isAdmin, selectedStudentId, effectiveStudentId, role, preferredTerm])
 
   useEffect(() => {
     fetchReceipt()
@@ -187,7 +190,7 @@ export function usePaymentController() {
       const reasonToUse = customReason || bypassReason || 'Administrative Fee Waiver'
       const res = await apiClient.post(`${API_BASE}/bypass`, {
         studentId: effectiveStudentId,
-        term: receipt?.term || 'Fall2026',
+        term: receipt?.term || preferredTerm,
         reason: reasonToUse,
         bypassedBy: storedUser?.fullName || 'Administrator'
       })
@@ -206,7 +209,7 @@ export function usePaymentController() {
     } finally {
       setBypassSubmitting(false)
     }
-  }, [isAdmin, effectiveStudentId, receipt, bypassReason, storedUser, fetchPaymentHistory, fetchReceipt])
+  }, [isAdmin, effectiveStudentId, receipt, bypassReason, storedUser, fetchPaymentHistory, fetchReceipt, preferredTerm])
 
   /**
    * Admin: Delete an existing payment record by ID from database.
@@ -424,7 +427,7 @@ export function usePaymentController() {
         studentId: studentId,
         studentName: 'Student',
         department: 'CSE',
-        term: 'Fall 2026',
+        term: preferredSemester,
         items: [],
         totalAcademicCredits: 12,
         totalFinancialCredits: 12,
@@ -472,7 +475,7 @@ export function usePaymentController() {
       doc.text(`Student Name: ${data.studentName || 'Student'}`, 40, 102)
       doc.text(`Department: ${data.department || 'CSE'}`, 40, 116)
 
-      doc.text(`Term: ${data.term || 'Fall 2026'}`, 380, 88)
+      doc.text(`Term: ${data.term || preferredSemester}`, 380, 88)
       doc.text(`Issue Date: ${new Date().toLocaleDateString('en-GB')}`, 380, 102)
       if (paymentSuccess && (transactionId || receiptNumber)) {
         doc.text(`Receipt No: ${receiptNumber || 'REC-2026'}`, 380, 116)
@@ -598,7 +601,7 @@ export function usePaymentController() {
     } catch (pdfErr) {
       console.error('PDF generation error:', pdfErr)
     }
-  }, [receipt, studentId, paymentSuccess, transactionId, receiptNumber, handleOpenBankMap])
+  }, [receipt, studentId, paymentSuccess, transactionId, receiptNumber, handleOpenBankMap, preferredSemester])
 
   /**
    * Generate PDF for a historical receipt record from database.
@@ -735,7 +738,7 @@ export function usePaymentController() {
           amount: Math.round(netAmount * 100),
           currency: 'bdt',
           studentId: studentId,
-          description: `Fall 2026 Registration Fee - ${receipt?.studentName || studentId}`
+          description: `${preferredSemester} Registration Fee - ${receipt?.studentName || studentId}`
       })
 
       let clientSecret = null
@@ -770,7 +773,7 @@ export function usePaymentController() {
           studentId: receipt?.studentId || studentId,
           studentName: receipt?.studentName || 'Student',
           department: receipt?.department || 'CSE',
-          term: receipt?.term || 'Fall2026',
+          term: receipt?.term || preferredTerm,
           totalCourseFee: receipt?.totalCourseFee || 90000,
           semesterFee: receipt?.semesterFee || 11500,
           grossPayable: receipt?.grossPayable || 101500,
@@ -810,6 +813,7 @@ export function usePaymentController() {
     studentId,
     role,
     isAdmin,
+    preferredSemester,
     // Admin Student Selector State
     studentIds,
     studentIdsLoading,

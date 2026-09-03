@@ -813,7 +813,7 @@
 }
 .student-att-rate-sub {
   font-size: 11px;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--color-text-sub);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 2px;
@@ -827,7 +827,7 @@
 .student-att-summary-title {
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
   margin: 0 0 4px;
 }
 .student-att-status-badge {
@@ -848,12 +848,12 @@
 .student-att-stat-val {
   font-size: 22px;
   font-weight: 800;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
   line-height: 1;
 }
 .student-att-stat-lbl {
   font-size: 11px;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--color-text-sub);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 2px;
@@ -864,7 +864,7 @@
   background: rgba(239,68,68,0.1);
   border: 1px solid rgba(239,68,68,0.3);
   border-radius: 10px;
-  color: #fca5a5;
+  color: var(--color-error);
   font-size: 13px;
   font-weight: 500;
 }
@@ -873,7 +873,7 @@
 .student-att-section-title {
   font-size: 16px;
   font-weight: 700;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -917,7 +917,7 @@
 .sac-course-code {
   font-size: 15px;
   font-weight: 800;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
 }
 .sac-rate-badge {
   font-size: 12px;
@@ -928,7 +928,7 @@
 .sac-course-name {
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
@@ -938,14 +938,14 @@
 }
 .sac-course-meta {
   font-size: 11px;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--color-text-sub);
   margin: 0;
 }
 
 /* Progress bar */
 .sac-progress-track {
   height: 6px;
-  background: rgba(255,255,255,0.06);
+  background: var(--color-border);
   border-radius: 3px;
   overflow: hidden;
   margin-top: 4px;
@@ -975,7 +975,7 @@
 .sac-total   { background: rgba(99,102,241,0.12); color: #818cf8; }
 .sac-no-data {
   font-size: 11px;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--color-text-sub);
   margin: 0;
   font-style: italic;
 }
@@ -1001,13 +1001,13 @@
 .detail-panel-header h3 {
   font-size: 17px;
   font-weight: 700;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
   margin: 0;
 }
 .detail-panel-close {
   background: none;
   border: none;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--color-text-sub);
   font-size: 18px;
   cursor: pointer;
   padding: 4px 8px;
@@ -1016,13 +1016,13 @@
 }
 .detail-panel-close:hover {
   background: rgba(255,255,255,0.06);
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
 }
 .detail-panel-meta {
   display: flex;
   gap: 8px;
   font-size: 12px;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--color-text-sub);
   margin-bottom: 18px;
 }
 .detail-rate-display {
@@ -1043,14 +1043,14 @@
 }
 .detail-bar-label {
   font-size: 13px;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
   width: 80px;
   flex-shrink: 0;
 }
 .detail-bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(255,255,255,0.06);
+  background: var(--color-border);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -1063,7 +1063,7 @@
 .detail-bar-count {
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-text-main, #f1f5f9);
+  color: var(--color-text);
   width: 28px;
   text-align: right;
 }

@@ -22,10 +22,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getStoredUser } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
-import { EMPTY_COURSE_ATTENDANCE } from '../models/studentAttendanceModel.js'
+import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
 const API_BASE = '/api/attendance'
-const TERM     = 'Fall2026'   // current term; update when changing semester
 
 /**
  * useStudentAttendanceController
@@ -43,6 +42,8 @@ const TERM     = 'Fall2026'   // current term; update when changing semester
 export function useStudentAttendanceController() {
   const user      = getStoredUser()
   const studentId = user?.userId || 'STU001'
+  const preferredSemester = getPreferredSemester()
+  const term = toSemesterApiTerm(preferredSemester)
 
   const [courses,        setCourses]        = useState([])
   const [overallRate,    setOverallRate]    = useState(0)
@@ -57,7 +58,7 @@ export function useStudentAttendanceController() {
     try {
       // Primary: registered courses with per-course attendance stats
       const coursesRes = await apiClient.get(
-        `${API_BASE}/student-courses?studentId=${encodeURIComponent(studentId)}&term=${TERM}`
+        `${API_BASE}/student-courses?studentId=${encodeURIComponent(studentId)}&term=${encodeURIComponent(term)}`
       )
 
       if (!coursesRes.ok) throw new Error(`API returned ${coursesRes.status}`)
@@ -87,7 +88,7 @@ export function useStudentAttendanceController() {
     } finally {
       setLoading(false)
     }
-  }, [studentId])
+  }, [studentId, term])
 
   useEffect(() => {
     fetchData()
@@ -98,6 +99,7 @@ export function useStudentAttendanceController() {
     overallRate,
     loading,
     error,
+    preferredSemester,
     selectedCourse,
     selectCourse:  setSelectedCourse,
     refresh:       fetchData,

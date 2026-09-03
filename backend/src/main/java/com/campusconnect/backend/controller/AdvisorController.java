@@ -51,14 +51,16 @@ public class AdvisorController {
      * Returns the profile-response map shape so the frontend can read advisedCourses.
      */
     @GetMapping("/students")
-    public ResponseEntity<List<Map<String, Object>>> getAllStudents() {
-        return ResponseEntity.ok(advisorService.getAllStudentsAsResponse());
+    public ResponseEntity<List<Map<String, Object>>> getAllStudents(
+            @RequestParam(defaultValue = "Fall2026") String term) {
+        return ResponseEntity.ok(advisorService.getAllStudentsAsResponse(term));
     }
 
     // ── GET /api/advisors/student/{studentId} ──────────────────────
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<?> getStudentProfile(@PathVariable String studentId) {
-        Optional<Map<String, Object>> profile = advisorService.getStudentProfileAsResponse(studentId);
+    public ResponseEntity<?> getStudentProfile(@PathVariable String studentId,
+                                                @RequestParam(defaultValue = "Fall2026") String term) {
+        Optional<Map<String, Object>> profile = advisorService.getStudentProfileAsResponse(studentId, term);
         return profile.<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -89,7 +91,8 @@ public class AdvisorController {
                 body.get("time"),
                 body.get("room"),
                 body.get("faculty"),
-                body.get("advisorName")
+                body.get("advisorName"),
+                body.getOrDefault("term", "Fall2026")
         );
         boolean success = Boolean.TRUE.equals(result.get("success"));
         return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
@@ -99,8 +102,9 @@ public class AdvisorController {
     @DeleteMapping("/assign/{studentId}/{courseId}")
     public ResponseEntity<Map<String, Object>> removeCourse(
             @PathVariable String studentId,
-            @PathVariable String courseId) {
-        Map<String, Object> result = advisorService.removeCourse(studentId, courseId);
+            @PathVariable String courseId,
+            @RequestParam(defaultValue = "Fall2026") String term) {
+        Map<String, Object> result = advisorService.removeCourse(studentId, courseId, term);
         boolean success = Boolean.TRUE.equals(result.get("success"));
         return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
@@ -112,7 +116,8 @@ public class AdvisorController {
             @PathVariable String studentId,
             @RequestBody(required = false) Map<String, String> body) {
         String advisorName = (body != null && body.containsKey("advisorName")) ? body.get("advisorName") : "Advisor";
-        Map<String, Object> result = advisorService.confirmAdvising(studentId, advisorName);
+        String term = (body != null && body.containsKey("term")) ? body.get("term") : "Fall2026";
+        Map<String, Object> result = advisorService.confirmAdvising(studentId, advisorName, term);
         boolean success = Boolean.TRUE.equals(result.get("success"));
         return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }

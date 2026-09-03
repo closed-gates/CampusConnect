@@ -13,6 +13,7 @@ import { FACULTIES, YEARS, SEMESTERS } from '../models/coursesModel.js'
 import { courseService } from '../services/courseService.js'
 import { channelService } from '../services/channelService.js'
 import { getCurrentUser } from '../models/messagingModel.js'
+import { getPreferredSemester, toSemesterSeason } from '../models/accountSettingsModel.js'
 
 const ENROLLED_IDS_KEY = 'cc_enrolled_course_ids_v1'
 
@@ -69,7 +70,12 @@ export function useCoursesController() {
   const [searchQuery,    setSearchQuery]    = useState('')
   const [activeFaculty,  setActiveFaculty]  = useState('all')
   const [activeYear,     setActiveYear]     = useState('All Years')
-  const [activeSemester, setActiveSemester] = useState('All Semesters')
+  // The account preference seeds this filter once. Subsequent choices made on
+  // this page remain fully controlled by the user.
+  const [activeSemester, setActiveSemester] = useState(() => {
+    const preferredSeason = toSemesterSeason(getPreferredSemester())
+    return SEMESTERS.includes(preferredSeason) ? preferredSeason : 'All Semesters'
+  })
   const [viewMode,       setViewMode]       = useState('grid')
 
   /** Enrolled IDs: sourced from DB, cached in localStorage */
@@ -119,7 +125,7 @@ export function useCoursesController() {
       const next = new Set([...prev, String(course.id)])
       try {
         localStorage.setItem(ENROLLED_IDS_KEY, JSON.stringify(Array.from(next)))
-      } catch (e) { /* ignore */ }
+      } catch { /* ignore unavailable storage */ }
       return next
     })
 
