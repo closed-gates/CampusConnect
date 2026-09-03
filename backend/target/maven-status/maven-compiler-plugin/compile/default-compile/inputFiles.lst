@@ -11,6 +11,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\Assi
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AttendanceController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AuthController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\BypassCourseController.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\ChannelAccessController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\ChatController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\ClubController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\CourseController.java
@@ -18,6 +19,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\Exam
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\FileUploadController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\GpaController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\HealthController.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\NotificationController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\package-info.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\PaymentController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\PaymentReceiptController.java
@@ -35,6 +37,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\ChatMessage
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\ExamScheduleDTO.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\GpaPredictRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\GpaRetakeRequest.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\NotificationDto.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\package-info.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PaymentBypassRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PaymentConfirmRequest.java
@@ -59,8 +62,10 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\Attendanc
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\ChatMessage.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\ClubNotice.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\CourseCatalog.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\CourseChannelMember.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\CourseSection.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\ExamSchedule.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\Notification.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\package-info.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\PaymentRecord.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\Recruitment.java
@@ -80,8 +85,10 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\Atte
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\ChatMessageRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\ClubNoticeRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\CourseCatalogRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\CourseChannelMemberRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\CourseSectionRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\ExamScheduleRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\NotificationRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\package-info.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\PaymentRecordRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\RecruitmentRepository.java
@@ -102,10 +109,13 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\Assignm
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AttendanceService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AuthService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\BypassCourseService.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ChannelAccessService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ChatService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ClubService.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\DeadlineNotificationWorker.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\ExamScheduleService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\GpaService.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\NotificationService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\package-info.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\PaymentReceiptService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\PaymentService.java

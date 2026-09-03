@@ -5,7 +5,9 @@ import ExamScheduleWidget from '../components/ExamScheduleWidget.jsx'
 import EnrolledCoursesModal from '../components/EnrolledCoursesModal.jsx'
 import StudentRoutineModal from '../components/StudentRoutineModal.jsx'
 import StudentAttendanceModal from '../components/StudentAttendanceModal.jsx'
+import NotificationBell from '../components/Notifications/NotificationBell.jsx'
 import { useDashboardController } from '../../controllers/dashboardController.js'
+import { getStoredUser } from '../../models/authModel.js'
 
 /**
  * DashboardView – View layer for the Dashboard page.
@@ -26,6 +28,9 @@ export default function DashboardView() {
     closeModal,
   } = useDashboardController()
 
+  const currentUser = getStoredUser()
+  const isStudent = !currentUser?.role || currentUser?.role?.toUpperCase() === 'STUDENT'
+
   return (
     <div className="dashboard-wrapper">
       {/* Sidebar */}
@@ -34,11 +39,16 @@ export default function DashboardView() {
       {/* Main content */}
       <main className="dashboard-main" aria-label="Dashboard main content">
         {/* Header */}
-        <div className="dashboard-header">
-          <h1 className="dashboard-greeting">
-            Welcome back, {fullName}!
-          </h1>
-          <p className="dashboard-date">{today}</p>
+        <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1 className="dashboard-greeting">
+              Welcome back, {fullName}!
+            </h1>
+            <p className="dashboard-date">{today}</p>
+          </div>
+
+          {/* Real-time In-App Notification Bell strictly for student users */}
+          {isStudent && <NotificationBell user={currentUser} />}
         </div>
 
         {/* ── Stat Cards ─────────────────────────────── */}

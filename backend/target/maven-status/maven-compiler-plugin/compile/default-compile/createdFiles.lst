@@ -20,6 +20,7 @@ com\campusconnect\backend\service\AiChatService$1.class
 com\campusconnect\backend\repository\AdvisorRepository.class
 com\campusconnect\backend\controller\AuthController.class
 com\campusconnect\backend\repository\ExamScheduleRepository.class
+com\campusconnect\backend\controller\ChannelAccessController.class
 com\campusconnect\backend\config\WebSocketConfig.class
 com\campusconnect\backend\controller\RegistrationController.class
 com\campusconnect\backend\service\ClubService.class
@@ -28,6 +29,7 @@ com\campusconnect\backend\repository\SectionRegistrationRepository.class
 com\campusconnect\backend\repository\AdvisedCourseRepository.class
 com\campusconnect\backend\service\ScheduleClashValidator$TimeInterval.class
 com\campusconnect\backend\service\TopicClassifier.class
+com\campusconnect\backend\controller\NotificationController.class
 com\campusconnect\backend\repository\PaymentRecordRepository.class
 com\campusconnect\backend\controller\TestCourseController.class
 com\campusconnect\backend\dto\AttachmentDto.class
@@ -42,7 +44,9 @@ com\campusconnect\backend\model\TestFaculty.class
 com\campusconnect\backend\dto\PresenceDto.class
 com\campusconnect\backend\service\TopicClassifier$Topic.class
 com\campusconnect\backend\model\AdvisedCourse.class
+com\campusconnect\backend\model\Notification.class
 com\campusconnect\backend\model\AttendanceRecord.class
+com\campusconnect\backend\service\DeadlineNotificationWorker.class
 com\campusconnect\backend\model\SectionRegistration.class
 com\campusconnect\backend\repository\SubmissionRepository.class
 com\campusconnect\backend\repository\AttendanceRecordRepository.class
@@ -75,6 +79,7 @@ com\campusconnect\backend\config\CorsConfig.class
 com\campusconnect\backend\controller\PaymentController.class
 com\campusconnect\backend\repository\AssignmentRepository.class
 com\campusconnect\backend\exception\ForbiddenException.class
+com\campusconnect\backend\service\ChannelAccessService.class
 com\campusconnect\backend\model\TestFaculty$TestFacultyBuilder.class
 com\campusconnect\backend\repository\StudentProfileRepository.class
 com\campusconnect\backend\service\ChatService.class
@@ -84,6 +89,7 @@ com\campusconnect\backend\exception\package-info.class
 com\campusconnect\backend\dto\PaymentBypassRequest$PaymentBypassRequestBuilder.class
 com\campusconnect\backend\controller\CourseController.class
 com\campusconnect\backend\model\AdvisedCourse$AdvisedCourseBuilder.class
+com\campusconnect\backend\repository\CourseChannelMemberRepository.class
 com\campusconnect\backend\BackendApplication.class
 com\campusconnect\backend\config\package-info.class
 com\campusconnect\backend\controller\AdminAdvisingController.class
@@ -102,6 +108,7 @@ com\campusconnect\backend\service\GpaService.class
 com\campusconnect\backend\model\TestSection$TestSectionBuilder.class
 com\campusconnect\backend\model\Assignment.class
 com\campusconnect\backend\repository\StudentCompletedCourseRepository.class
+com\campusconnect\backend\model\CourseChannelMember.class
 com\campusconnect\backend\repository\package-info.class
 com\campusconnect\backend\dto\GpaRetakeRequest.class
 com\campusconnect\backend\model\Submission.class
@@ -114,6 +121,7 @@ com\campusconnect\backend\controller\ClubController.class
 com\campusconnect\backend\service\AssignmentService.class
 com\campusconnect\backend\dto\AiChatRequest$Turn.class
 com\campusconnect\backend\service\package-info.class
+com\campusconnect\backend\repository\NotificationRepository.class
 com\campusconnect\backend\controller\AiChatController.class
 com\campusconnect\backend\service\AdminAdvisingService.class
 com\campusconnect\backend\model\PaymentRecord.class
@@ -130,6 +138,7 @@ com\campusconnect\backend\model\StudentCompletedCourse.class
 com\campusconnect\backend\dto\GpaPredictRequest.class
 com\campusconnect\backend\controller\BypassCourseController.class
 com\campusconnect\backend\service\ScheduleClashValidator$ExamSlot.class
+com\campusconnect\backend\dto\NotificationDto.class
 com\campusconnect\backend\exception\ResourceNotFoundException.class
 com\campusconnect\backend\repository\TestFacultyRepository.class
 com\campusconnect\backend\service\AiChatService.class
@@ -142,4 +151,5 @@ com\campusconnect\backend\security\package-info.class
 com\campusconnect\backend\service\ExamScheduleService.class
 com\campusconnect\backend\dto\AuthResponse.class
 com\campusconnect\backend\model\ClubNotice.class
+com\campusconnect\backend\service\NotificationService.class
 com\campusconnect\backend\service\PresenceStore$UserPresence.class

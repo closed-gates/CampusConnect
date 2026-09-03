@@ -47,6 +47,9 @@ public class AdvisorService {
     private final com.campusconnect.backend.repository.SectionRegistrationRepository regRepo;
     private final ScheduleClashValidator    clashValidator;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private NotificationService notificationService;
+
     public AdvisorService(AdvisorRepository advisorRepo,
                           StudentProfileRepository studentRepo,
                           AdvisedCourseRepository advisedCourseRepo,
@@ -385,6 +388,14 @@ public class AdvisorService {
         profile.setAdvisingConfirmed(true);
         profile.setAdvisingConfirmedAt(LocalDateTime.now().toString());
         studentRepo.save(profile);
+
+        if (notificationService != null) {
+            try {
+                notificationService.notifyAdvisingConfirmed(studentId, advisorName, dbCourses.size());
+            } catch (Exception ex) {
+                // Log and continue without failing transaction
+            }
+        }
 
         result.put("success", true);
         result.put("message", "Advising confirmed and saved to database for " + profile.getStudentName() + " (" + dbCourses.size() + " courses).");
