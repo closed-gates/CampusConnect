@@ -16,6 +16,7 @@ import BypassCourseView    from './views/pages/BypassCourseView'
 import ViewRoutineView     from './views/pages/ViewRoutineView'
 import AssignmentView       from './views/pages/AssignmentView'
 import PaymentView          from './views/pages/PaymentView'
+import GpaView             from './views/pages/GpaView'
 
 // ── Route guard ──────────────────────────────────────────────
 import ProtectedRoute       from './views/components/ProtectedRoute'
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="/bypass-course"     element={<BypassCourseView />} />
         <Route path="/assignments"       element={<AssignmentView />} />
         <Route path="/payments"          element={<PaymentView />} />
+        <Route path="/gpa-calculator"    element={<GpaView />} />
       </Route>
 
       {/* ── Catch-all → login ──────────────────────── */}
