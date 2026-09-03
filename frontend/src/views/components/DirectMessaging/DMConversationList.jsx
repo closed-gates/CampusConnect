@@ -14,6 +14,7 @@ export default function DMConversationList({
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTab, setFilterTab] = useState('ALL');
   const [showUserModal, setShowUserModal] = useState(false);
+  const [userModalSearch, setUserModalSearch] = useState('');
 
   const filteredConversations = conversations.filter((conv) => {
     const recipient = conv.recipient;
@@ -45,43 +46,87 @@ export default function DMConversationList({
       </div>
 
       {showUserModal && (
-        <div style={{ padding: '10px 16px', background: '#0b192c', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', marginBottom: 8, letterSpacing: '0.5px' }}>
-            SELECT FACULTY OR STUDENT TO MESSAGE:
+        <div style={{ padding: '12px 16px', background: '#0b192c', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', letterSpacing: '0.5px' }}>
+              SELECT USER TO MESSAGE ({availableUsers.length}):
+            </span>
+            <button
+              onClick={() => { setShowUserModal(false); setUserModalSearch(''); }}
+              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 14 }}
+              title="Close"
+            >
+              ✕
+            </button>
           </div>
-          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-            {availableUsers.map((user) => (
-              <div
-                key={user.id}
-                onClick={() => {
-                  onStartNewDM(user);
-                  setShowUserModal(false);
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '8px 10px',
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                  fontSize: 13,
-                  minHeight: 44
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(30,58,138,0.3)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
-                <UserAvatar user={user} size={30} />
-                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontWeight: 600, color: '#f8fafc' }}>{user.displayName}</span>
-                    <span className={`role-badge ${user.role === 'FACULTY' ? 'faculty' : 'student'}`}>
-                      {user.role}
+          <div style={{ marginBottom: 8 }}>
+            <input
+              type="text"
+              placeholder="Search by name, user ID, or role..."
+              value={userModalSearch}
+              onChange={(e) => setUserModalSearch(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '6px 10px',
+                borderRadius: 6,
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 12,
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+          </div>
+          <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+            {availableUsers
+              .filter(u => {
+                if (!userModalSearch.trim()) return true;
+                const q = userModalSearch.toLowerCase();
+                return (
+                  u.displayName?.toLowerCase().includes(q) ||
+                  u.username?.toLowerCase().includes(q) ||
+                  u.email?.toLowerCase().includes(q) ||
+                  u.role?.toLowerCase().includes(q)
+                );
+              })
+              .map((user) => (
+                <div
+                  key={user.id}
+                  onClick={() => {
+                    onStartNewDM(user);
+                    setShowUserModal(false);
+                    setUserModalSearch('');
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '8px 10px',
+                    borderRadius: 6,
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    minHeight: 44
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(30,58,138,0.3)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <UserAvatar user={user} size={30} />
+                  <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontWeight: 600, color: '#f8fafc', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {user.displayName}
+                      </span>
+                      <span className={`role-badge ${user.role === 'FACULTY' ? 'faculty' : user.role === 'ADMIN' ? 'admin' : 'student'}`}>
+                        {user.role}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 11, color: '#94a3b8' }}>
+                      @{user.username}{user.email ? ` • ${user.email}` : ''}
                     </span>
                   </div>
-                  <span style={{ fontSize: 11, color: '#94a3b8' }}>@{user.username}</span>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       )}
@@ -197,7 +242,7 @@ function renderChatItem(conv, activeConvId, onSelectConversation, onlineUsers) {
         <div className="univ-chat-top-line">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
             <span className="univ-chat-name">{recipient?.displayName}</span>
-            <span className={`role-badge ${isFaculty ? 'faculty' : 'student'}`}>
+            <span className={`role-badge ${recipient?.role === 'FACULTY' ? 'faculty' : recipient?.role === 'ADMIN' ? 'admin' : 'student'}`}>
               {recipient?.role}
             </span>
           </div>

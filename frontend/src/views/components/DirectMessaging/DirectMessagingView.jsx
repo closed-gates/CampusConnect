@@ -1,5 +1,6 @@
 import { useMessagingController } from '../../../controllers/messagingController.js'
 import { usePresenceController } from '../../../controllers/usePresenceController.js'
+import { getCurrentUser } from '../../../models/messagingModel.js'
 import DMConversationList from './DMConversationList.jsx'
 import DMHeader from './DMHeader.jsx'
 import DMChatWindow from './DMChatWindow.jsx'
@@ -24,6 +25,8 @@ import './DirectMessaging.css'
  * @param {function} onMessageSent - Optional callback when a message is sent
  */
 export default function DirectMessagingView({ user, onMessageSent }) {
+  // Always resolve the real logged-in user; fall back to the prop only if provided
+  const resolvedUser = user || getCurrentUser()
   const {
     conversations,
     activeConvId,
@@ -39,10 +42,10 @@ export default function DirectMessagingView({ user, onMessageSent }) {
     handleTyping,
     handleSelectConversation,
     handleStartNewDM,
-  } = useMessagingController(user, onMessageSent)
+  } = useMessagingController(resolvedUser, onMessageSent)
 
   // Global presence map — feeds live dots in DMConversationList + CourseChatPanel
-  const { onlineUsers } = usePresenceController(currentUser)
+  const { onlineUsers } = usePresenceController(resolvedUser)
 
   // Is the active conversation a course channel?
   const isChannel = activeConvId?.startsWith('ch_')

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { getPresenceColor, getDeterministicRoomId } from '../../../utils/dmUtils.js';
 import UserAvatar from './UserAvatar.jsx';
 
