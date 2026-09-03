@@ -6,6 +6,8 @@
  * centralizing messaging data under the models/ layer.
  */
 
+import { getStoredUser } from './authModel.js'
+
 export const CURRENT_USER = {
   id: 'usr_eusha_001',
   username: 'eusha.k',
@@ -15,6 +17,29 @@ export const CURRENT_USER = {
   avatarUrl: null,
   status: 'ONLINE',
   customStatus: 'Building DM feature for CSE470 🚀'
+}
+
+/**
+ * getCurrentUser()
+ *
+ * Returns the authenticated user for the current session by reading
+ * from localStorage (populated by storeAuth() on login), overlaid
+ * onto the CURRENT_USER shape so all fields are always present.
+ *
+ * Falls back to the hardcoded CURRENT_USER when no session exists.
+ *
+ * MVC Role: Model helper — pure function, no side effects.
+ */
+export function getCurrentUser() {
+  const stored = getStoredUser()
+  if (!stored || !stored.userId) return CURRENT_USER
+  return {
+    ...CURRENT_USER,
+    id:          stored.userId,
+    displayName: stored.fullName || CURRENT_USER.displayName,
+    username:    stored.email    || CURRENT_USER.username,
+    role:        stored.role     || CURRENT_USER.role,
+  }
 }
 
 export const MOCK_USERS = [

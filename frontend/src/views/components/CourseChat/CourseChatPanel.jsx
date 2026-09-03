@@ -17,7 +17,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useChatController } from '../../../controllers/useChatController.js'
-import { CURRENT_USER } from '../../../models/messagingModel.js'
+import { CURRENT_USER, getCurrentUser } from '../../../models/messagingModel.js'
 import { channelService } from '../../../services/channelService.js'
 import '../DirectMessaging/CourseChannelView.css'
 
@@ -123,11 +123,14 @@ export default function CourseChatPanel({ channel }) {
 
   const activeSub = subChannels.find(s => s.id === activeSubId) || subChannels[0]
 
+  // Resolve the real logged-in user at render time (student / faculty / admin)
+  const currentUser = getCurrentUser()
+
   // ── WebSocket controller hook ────────────────────────────────────
   const { messages, connected, error, sendMessage } = useChatController(
     channel,
     activeSubId,
-    CURRENT_USER
+    currentUser
   )
 
   // Auto-scroll on new messages
@@ -143,9 +146,14 @@ export default function CourseChatPanel({ channel }) {
 
   /* ── Handlers ─────────────────────────────────────────────────── */
 
+  // Faculty can post to readOnly (announcement) channels; students cannot.
+  const isFaculty = currentUser.role === 'FACULTY'
+
   function handleSend() {
     const content = inputVal.trim()
-    if ((!content && !pendingAttachment) || activeSub?.readOnly) return
+    if (!content && !pendingAttachment) return
+    // Block non-faculty from posting to readOnly channels
+    if (activeSub?.readOnly && !isFaculty) return
     sendMessage(content, pendingAttachment ? [pendingAttachment] : [])
     setInputVal('')
     setPendingAttachment(null)
@@ -260,7 +268,9 @@ export default function CourseChatPanel({ channel }) {
             </>
           )}
           {activeSub?.readOnly && (
-            <span className="cc-topbar-readonly">📌 Instructor Only</span>
+            <span className="cc-topbar-readonly">
+              {isFaculty ? '📢 Announcements (You can post)' : '📌 Instructor Only'}
+            </span>
           )}
           {/* Live/Offline badge */}
           <ConnectionBadge connected={connected} />
@@ -351,7 +361,8 @@ export default function CourseChatPanel({ channel }) {
 
         {/* Input area */}
         <div className="cc-input-area">
-          {activeSub?.readOnly ? (
+          {activeSub?.readOnly && !isFaculty ? (
+            // Non-faculty: show locked notice for announcement channels
             <div className="cc-read-only-notice">
               📌 This channel is for instructor announcements only.
             </div>
