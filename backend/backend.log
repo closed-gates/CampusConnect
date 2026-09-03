@@ -1,0 +1,136 @@
+[INFO] Using JDK: C:\Users\eusha\jdk17\jdk-17.0.12+7
+[INFO] Using Maven: C:\Users\eusha\.maven\apache-maven-3.9.9\bin\mvn.cmd
+[INFO] Environment variables loaded.
+[INFO] Starting Spring Boot backend...
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.campusconnect:backend >----------------------
+[INFO] Building CampusConnect Backend 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.2:run (default-cli) > test-compile @ backend >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend ---
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 105 source files with javac [debug parameters release 17] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ backend ---
+[INFO] skip non existing resourceDirectory E:\CampusConnect\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ backend ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:3.3.2:run (default-cli) < test-compile @ backend <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.2:run (default-cli) @ backend ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-09-03T13:12:10.586+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 10424 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-03T13:12:10.590+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-03T13:12:10.675+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-03T13:12:10.675+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-03T13:12:11.660+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-03T13:12:11.821+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 145 ms. Found 22 JPA repository interfaces.
+2026-09-03T13:12:13.187+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-03T13:12:13.203+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-03T13:12:13.203+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-03T13:12:13.277+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-03T13:12:13.278+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2602 ms
+2026-09-03T13:12:13.528+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-03T13:12:13.634+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-09-03T13:12:13.695+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-03T13:12:14.188+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-03T13:12:14.229+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-03T13:12:16.207+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5be3ed08
+2026-09-03T13:12:16.209+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-03T13:12:16.339+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-03T13:12:18.308+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-03T13:12:21.147+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-03T13:12:21.534+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-03T13:12:23.844+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-03T13:12:23.870+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: a5201ee5-356e-4d20-8f68-97c41ee575d7
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-03T13:12:24.592+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-09-03T13:12:24.647+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-03T13:12:24.651+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-09-03T13:12:24.652+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@51edd7f7]]
+2026-09-03T13:12:24.652+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-09-03T13:12:24.667+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Started BackendApplication in 14.629 seconds (process running for 15.232)
+2026-09-03T13:12:24.723+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Initializing test course catalogue and faculty dataset...
+2026-09-03T13:12:27.615+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
+2026-09-03T13:12:27.615+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
+2026-09-03T13:13:24.630+06:00  INFO 10424 --- [campusconnect-backend] [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 5, active threads = 1, queued tasks = 1, completed tasks = 3]
+2026-09-03T13:15:21.084+06:00  INFO 10424 --- [campusconnect-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-03T13:15:21.084+06:00  INFO 10424 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-03T13:15:21.086+06:00  INFO 10424 --- [campusconnect-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-09-03T13:16:19.975+06:00  INFO 10424 --- [campusconnect-backend] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 3 class path changes (0 additions, 0 deletions, 3 modifications)
+2026-09-03T13:16:19.979+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-09-03T13:16:19.979+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@51edd7f7]]
+2026-09-03T13:16:19.980+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-5] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-09-03T13:16:20.114+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-5] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-03T13:16:20.117+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-03T13:16:20.639+06:00  INFO 10424 --- [campusconnect-backend] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-09-03T13:16:20.738+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Starting BackendApplication using Java 17.0.12 with PID 10424 (E:\CampusConnect\backend\target\classes started by eusha in E:\CampusConnect\backend)
+2026-09-03T13:16:20.738+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : The following 1 profile is active: "prod"
+2026-09-03T13:16:21.010+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-03T13:16:21.053+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 22 JPA repository interfaces.
+2026-09-03T13:16:21.273+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-03T13:16:21.274+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-03T13:16:21.274+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-09-03T13:16:21.290+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-03T13:16:21.290+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 549 ms
+2026-09-03T13:16:21.340+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-03T13:16:21.342+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-03T13:16:21.351+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-03T13:16:21.352+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-09-03T13:16:21.896+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@e47a7fc
+2026-09-03T13:16:21.896+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-09-03T13:16:21.950+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-03T13:16:22.356+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-03T13:16:24.767+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-03T13:16:26.201+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-03T13:16:26.211+06:00  WARN 10424 --- [campusconnect-backend] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 68abffd4-a3cd-4b37-8a52-1036ff71ab5f
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-03T13:16:26.448+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-09-03T13:16:26.469+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-03T13:16:26.470+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-09-03T13:16:26.470+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@11e9777e]]
+2026-09-03T13:16:26.470+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-09-03T13:16:26.477+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.backend.BackendApplication           : Started BackendApplication in 5.764 seconds (process running for 257.042)
+2026-09-03T13:16:26.478+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Initializing test course catalogue and faculty dataset...
+2026-09-03T13:16:29.110+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test sections already present (74 sections).
+2026-09-03T13:16:29.110+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] c.c.b.service.TestCourseDataSeeder       : [TestCourseDataSeeder] Test dataset successfully initialized and verified.
+2026-09-03T13:16:29.161+06:00  INFO 10424 --- [campusconnect-backend] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
