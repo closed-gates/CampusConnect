@@ -144,7 +144,7 @@ export default function DMConversationList({
             {studentConvs.length > 0 && (
               <>
                 <div className="univ-category-label" style={{ marginTop: facultyConvs.length > 0 ? 12 : 0 }}>
-                  <span>👥 Classmates & Students ({studentConvs.length})</span>
+                  <span>👥 Students ({studentConvs.length})</span>
                 </div>
                 {studentConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation))}
               </>

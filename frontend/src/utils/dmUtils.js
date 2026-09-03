@@ -7,7 +7,7 @@ export function getDeterministicRoomId(userAId, userBId) {
     throw new Error('Both userAId and userBId are required to generate a deterministic room ID.');
   }
   const minId = userAId < userBId ? userAId : userBId;
-  const maxId = userAId < userBId ? userAId : userBId;
+  const maxId = userAId > userBId ? userAId : userBId;
   return `dm_${minId}_${maxId}`;
 }
 

@@ -36,14 +36,14 @@ import {
   deriveCourseId,
 } from '../models/courseChatModel.js'
 import { channelService } from '../services/channelService.js'
-import { CURRENT_USER } from '../models/messagingModel.js'
+import { getCurrentUser } from '../models/messagingModel.js'
 
 /**
  * useChatController
  *
  * @param {object} channel        - The active channel object (from channelService / messagingController)
  * @param {string} activeSubId    - The currently selected sub-channel id (e.g. "general")
- * @param {object} [currentUser]  - Authenticated user; defaults to CURRENT_USER from messagingModel
+ * @param {object} [currentUser]  - Authenticated user; defaults to getCurrentUser() read from localStorage
  *
  * @returns {{
  *   messages:     Array,
@@ -52,7 +52,7 @@ import { CURRENT_USER } from '../models/messagingModel.js'
  *   sendMessage:  (content: string) => void,
  * }}
  */
-export function useChatController(channel, activeSubId, currentUser = CURRENT_USER) {
+export function useChatController(channel, activeSubId, currentUser = getCurrentUser()) {
   const courseId = deriveCourseId(channel?.courseCode || channel?.id || 'unknown')
 
   const [messages,  setMessages]  = useState([])

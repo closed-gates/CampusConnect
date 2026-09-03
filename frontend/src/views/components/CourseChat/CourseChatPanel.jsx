@@ -17,7 +17,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useChatController } from '../../../controllers/useChatController.js'
-import { CURRENT_USER, getCurrentUser } from '../../../models/messagingModel.js'
+import { getCurrentUser } from '../../../models/messagingModel.js'
 import { channelService } from '../../../services/channelService.js'
 import '../DirectMessaging/CourseChannelView.css'
 

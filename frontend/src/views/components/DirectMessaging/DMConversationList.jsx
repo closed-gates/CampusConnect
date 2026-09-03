@@ -18,19 +18,24 @@ export default function DMConversationList({
 
   const filteredConversations = conversations.filter((conv) => {
     const recipient = conv.recipient;
+    const role = (recipient?.role || 'STUDENT').toUpperCase();
     const matchesSearch =
-      recipient?.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipient?.username.toLowerCase().includes(searchQuery.toLowerCase());
+      recipient?.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      recipient?.username?.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
 
-    if (filterTab === 'FACULTY') return recipient?.role === 'FACULTY';
-    if (filterTab === 'STUDENTS') return recipient?.role === 'STUDENT';
+    if (filterTab === 'FACULTY') return role === 'FACULTY';
+    if (filterTab === 'STUDENTS') return role === 'STUDENT';
     return true;
   });
 
-  const facultyConvs = filteredConversations.filter((c) => c.recipient?.role === 'FACULTY');
-  const studentConvs = filteredConversations.filter((c) => c.recipient?.role === 'STUDENT' || c.recipient?.role !== 'FACULTY');
+  const adminConvs = filteredConversations.filter((c) => (c.recipient?.role || '').toUpperCase() === 'ADMIN');
+  const facultyConvs = filteredConversations.filter((c) => (c.recipient?.role || '').toUpperCase() === 'FACULTY');
+  const studentConvs = filteredConversations.filter((c) => {
+    const r = (c.recipient?.role || 'STUDENT').toUpperCase();
+    return r === 'STUDENT' || (r !== 'FACULTY' && r !== 'ADMIN');
+  });
 
   return (
     <aside className="univ-chats-sidebar">
@@ -182,9 +187,18 @@ export default function DMConversationList({
             {/* ── Advisor channel (always pinned) ── */}
             {channelConvs.filter(c => c.isAdvisorChannel).map(ch => renderAdvisorChannelItem(ch, activeConversationId, onSelectConversation))}
 
-            {facultyConvs.length > 0 && (
+            {adminConvs.length > 0 && (
               <>
                 <div className="univ-category-label">
+                  <span>🛡️ Administrators ({adminConvs.length})</span>
+                </div>
+                {adminConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation, onlineUsers))}
+              </>
+            )}
+
+            {facultyConvs.length > 0 && (
+              <>
+                <div className="univ-category-label" style={{ marginTop: adminConvs.length > 0 ? 12 : 0 }}>
                   <span>🎓 Faculty Members ({facultyConvs.length})</span>
                 </div>
                 {facultyConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation, onlineUsers))}
@@ -193,8 +207,8 @@ export default function DMConversationList({
 
             {studentConvs.length > 0 && (
               <>
-                <div className="univ-category-label" style={{ marginTop: facultyConvs.length > 0 ? 12 : 0 }}>
-                  <span>👥 Classmates & Students ({studentConvs.length})</span>
+                <div className="univ-category-label" style={{ marginTop: (adminConvs.length + facultyConvs.length) > 0 ? 12 : 0 }}>
+                  <span>👥 Students ({studentConvs.length})</span>
                 </div>
                 {studentConvs.map((conv) => renderChatItem(conv, activeConversationId, onSelectConversation, onlineUsers))}
               </>
@@ -218,8 +232,8 @@ export default function DMConversationList({
 function renderChatItem(conv, activeConvId, onSelectConversation, onlineUsers) {
   const isActive = conv.id === activeConvId;
   const recipient = conv.recipient;
-  // Live presence if available, fall back to static mock status
-  const isOnline = onlineUsers?.has(recipient?.id) ?? (recipient?.status?.toUpperCase() === 'ONLINE');
+  // Presence from live STOMP map — green = heartbeat received within 60 s, grey = offline
+  const isOnline = onlineUsers instanceof Map ? onlineUsers.has(recipient?.id) : false;
   const presenceColor = isOnline ? '#10b981' : '#94a3b8';
   const isFaculty = recipient?.role === 'FACULTY';
 
@@ -234,7 +248,7 @@ function renderChatItem(conv, activeConvId, onSelectConversation, onlineUsers) {
         <span
           className="univ-presence-badge"
           style={{ backgroundColor: presenceColor }}
-          title={`Status: ${recipient?.status}`}
+          title={`${recipient?.displayName}: ${isOnline ? 'Online' : 'Offline'}`}
         />
       </div>
 

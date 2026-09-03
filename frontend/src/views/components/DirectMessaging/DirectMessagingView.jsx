@@ -95,6 +95,7 @@ export default function DirectMessagingView({ user, onMessageSent }) {
           <DMHeader
             currentUser={currentUser}
             activeConversation={activeConversation}
+            onlineUsers={onlineUsers}
           />
 
           <DMChatWindow

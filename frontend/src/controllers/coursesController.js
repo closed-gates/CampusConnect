@@ -12,7 +12,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { FACULTIES, YEARS, SEMESTERS } from '../models/coursesModel.js'
 import { courseService } from '../services/courseService.js'
 import { channelService } from '../services/channelService.js'
-import { CURRENT_USER } from '../models/messagingModel.js'
+import { getCurrentUser } from '../models/messagingModel.js'
 
 const ENROLLED_IDS_KEY = 'cc_enrolled_course_ids_v1'
 
@@ -124,7 +124,7 @@ export function useCoursesController() {
     })
 
     try {
-      const channel = await channelService.onEnrollment({ userId: CURRENT_USER.id, course })
+      const channel = await channelService.onEnrollment({ userId: getCurrentUser().id, course })
       setEnrollToast(`✅ Joined ${course.code} discussion · Channel ${channel.name} ready!`)
     } catch {
       setEnrollToast(`✅ Joined ${course.code}!`)
