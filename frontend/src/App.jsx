@@ -17,10 +17,12 @@ import ViewRoutineView     from './views/pages/ViewRoutineView'
 import AssignmentView       from './views/pages/AssignmentView'
 import PaymentView          from './views/pages/PaymentView'
 import GpaView             from './views/pages/GpaView'
+import AccountSettingsView from './views/pages/AccountSettingsView'
 
 // ── Route guard ──────────────────────────────────────────────
 import ProtectedRoute       from './views/components/ProtectedRoute'
 import { getStoredUser }    from './models/authModel'
+import { usePreferencesBootstrapController } from './controllers/preferencesController'
 
 /** Guard: only students can access */
 function StudentOnlyRoute({ children }) {
@@ -49,6 +51,8 @@ function NonFacultyRoute({ children }) {
  *   All other routes are nested inside <ProtectedRoute>
  */
 export default function App() {
+  usePreferencesBootstrapController()
+
   return (
     <Routes>
       {/* ── Public routes ──────────────────────────── */}
@@ -71,6 +75,7 @@ export default function App() {
         <Route path="/assignments"       element={<AssignmentView />} />
         <Route path="/payments"          element={<NonFacultyRoute><PaymentView /></NonFacultyRoute>} />
         <Route path="/gpa-calculator"    element={<GpaView />} />
+        <Route path="/settings"          element={<AccountSettingsView />} />
       </Route>
 
       {/* ── Catch-all → login ──────────────────────── */}

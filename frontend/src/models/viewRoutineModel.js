@@ -15,6 +15,14 @@ export const DAYS_OF_WEEK = [
   'SATURDAY'
 ]
 
+/** Rotates the routine columns without changing their underlying day data. */
+export function orderDaysFrom(startDay, days = DAYS_OF_WEEK) {
+  const normalizedStart = String(startDay || '').toUpperCase()
+  const startIndex = days.indexOf(normalizedStart)
+  if (startIndex < 0) return [...days]
+  return [...days.slice(startIndex), ...days.slice(0, startIndex)]
+}
+
 export const STANDARD_TIME_SLOTS = [
   '8:00 am - 9:20 am',
   '8:00 am - 10:50 am',

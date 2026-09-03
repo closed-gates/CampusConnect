@@ -262,11 +262,10 @@ public class PaymentService {
     @Transactional
     public PaymentRecord bypassPayment(PaymentBypassRequest req) {
         String studentId = req.getStudentId();
-        PaymentReceiptDTO receipt = paymentReceiptService.getReceipt(studentId);
-
         String term = (req.getTerm() != null && !req.getTerm().isBlank())
                 ? req.getTerm()
-                : (receipt.getTerm() != null ? receipt.getTerm() : "Fall2026");
+                : "Fall2026";
+        PaymentReceiptDTO receipt = paymentReceiptService.getReceipt(studentId, term);
 
         String receiptNo = "REC-BYPASS-" + String.format("%04d", (int)(Math.random() * 9000) + 1000);
         String txnId = "BYPASS_" + UUID.randomUUID().toString().substring(0, 10).toUpperCase();

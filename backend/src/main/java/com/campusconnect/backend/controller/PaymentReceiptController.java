@@ -26,8 +26,10 @@ public class PaymentReceiptController {
      * Returns the dynamic course fee receipt and bank details for the given student.
      */
     @GetMapping("/receipt/{studentId}")
-    public ResponseEntity<PaymentReceiptDTO> getReceipt(@PathVariable String studentId) {
-        PaymentReceiptDTO receipt = receiptService.getReceipt(studentId);
+    public ResponseEntity<PaymentReceiptDTO> getReceipt(
+            @PathVariable String studentId,
+            @RequestParam(defaultValue = "Fall2026") String term) {
+        PaymentReceiptDTO receipt = receiptService.getReceipt(studentId, term);
         return ResponseEntity.ok(receipt);
     }
 }

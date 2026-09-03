@@ -98,6 +98,10 @@ public class AuthService {
 
         AppUser user = userOpt.get();
 
+        if (!user.isActive()) {
+            return new AuthResponse(false, "This account has been deactivated. Contact an administrator for assistance.");
+        }
+
         // Validate BCrypt password
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             return new AuthResponse(false, "Incorrect password. Please try again.");

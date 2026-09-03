@@ -20,7 +20,13 @@ public interface AdvisedCourseRepository extends JpaRepository<AdvisedCourse, Lo
 
     List<AdvisedCourse> findByStudentProfile_StudentId(String studentId);
 
+    @Query("SELECT ac FROM AdvisedCourse ac WHERE ac.studentProfile.studentId = :studentId AND (ac.term = :term OR (ac.term IS NULL AND :term = 'Fall2026'))")
+    List<AdvisedCourse> findForTerm(@Param("studentId") String studentId, @Param("term") String term);
+
     boolean existsByStudentProfile_StudentIdAndCourseCode(String studentId, String courseCode);
+
+    @Query("SELECT COUNT(ac) > 0 FROM AdvisedCourse ac WHERE ac.studentProfile.studentId = :studentId AND UPPER(ac.courseCode) = UPPER(:courseCode) AND (ac.term = :term OR (ac.term IS NULL AND :term = 'Fall2026'))")
+    boolean existsForTerm(@Param("studentId") String studentId, @Param("courseCode") String courseCode, @Param("term") String term);
 
     /**
      * Removes a specific advised course assignment from a student by its ID.

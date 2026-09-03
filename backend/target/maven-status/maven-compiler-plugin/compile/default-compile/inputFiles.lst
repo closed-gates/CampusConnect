@@ -4,6 +4,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\package-
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\PasswordEncoderConfig.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\SecurityConfig.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\WebSocketConfig.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AccountSettingsController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AdminAdvisingController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AdvisorController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AiChatController.java
@@ -27,12 +28,14 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\Pres
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\RegistrationController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\TestCourseController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\UserController.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AccountProfileDTO.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AdvisorMatchResponse.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AiChatRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AttachmentDto.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AuthRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AuthResponse.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\BankInfoDTO.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\ChangePasswordRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\ChatMessageDto.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\ExamScheduleDTO.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\GpaPredictRequest.java
@@ -47,6 +50,8 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PaymentRece
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PaymentReceiptItemDTO.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PaymentUpdateRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PresenceDto.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\UpdateProfileRequest.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\UpdateReminderPreferenceRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\UserDto.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\exception\ForbiddenException.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\exception\GlobalExceptionHandler.java
@@ -102,6 +107,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\Test
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\JwtAuthFilter.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\JwtService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\package-info.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AccountSettingsService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AdminAdvisingService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AdvisorService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AiChatService.java

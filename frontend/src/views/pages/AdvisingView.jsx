@@ -135,6 +135,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
     toast, toastType,
     creditUsed, creditLimit, courseCount, courseLimit,
     seatUpdates,
+    preferredSemester,
     handleSelectStudent,
     handleAssign,
     handleRemove,
@@ -153,7 +154,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
           <h1 className="dashboard-greeting">
             {isAdmin ? 'Student Course Advising 🧑‍🏫' : 'Advisor Panel 🧑‍🏫'}
           </h1>
-          <p className="dashboard-date">Assign and manage course schedules, routines, and confirm advising for students</p>
+          <p className="dashboard-date">Assign and manage {preferredSemester} course schedules, routines, and advising</p>
         </div>
       </div>
 

@@ -12,18 +12,24 @@ import {
   STANDARD_TIME_SLOTS,
   buildRoutineMatrix,
   generateExamSchedule,
-  normalizeTimeSlot,
+  orderDaysFrom,
 } from '../models/viewRoutineModel.js'
 import apiClient from '../services/apiClient.js'
+import { loadPreferences, PREFERENCE_CHANGE_EVENT, getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
 export function useViewRoutineController() {
   const [courses, setCourses]           = useState([])
   const [studentProfile, setStudentProfile] = useState(null)
   const [loading, setLoading]           = useState(true)
   const [error, setError]               = useState(null)
+  const [weekStartsOn, setWeekStartsOn] = useState(
+    () => loadPreferences().calendar.weekStartsOn
+  )
 
   const user = getStoredUser()
   const studentId = user?.userId || 'STU001'
+  const preferredSemester = getPreferredSemester()
+  const preferredTerm = toSemesterApiTerm(preferredSemester)
 
   const loadRoutineData = useCallback(async () => {
     setLoading(true)
@@ -31,8 +37,8 @@ export function useViewRoutineController() {
     try {
       // Query both registration/my and advisors/student to ensure complete aggregation
       const [regRes, advRes] = await Promise.all([
-        apiClient.get(`/api/registration/my?studentId=${studentId}`).catch(() => ({ ok: false })),
-        apiClient.get(`/api/advisors/student/${studentId}`).catch(() => ({ ok: false }))
+        apiClient.get(`/api/registration/my?studentId=${studentId}&term=${encodeURIComponent(preferredTerm)}`).catch(() => ({ ok: false })),
+        apiClient.get(`/api/advisors/student/${studentId}?term=${encodeURIComponent(preferredTerm)}`).catch(() => ({ ok: false }))
       ])
 
       let advisedList = []
@@ -58,16 +64,29 @@ export function useViewRoutineController() {
         department: 'Computer Science and Engineering',
         program: 'CS'
       })
-    } catch (err) {
+    } catch {
       setError('Could not load routine. Please ensure backend is active.')
     } finally {
       setLoading(false)
     }
-  }, [studentId, user?.fullName])
+  }, [studentId, user?.fullName, preferredTerm])
 
   useEffect(() => {
     loadRoutineData()
   }, [loadRoutineData])
+
+  useEffect(() => {
+    const syncWeekStart = event => {
+      const preferences = event?.detail || loadPreferences()
+      setWeekStartsOn(preferences.calendar.weekStartsOn)
+    }
+    window.addEventListener(PREFERENCE_CHANGE_EVENT, syncWeekStart)
+    window.addEventListener('storage', syncWeekStart)
+    return () => {
+      window.removeEventListener(PREFERENCE_CHANGE_EVENT, syncWeekStart)
+      window.removeEventListener('storage', syncWeekStart)
+    }
+  }, [])
 
   // Build 2D routine matrix
   const matrix = useMemo(() => {
@@ -78,6 +97,8 @@ export function useViewRoutineController() {
   const examSchedule = useMemo(() => {
     return generateExamSchedule(courses)
   }, [courses])
+
+  const orderedDays = useMemo(() => orderDaysFrom(weekStartsOn), [weekStartsOn])
 
   // Determine all distinct time slots present in the routine (or standard slots)
   const activeTimeSlots = useMemo(() => {
@@ -107,10 +128,11 @@ export function useViewRoutineController() {
     courses,
     matrix,
     examSchedule,
-    days: DAYS_OF_WEEK,
+    days: orderedDays,
     timeSlots: activeTimeSlots,
     loading,
     error,
+    preferredSemester,
     handlePrint,
     refetch: loadRoutineData
   }

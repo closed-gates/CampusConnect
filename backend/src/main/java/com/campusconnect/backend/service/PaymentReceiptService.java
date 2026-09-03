@@ -24,7 +24,6 @@ import java.util.List;
 @Service
 public class PaymentReceiptService {
 
-    private static final String CURRENT_TERM = "Fall2026";
     private static final double RATE_PER_CREDIT = 7500.0;
     private static final double SEMESTER_FEE = 11500.0;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
@@ -41,11 +40,16 @@ public class PaymentReceiptService {
      * Computes the complete fee receipt breakdown for the specified student.
      */
     public PaymentReceiptDTO getReceipt(String studentId) {
+        return getReceipt(studentId, "Fall2026");
+    }
+
+    public PaymentReceiptDTO getReceipt(String studentId, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         StudentProfile student = studentRepo.findById(studentId).orElse(null);
         String studentName = (student != null) ? student.getStudentName() : "Student (" + studentId + ")";
         String department = (student != null) ? student.getDepartment() : "Computer Science and Engineering";
 
-        List<SectionRegistration> registrations = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM);
+        List<SectionRegistration> registrations = regRepo.findByStudentIdAndTerm(studentId, term);
         List<PaymentReceiptItemDTO> items = new ArrayList<>();
 
         if (registrations != null && !registrations.isEmpty()) {
@@ -88,7 +92,7 @@ public class PaymentReceiptService {
                 .studentId(studentId)
                 .studentName(studentName)
                 .department(department)
-                .term(CURRENT_TERM)
+                .term(term)
                 .items(items)
                 .noEnrollment(noEnrollment)
                 .totalAcademicCredits(totalAcademicCredits)
@@ -98,9 +102,15 @@ public class PaymentReceiptService {
                 .grossPayable(grossPayable)
                 .discount(discount)
                 .netPayable(netPayable)
-                .amountInWords(noEnrollment ? "No courses registered for " + CURRENT_TERM : convertAmountToWords((long) netPayable))
+                .amountInWords(noEnrollment ? "No courses registered for " + term : convertAmountToWords((long) netPayable))
                 .bankAccounts(noEnrollment ? new ArrayList<>() : getAcceptingBankAccounts())
                 .build();
+    }
+
+    private String normalizeTerm(String term) {
+        if (term == null || term.isBlank()) return "Fall2026";
+        String normalized = term.replaceAll("\\s+", "");
+        return normalized.matches("(?i)(Spring|Summer|Fall)\\d{4}") ? normalized : "Fall2026";
     }
 
 

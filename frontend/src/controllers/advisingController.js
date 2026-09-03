@@ -19,6 +19,7 @@ import { courseService } from '../services/courseService.js'
 import { channelService } from '../services/channelService.js'
 import { getStoredUser } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
+import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
 const API_BASE = '/api/advisors'
 
@@ -97,6 +98,8 @@ function parseStudentRoutine(advisedCourses = []) {
 export function useStudentAdvisingController() {
   const user = getStoredUser()
   const studentId = user?.userId || 'STU001'
+  const preferredSemester = getPreferredSemester()
+  const preferredTerm = toSemesterApiTerm(preferredSemester)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
@@ -105,7 +108,7 @@ export function useStudentAdvisingController() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get(`${API_BASE}/student/${studentId}`)
+      const res = await apiClient.get(`${API_BASE}/student/${studentId}?term=${encodeURIComponent(preferredTerm)}`)
       if (!res.ok) throw new Error(`Server returned ${res.status}`)
       setProfile(await res.json())
     } catch (e) {
@@ -113,11 +116,11 @@ export function useStudentAdvisingController() {
     } finally {
       setLoading(false)
     }
-  }, [studentId])
+  }, [studentId, preferredTerm])
 
   useEffect(() => { fetchProfile() }, [fetchProfile])
 
-  return { profile, loading, error, refetch: fetchProfile }
+  return { profile, loading, error, preferredSemester, refetch: fetchProfile }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -139,13 +142,15 @@ export function useAdvisorController() {
 
   const currentUser = getStoredUser()
   const advisorName = currentUser?.fullName || 'Advisor'
+  const preferredSemester = getPreferredSemester()
+  const preferredTerm = toSemesterApiTerm(preferredSemester)
 
   /* Load all students + initial seat state + course sections on mount */
   const loadInitialData = useCallback(() => {
     setLoading(true)
     setCoursesLoading(true)
     Promise.all([
-      apiClient.get(`${API_BASE}/students`).then(r => r.json()),
+      apiClient.get(`${API_BASE}/students?term=${encodeURIComponent(preferredTerm)}`).then(r => r.json()),
       apiClient.get(`${API_BASE}/seat-updates`).then(r => r.json()).catch(() => ({})),
       courseService.getSections().catch(() => apiClient.get('/api/courses/sections').then(r => r.json()).catch(() => [])),
     ])
@@ -160,7 +165,7 @@ export function useAdvisorController() {
         setLoading(false)
         setCoursesLoading(false)
       })
-  }, [])
+  }, [preferredTerm])
 
   useEffect(() => {
     loadInitialData()
@@ -172,7 +177,7 @@ export function useAdvisorController() {
     setProfile(null)
     setSelectedStudent(studentId)
     try {
-      const res = await apiClient.get(`${API_BASE}/student/${studentId}`)
+      const res = await apiClient.get(`${API_BASE}/student/${studentId}?term=${encodeURIComponent(preferredTerm)}`)
       if (!res.ok) throw new Error()
       setProfile(await res.json())
     } catch {
@@ -180,7 +185,7 @@ export function useAdvisorController() {
     } finally {
       setProfileLoading(false)
     }
-  }, [])
+  }, [preferredTerm])
 
   /* Assign a course */
   const handleAssign = useCallback(async (course) => {
@@ -196,6 +201,7 @@ export function useAdvisorController() {
         room:        course.room,
         faculty:     course.faculty,
         advisorName: advisorName,
+        term: preferredTerm,
       })
       const data = await res.json()
       if (data.success) {
@@ -215,7 +221,7 @@ export function useAdvisorController() {
     } catch {
       showToast('Network error. Could not assign course.', 'error')
     }
-  }, [profile, advisorName])
+  }, [profile, advisorName, preferredTerm])
 
   /* Remove a course */
   const handleRemove = useCallback(async (courseId) => {
@@ -241,7 +247,7 @@ export function useAdvisorController() {
     }
 
     try {
-      const res = await apiClient.delete(`${API_BASE}/assign/${profile.studentId}/${courseId}`)
+      const res = await apiClient.delete(`${API_BASE}/assign/${profile.studentId}/${courseId}?term=${encodeURIComponent(preferredTerm)}`)
       const data = await res.json()
       if (data.success) {
         setProfile(data.profile)
@@ -256,7 +262,7 @@ export function useAdvisorController() {
       setProfile(prevProfile)
       showToast('Network error. Could not remove course.', 'error')
     }
-  }, [profile])
+  }, [profile, preferredTerm])
 
   const showToast = (msg, type = 'success') => {
     setToast(msg)
@@ -275,7 +281,8 @@ export function useAdvisorController() {
     setConfirming(true)
     try {
       const res = await apiClient.post(`${API_BASE}/confirm/${profile.studentId}`, {
-        advisorName: advisorName
+        advisorName: advisorName,
+        term: preferredTerm,
       })
       const data = await res.json()
       if (data.success) {
@@ -289,7 +296,7 @@ export function useAdvisorController() {
     } finally {
       setConfirming(false)
     }
-  }, [profile, advisorName])
+  }, [profile, advisorName, preferredTerm])
 
   /* Derived: use limits from backend profile (CGPA-based) */
   const creditLimit  = profile?.creditLimit  ?? 15
@@ -326,6 +333,7 @@ export function useAdvisorController() {
     toast, toastType,
     creditUsed, creditLimit, courseCount, courseLimit,
     seatUpdates,
+    preferredSemester,
     handleSelectStudent: loadStudent,
     handleAssign,
     handleRemove,

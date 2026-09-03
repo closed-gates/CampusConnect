@@ -46,16 +46,18 @@ public class RegistrationController {
      */
     @GetMapping("/sections")
     public ResponseEntity<List<Map<String, Object>>> getSections(
-            @RequestParam(defaultValue = "STU001") String studentId) {
-        return ResponseEntity.ok(registrationService.getSections(studentId));
+            @RequestParam(defaultValue = "STU001") String studentId,
+            @RequestParam(defaultValue = "Fall2026") String term) {
+        return ResponseEntity.ok(registrationService.getSections(studentId, term));
     }
 
     // ── GET /api/registration/my ───────────────────────────────────
     /** Returns the sections the student has registered for in the current term. */
     @GetMapping("/my")
     public ResponseEntity<List<Map<String, Object>>> getMyRegistrations(
-            @RequestParam(defaultValue = "STU001") String studentId) {
-        return ResponseEntity.ok(registrationService.getStudentRegistrations(studentId));
+            @RequestParam(defaultValue = "STU001") String studentId,
+            @RequestParam(defaultValue = "Fall2026") String term) {
+        return ResponseEntity.ok(registrationService.getStudentRegistrations(studentId, term));
     }
 
     // ── GET /api/registration/window/{studentId} ───────────────────
@@ -83,13 +85,14 @@ public class RegistrationController {
     public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, String> body) {
         String studentId = body.getOrDefault("studentId", "STU001");
         String sectionId = body.get("sectionId");
+        String term = body.getOrDefault("term", "Fall2026");
 
         if (sectionId == null || sectionId.isBlank()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "sectionId is required."));
         }
 
-        Map<String, Object> result = registrationService.registerSection(studentId, sectionId);
+        Map<String, Object> result = registrationService.registerSection(studentId, sectionId, term);
         boolean success = Boolean.TRUE.equals(result.get("success"));
 
         if (!success) {
@@ -110,9 +113,10 @@ public class RegistrationController {
     @DeleteMapping("/drop/{studentId}/{sectionId}")
     public ResponseEntity<Map<String, Object>> drop(
             @PathVariable String studentId,
-            @PathVariable String sectionId) {
+            @PathVariable String sectionId,
+            @RequestParam(defaultValue = "Fall2026") String term) {
 
-        Map<String, Object> result = registrationService.dropSection(studentId, sectionId);
+        Map<String, Object> result = registrationService.dropSection(studentId, sectionId, term);
         boolean success = Boolean.TRUE.equals(result.get("success"));
         return success
                 ? ResponseEntity.ok(result)
