@@ -38,8 +38,8 @@ public class PresenceStore {
     /** Broadcast destination for all presence delta events. */
     public static final String PRESENCE_TOPIC = "/topic/presence";
 
-    /** How long (seconds) a heartbeat entry stays alive without renewal. */
-    private static final long TTL_SECONDS = 60L;
+    /** How long (seconds) a heartbeat entry stays alive without renewal (2 minutes of inactivity). */
+    private static final long TTL_SECONDS = 120L;
 
     private final SimpMessagingTemplate messagingTemplate;
 

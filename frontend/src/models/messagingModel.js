@@ -2,43 +2,45 @@
  * messagingModel.js – Model layer for the Direct Messaging feature.
  *
  * MVC Role: Model
- * Re-exports all mock data from the original data/mockData.js location,
- * centralizing messaging data under the models/ layer.
+ * Centralizes messaging data and session identity under the models/ layer.
+ *
+ * NOTE: CURRENT_USER has been removed. All identity is read at call-time
+ * from localStorage via getCurrentUser(). This eliminates the stale-module-
+ * load bug where the role/id were frozen at import time as 'STUDENT'.
  */
 
 import { getStoredUser } from './authModel.js'
-
-export const CURRENT_USER = {
-  id: 'usr_eusha_001',
-  username: 'eusha.k',
-  displayName: 'Eusha Kayenat',
-  role: 'STUDENT',
-  department: 'Computer Science & Engineering',
-  avatarUrl: null,
-  status: 'ONLINE',
-  customStatus: 'Building DM feature for CSE470 🚀'
-}
 
 /**
  * getCurrentUser()
  *
  * Returns the authenticated user for the current session by reading
- * from localStorage (populated by storeAuth() on login), overlaid
- * onto the CURRENT_USER shape so all fields are always present.
+ * from localStorage (populated by storeAuth() on login).
  *
- * Falls back to the hardcoded CURRENT_USER when no session exists.
+ * Called at the moment a message is sent / a component mounts — never
+ * cached at module-load time. This is the single source of truth for
+ * authorId, authorName, and authorRole on every outgoing message.
  *
  * MVC Role: Model helper — pure function, no side effects.
  */
 export function getCurrentUser() {
   const stored = getStoredUser()
-  if (!stored || !stored.userId) return CURRENT_USER
+  if (stored && stored.userId) {
+    return {
+      id:          stored.userId,
+      username:    stored.email    || stored.userId,
+      displayName: stored.fullName || stored.userId,
+      role:        stored.role     || 'STUDENT',
+      status:      'ONLINE',
+    }
+  }
+  // Unauthenticated fallback — should never reach production with a real login
   return {
-    ...CURRENT_USER,
-    id:          stored.userId,
-    displayName: stored.fullName || CURRENT_USER.displayName,
-    username:    stored.email    || CURRENT_USER.username,
-    role:        stored.role     || CURRENT_USER.role,
+    id:          'guest',
+    username:    'guest',
+    displayName: 'Guest',
+    role:        'STUDENT',
+    status:      'ONLINE',
   }
 }
 
@@ -100,81 +102,13 @@ export const MOCK_USERS = [
   }
 ]
 
-export const MOCK_CONVERSATIONS = [
-  {
-    id: 'dm_usr_eusha_001_usr_faculty_001',
-    isGroup: false,
-    recipient: MOCK_USERS[0],
-    unreadCount: 1,
-    lastMessage: {
-      content: 'Please find attached the project proposal PDF and database schema for your review.',
-      createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-      senderId: 'usr_faculty_001'
-    }
-  },
-  {
-    id: 'dm_usr_eusha_001_usr_alex_002',
-    isGroup: false,
-    recipient: MOCK_USERS[2],
-    unreadCount: 0,
-    lastMessage: {
-      content: 'Hey Eusha! Are the DM WebSocket event endpoints ready?',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-      senderId: 'usr_alex_002'
-    }
-  },
-  {
-    id: 'dm_usr_eusha_001_usr_sarah_003',
-    isGroup: false,
-    recipient: MOCK_USERS[3],
-    unreadCount: 0,
-    lastMessage: {
-      content: 'Thanks for sending over the schema documentation!',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-      senderId: 'usr_eusha_001'
-    }
-  }
-]
 
-export const INITIAL_MESSAGES = {
-  ['dm_usr_eusha_001_usr_faculty_001']: [
-    {
-      id: 'msg_fac_001',
-      conversationId: 'dm_usr_eusha_001_usr_faculty_001',
-      senderId: 'usr_eusha_001',
-      content: 'Respected Sir, I have submitted the Direct Messaging project proposal PDF and modular schema file for your review.',
-      createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-      attachments: [
-        {
-          id: 'att_001',
-          name: 'CSE470_DirectMessaging_Proposal.pdf',
-          size: '2.4 MB',
-          type: 'application/pdf',
-          url: '#'
-        }
-      ],
-      isRead: true
-    },
-    {
-      id: 'msg_fac_002',
-      conversationId: 'dm_usr_eusha_001_usr_faculty_001',
-      senderId: 'usr_faculty_001',
-      content: 'Thank you Eusha! 🎓 I have reviewed the architecture PDF.',
-      createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-      isRead: false
-    }
-  ],
-  ['dm_usr_eusha_001_usr_alex_002']: [
-    {
-      id: 'msg_001',
-      conversationId: 'dm_usr_eusha_001_usr_alex_002',
-      senderId: 'usr_alex_002',
-      content: 'Hi Eusha! How is the CSE470 project coming along?',
-      createdAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-      isRead: true
-    }
-  ]
-}
+// MOCK_CONVERSATIONS and INITIAL_MESSAGES have been removed.
+// The conversation list is populated at runtime:
+//   - DM conversations are built dynamically when the user starts a new DM.
+//   - The controller initialises with an empty conversations array [].
+//   - MOCK_USERS below serves only as a fallback when GET /api/users fails.
+
 
 /**
  * ADVISOR_CHANNEL – Permanent advisor channel always visible in the DM sidebar.

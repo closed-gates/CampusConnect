@@ -25,10 +25,16 @@ export const PRESENCE_TOPIC           = '/topic/presence'
 /* ── Timing ───────────────────────────────────────────────────────── */
 
 /**
- * Heartbeat interval in milliseconds.
- * Must be shorter than the backend TTL (60s). 25s gives comfortable margin.
+ * Inactivity timeout in milliseconds (2 minutes).
+ * Users with no interaction for 2 minutes are marked offline.
  */
-export const HEARTBEAT_INTERVAL_MS = 25_000
+export const INACTIVITY_TIMEOUT_MS = 120_000
+
+/**
+ * Heartbeat interval in milliseconds.
+ * Heartbeat sent every 20 seconds while user is active.
+ */
+export const HEARTBEAT_INTERVAL_MS = 20_000
 
 /* ── Status constants ─────────────────────────────────────────────── */
 

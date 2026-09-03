@@ -30,6 +30,21 @@ export default function DMChatWindow({
 
   const isFacultyRecipient = recipientUser?.role === 'FACULTY';
 
+  // Strictly filter messages belonging only to this 1-on-1 dialogue between currentUser and recipientUser
+  const validMessages = (messages || []).filter((msg) => {
+    if (!msg) return false;
+    const isFromSelf = msg.senderId === currentUser?.id;
+    const isFromRecipient = msg.senderId === recipientUser?.id;
+
+    // If message has explicit recipientId metadata, enforce it
+    if (msg.recipientId) {
+      return (isFromSelf && msg.recipientId === recipientUser?.id) ||
+             (isFromRecipient && msg.recipientId === currentUser?.id);
+    }
+    // Fallback: must be from either currentUser or recipientUser
+    return isFromSelf || isFromRecipient;
+  });
+
   return (
     <div className="univ-msg-feed" ref={scrollRef}>
       <div style={{ textAlign: 'center', padding: '24px 16px', borderBottom: '1px solid var(--color-border, #E5E7EB)', marginBottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#ffffff', borderRadius: 12, margin: '16px 16px 8px' }}>
@@ -48,17 +63,27 @@ export default function DMChatWindow({
         </p>
       </div>
 
-      {messages.length === 0 ? (
+      {validMessages.length === 0 ? (
         <div className="univ-empty-state">
           <span className="univ-empty-icon">💬</span>
           <h3>No messages yet</h3>
           <p>Send a direct message or share course files below to start chatting with {recipientUser?.displayName}!</p>
         </div>
       ) : (
-        messages.map((msg) => {
+        validMessages.map((msg) => {
           const isSelf = msg.senderId === currentUser.id;
-          const author = isSelf ? currentUser : recipientUser;
+          const author = isSelf
+            ? currentUser
+            : (recipientUser?.id === msg.senderId
+                ? recipientUser
+                : {
+                    id: msg.senderId,
+                    displayName: msg.senderName || 'Student',
+                    role: msg.senderRole || 'STUDENT',
+                    avatarUrl: null,
+                  });
           const isAuthorFaculty = author?.role === 'FACULTY';
+          const isAuthorAdmin   = author?.role === 'ADMIN';
           const hasAttachments = msg.attachments && msg.attachments.length > 0;
           const safeContent = typeof msg.content === 'string' ? msg.content : (msg.content?.content || String(msg.content || ''));
 
@@ -71,7 +96,7 @@ export default function DMChatWindow({
               <div className="univ-msg-bubble">
                 <div className="univ-msg-header">
                   <span className="univ-msg-author">{author?.displayName}</span>
-                  <span className={`role-badge ${isAuthorFaculty ? 'faculty' : 'student'}`}>
+                  <span className={`role-badge ${isAuthorFaculty ? 'faculty' : isAuthorAdmin ? 'admin' : 'student'}`}>
                     {author?.role}
                   </span>
                   <span className="univ-msg-timestamp">
