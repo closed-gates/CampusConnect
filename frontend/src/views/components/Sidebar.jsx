@@ -16,6 +16,8 @@ const NAV_ITEMS = [
   { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: '/courses' },
   { id: 'faculty-directory', label: 'Faculty Directory', icon: <DirectoryIcon />, route: '/faculty-directory' },
   { id: 'assignments',       label: 'Assignments',       icon: <AssignmentIcon />, route: '/assignments' },
+  { id: 'video-lectures',    label: 'Video Lectures',    icon: <VideoLectureIcon />, route: '/video-lectures' },
+  { id: 'course-materials',  label: 'Course Materials',  icon: <CourseMaterialIcon />, route: '/course-materials' },
   { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: '/advising' },
   { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: '/messaging' },
   { id: 'academic-calendar', label: 'Academic Calendar', icon: <CalendarIcon />,  route: '/academic-calendar' },
@@ -161,6 +163,23 @@ function CoursesIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+    </svg>
+  )
+}
+
+function CourseMaterialIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+    </svg>
+  )
+}
+
+function VideoLectureIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <polygon points="10 9 16 12 10 15 10 9" fill="currentColor" stroke="none"/>
     </svg>
   )
 }

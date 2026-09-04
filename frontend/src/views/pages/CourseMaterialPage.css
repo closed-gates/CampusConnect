@@ -1,0 +1,243 @@
+/* CourseMaterialPage.css – styles for the course materials repository. */
+
+.cm-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cm-page-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.4px;
+}
+
+.cm-page-subtitle {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  margin-top: 4px;
+}
+
+.cm-create-btn,
+.cm-secondary-btn,
+.cm-delete-btn {
+  border: none;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cm-create-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+  color: var(--color-white);
+}
+
+.cm-secondary-btn {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-teal-light);
+  color: var(--color-teal-dark);
+}
+
+.cm-delete-btn {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: #FEF2F2;
+  color: var(--color-error);
+}
+
+.cm-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 20px;
+}
+
+.cm-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cm-input,
+.cm-textarea {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.cm-status {
+  color: var(--color-text-sub);
+  margin-bottom: 16px;
+}
+
+.cm-status-error {
+  color: var(--color-error);
+}
+
+.cm-empty {
+  padding: 28px;
+}
+
+.cm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cm-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px;
+}
+
+.cm-card-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.cm-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cm-card-body h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 6px 0 4px;
+}
+
+.cm-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-teal-dark);
+  background: var(--color-teal-light);
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.cm-meta,
+.cm-description {
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+.cm-description {
+  margin: 6px 0;
+  color: var(--color-text);
+}
+
+.cm-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cm-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 50;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-text);
+  color: var(--color-white);
+  box-shadow: var(--shadow-md);
+}
+
+.cm-toast.error {
+  background: var(--color-error);
+}
+
+.cm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 24, 39, 0.45);
+  padding: 16px;
+}
+
+.cm-modal {
+  width: min(520px, 100%);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.cm-preview-modal {
+  width: min(1100px, 100%);
+  height: min(90vh, 900px);
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cm-preview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cm-preview-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cm-preview-frame {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+}
+
+.cm-preview-image {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.cm-preview-text {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 700px) {
+  .cm-page-header,
+  .cm-card {
+    flex-direction: column;
+  }
+}

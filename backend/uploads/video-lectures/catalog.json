@@ -1,0 +1,26 @@
+{
+  "lectures" : [ {
+    "id" : 1,
+    "title" : "Demo",
+    "description" : "",
+    "courseCode" : "CSE470",
+    "courseName" : "Software Engineering",
+    "sourceType" : "EMBED",
+    "embedUrl" : "https://www.youtube.com/embed/Epi4QGaccSg?enablejsapi=1&rel=0",
+    "storedFilename" : null,
+    "originalFilename" : null,
+    "contentType" : null,
+    "fileSize" : null,
+    "createdBy" : "FAC001",
+    "createdAt" : "2026-09-05T01:07:19.783997"
+  } ],
+  "progress" : [ {
+    "lectureId" : 1,
+    "userId" : "STU001",
+    "positionSeconds" : 45.874889,
+    "durationSeconds" : 146.0,
+    "percentWatched" : 31,
+    "completed" : false,
+    "updatedAt" : "2026-09-05T01:21:33.6154167"
+  } ]
+}

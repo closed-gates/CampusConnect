@@ -93,18 +93,20 @@ export const EMPTY_CREATE_FORM = {
   createdBy:   '',
 }
 
-// ── Available courses for teacher's create form ───────────────
-export const COURSE_OPTIONS = [
-  { code: 'CSE470', name: 'Software Engineering' },
-  { code: 'CSE321', name: 'Operating Systems' },
-  { code: 'CSE220', name: 'Data Structures' },
-  { code: 'CSE110', name: 'Programming Language I' },
-  { code: 'CSE370', name: 'Database Systems' },
-  { code: 'CSE421', name: 'Computer Networks' },
-  { code: 'CSE481', name: 'Artificial Intelligence' },
-  { code: 'MAT201', name: 'Linear Algebra' },
-  { code: 'PHY101', name: 'Physics I' },
-]
+/** Map GET /api/courses/catalog rows into { code, name } options. */
+export function toCourseOptions(catalog) {
+  const rows = Array.isArray(catalog) ? catalog : []
+  const seen = new Set()
+  return rows
+    .filter(course => {
+      const code = course?.code
+      if (!code || seen.has(code)) return false
+      seen.add(code)
+      return true
+    })
+    .map(course => ({ code: course.code, name: course.name || course.title || course.code }))
+    .sort((a, b) => a.code.localeCompare(b.code))
+}
 
 // ── Pure helper functions ─────────────────────────────────────
 

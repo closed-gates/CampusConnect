@@ -21,8 +21,10 @@ import {
   EMPTY_CREATE_FORM,
   MAX_FILE_SIZE,
   deriveStatus,
+  toCourseOptions,
 } from '../models/assignmentModel.js'
 import * as assignmentService from '../services/assignmentService.js'
+import { getCatalog } from '../services/courseService.js'
 
 /**
  * useAssignmentController
@@ -38,6 +40,7 @@ export function useAssignmentController() {
 
   // ── Assignments list state ────────────────────────────────────
   const [assignments, setAssignments] = useState([])
+  const [courseOptions, setCourseOptions] = useState([])
   const [showOverdue, setShowOverdue] = useState(false)
   const [overdueCount, setOverdueCount] = useState(0)
   const [loading,     setLoading]     = useState(true)
@@ -80,6 +83,19 @@ export function useAssignmentController() {
   useEffect(() => {
     loadAssignments(showOverdue)
   }, [showOverdue])
+
+  useEffect(() => {
+    let cancelled = false
+    getCatalog()
+      .then(data => {
+        if (!cancelled) setCourseOptions(toCourseOptions(data))
+      })
+      .catch(err => {
+        console.error('[AssignmentController] Failed to load course catalog:', err)
+        if (!cancelled) setCourseOptions([])
+      })
+    return () => { cancelled = true }
+  }, [])
 
   async function loadAssignments(includeOverdue = showOverdue) {
     setLoading(true)
@@ -228,9 +244,12 @@ export function useAssignmentController() {
     setCreateForm(prev => ({ ...prev, [field]: value }))
   }, [])
 
-  const handleCourseSelect = useCallback((code, name) => {
-    setCreateForm(prev => ({ ...prev, courseCode: code, courseName: name }))
-  }, [])
+  const handleCourseSelect = useCallback((code) => {
+    setCreateForm(prev => {
+      const match = courseOptions.find(c => c.code === code)
+      return { ...prev, courseCode: code, courseName: match ? match.name : '' }
+    })
+  }, [courseOptions])
 
   const handleCreateFileSelect = useCallback((file) => {
     if (file && file.size > MAX_FILE_SIZE) {
@@ -353,6 +372,7 @@ export function useAssignmentController() {
     handleDownload,
 
     // Teacher: create form
+    courseOptions,
     createForm,
     createFile,
     creating,

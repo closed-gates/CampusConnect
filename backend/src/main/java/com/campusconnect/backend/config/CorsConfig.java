@@ -33,9 +33,9 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Allowed origins — update with production URL when deploying
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",   // React dev server
-                "http://localhost:5173"    // Vite dev server (alternative)
+        // Vite falls back to 5174+ when 5173 is already in use.
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:*"
         ));
 
         // Allowed HTTP methods
