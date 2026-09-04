@@ -3,6 +3,7 @@ package com.campusconnect.backend.controller;
 import com.campusconnect.backend.service.AdminAdvisingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Map;
@@ -62,5 +63,23 @@ public class AdminAdvisingController {
         Map<String, Object> result = adminAdvisingService.forceRegisterStudent(studentId, sectionId);
         boolean success = Boolean.TRUE.equals(result.get("success"));
         return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
+    }
+
+    // ── 4. Advising Portal Open/Close Toggle (Admin Only) ────────────
+
+    @GetMapping("/advising-portal/status")
+    public ResponseEntity<Map<String, Object>> getAdvisingPortalStatus() {
+        return ResponseEntity.ok(adminAdvisingService.getAdvisingPortalStatus());
+    }
+
+    @PostMapping("/advising-portal/toggle")
+    public ResponseEntity<Map<String, Object>> setAdvisingPortalStatus(
+            @RequestBody Map<String, Object> body,
+            Authentication auth) {
+        boolean open   = Boolean.TRUE.equals(body.get("isOpen"));
+        String  msg    = body.get("message") instanceof String m ? m : null;
+        String  adminId = auth != null ? auth.getName() : "admin";
+        Map<String, Object> result = adminAdvisingService.setAdvisingPortalStatus(open, adminId, msg);
+        return ResponseEntity.ok(result);
     }
 }
