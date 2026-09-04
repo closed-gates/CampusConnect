@@ -44,11 +44,19 @@ public class AiChatService {
     private static final String FALLBACK_MESSAGE =
         "I do not have the information you need. Please contact the admin or desired department for further assistance.";
 
+    private static final String OPENAI_API_URL    = "https://api.openai.com/v1/chat/completions";
+    private static final String DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
     private static final String ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
     private static final String CLAUDE_MODEL       = "claude-3-5-haiku-20241022";
     private static final int    MAX_HISTORY_TURNS  = 6;  // keep last 3 user+assistant pairs
 
-    @Value("${anthropic.api.key}")
+    @Value("${openai.api.key:}")
+    private String openaiApiKey;
+
+    @Value("${openai.model:gpt-4o-mini}")
+    private String openaiModel;
+
+    @Value("${anthropic.api.key:}")
     private String anthropicApiKey;
 
     // ── Repositories injected for data context ────────────────────────────────
@@ -111,13 +119,21 @@ public class AiChatService {
         // ── Layer 2: Fetch real user context ──────────────────────────────────
         String contextBlock = buildContextBlock(userId, role, topic);
 
-        // ── Layer 3: Call Claude with system prompt + context ─────────────────
+        // ── Layer 3: Call AI model with system prompt + context ─────────────────
         try {
             String systemPrompt = buildSystemPrompt(contextBlock);
-            String reply = callClaude(systemPrompt, request.getHistory(), userMessage);
+            String effectiveOpenAiKey = getEffectiveOpenAiKey();
+            String reply;
+            if (effectiveOpenAiKey != null) {
+                log.info("[AiChatService] Generating reply via OpenAI ({})", (openaiModel != null && !openaiModel.isBlank()) ? openaiModel : DEFAULT_OPENAI_MODEL);
+                reply = callOpenAI(effectiveOpenAiKey, systemPrompt, request.getHistory(), userMessage);
+            } else {
+                log.info("[AiChatService] Generating reply via Anthropic ({})", CLAUDE_MODEL);
+                reply = callClaude(systemPrompt, request.getHistory(), userMessage);
+            }
             return buildResult(reply, topic.name(), false);
         } catch (Exception e) {
-            log.error("[AiChatService] Claude API error for user {}: {}", userId, e.getMessage());
+            log.error("[AiChatService] AI API error for user {}: {}", userId, e.getMessage());
             return buildResult(
                 "I'm having trouble connecting to my knowledge base right now. Please try again in a moment.",
                 topic.name(), false
@@ -481,6 +497,79 @@ public class AiChatService {
 
         JsonNode json = objectMapper.readTree(response.body());
         return json.path("content").path(0).path("text").asText(FALLBACK_MESSAGE);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // OpenAI API call
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private String getEffectiveOpenAiKey() {
+        if (openaiApiKey != null && !openaiApiKey.isBlank() && !openaiApiKey.contains("replace")) {
+            return openaiApiKey.trim();
+        }
+        if (anthropicApiKey != null && anthropicApiKey.startsWith("sk-proj-")) {
+            return anthropicApiKey.trim();
+        }
+        return null;
+    }
+
+    private String callOpenAI(String apiKey,
+                              String systemPrompt,
+                              List<AiChatRequest.Turn> history,
+                              String userMessage) throws Exception {
+
+        ArrayNode messagesArray = objectMapper.createArrayNode();
+
+        // 1. System prompt message
+        ObjectNode sysMsg = objectMapper.createObjectNode();
+        sysMsg.put("role", "system");
+        sysMsg.put("content", systemPrompt);
+        messagesArray.add(sysMsg);
+
+        // 2. Recent history turns
+        if (history != null && !history.isEmpty()) {
+            int start = Math.max(0, history.size() - MAX_HISTORY_TURNS);
+            for (int i = start; i < history.size(); i++) {
+                AiChatRequest.Turn turn = history.get(i);
+                ObjectNode msg = objectMapper.createObjectNode();
+                msg.put("role", turn.getRole());
+                msg.put("content", turn.getContent());
+                messagesArray.add(msg);
+            }
+        }
+
+        // 3. Current user message
+        ObjectNode userMsg = objectMapper.createObjectNode();
+        userMsg.put("role", "user");
+        userMsg.put("content", userMessage);
+        messagesArray.add(userMsg);
+
+        // Build request body
+        ObjectNode body = objectMapper.createObjectNode();
+        String model = (openaiModel != null && !openaiModel.isBlank()) ? openaiModel : DEFAULT_OPENAI_MODEL;
+        body.put("model", model);
+        body.put("max_tokens", 1024);
+        body.put("temperature", 0.3);
+        body.set("messages", messagesArray);
+
+        String requestBody = objectMapper.writeValueAsString(body);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(OPENAI_API_URL))
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer " + apiKey)
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            log.error("[AiChatService] OpenAI API returned {}: {}", response.statusCode(), response.body());
+            throw new RuntimeException("OpenAI API error: HTTP " + response.statusCode() + " - " + response.body());
+        }
+
+        JsonNode json = objectMapper.readTree(response.body());
+        return json.path("choices").path(0).path("message").path("content").asText(FALLBACK_MESSAGE);
     }
 
     // ─────────────────────────────────────────────────────────────────────────

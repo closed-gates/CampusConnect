@@ -68,6 +68,14 @@ export default function AdvisingView() {
    1. STUDENT PANEL
 ═══════════════════════════════════════════════════════════════ */
 function StudentPanel() {
+  const [portalStatus, setPortalStatus] = useState(null)
+
+  useEffect(() => {
+    adminAdvisingService.getPortalStatus()
+      .then(s => setPortalStatus(s))
+      .catch(() => setPortalStatus({ isOpen: true }))
+  }, [])
+
   return (
     <>
       <div className="dashboard-header">
@@ -76,6 +84,31 @@ function StudentPanel() {
           <p className="dashboard-date">Browse open sections and register during your advising window</p>
         </div>
       </div>
+
+      {/* Portal closed banner */}
+      {portalStatus !== null && !portalStatus.isOpen && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.06))',
+          border: '1.5px solid rgba(239,68,68,0.35)',
+          borderRadius: 12,
+          padding: '18px 22px',
+          marginBottom: 20,
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 14,
+        }}>
+          <span style={{ fontSize: 28, flexShrink: 0 }}>🔒</span>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: '#DC2626', marginBottom: 4 }}>
+              Advising Portal is Closed
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--color-text-sub)', lineHeight: 1.6 }}>
+              {portalStatus.message || 'The advising portal is currently closed by the administrator. Please check back later.'}
+            </div>
+          </div>
+        </div>
+      )}
+
       <RegistrationSection />
     </>
   )
@@ -129,6 +162,8 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
   const {
     students, selectedStudent, profile,
     courseSearch, setCourseSearch,
+    catalogFilter, setCatalogFilter,
+    allCourses,
     filteredCourses,
     studentRoutine,
     loading, profileLoading, coursesLoading, confirming,
@@ -383,6 +418,33 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
                   </span>
                 </div>
 
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className={`btn ${catalogFilter === 'all' ? 'btn--primary' : 'btn--outline'}`}
+                    style={{ padding: '4px 12px', fontSize: 12, borderRadius: 6 }}
+                    onClick={() => setCatalogFilter('all')}
+                  >
+                    All Sections ({(allCourses || []).length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${catalogFilter === 'test' ? 'btn--primary' : 'btn--outline'}`}
+                    style={{ padding: '4px 12px', fontSize: 12, borderRadius: 6 }}
+                    onClick={() => setCatalogFilter('test')}
+                  >
+                    🧪 Test Courses & Sections ({(allCourses || []).filter(c => c.isTestCourse).length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${catalogFilter === 'catalog' ? 'btn--primary' : 'btn--outline'}`}
+                    style={{ padding: '4px 12px', fontSize: 12, borderRadius: 6 }}
+                    onClick={() => setCatalogFilter('catalog')}
+                  >
+                    Standard Catalog ({(allCourses || []).filter(c => !c.isTestCourse).length})
+                  </button>
+                </div>
+
                 <div style={{ position: 'relative', marginBottom: 14 }}>
                   <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14 }}>🔍</span>
                   <input
@@ -423,6 +485,20 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
                           <div className="adv-catalog-top">
                             <span className="adv-course-code">{course.code}</span>
                             <span className="adv-catalog-section">Sec {course.section}</span>
+                            {course.isTestCourse && (
+                              <span style={{
+                                background: '#E0F2FE',
+                                color: '#0369A1',
+                                fontWeight: 700,
+                                fontSize: 11,
+                                padding: '2px 8px',
+                                borderRadius: 4,
+                                border: '1px solid #BAE6FD',
+                                marginLeft: 4
+                              }}>
+                                🧪 Test Section
+                              </span>
+                            )}
                             {isOverenrolled ? (
                               <span className="adv-soldout-badge" style={{ background: '#FEE2E2', color: '#DC2626', fontWeight: 700 }}>
                                 Overenrolled ({availableSeats})
@@ -477,7 +553,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
    4. ADMIN ADVISING PANEL (Section Creator & Bypass Enrolment)
 ═══════════════════════════════════════════════════════════════ */
 function AdminAdvisingPanel() {
-  const [adminTab, setAdminTab] = useState('advising') // 'advising' | 'create-section' | 'force-register'
+  const [adminTab, setAdminTab] = useState('portal') // 'portal' | 'advising' | 'create-section' | 'force-register'
   const advisorCtrl = useAdvisorController()
 
   const {
@@ -489,6 +565,16 @@ function AdminAdvisingPanel() {
     enrollingBypass,
     handleBypassFieldChange,
     handleForceRegister,
+    // Portal toggle
+    isPortalOpen,
+    portalMessage,
+    portalUpdatedBy,
+    portalUpdatedAt,
+    portalLoading,
+    portalUpdating,
+    customMessage,
+    setCustomMessage,
+    handleTogglePortal,
     toast,
     toastType,
   } = useAdminAdvisingController({
@@ -508,12 +594,30 @@ function AdminAdvisingPanel() {
       <div className="dashboard-header" style={{ marginBottom: 16 }}>
         <div>
           <h1 className="dashboard-greeting">Admin Advising & Section Management 🛡️</h1>
-          <p className="dashboard-date">Create new course sections, manage advisees, and bypass seat limits</p>
+          <p className="dashboard-date">Manage advising portal, create course sections, manage advisees, and bypass seat limits</p>
         </div>
       </div>
 
       {/* Admin Navigation Tabs */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, borderBottom: '2px solid var(--color-border, #E2E8F0)', paddingBottom: 10 }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, borderBottom: '2px solid var(--color-border, #E2E8F0)', paddingBottom: 10, flexWrap: 'wrap' }}>
+        <button
+          id="admin-tab-portal"
+          className={`btn ${adminTab === 'portal' ? 'btn--primary' : 'btn--outline'}`}
+          onClick={() => setAdminTab('portal')}
+          style={{ position: 'relative' }}
+        >
+          {isPortalOpen ? '🟢' : '🔴'} Portal Control
+          <span style={{
+            position: 'absolute',
+            top: -5,
+            right: -5,
+            background: isPortalOpen ? '#10B981' : '#EF4444',
+            width: 9,
+            height: 9,
+            borderRadius: '50%',
+            border: '2px solid white',
+          }} />
+        </button>
         <button
           className={`btn ${adminTab === 'advising' ? 'btn--primary' : 'btn--outline'}`}
           onClick={() => setAdminTab('advising')}
@@ -535,6 +639,21 @@ function AdminAdvisingPanel() {
           ⚡ Force Enrolment (Bypass Seat Limit)
         </button>
       </div>
+
+      {/* Tab 0: Portal Control */}
+      {adminTab === 'portal' && (
+        <PortalControlPanel
+          isPortalOpen={isPortalOpen}
+          portalMessage={portalMessage}
+          portalUpdatedBy={portalUpdatedBy}
+          portalUpdatedAt={portalUpdatedAt}
+          portalLoading={portalLoading}
+          portalUpdating={portalUpdating}
+          customMessage={customMessage}
+          setCustomMessage={setCustomMessage}
+          handleTogglePortal={handleTogglePortal}
+        />
+      )}
 
       {/* Tab 1: Normal Advising & Routines */}
       {adminTab === 'advising' && <AdvisorPanel isAdmin={true} advisorCtrl={advisorCtrl} />}
@@ -737,5 +856,184 @@ function AdminAdvisingPanel() {
         </div>
       )}
     </>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. PORTAL CONTROL PANEL (Admin Only)
+═══════════════════════════════════════════════════════════════ */
+function PortalControlPanel({
+  isPortalOpen, portalMessage, portalUpdatedBy, portalUpdatedAt,
+  portalLoading, portalUpdating, customMessage, setCustomMessage, handleTogglePortal
+}) {
+  const fmtDate = (iso) => {
+    if (!iso) return 'Not set'
+    try { return new Date(iso).toLocaleString() } catch { return iso }
+  }
+
+  return (
+    <div style={{ maxWidth: 700, margin: '0 auto' }}>
+      {/* Status Banner */}
+      <div style={{
+        borderRadius: 16,
+        padding: '28px 32px',
+        marginBottom: 24,
+        background: isPortalOpen
+          ? 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.05))'
+          : 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.05))',
+        border: `2px solid ${isPortalOpen ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 24,
+      }}>
+        {/* Big status icon */}
+        <div style={{
+          width: 72,
+          height: 72,
+          borderRadius: '50%',
+          background: isPortalOpen ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 34,
+          flexShrink: 0,
+          border: `2px solid ${isPortalOpen ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)'}`,
+          boxShadow: isPortalOpen ? '0 0 16px rgba(16,185,129,0.2)' : '0 0 16px rgba(239,68,68,0.2)',
+        }}>
+          {portalLoading ? '⏳' : isPortalOpen ? '🟢' : '🔴'}
+        </div>
+
+        <div style={{ flex: 1 }}>
+          <div style={{
+            fontSize: 22,
+            fontWeight: 800,
+            color: isPortalOpen ? '#059669' : '#DC2626',
+            marginBottom: 4,
+            letterSpacing: '-0.3px'
+          }}>
+            {portalLoading ? 'Loading…' : isPortalOpen ? 'Advising Portal is OPEN' : 'Advising Portal is CLOSED'}
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--color-text-sub)', lineHeight: 1.6, marginBottom: 8 }}>
+            {portalMessage || (isPortalOpen ? 'Students can currently self-register for courses.' : 'Students cannot register while the portal is closed.')}
+          </div>
+          {portalUpdatedBy && (
+            <div style={{ fontSize: 11, color: 'var(--color-text-sub)', opacity: 0.75 }}>
+              Last updated by <strong>{portalUpdatedBy}</strong> · {fmtDate(portalUpdatedAt)}
+            </div>
+          )}
+        </div>
+
+        {/* Live pulse indicator */}
+        {!portalLoading && (
+          <div style={{ position: 'relative', width: 16, height: 16, flexShrink: 0 }}>
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              background: isPortalOpen ? '#10B981' : '#EF4444',
+              opacity: 0.3,
+              animation: 'pulse 2s infinite',
+            }} />
+            <div style={{
+              position: 'absolute', inset: 3, borderRadius: '50%',
+              background: isPortalOpen ? '#10B981' : '#EF4444',
+            }} />
+          </div>
+        )}
+      </div>
+
+      {/* Toggle Control Card */}
+      <div className="section-card">
+        <div className="section-header" style={{ marginBottom: 20 }}>
+          <h2 className="section-title">Portal Access Control</h2>
+          <p style={{ fontSize: 13, color: 'var(--color-text-sub)', marginTop: 4 }}>
+            Toggle the advising portal for all students university-wide.
+            When closed, students cannot self-register — only admins can force-enrol.
+          </p>
+        </div>
+
+        {/* Custom message input */}
+        <div style={{ marginBottom: 18 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: 'var(--color-text-primary)' }}>
+            Custom Student Notice (optional)
+          </label>
+          <textarea
+            id="portal-custom-message"
+            className="adv-course-search-input"
+            style={{ resize: 'vertical', minHeight: 72, fontFamily: 'inherit', fontSize: 13, lineHeight: 1.5 }}
+            placeholder="e.g. Advising portal will reopen on Monday 9 AM. Thank you for your patience."
+            value={customMessage}
+            onChange={e => setCustomMessage(e.target.value)}
+          />
+          <p style={{ fontSize: 11, color: 'var(--color-text-sub)', marginTop: 4 }}>
+            This message will be shown to all students when the portal is closed.
+          </p>
+        </div>
+
+        {/* Toggle buttons */}
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <button
+            id="portal-open-btn"
+            className="btn btn--primary"
+            style={{
+              padding: '12px 28px',
+              fontWeight: 700,
+              fontSize: 14,
+              background: isPortalOpen ? '#10B981' : undefined,
+              borderColor: isPortalOpen ? '#10B981' : undefined,
+              opacity: isPortalOpen ? 0.7 : 1,
+              cursor: isPortalOpen ? 'default' : 'pointer',
+              flex: 1,
+              minWidth: 140,
+            }}
+            disabled={portalUpdating || portalLoading || isPortalOpen}
+            onClick={() => handleTogglePortal(true)}
+          >
+            {portalUpdating && !isPortalOpen ? '⏳ Opening…' : '🟢 Open Portal'}
+            {isPortalOpen && ' ✓ Currently Open'}
+          </button>
+
+          <button
+            id="portal-close-btn"
+            className="btn btn--outline"
+            style={{
+              padding: '12px 28px',
+              fontWeight: 700,
+              fontSize: 14,
+              color: !isPortalOpen ? '#DC2626' : undefined,
+              borderColor: !isPortalOpen ? '#DC2626' : undefined,
+              background: !isPortalOpen ? 'rgba(239,68,68,0.08)' : undefined,
+              opacity: !isPortalOpen ? 0.7 : 1,
+              cursor: !isPortalOpen ? 'default' : 'pointer',
+              flex: 1,
+              minWidth: 140,
+            }}
+            disabled={portalUpdating || portalLoading || !isPortalOpen}
+            onClick={() => handleTogglePortal(false)}
+          >
+            {portalUpdating && isPortalOpen ? '⏳ Closing…' : '🔴 Close Portal'}
+            {!isPortalOpen && ' ✓ Currently Closed'}
+          </button>
+        </div>
+
+        {/* Impact description */}
+        <div style={{
+          marginTop: 18,
+          background: 'rgba(99,102,241,0.06)',
+          border: '1px solid rgba(99,102,241,0.15)',
+          borderRadius: 10,
+          padding: '14px 16px',
+          fontSize: 13,
+          color: 'var(--color-text-sub)',
+          lineHeight: 1.7,
+        }}>
+          <strong style={{ color: 'var(--color-text-primary)' }}>💡 How this works:</strong>
+          <ul style={{ margin: '6px 0 0 16px', padding: 0 }}>
+            <li>When <strong>Open</strong> — students can self-register and drop courses per their advising window tier.</li>
+            <li>When <strong>Closed</strong> — student registration attempts are immediately blocked with your custom message.</li>
+            <li>Admin force-enrolment always works regardless of portal status.</li>
+            <li>The portal state is stored in the database and persists across server restarts.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   )
 }

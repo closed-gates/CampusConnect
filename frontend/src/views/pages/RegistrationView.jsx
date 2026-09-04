@@ -249,6 +249,20 @@ function SectionCard({ section: sec, windowOpen, onRegister, onDrop }) {
         <div className="reg-card-codes">
           <span className="reg-code-badge">{sec.code}</span>
           <span className="reg-section-num">Sec {sec.section}</span>
+          {sec.isTestCourse && (
+            <span style={{
+              background: '#E0F2FE',
+              color: '#0369A1',
+              fontWeight: 700,
+              fontSize: 10,
+              padding: '2px 6px',
+              borderRadius: 4,
+              border: '1px solid #BAE6FD',
+              marginLeft: 4
+            }}>
+              🧪 Test Section
+            </span>
+          )}
         </div>
         <div className="reg-status-badge" style={{ color: cfg.color, background: cfg.bg }}>
           {cfg.label}

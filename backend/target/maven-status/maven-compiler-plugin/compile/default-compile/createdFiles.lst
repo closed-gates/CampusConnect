@@ -12,6 +12,7 @@ com\campusconnect\backend\model\SectionRegistration$SectionRegistrationBuilder.c
 com\campusconnect\backend\service\AuthService.class
 com\campusconnect\backend\model\CourseSection.class
 com\campusconnect\backend\repository\CourseCatalogRepository.class
+com\campusconnect\backend\repository\FacultyDirectoryRepository.class
 com\campusconnect\backend\service\AdvisorService.class
 com\campusconnect\backend\config\SecurityConfig.class
 com\campusconnect\backend\controller\GpaController.class
@@ -31,6 +32,7 @@ com\campusconnect\backend\repository\AdvisedCourseRepository.class
 com\campusconnect\backend\service\ScheduleClashValidator$TimeInterval.class
 com\campusconnect\backend\service\TopicClassifier.class
 com\campusconnect\backend\controller\NotificationController.class
+com\campusconnect\backend\service\FacultyDirectoryService.class
 com\campusconnect\backend\repository\PaymentRecordRepository.class
 com\campusconnect\backend\controller\TestCourseController.class
 com\campusconnect\backend\dto\AttachmentDto.class
@@ -49,6 +51,7 @@ com\campusconnect\backend\model\AdvisedCourse.class
 com\campusconnect\backend\model\Notification.class
 com\campusconnect\backend\model\AttendanceRecord.class
 com\campusconnect\backend\service\DeadlineNotificationWorker.class
+com\campusconnect\backend\model\AdvisingPortalStatus.class
 com\campusconnect\backend\model\SectionRegistration.class
 com\campusconnect\backend\repository\SubmissionRepository.class
 com\campusconnect\backend\repository\AttendanceRecordRepository.class
@@ -76,6 +79,7 @@ com\campusconnect\backend\dto\ChatMessageDto.class
 com\campusconnect\backend\dto\BankInfoDTO$BankInfoDTOBuilder.class
 com\campusconnect\backend\model\TestSection.class
 com\campusconnect\backend\dto\PaymentUpdateRequest.class
+com\campusconnect\backend\model\FacultyDirectoryEntry.class
 com\campusconnect\backend\dto\ChangePasswordRequest.class
 com\campusconnect\backend\dto\PaymentBypassRequest.class
 com\campusconnect\backend\config\CorsConfig.class
@@ -83,6 +87,7 @@ com\campusconnect\backend\controller\PaymentController.class
 com\campusconnect\backend\repository\AssignmentRepository.class
 com\campusconnect\backend\dto\UserDto.class
 com\campusconnect\backend\exception\ForbiddenException.class
+com\campusconnect\backend\model\AdvisingPortalStatus$AdvisingPortalStatusBuilder.class
 com\campusconnect\backend\service\ChannelAccessService.class
 com\campusconnect\backend\model\TestFaculty$TestFacultyBuilder.class
 com\campusconnect\backend\repository\StudentProfileRepository.class
@@ -105,19 +110,24 @@ com\campusconnect\backend\dto\AdvisorMatchResponse.class
 com\campusconnect\backend\model\Advisor.class
 com\campusconnect\backend\controller\AccountSettingsController.class
 com\campusconnect\backend\security\JwtService.class
+com\campusconnect\backend\dto\FacultyDirectoryEntryDTO.class
 com\campusconnect\backend\dto\PaymentReceiptDTO.class
 com\campusconnect\backend\model\ChatMessage.class
+com\campusconnect\backend\model\FacultyDirectoryEntry$FacultyDirectoryEntryBuilder.class
 com\campusconnect\backend\dto\PaymentUpdateRequest$PaymentUpdateRequestBuilder.class
+com\campusconnect\backend\repository\AdvisingPortalStatusRepository.class
 com\campusconnect\backend\dto\PaymentReceiptItemDTO.class
 com\campusconnect\backend\service\GpaService.class
 com\campusconnect\backend\model\TestSection$TestSectionBuilder.class
 com\campusconnect\backend\model\Assignment.class
+com\campusconnect\backend\controller\FacultyDirectoryController.class
 com\campusconnect\backend\repository\StudentCompletedCourseRepository.class
 com\campusconnect\backend\model\CourseChannelMember.class
 com\campusconnect\backend\repository\package-info.class
 com\campusconnect\backend\dto\GpaRetakeRequest.class
 com\campusconnect\backend\model\Submission.class
 com\campusconnect\backend\controller\AssignmentController.class
+com\campusconnect\backend\dto\FacultyDirectoryEntryDTO$FacultyDirectoryEntryDTOBuilder.class
 com\campusconnect\backend\dto\PaymentReceiptItemDTO$PaymentReceiptItemDTOBuilder.class
 com\campusconnect\backend\repository\AppUserRepository.class
 com\campusconnect\backend\security\JwtAuthFilter.class
