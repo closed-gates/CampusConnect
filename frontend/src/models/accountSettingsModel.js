@@ -40,7 +40,7 @@ export const DEFAULT_PREFERENCES = {
   theme: 'light',
   accent: 'teal',
   notificationsMuted: false,
-  emailNotifications: { assignments: true, grades: true, advising: true, exams: true, announcements: true },
+  inAppNotifications: { assignments: true, grades: true, advising: true, exams: true, announcements: true },
   accessibility: { fontSize: 'normal', highContrast: false },
   academic: { semester: 'Fall 2026', courseView: 'grid', dashboardExams: true },
   calendar: { weekStartsOn: 'sunday', reminderHours: 24 },
@@ -93,7 +93,10 @@ export function loadPreferences() {
         notificationsMuted: typeof stored.notificationsMuted === 'boolean'
           ? stored.notificationsMuted
           : stored.notificationSound === false,
-        emailNotifications: { ...DEFAULT_PREFERENCES.emailNotifications, ...stored.emailNotifications },
+        inAppNotifications: {
+          ...DEFAULT_PREFERENCES.inAppNotifications,
+          ...(stored.inAppNotifications || stored.emailNotifications || {}),
+        },
         accessibility: {
           fontSize: stored.accessibility?.fontSize || DEFAULT_PREFERENCES.accessibility.fontSize,
           highContrast: stored.accessibility?.highContrast === true,

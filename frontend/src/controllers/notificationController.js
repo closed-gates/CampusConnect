@@ -17,6 +17,7 @@ import { Client as StompClient } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { getCurrentUser } from '../models/messagingModel.js';
 import { CHAT_WS_URL } from '../models/courseChatModel.js';
+import apiClient from '../services/apiClient.js';
 import {
   loadPreferences,
   PREFERENCE_CHANGE_EVENT,
@@ -47,7 +48,7 @@ export function useNotificationController(user = getCurrentUser()) {
     if (!userId) return;
     try {
       setLoading(true);
-      const res = await fetch(`${API_NOTIFICATIONS}?userId=${encodeURIComponent(userId)}`);
+      const res = await apiClient.get(API_NOTIFICATIONS);
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
@@ -163,9 +164,7 @@ export function useNotificationController(user = getCurrentUser()) {
       );
       setUnreadCount((c) => Math.max(0, c - 1));
 
-      await fetch(`${API_NOTIFICATIONS}/${id}/read?userId=${encodeURIComponent(userId)}`, {
-        method: 'PUT',
-      });
+      await apiClient.put(`${API_NOTIFICATIONS}/${id}/read`, {});
     } catch (err) {
       console.warn('[notificationController] Error marking as read:', err);
     }
@@ -177,9 +176,7 @@ export function useNotificationController(user = getCurrentUser()) {
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
 
-      await fetch(`${API_NOTIFICATIONS}/read-all?userId=${encodeURIComponent(userId)}`, {
-        method: 'PUT',
-      });
+      await apiClient.put(`${API_NOTIFICATIONS}/read-all`, {});
     } catch (err) {
       console.warn('[notificationController] Error marking all as read:', err);
     }

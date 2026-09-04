@@ -87,6 +87,46 @@ export function useAccountSettingsController() {
       .finally(() => setLoading(false))
   }, [storedUser])
 
+  useEffect(() => {
+    if (!storedUser?.userId) return
+    apiClient.get('/api/account/preferences/in-app-notifications')
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('Failed to load notification preferences')))
+      .then(data => {
+        setPreferenceError('')
+        setPreferences(prev => {
+          const next = { ...prev, inAppNotifications: {
+            assignments: data.assignments,
+            grades: data.grades,
+            advising: data.advising,
+            exams: data.exams,
+            announcements: data.announcements,
+          }}
+          savePreferences(next)
+          return next
+        })
+      })
+      .catch(() => setPreferenceError('Could not load notification preferences.'))
+  }, [storedUser])
+
+  // Load the authenticated user's persisted profile picture.
+  useEffect(() => {
+    let objectUrl = ''
+    if (!storedUser?.userId) return undefined
+    apiClient.get('/api/account/profile-picture')
+      .then(async response => {
+        if (response.status === 404) return null
+        if (!response.ok) throw new Error('Failed to load profile photo')
+        return response.blob()
+      })
+      .then(blob => {
+        if (!blob) return
+        objectUrl = URL.createObjectURL(blob)
+        setPreferences(prev => ({ ...prev, avatar: objectUrl }))
+      })
+      .catch(() => {})
+    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl) }
+  }, [storedUser])
+
   // ── Apply theme preference ────────────────────────────────────────────────────
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', preferences.theme)
@@ -206,16 +246,36 @@ export function useAccountSettingsController() {
     }
   }, [handleNestedPreferenceChange])
 
-  const handleAvatarChange = useCallback((file) => {
+  const handleInAppNotificationChange = useCallback(async (category, enabled) => {
+    setPreferenceError('')
+    try {
+      const response = await apiClient.put('/api/account/preferences/in-app-notifications', { [category]: enabled })
+      if (!response.ok) throw new Error(await getErrorMessage(response, 'Failed to update notification preference'))
+      handleNestedPreferenceChange('inAppNotifications', category, enabled)
+    } catch (error) {
+      setPreferenceError(error.message || 'Failed to update notification preference.')
+    }
+  }, [handleNestedPreferenceChange])
+
+  const handleAvatarChange = useCallback(async (file) => {
     if (!file) return
     if (!file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) {
       setProfileError('Profile photo must be an image smaller than 2 MB.')
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => handlePreferenceChange('avatar', reader.result)
-    reader.readAsDataURL(file)
-  }, [handlePreferenceChange])
+    setProfileError('')
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const response = await apiClient.upload('/api/account/profile-picture', formData, 'PUT')
+      if (!response.ok) throw new Error(await getErrorMessage(response, 'Failed to save profile photo'))
+      const avatar = URL.createObjectURL(file)
+      setPreferences(prev => ({ ...prev, avatar }))
+      setProfileSuccess('Profile photo saved.')
+    } catch (error) {
+      setProfileError(error.message || 'Failed to save profile photo.')
+    }
+  }, [])
 
   const handleExportData = useCallback(() => {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' })
@@ -334,14 +394,6 @@ export function useAccountSettingsController() {
     }
   }, [])
 
-  const handleDeactivateAccount = useCallback(async () => {
-    if (!window.confirm('Deactivate your CampusConnect account? You will no longer be able to sign in.')) return
-    const res = await apiClient.delete('/api/account')
-    if (!res.ok) throw new Error(await getErrorMessage(res, 'Failed to deactivate account'))
-    clearAuth()
-    window.location.href = '/'
-  }, [])
-
   const handleSignOut = useCallback(() => {
     clearAuth()
     window.location.href = '/'
@@ -367,10 +419,10 @@ export function useAccountSettingsController() {
     handlePreferenceChange,
     handleNestedPreferenceChange,
     handleReminderHoursChange,
+    handleInAppNotificationChange,
     handleAvatarChange,
     handleExportData,
     handleResetPreferences,
-    handleDeactivateAccount,
     handleSignOut,
   }
 }

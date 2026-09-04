@@ -21,7 +21,7 @@ import './AttendancePage.css'
  */
 export default function AttendanceView() {
   const {
-    isFaculty,
+    isFaculty, isAdmin, canMark,
     courses, selectedCourse, selectCourse, courseInfo, courseStudents,
     selectedDate, setSelectedDate,
     activeTab, setActiveTab,
@@ -44,10 +44,12 @@ export default function AttendanceView() {
         {/* Header */}
         <div className="dashboard-header">
           <h1 className="dashboard-greeting">
-            {isFaculty ? '📋 Faculty Attendance Tracking' : '📊 My Attendance'}
+            {isAdmin ? '🛡️ All Section Attendance' : isFaculty ? '📋 Faculty Attendance Tracking' : '📊 My Attendance'}
           </h1>
           <p className="dashboard-date">
-            {isFaculty
+            {isAdmin
+              ? 'Select any section to inspect its roster, history, and attendance summary.'
+              : isFaculty
               ? 'Record and manage student attendance for your courses.'
               : 'View attendance for your registered courses, synced from Advising.'}
           </p>
@@ -56,7 +58,7 @@ export default function AttendanceView() {
         {/* Role badge */}
         <div className="club-role-badge-row">
           <span className={`club-role-badge ${isFaculty ? 'admin' : 'student'}`}>
-            {isFaculty ? '👨‍🏫 Faculty' : '🎓 Student'}
+            {isAdmin ? '🛡️ Administrator · Read only' : isFaculty ? '👨‍🏫 Faculty' : '🎓 Student'}
           </span>
         </div>
 
@@ -84,7 +86,8 @@ export default function AttendanceView() {
                       <div className="att-course-id">{course.id}</div>
                       <div className="att-course-name">{course.name}</div>
                       <div className="att-course-info">
-                        <span>{course.totalStudents} students enrolled</span>
+                        <span>{course.section ? `Section ${course.section} · ` : ''}{course.totalStudents} students enrolled</span>
+                        {isAdmin && course.faculty && <span> · {course.faculty}</span>}
                       </div>
                     </div>
                   </button>
@@ -94,10 +97,23 @@ export default function AttendanceView() {
           </div>
         )}
 
+        {isAdmin && courseInfo && (
+          <section className="section-card" style={{ marginBottom: 18 }}>
+            <h2 className="att-section-label">Section details</h2>
+            <p><strong>{courseInfo.id}</strong> · {courseInfo.name}{courseInfo.faculty ? ` · ${courseInfo.faculty}` : ''}</p>
+            <p className="text-muted">{courseStudents.length} registered student{courseStudents.length === 1 ? '' : 's'}</p>
+            <div className="advisor-table-wrapper" style={{ overflowX: 'auto', marginTop: 12 }}>
+              <table className="admin-faculty-table" style={{ width: '100%', borderCollapse: 'collapse' }}><thead><tr><th style={{ textAlign: 'left', padding: 10 }}>Student ID</th><th style={{ textAlign: 'left', padding: 10 }}>Student</th></tr></thead><tbody>
+                {courseStudents.length ? courseStudents.map(student => <tr key={student.id}><td style={{ padding: 10 }}>{student.id}</td><td style={{ padding: 10 }}>{student.name}</td></tr>) : <tr><td colSpan="2" style={{ padding: 16 }}>No students registered in this section.</td></tr>}
+              </tbody></table>
+            </div>
+          </section>
+        )}
+
         {/* ── Faculty view: Tab Navigation ──────────────────────── */}
         {isFaculty && (
           <div className="att-tabs" role="tablist">
-            <button
+            {canMark && <button
               id="att-tab-mark"
               role="tab"
               aria-selected={activeTab === 'mark'}
@@ -105,7 +121,7 @@ export default function AttendanceView() {
               onClick={() => setActiveTab('mark')}
             >
               ✏️ Mark Attendance
-            </button>
+            </button>}
             <button
               id="att-tab-history"
               role="tab"
@@ -129,7 +145,7 @@ export default function AttendanceView() {
         )}
 
         {/* ── Faculty view: Mark Attendance Tab ─────────────────── */}
-        {isFaculty && activeTab === 'mark' && (
+        {canMark && activeTab === 'mark' && (
           <div className="att-tab-content">
             {/* Date selector + quick actions */}
             <div className="att-mark-header">

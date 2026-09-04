@@ -85,10 +85,11 @@ User toggles dark mode / notification muting
 ```
 
 ### 5. Extended Settings
-Profile photo, appearance, accessibility, email categories, academic defaults, and calendar defaults are persisted in `cc_preferences`. The global preferences controller applies appearance and accessibility attributes on every route. Data export produces a branded local PDF containing account and academic profile fields only; preference values are excluded and server data is not modified. Deactivation sends authenticated `DELETE /api/account`, soft-disables the database user, and prevents subsequent login.
+Profile photo, appearance, accessibility, email categories, academic defaults, and calendar defaults are persisted in `cc_preferences`. The global preferences controller applies appearance and accessibility attributes on every route. Data export produces a branded local PDF containing account and academic profile fields only; preference values are excluded and server data is not modified. Account access suspension is managed only by administrators through the separate account-freeze workflow.
 
 The preferred semester is applied non-destructively when semester-aware pages mount:
 - Courses initializes its existing semester filter from the preferred term's season (for example, `Spring 2027` → `Spring`). The user can still change or clear that page filter normally.
+- Default Course View initializes the Course Catalog's existing grid/list toggle whenever the page mounts. The user can still switch views for the current visit; the saved default remains unchanged until it is updated in Settings.
 - Attendance converts the display term to the backend format (for example, `Spring 2027` → `Spring2027`) and requests registered courses for that term.
 - Advising and student self-registration pass the preferred term through their list, assign, confirm, register, and drop operations. Advisor-assigned courses are stored with a term so records from different semesters do not mix.
 - View Routine requests registrations and advised courses for the preferred term and displays that term in its heading, official session label, and empty state.

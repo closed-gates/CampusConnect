@@ -1302,6 +1302,9 @@ input {
   background: var(--course-header-color, var(--color-bg));
 }
 
+.stat-card-icon.red { background: rgba(239, 68, 68, 0.14); color: #dc2626; }
+.stat-card:has(.stat-card-icon.red) .stat-card-value { color: #dc2626; }
+
 :root[data-accent='blue'] { --color-teal: #3B82F6; --color-teal-dark: #2563EB; --color-teal-light: #DBEAFE; }
 :root[data-accent='purple'] { --color-teal: #8B5CF6; --color-teal-dark: #7C3AED; --color-teal-light: #EDE9FE; }
 :root[data-font-size='large'] { font-size: 112.5%; }

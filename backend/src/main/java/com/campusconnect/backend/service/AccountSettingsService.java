@@ -123,14 +123,6 @@ public class AccountSettingsService {
     }
 
     @Transactional
-    public void deactivateAccount(String userId) {
-        AppUser user = userRepo.findByUserId(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
-        user.setActive(false);
-        userRepo.save(user);
-    }
-
-    @Transactional
     public void updateReminderPreference(String userId, UpdateReminderPreferenceRequest req) {
         AppUser user = userRepo.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));

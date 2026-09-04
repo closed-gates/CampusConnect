@@ -13,7 +13,10 @@ com\campusconnect\backend\service\AuthService.class
 com\campusconnect\backend\model\CourseSection.class
 com\campusconnect\backend\repository\CourseCatalogRepository.class
 com\campusconnect\backend\repository\FacultyDirectoryRepository.class
+com\campusconnect\backend\repository\UserProfilePictureRepository.class
+com\campusconnect\backend\service\UserProfilePictureService.class
 com\campusconnect\backend\service\AdvisorService.class
+com\campusconnect\backend\service\InAppNotificationPreferenceService.class
 com\campusconnect\backend\config\SecurityConfig.class
 com\campusconnect\backend\controller\GpaController.class
 com\campusconnect\backend\repository\ApplicationRepository.class
@@ -24,6 +27,7 @@ com\campusconnect\backend\repository\ExamScheduleRepository.class
 com\campusconnect\backend\controller\ChannelAccessController.class
 com\campusconnect\backend\config\WebSocketConfig.class
 com\campusconnect\backend\controller\RegistrationController.class
+com\campusconnect\backend\service\AttendanceAccessService.class
 com\campusconnect\backend\service\ClubService.class
 com\campusconnect\backend\model\TestCourse$TestCourseBuilder.class
 com\campusconnect\backend\service\UserService.class
@@ -50,9 +54,11 @@ com\campusconnect\backend\service\TopicClassifier$Topic.class
 com\campusconnect\backend\model\AdvisedCourse.class
 com\campusconnect\backend\model\Notification.class
 com\campusconnect\backend\model\AttendanceRecord.class
+com\campusconnect\backend\dto\AccountFreezeDTO.class
 com\campusconnect\backend\service\DeadlineNotificationWorker.class
 com\campusconnect\backend\model\AdvisingPortalStatus.class
 com\campusconnect\backend\model\SectionRegistration.class
+com\campusconnect\backend\repository\InAppNotificationPreferenceRepository.class
 com\campusconnect\backend\repository\SubmissionRepository.class
 com\campusconnect\backend\repository\AttendanceRecordRepository.class
 com\campusconnect\backend\controller\AttendanceController.class
@@ -92,6 +98,8 @@ com\campusconnect\backend\service\ChannelAccessService.class
 com\campusconnect\backend\model\TestFaculty$TestFacultyBuilder.class
 com\campusconnect\backend\repository\StudentProfileRepository.class
 com\campusconnect\backend\service\ChatService.class
+com\campusconnect\backend\controller\AccountFreezeController.class
+com\campusconnect\backend\controller\UserProfilePictureController.class
 com\campusconnect\backend\model\Advisor$AdvisorBuilder.class
 com\campusconnect\backend\model\Recruitment.class
 com\campusconnect\backend\exception\package-info.class
@@ -103,12 +111,14 @@ com\campusconnect\backend\BackendApplication.class
 com\campusconnect\backend\config\package-info.class
 com\campusconnect\backend\controller\AdminAdvisingController.class
 com\campusconnect\backend\dto\GpaPredictRequest$CourseGradePair.class
+com\campusconnect\backend\service\AccountFreezeService.class
 com\campusconnect\backend\repository\RecruitmentRepository.class
 com\campusconnect\backend\service\RegistrationService.class
 com\campusconnect\backend\model\StudentProfile$StudentProfileBuilder.class
 com\campusconnect\backend\dto\AdvisorMatchResponse.class
 com\campusconnect\backend\model\Advisor.class
 com\campusconnect\backend\controller\AccountSettingsController.class
+com\campusconnect\backend\model\InAppNotificationPreference.class
 com\campusconnect\backend\security\JwtService.class
 com\campusconnect\backend\dto\FacultyDirectoryEntryDTO.class
 com\campusconnect\backend\dto\PaymentReceiptDTO.class
@@ -122,10 +132,12 @@ com\campusconnect\backend\model\TestSection$TestSectionBuilder.class
 com\campusconnect\backend\model\Assignment.class
 com\campusconnect\backend\controller\FacultyDirectoryController.class
 com\campusconnect\backend\repository\StudentCompletedCourseRepository.class
+com\campusconnect\backend\controller\InAppNotificationPreferenceController.class
 com\campusconnect\backend\model\CourseChannelMember.class
 com\campusconnect\backend\repository\package-info.class
 com\campusconnect\backend\dto\GpaRetakeRequest.class
 com\campusconnect\backend\model\Submission.class
+com\campusconnect\backend\service\DevelopmentStudentProfileSeeder.class
 com\campusconnect\backend\controller\AssignmentController.class
 com\campusconnect\backend\dto\FacultyDirectoryEntryDTO$FacultyDirectoryEntryDTOBuilder.class
 com\campusconnect\backend\dto\PaymentReceiptItemDTO$PaymentReceiptItemDTOBuilder.class
@@ -150,6 +162,7 @@ com\campusconnect\backend\dto\PaymentConfirmRequest$PaymentConfirmRequestBuilder
 com\campusconnect\backend\model\package-info.class
 com\campusconnect\backend\repository\CourseSectionRepository.class
 com\campusconnect\backend\model\StudentCompletedCourse.class
+com\campusconnect\backend\model\UserProfilePicture.class
 com\campusconnect\backend\dto\GpaPredictRequest.class
 com\campusconnect\backend\controller\BypassCourseController.class
 com\campusconnect\backend\dto\UpdateProfileRequest.class

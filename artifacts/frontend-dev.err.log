@@ -1,0 +1,110 @@
+7:11:44 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:12:08 PM [vite] (client) [console.error] [authController] Login error: SyntaxError: Unexpected token 'I', "Invalid CORS request" is not valid JSON
+7:12:10 PM [vite] (client) [console.error] [authController] Login error: SyntaxError: Unexpected token 'I', "Invalid CORS request" is not valid JSON
+7:12:10 PM [vite] (client) [console.error] [authController] Login error: SyntaxError: Unexpected token 'I', "Invalid CORS request" is not valid JSON
+7:12:11 PM [vite] (client) [console.error] [authController] Login error: SyntaxError: Unexpected token 'I', "Invalid CORS request" is not valid JSON
+7:12:49 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:13:12 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:13:21 PM [vite] (client) [console.error] [authController] Login error: SyntaxError: Unexpected token 'I', "Invalid CORS request" is not valid JSON
+7:13:34 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:14:09 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:15:09 PM [vite] ws proxy error:
+Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+7:16:52 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:19:31 PM [vite] ws proxy error:
+Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+7:22:02 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:29:55 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:31:05 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:37:54 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:37:55 PM [vite] (client) [Unhandled error] TypeError: Cannot convert undefined or null to object
+ > PreferencesTab src/views/pages/AccountSettingsView.jsx:437:18
+    435 |              </label>
+    436 |            </div>
+    437 |            {Object.entries(preferences.inAppNotifications).map(([key, enabled]) => <ToggleRow key={key} label={`In-app...
+        |                    ^
+    438 |  
+    439 |            <PreferenceHeading title="Accessibility" />
+ > Object.react_stack_bottom_frame node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:25904:19
+ > renderWithHooks node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:7662:21
+ > updateFunctionComponent node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:10166:18
+ > beginWork node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:11778:17
+ > runWithFiberInDEV node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:871:29
+ > performUnitOfWork node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:17641:21
+ > workLoopSync node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:17469:40
+ > renderRootSync node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:17450:10
+
+7:37:55 PM [vite] (client) [console.warn] An error occurred in the <PreferencesTab> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+7:39:52 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:50:48 PM [vite] ws proxy error:
+Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+7:52:56 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+7:55:38 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+8:04:00 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+8:11:46 PM [vite] (client) [Unhandled error] Error: Rendered fewer hooks than expected. This may be caused by an accidental early return statement.
+ > finishRenderingHooks node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:7717:14
+ > renderWithHooks node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:7684:6
+ > updateFunctionComponent node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:10166:18
+ > beginWork node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:11778:17
+ > runWithFiberInDEV node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:871:29
+ > performUnitOfWork node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:17641:21
+ > workLoopSync node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:17469:40
+ > renderRootSync node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:17450:10
+ > performWorkOnRoot node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:16583:34
+ > performSyncWorkOnRoot node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:18972:6
+
+8:11:46 PM [vite] (client) [console.warn] An error occurred in the <AccountSettingsView> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+8:17:22 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+8:18:20 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+8:33:52 PM [vite] (client) [console.error] React has detected a change in the order of Hooks called by StudentAttendancePanel. This will lead to bugs and errors if not fixed. For more information, read the Rules of Hooks: https://react.dev/link/rules-of-hooks
+
+   Previous render            Next render
+   ------------------------------------------------------
+1. useState                   useState
+2. useState                   useState
+3. useState                   useState
+4. useState                   useState
+5. useState                   useState
+6. useCallback                useState
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+8:33:53 PM [vite] (client) [Unhandled error] Error: Should have a queue. You are likely calling Hooks conditionally, which is not allowed. (https://react.dev/link/invalid-hook-call)
+ > updateReducerImpl node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:7973:14
+ > updateReducer node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:7968:13
+ > Object.useState node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:26511:17
+ > exports.useState node_modules/.pnpm/react@19.2.8/node_modules/react/cjs/react.development.js:1263:33
+ > useStudentAttendanceController src/controllers/studentAttendanceController.js:54:46
+    52 |    const [loading,        setLoading]        = useState(true)
+    53 |    const [error,          setError]          = useState(null)
+    54 |    const [selectedCourse, setSelectedCourse] = useState(null)
+       |                                                ^
+    55 |  
+    56 |    const fetchData = useCallback(async () => {
+ > StudentAttendancePanel src/views/components/StudentAttendancePanel.jsx:30:6
+ > Object.react_stack_bottom_frame node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:25904:19
+ > renderWithHooks node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:7662:21
+ > updateFunctionComponent node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:10166:18
+ > beginWork node_modules/.pnpm/react-dom@19.2.8_react@19.2.8/node_modules/react-dom/cjs/react-dom-client.development.js:11778:17
+
+8:33:53 PM [vite] (client) [console.warn] An error occurred in the <StudentAttendancePanel> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+8:42:27 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
+8:42:27 PM [vite] (client) [console.error] [StudentAttendanceController] Failed to load attendance: Error: API returned 403
+    at http://localhost:5173/src/controllers/studentAttendanceController.js?t=1788532432930:57:30
+8:42:27 PM [vite] (client) [console.error] [StudentAttendanceController] Failed to load attendance: Error: API returned 403
+    at http://localhost:5173/src/controllers/studentAttendanceController.js?t=1788532432930:57:30
+8:43:01 PM [vite] (client) [console.warn] You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.

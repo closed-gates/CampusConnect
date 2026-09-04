@@ -23,6 +23,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { getStoredUser } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
 import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
+import { getLowestAttendanceRate } from '../models/studentAttendanceModel.js'
 
 const API_BASE = '/api/attendance'
 
@@ -47,6 +48,7 @@ export function useStudentAttendanceController() {
 
   const [courses,        setCourses]        = useState([])
   const [overallRate,    setOverallRate]    = useState(0)
+  const [lowestRate,     setLowestRate]     = useState(0)
   const [loading,        setLoading]        = useState(true)
   const [error,          setError]          = useState(null)
   const [selectedCourse, setSelectedCourse] = useState(null)
@@ -66,6 +68,7 @@ export function useStudentAttendanceController() {
       const rawCourses  = coursesJson.data || []
 
       setCourses(rawCourses)
+      setLowestRate(getLowestAttendanceRate(rawCourses))
 
       // Compute weighted overall attendance rate
       const totalSessions = rawCourses.reduce((s, c) => s + (c.totalSessions || 0), 0)
@@ -97,6 +100,7 @@ export function useStudentAttendanceController() {
   return {
     courses,
     overallRate,
+    lowestRate,
     loading,
     error,
     preferredSemester,

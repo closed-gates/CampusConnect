@@ -21,6 +21,7 @@ export default function StudentAttendancePanel() {
   const {
     courses,
     overallRate,
+    lowestRate,
     loading,
     error,
     preferredSemester,
@@ -68,7 +69,7 @@ export default function StudentAttendancePanel() {
     )
   }
 
-  const status        = getAttendanceStatus(overallRate)
+  const status        = getAttendanceStatus(lowestRate)
   const totalSessions = courses.reduce((s, c) => s + (c.totalSessions || 0), 0)
   const totalPresent  = courses.reduce((s, c) => s + (c.presentCount || 0), 0)
   const totalLate     = courses.reduce((s, c) => s + (c.lateCount || 0), 0)
@@ -86,25 +87,25 @@ export default function StudentAttendancePanel() {
             <circle
               cx="60" cy="60" r="50"
               fill="none"
-              stroke={getRateColor(overallRate)}
+              stroke={lowestRate < 70 ? '#ef4444' : getRateColor(lowestRate)}
               strokeWidth="10"
-              strokeDasharray={`${overallRate * 3.14} 314`}
+              strokeDasharray={`${lowestRate * 3.14} 314`}
               strokeLinecap="round"
               transform="rotate(-90 60 60)"
               style={{ transition: 'stroke-dasharray 1s ease' }}
             />
           </svg>
           <div className="student-att-ring-label">
-            <span className="student-att-rate-num" style={{ color: getRateColor(overallRate) }}>
-              {overallRate}%
+            <span className="student-att-rate-num" style={{ color: lowestRate < 70 ? '#ef4444' : getRateColor(lowestRate) }}>
+              {lowestRate}%
             </span>
-            <span className="student-att-rate-sub">Overall</span>
+            <span className="student-att-rate-sub">Lowest course</span>
           </div>
         </div>
 
         {/* Summary numbers */}
         <div className="student-att-summary-stats">
-          <h2 className="student-att-summary-title">My Attendance Overview · {preferredSemester}</h2>
+          <h2 className="student-att-summary-title">Lowest Attendance · {preferredSemester}</h2>
           <p className="student-att-status-badge" style={{ color: status.color }}>
             ● {status.label}
           </p>
@@ -138,9 +139,9 @@ export default function StudentAttendancePanel() {
             </div>
           </div>
 
-          {overallRate < 75 && (
+          {lowestRate < 70 && (
             <div className="student-att-warning-banner">
-              ⚠️ Your attendance is below the 75% requirement. You may be barred from exams.
+              ⚠️ At least one course is below 70% attendance.
             </div>
           )}
         </div>

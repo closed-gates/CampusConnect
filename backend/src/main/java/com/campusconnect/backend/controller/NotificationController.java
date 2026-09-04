@@ -126,7 +126,11 @@ public class NotificationController {
                 feedback
         );
 
-        return ResponseEntity.ok(Map.of("success", true, "data", dto));
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("muted", dto == null);
+        if (dto != null) response.put("data", dto);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -183,7 +187,11 @@ public class NotificationController {
                 LocalDateTime.now().plusHours(18)
         );
 
-        return ResponseEntity.ok(Map.of("success", true, "data", dto));
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("muted", dto == null);
+        if (dto != null) response.put("data", dto);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -209,18 +217,19 @@ public class NotificationController {
 
         NotificationDto dto = notificationService.notifyAdvisingConfirmed(studentId, advisorName, courseCount);
 
-        return ResponseEntity.ok(Map.of("success", true, "data", dto));
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("muted", dto == null);
+        if (dto != null) response.put("data", dto);
+        return ResponseEntity.ok(response);
     }
 
     // ── Helper ───────────────────────────────────────────────────────────────────
 
     private String resolveUserId(String requestedUserId, Authentication authentication) {
-        if (requestedUserId != null && !requestedUserId.isBlank()) {
-            return requestedUserId.trim();
-        }
         if (authentication != null && authentication.getName() != null && !authentication.getName().isBlank()) {
             return authentication.getName().trim();
         }
-        return "STU001"; // Fallback demo student
+        throw new IllegalStateException("Authenticated user is required");
     }
 }
