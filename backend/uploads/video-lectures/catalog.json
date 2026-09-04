@@ -13,36 +13,14 @@
     "fileSize" : null,
     "createdBy" : "FAC001",
     "createdAt" : "2026-09-05T01:07:19.783997"
-  }, {
-    "id" : 2,
-    "title" : "Testing 2",
-    "description" : "",
-    "courseCode" : "CSE470",
-    "courseName" : "Software Engineering",
-    "sourceType" : "UPLOAD",
-    "embedUrl" : null,
-    "storedFilename" : "ddde0237-9fa0-4fc2-a62a-a579ad6f4267_PD2.0.mp4",
-    "originalFilename" : "PD2.0.mp4",
-    "contentType" : "video/mp4",
-    "fileSize" : 142321280,
-    "createdBy" : "FAC001",
-    "createdAt" : "2026-09-05T01:08:35.101653"
   } ],
   "progress" : [ {
     "lectureId" : 1,
     "userId" : "STU001",
-    "positionSeconds" : 23.684733,
+    "positionSeconds" : 45.874889,
     "durationSeconds" : 146.0,
-    "percentWatched" : 16,
+    "percentWatched" : 31,
     "completed" : false,
-    "updatedAt" : "2026-09-05T01:07:56.24068"
-  }, {
-    "lectureId" : 2,
-    "userId" : "STU001",
-    "positionSeconds" : 12.667176,
-    "durationSeconds" : 145.535667,
-    "percentWatched" : 9,
-    "completed" : false,
-    "updatedAt" : "2026-09-05T01:08:59.4872694"
+    "updatedAt" : "2026-09-05T01:21:33.6154167"
   } ]
 }

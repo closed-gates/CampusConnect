@@ -14,7 +14,6 @@ import Sidebar from '../components/Sidebar'
 import { useAssignmentController } from '../../controllers/assignmentController'
 import {
   STATUS_CONFIG,
-  COURSE_OPTIONS,
   getDeadlineStatus,
   formatDeadline,
   formatFileSize,
@@ -512,14 +511,11 @@ function CreateAssignmentModal({ ctrl }) {
             <label>Course</label>
             <select
               value={ctrl.createForm.courseCode}
-              onChange={(e) => {
-                const opt = COURSE_OPTIONS.find(c => c.code === e.target.value)
-                if (opt) ctrl.handleCourseSelect(opt.code, opt.name)
-              }}
+              onChange={(e) => ctrl.handleCourseSelect(e.target.value)}
               id="asgn-create-course"
             >
               <option value="">Select a course...</option>
-              {COURSE_OPTIONS.map(c => (
+              {ctrl.courseOptions.map(c => (
                 <option key={c.code} value={c.code}>
                   {c.code} – {c.name}
                 </option>
