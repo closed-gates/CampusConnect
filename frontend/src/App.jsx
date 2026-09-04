@@ -19,6 +19,7 @@ import PaymentView          from './views/pages/PaymentView'
 import GpaView             from './views/pages/GpaView'
 import AccountSettingsView from './views/pages/AccountSettingsView'
 import FacultyDirectoryView from './views/pages/FacultyDirectoryView'
+import VideoLectureView    from './views/pages/VideoLectureView'
 
 // ── Route guard ──────────────────────────────────────────────
 import ProtectedRoute       from './views/components/ProtectedRoute'
@@ -78,6 +79,7 @@ export default function App() {
         <Route path="/gpa-calculator"    element={<GpaView />} />
         <Route path="/settings"          element={<AccountSettingsView />} />
         <Route path="/faculty-directory" element={<FacultyDirectoryView />} />
+        <Route path="/video-lectures"    element={<VideoLectureView />} />
       </Route>
 
       {/* ── Catch-all → login ──────────────────────── */}
