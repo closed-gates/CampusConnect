@@ -3,6 +3,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\CorsConf
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\package-info.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\PasswordEncoderConfig.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\SecurityConfig.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\VideoLectureMultipartConfig.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\WebSocketConfig.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AccountFreezeController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AccountSettingsController.java
@@ -32,6 +33,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\Regi
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\TestCourseController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\UserController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\UserProfilePictureController.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\VideoLectureController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AccountFreezeDTO.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AccountProfileDTO.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AdvisorMatchResponse.java
@@ -59,6 +61,9 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\PresenceDto
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\UpdateProfileRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\UpdateReminderPreferenceRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\UserDto.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\VideoLectureDTO.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\VideoProgressDTO.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\VideoProgressUpdateRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\exception\ForbiddenException.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\exception\GlobalExceptionHandler.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\exception\package-info.java
@@ -91,6 +96,8 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\TestCours
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\TestFaculty.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\TestSection.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\UserProfilePicture.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\VideoLecture.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\VideoWatchProgress.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdvisedCourseRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdvisingPortalStatusRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdvisorRepository.java
@@ -118,6 +125,8 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\Test
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\TestFacultyRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\TestSectionRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\UserProfilePictureRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\VideoLectureRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\VideoWatchProgressRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\JwtAuthFilter.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\JwtService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\package-info.java
@@ -152,3 +161,5 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\TestCou
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\TopicClassifier.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\UserProfilePictureService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\UserService.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\VideoLectureCatalogStore.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\VideoLectureService.java
