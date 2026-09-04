@@ -3,6 +3,7 @@ package com.campusconnect.backend.config;
 import com.campusconnect.backend.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -54,6 +55,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/api/auth/logout").permitAll()
+                // Profile mutation is restricted to administrators. Read-only
+                // access remains available to each authenticated account.
+                .requestMatchers(HttpMethod.PUT, "/api/account/profile").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/account/profile-picture").hasRole("ADMIN")
+                .requestMatchers("/api/admin/profile-management/**").hasRole("ADMIN")
                 // Public — health check
                 .requestMatchers("/api/health").permitAll()
                 // Public — WebSocket handshake

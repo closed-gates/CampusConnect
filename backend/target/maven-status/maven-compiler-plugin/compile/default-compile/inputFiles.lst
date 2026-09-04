@@ -8,6 +8,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\config\WebSocke
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AccountFreezeController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AccountSettingsController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AdminAdvisingController.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AdminProfileManagementController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AdvisorController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AiChatController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\AssignmentController.java
@@ -37,6 +38,8 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\User
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\controller\VideoLectureController.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AccountFreezeDTO.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AccountProfileDTO.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AdminManagedProfileDTO.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AdminProfileUpdateRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AdvisorMatchResponse.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AiChatRequest.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\dto\AttachmentDto.java
@@ -79,7 +82,9 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\AppUser.j
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\Assignment.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\AttendanceRecord.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\ChatMessage.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\Club.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\ClubNotice.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\ClubPanelAssignment.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\CourseCatalog.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\CourseChannelMember.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\CourseMaterial.java
@@ -101,6 +106,9 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\TestSecti
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\UserProfilePicture.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\VideoLecture.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\model\VideoWatchProgress.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdminProfilePictureRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdminProfileRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdminStudentProfileRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdvisedCourseRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdvisingPortalStatusRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AdvisorRepository.java
@@ -110,6 +118,8 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\Assi
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\AttendanceRecordRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\ChatMessageRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\ClubNoticeRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\ClubPanelAssignmentRepository.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\ClubRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\CourseCatalogRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\CourseChannelMemberRepository.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\repository\CourseMaterialRepository.java
@@ -137,6 +147,7 @@ E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\security\packag
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AccountFreezeService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AccountSettingsService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AdminAdvisingService.java
+E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AdminProfileManagementService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AdvisorService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AiChatService.java
 E:\CampusConnect\backend\src\main\java\com\campusconnect\backend\service\AssignmentService.java

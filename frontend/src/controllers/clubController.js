@@ -19,6 +19,7 @@ import {
   EMPTY_RECRUITMENT_FORM,
 } from '../models/clubModel.js'
 import apiClient from '../services/apiClient.js'
+import { getStoredUser } from '../models/authModel.js'
 
 const API_BASE = '/api'
 
@@ -27,8 +28,9 @@ const API_BASE = '/api'
  * Manages tabs, notices, recruitments, multi-step application form, and toast state.
  */
 export function useClubController() {
-  const role    = localStorage.getItem('userRole') || 'student'
-  const isAdmin = role === 'admin'
+  const currentUser = getStoredUser()
+  const role = currentUser?.role || 'STUDENT'
+  const isAdmin = role === 'ADMIN'
 
   const [activeTab,  setActiveTab]  = useState('notices')
 
@@ -37,6 +39,12 @@ export function useClubController() {
   const [recruitments, setRecruitments] = useState([])
   const [toast,        setToast]        = useState(null)
   const [loading,      setLoading]      = useState(true)
+  const [assignedClubs, setAssignedClubs] = useState([])
+  const [clubs, setClubs] = useState([])
+  const [isPanelMember, setIsPanelMember] = useState(false)
+  const [panelMembers, setPanelMembers] = useState([])
+  const [assignmentForm, setAssignmentForm] = useState({ studentId: '', clubName: '' })
+  const [applications, setApplications] = useState([])
 
   // Notices UI state
   const [expandedNotice,   setExpandedNotice]   = useState(null)
@@ -61,14 +69,26 @@ export function useClubController() {
     async function loadData() {
       setLoading(true)
       try {
-        const [noticesRes, recruitmentsRes] = await Promise.all([
+        const [noticesRes, recruitmentsRes, accessRes, clubsRes] = await Promise.all([
           apiClient.get(`${API_BASE}/clubs/notices`),
           apiClient.get(`${API_BASE}/clubs/recruitment`),
+          apiClient.get(`${API_BASE}/clubs/access`),
+          apiClient.get(`${API_BASE}/clubs`),
         ])
 
         if (noticesRes.ok) {
           const json = await noticesRes.json()
           setNotices(json.data || [])
+        }
+        if (accessRes.ok) {
+          const access = await accessRes.json()
+          setAssignedClubs(access.assignedClubs || [])
+          setIsPanelMember(access.isPanelMember === true)
+        }
+        if (clubsRes.ok) setClubs(await clubsRes.json())
+        if (isAdmin) {
+          const membersRes = await apiClient.get(`${API_BASE}/clubs/panel-members`)
+          if (membersRes.ok) setPanelMembers(await membersRes.json())
         }
 
         if (recruitmentsRes.ok) {
@@ -152,6 +172,31 @@ export function useClubController() {
     }
   }
 
+  async function assignPanelMember(e) {
+    e.preventDefault()
+    const res = await apiClient.post(`${API_BASE}/clubs/panel-members`, assignmentForm)
+    if (res.ok) { const item=await res.json(); setPanelMembers(p=>[...p,item]); setAssignmentForm({studentId:'',clubName:''}); showToast('✅ Panel member assigned.') }
+    else showToast('❌ Could not assign panel member.', 'error')
+  }
+  async function removePanelMember(id) {
+    const res = await apiClient.delete(`${API_BASE}/clubs/panel-members/${id}`)
+    if(res.ok){setPanelMembers(p=>p.filter(x=>x.id!==id));showToast('Assignment removed.')} else showToast('❌ Could not remove assignment.','error')
+  }
+  async function deleteNotice(id) { const res=await apiClient.delete(`${API_BASE}/clubs/notices/${id}`); if(res.ok)setNotices(p=>p.filter(x=>x.id!==id)); else showToast('❌ Not permitted.','error') }
+  async function toggleNoticePin(notice) { const res=await apiClient.put(`${API_BASE}/clubs/notices/${notice.id}/pin`,{pinned:!notice.pinned}); if(res.ok){const n=await res.json();setNotices(p=>p.map(x=>x.id===n.id?n:x))} }
+  async function updateNotice(notice) {
+    const title=window.prompt('Notice title',notice.title); if(title===null)return
+    const body=window.prompt('Notice content',notice.body); if(body===null)return
+    const res=await apiClient.put(`${API_BASE}/clubs/notices/${notice.id}`,{title,body}); if(res.ok){const n=await res.json();setNotices(p=>p.map(x=>x.id===n.id?n:x))} else showToast('❌ Not permitted.','error')
+  }
+  async function deleteRecruitment(id) { const res=await apiClient.delete(`${API_BASE}/clubs/recruitment/${id}`); if(res.ok)setRecruitments(p=>p.filter(x=>x.id!==id)); else showToast('❌ Not permitted.','error') }
+  async function toggleRecruitmentPin(rec) { const res=await apiClient.put(`${API_BASE}/clubs/recruitment/${rec.id}/pin`,{pinned:!rec.pinned}); if(res.ok){const n=await res.json();setRecruitments(p=>p.map(x=>x.id===n.id?n:x))} }
+  async function updateRecruitment(rec) {
+    const description=window.prompt('Recruitment description',rec.description); if(description===null)return
+    const res=await apiClient.put(`${API_BASE}/clubs/recruitment/${rec.id}`,{role:rec.role,description,deadline:rec.deadline,slots:String(rec.slots)}); if(res.ok){const n=await res.json();setRecruitments(p=>p.map(x=>x.id===n.id?n:x))} else showToast('❌ Not permitted.','error')
+  }
+  async function loadApplications(clubName) { const res=await apiClient.get(`${API_BASE}/clubs/applications?clubName=${encodeURIComponent(clubName)}`); if(res.ok)setApplications(await res.json()); else showToast('❌ Not permitted.','error') }
+
   /* ── Multi-step Application Form Logic ────────────────────── */
 
   // Open the multi-step form for a recruitment
@@ -233,11 +278,7 @@ export function useClubController() {
         motivation:    applyForm.motivation,
       }
 
-      const res = await fetch(`${API_BASE}/clubs/apply`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
+      const res = await apiClient.post(`${API_BASE}/clubs/apply`, payload)
 
       if (res.ok) {
         // Move to confirmation step
@@ -290,6 +331,8 @@ export function useClubController() {
   return {
     // Role
     isAdmin,
+    isPanelMember, assignedClubs, clubs, canManage: isAdmin || isPanelMember,
+    panelMembers, assignmentForm, setAssignmentForm, applications,
     // Tab
     activeTab, setActiveTab,
     // Loading
@@ -303,10 +346,12 @@ export function useClubController() {
     noticeForm, setNoticeForm,
     noticeSubmitting,
     handlePostNotice,
+    assignPanelMember, removePanelMember, deleteNotice, toggleNoticePin, updateNotice,
     // Recruitment state
     recruitForm, setRecruitForm,
     recruitSubmitting,
     handlePostRecruitment,
+    deleteRecruitment, toggleRecruitmentPin, updateRecruitment, loadApplications,
     // Multi-step Application state
     applyTarget,
     applyStep,

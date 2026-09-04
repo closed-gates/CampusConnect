@@ -49,6 +49,9 @@ export default function Sidebar({ activeItem = 'home' }) {
     if (item.id === 'payments' && isFaculty) {
       return
     }
+    if (item.id === 'clubs' && isFaculty) {
+      return
+    }
 
     navItems.push(item)
     if (item.id === 'advising' && isStudent) {

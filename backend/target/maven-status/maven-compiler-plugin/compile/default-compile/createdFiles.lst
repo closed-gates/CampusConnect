@@ -47,6 +47,7 @@ com\campusconnect\backend\controller\HealthController.class
 com\campusconnect\backend\dto\package-info.class
 com\campusconnect\backend\service\AttendanceService.class
 com\campusconnect\backend\model\CourseCatalog.class
+com\campusconnect\backend\repository\AdminProfilePictureRepository.class
 com\campusconnect\backend\repository\VideoLectureRepository.class
 com\campusconnect\backend\dto\ChangePasswordRequest.class
 com\campusconnect\backend\dto\PaymentBypassRequest.class
@@ -55,6 +56,7 @@ com\campusconnect\backend\exception\ForbiddenException.class
 com\campusconnect\backend\service\ChannelAccessService.class
 com\campusconnect\backend\model\TestFaculty$TestFacultyBuilder.class
 com\campusconnect\backend\controller\UserProfilePictureController.class
+com\campusconnect\backend\repository\ClubPanelAssignmentRepository.class
 com\campusconnect\backend\exception\package-info.class
 com\campusconnect\backend\dto\PaymentBypassRequest$PaymentBypassRequestBuilder.class
 com\campusconnect\backend\model\AdvisedCourse$AdvisedCourseBuilder.class
@@ -87,6 +89,7 @@ com\campusconnect\backend\dto\PaymentReceiptItemDTO$PaymentReceiptItemDTOBuilder
 com\campusconnect\backend\repository\AppUserRepository.class
 com\campusconnect\backend\model\ExamSchedule$ExamScheduleBuilder.class
 com\campusconnect\backend\controller\ClubController.class
+com\campusconnect\backend\model\Club.class
 com\campusconnect\backend\service\AssignmentService.class
 com\campusconnect\backend\dto\AiChatRequest$Turn.class
 com\campusconnect\backend\service\package-info.class
@@ -128,9 +131,11 @@ com\campusconnect\backend\controller\GpaController.class
 com\campusconnect\backend\repository\ApplicationRepository.class
 com\campusconnect\backend\repository\CourseMaterialRepository.class
 com\campusconnect\backend\controller\RegistrationController.class
+com\campusconnect\backend\service\AdminProfileManagementService.class
 com\campusconnect\backend\service\ClubService.class
 com\campusconnect\backend\service\UserService.class
 com\campusconnect\backend\repository\SectionRegistrationRepository.class
+com\campusconnect\backend\repository\ClubRepository.class
 com\campusconnect\backend\controller\NotificationController.class
 com\campusconnect\backend\service\FacultyDirectoryService.class
 com\campusconnect\backend\repository\PaymentRecordRepository.class
@@ -151,7 +156,9 @@ com\campusconnect\backend\service\TestCourseDataSeeder$FacultySeedData.class
 com\campusconnect\backend\controller\PresenceController.class
 com\campusconnect\backend\repository\ChatMessageRepository.class
 com\campusconnect\backend\service\TestCourseDataSeeder.class
+com\campusconnect\backend\controller\AdminProfileManagementController.class
 com\campusconnect\backend\model\CourseCatalog$CourseCatalogBuilder.class
+com\campusconnect\backend\dto\AdminManagedProfileDTO.class
 com\campusconnect\backend\controller\package-info.class
 com\campusconnect\backend\dto\PaymentIntentRequest$PaymentIntentRequestBuilder.class
 com\campusconnect\backend\dto\PaymentConfirmRequest.class
@@ -166,6 +173,7 @@ com\campusconnect\backend\config\CorsConfig.class
 com\campusconnect\backend\repository\AssignmentRepository.class
 com\campusconnect\backend\dto\UserDto.class
 com\campusconnect\backend\model\AdvisingPortalStatus$AdvisingPortalStatusBuilder.class
+com\campusconnect\backend\repository\AdminProfileRepository.class
 com\campusconnect\backend\repository\StudentProfileRepository.class
 com\campusconnect\backend\service\ChatService.class
 com\campusconnect\backend\controller\AccountFreezeController.class
@@ -182,6 +190,8 @@ com\campusconnect\backend\model\InAppNotificationPreference.class
 com\campusconnect\backend\security\JwtService.class
 com\campusconnect\backend\dto\PaymentReceiptDTO.class
 com\campusconnect\backend\dto\PaymentUpdateRequest$PaymentUpdateRequestBuilder.class
+com\campusconnect\backend\model\ClubPanelAssignment.class
+com\campusconnect\backend\dto\AdminProfileUpdateRequest.class
 com\campusconnect\backend\dto\VideoProgressDTO.class
 com\campusconnect\backend\model\CourseChannelMember.class
 com\campusconnect\backend\repository\package-info.class
@@ -200,6 +210,7 @@ com\campusconnect\backend\exception\ResourceNotFoundException.class
 com\campusconnect\backend\controller\CourseMaterialController.class
 com\campusconnect\backend\service\AiChatService.class
 com\campusconnect\backend\service\CourseMaterialCatalogStore$CatalogRow.class
+com\campusconnect\backend\repository\AdminStudentProfileRepository.class
 com\campusconnect\backend\service\VideoLectureCatalogStore$CatalogSnapshot.class
 com\campusconnect\backend\model\CourseSection$CourseSectionBuilder.class
 com\campusconnect\backend\dto\UpdateReminderPreferenceRequest.class

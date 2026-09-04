@@ -6,6 +6,14 @@ import com.campusconnect.backend.model.Recruitment;
 import com.campusconnect.backend.repository.ApplicationRepository;
 import com.campusconnect.backend.repository.ClubNoticeRepository;
 import com.campusconnect.backend.repository.RecruitmentRepository;
+import com.campusconnect.backend.repository.ClubPanelAssignmentRepository;
+import com.campusconnect.backend.repository.AppUserRepository;
+import com.campusconnect.backend.model.ClubPanelAssignment;
+import com.campusconnect.backend.model.AppUser;
+import com.campusconnect.backend.model.Club;
+import com.campusconnect.backend.repository.ClubRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +38,22 @@ public class ClubService {
     private final ClubNoticeRepository   noticeRepo;
     private final RecruitmentRepository  recruitRepo;
     private final ApplicationRepository  appRepo;
+    private final ClubPanelAssignmentRepository panelRepo;
+    private final AppUserRepository userRepo;
+    private final ClubRepository clubRepo;
 
     public ClubService(ClubNoticeRepository noticeRepo,
                        RecruitmentRepository recruitRepo,
-                       ApplicationRepository appRepo) {
+                       ApplicationRepository appRepo,
+                       ClubPanelAssignmentRepository panelRepo,
+                       AppUserRepository userRepo,
+                       ClubRepository clubRepo) {
         this.noticeRepo  = noticeRepo;
         this.recruitRepo = recruitRepo;
         this.appRepo     = appRepo;
+        this.panelRepo   = panelRepo;
+        this.userRepo    = userRepo;
+        this.clubRepo    = clubRepo;
     }
 
     // ── Seed data on first startup ────────────────────────────────
@@ -47,6 +64,12 @@ public class ClubService {
     @PostConstruct
     @Transactional
     public void seedData() {
+        if (clubRepo.count() == 0) {
+            clubRepo.saveAll(List.of(
+                    new Club("Coding Club"), new Club("Debate Society"), new Club("Music Club"),
+                    new Club("Photography Club"), new Club("Robotics Club")
+            ));
+        }
         // ── Seed Notices ────────────────────────────────────────
         if (noticeRepo.count() == 0) {
             ClubNotice n1 = new ClubNotice();
@@ -167,16 +190,29 @@ public class ClubService {
      * @return The newly created ClubNotice
      */
     @Transactional
-    public ClubNotice postNotice(String clubName, String title, String body) {
+    public ClubNotice postNotice(String clubName, String title, String body, String postedBy) {
+        requireClub(clubName);
         ClubNotice notice = new ClubNotice();
         notice.setClubName(clubName != null ? clubName : "Unknown Club");
         notice.setTitle(title       != null ? title    : "Untitled Notice");
         notice.setBody(body         != null ? body     : "");
-        notice.setPostedBy("Admin");
+        notice.setPostedBy(postedBy);
         notice.setPostedAt(LocalDateTime.now().toString());
         notice.setPinned(false);
         return noticeRepo.save(notice);
     }
+
+    @Transactional
+    public ClubNotice updateNotice(Long id, String title, String body) {
+        ClubNotice notice = noticeRepo.findById(id).orElseThrow(() -> notFound("Notice"));
+        if (title != null && !title.isBlank()) notice.setTitle(title.trim());
+        if (body != null && !body.isBlank()) notice.setBody(body.trim());
+        return noticeRepo.save(notice);
+    }
+
+    @Transactional public void deleteNotice(Long id) { noticeRepo.delete(noticeRepo.findById(id).orElseThrow(() -> notFound("Notice"))); }
+    public ClubNotice getNotice(Long id) { return noticeRepo.findById(id).orElseThrow(() -> notFound("Notice")); }
+    @Transactional public ClubNotice pinNotice(Long id, boolean pinned) { ClubNotice n=getNotice(id); n.setPinned(pinned); return noticeRepo.save(n); }
 
     // ── Recruitment operations ─────────────────────────────────────
 
@@ -184,7 +220,10 @@ public class ClubService {
      * Returns all active recruitment postings.
      */
     public List<Recruitment> getActiveRecruitments() {
-        return recruitRepo.findByActiveTrue();
+        return recruitRepo.findByActiveTrue().stream()
+                .sorted(java.util.Comparator.comparing(Recruitment::isPinned).reversed()
+                        .thenComparing(Recruitment::getPostedAt, java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder())))
+                .toList();
     }
 
     /**
@@ -200,6 +239,7 @@ public class ClubService {
     @Transactional
     public Recruitment postRecruitment(String clubName, String role,
                                        String description, String deadline, int slots) {
+        requireClub(clubName);
         Recruitment posting = new Recruitment();
         posting.setClubName(clubName       != null ? clubName    : "Unknown Club");
         posting.setRole(role               != null ? role        : "Member");
@@ -208,8 +248,41 @@ public class ClubService {
         posting.setSlots(slots);
         posting.setPostedAt(LocalDateTime.now().toString());
         posting.setActive(true);
+        posting.setPinned(false);
         return recruitRepo.save(posting);
     }
+
+    public Recruitment getRecruitment(Long id) { return recruitRepo.findById(id).orElseThrow(() -> notFound("Recruitment")); }
+    @Transactional public Recruitment updateRecruitment(Long id, String role, String description, String deadline, Integer slots) {
+        Recruitment r=getRecruitment(id);
+        if(role!=null&&!role.isBlank()) r.setRole(role.trim()); if(description!=null&&!description.isBlank()) r.setDescription(description.trim());
+        if(deadline!=null&&!deadline.isBlank()) r.setDeadline(deadline); if(slots!=null&&slots>0) r.setSlots(slots);
+        return recruitRepo.save(r);
+    }
+    @Transactional public void deleteRecruitment(Long id) { recruitRepo.delete(getRecruitment(id)); }
+    @Transactional public Recruitment pinRecruitment(Long id, boolean pinned) { Recruitment r=getRecruitment(id); r.setPinned(pinned); return recruitRepo.save(r); }
+
+    public List<ClubPanelAssignment> getAssignments() { return panelRepo.findAll(); }
+    public List<ClubPanelAssignment> getAssignments(String studentId) { return panelRepo.findByStudentIdIgnoreCaseOrderByClubName(studentId); }
+    public boolean managesClub(String userId, String clubName) { return panelRepo.existsByStudentIdIgnoreCaseAndClubNameIgnoreCase(userId, clubName); }
+    @Transactional public ClubPanelAssignment assign(String studentId, String clubName, String adminId) {
+        AppUser user=userRepo.findByUserId(studentId.toUpperCase()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Student not found."));
+        if(!"STUDENT".equalsIgnoreCase(user.getRole())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Only students can be panel members.");
+        if(clubName==null||clubName.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Club name is required.");
+        requireClub(clubName);
+        if(managesClub(user.getUserId(),clubName)) throw new ResponseStatusException(HttpStatus.CONFLICT,"Student is already assigned to this club.");
+        ClubPanelAssignment a=new ClubPanelAssignment(); a.setStudentId(user.getUserId()); a.setClubName(clubName.trim()); a.setAssignedBy(adminId); a.setAssignedAt(LocalDateTime.now().toString()); return panelRepo.save(a);
+    }
+    @Transactional public void removeAssignment(Long id) { panelRepo.deleteById(id); }
+    public List<Application> getApplications(String clubName) { return appRepo.findByClubNameIgnoreCaseOrderByAppliedAtDesc(clubName); }
+    public List<Club> getClubs() { return clubRepo.findByActiveTrueOrderByNameAsc(); }
+
+    private void requireClub(String clubName) {
+        if (clubName == null || !clubRepo.existsByNameIgnoreCaseAndActiveTrue(clubName.trim()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Select a valid active club.");
+    }
+
+    private ResponseStatusException notFound(String kind) { return new ResponseStatusException(HttpStatus.NOT_FOUND, kind+" not found."); }
 
     // ── Application operations ─────────────────────────────────────
 
