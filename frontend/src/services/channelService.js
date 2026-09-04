@@ -237,26 +237,99 @@ class ChannelService {
     this._emit('CHANNEL_LEFT', { channelId, userId: userKey })
   }
 
+  _ensureCoreChannelsProvisioned() {
+    const coreCourses = [
+      { code: 'CSE110', name: 'Programming Language I', faculty: 'Dr. Farhan Kabir' },
+      { code: 'CSE220', name: 'Data Structures', faculty: 'Dr. Sadia Rahman' },
+      { code: 'CSE320', name: 'Data Communications', faculty: 'Dr. Tanvir Ahmed' },
+      { code: 'CSE470', name: 'Software Engineering', faculty: 'Dr. Mahbubur Rahman' },
+      { code: 'MAT110', name: 'Differential Calculus', faculty: 'Dr. Samira Khan' },
+      { code: 'PHY111', name: 'Principles of Physics I', faculty: 'Dr. Rafiqul Islam' },
+    ]
+    coreCourses.forEach(c => this._provisionChannel(c))
+  }
+
   /**
-   * Returns ONLY the course channels that this user currently has enrolled in advising.
+   * Returns course channels that this user currently has access to.
+   * Admins have full access to all university course channels.
    */
-  getChannelsForUser(userId) {
+  getChannelsForUser(userId, role) {
     if (!userId) return []
     const userKey = String(userId).trim()
+    const userRole = (role || '').toUpperCase()
 
-    if (!this._userEnrolledChannels.has(userKey)) {
+    this._ensureCoreChannelsProvisioned()
+
+    if (userRole === 'ADMIN') {
+      return this.getAllChannels()
+    }
+
+    const allowed = new Set()
+    if (this._userEnrolledChannels.has(userKey)) {
+      this._userEnrolledChannels.get(userKey).forEach(id => allowed.add(id))
+    } else {
       try {
         const raw = localStorage.getItem(`cc_user_enrolled_${userKey}`)
         if (raw) {
           const courses = JSON.parse(raw)
-          return this.syncUserChannels(userKey, courses)
+          this.syncUserChannels(userKey, courses).forEach(ch => allowed.add(ch.id))
         }
       } catch (ignored) {}
-      return []
     }
 
-    const set = this._userEnrolledChannels.get(userKey) || new Set()
-    return Array.from(set).map(id => this._channels.get(id)).filter(Boolean)
+    // Also include any channels where user is explicitly in members map
+    for (const [chId, membersMap] of this._members.entries()) {
+      if (membersMap.has(userKey)) {
+        allowed.add(chId)
+      }
+    }
+
+    return Array.from(allowed).map(id => this._channels.get(id)).filter(Boolean)
+  }
+
+  getAllChannels() {
+    this._ensureCoreChannelsProvisioned()
+    return Array.from(this._channels.values()).filter(c => !c.isAdvisorChannel)
+  }
+
+  setMembers(channelId, memberList) {
+    if (!channelId || !Array.isArray(memberList)) return
+    const map = new Map()
+    memberList.forEach(m => {
+      const id = m.id || m.userId
+      if (id) map.set(String(id).trim(), m)
+    })
+    this._members.set(channelId, map)
+  }
+
+  addMemberToChannel(channelId, user) {
+    if (!channelId || !user) return
+    const uid = String(user.id || user.userId).trim()
+    if (!this._members.has(channelId)) {
+      this._members.set(channelId, new Map())
+    }
+    this._members.get(channelId).set(uid, user)
+
+    if (!this._userEnrolledChannels.has(uid)) {
+      this._userEnrolledChannels.set(uid, new Set())
+    }
+    this._userEnrolledChannels.get(uid).add(channelId)
+
+    this._emit('CHANNEL_ACCESS_CHANGED', { channelId, userId: uid, action: 'ADD', member: user })
+  }
+
+  removeMemberFromChannel(channelId, userId) {
+    if (!channelId || !userId) return
+    const uid = String(userId).trim()
+    if (this._members.has(channelId)) {
+      this._members.get(channelId).delete(uid)
+    }
+
+    if (this._userEnrolledChannels.has(uid)) {
+      this._userEnrolledChannels.get(uid).delete(channelId)
+    }
+
+    this._emit('CHANNEL_ACCESS_CHANGED', { channelId, userId: uid, action: 'REMOVE' })
   }
 
   getSubChannels(channelId) { return this._subChs.get(channelId) || [] }

@@ -6,8 +6,14 @@
  * Used by DirectMessagingView (replaces DirectMessagingContainer logic).
  */
 
-import { useState, useEffect } from 'react'
-import { CURRENT_USER, MOCK_USERS, MOCK_CONVERSATIONS, INITIAL_MESSAGES, ADVISOR_CHANNEL } from '../models/messagingModel.js'
+import { useState, useEffect, useRef } from 'react'
+import { getCurrentUser, MOCK_USERS, ADVISOR_CHANNEL } from '../models/messagingModel.js'
+import {
+  loadConversations, saveConversations,
+  loadMessagesMap,   saveMessagesMap,
+  loadActiveConvId,  saveActiveConvId,
+  loadRoomMessages,
+} from '../models/dmPersistenceModel.js'
 import { getDeterministicRoomId } from '../utils/dmUtils.js'
 import { dmService } from '../services/dmService.js'
 import { channelService } from '../services/channelService.js'
@@ -21,59 +27,181 @@ import apiClient from '../services/apiClient.js'
  * @param {object} user - The current authenticated user (defaults to CURRENT_USER)
  * @param {function} onMessageSent - Optional callback when a message is sent
  */
-export function useMessagingController(user = CURRENT_USER, onMessageSent) {
-  const [conversations,    setConversations]    = useState(MOCK_CONVERSATIONS)
-  const [activeConvId,     setActiveConvId]     = useState(MOCK_CONVERSATIONS[0].id)
-  const [messagesMap,      setMessagesMap]      = useState(INITIAL_MESSAGES)
+export function useMessagingController(user = getCurrentUser(), onMessageSent) {
+  // ── Persisted state: load from localStorage on first render ──────
+  const userId = user?.id || user?.userId || 'guest'
+  const userRole = user?.role || ''
+
+  const [conversations,    setConversations]    = useState(() => loadConversations(userId))
+  const [activeConvId,     setActiveConvId]     = useState(() => loadActiveConvId(userId))
+  const [messagesMap,      setMessagesMap]      = useState(() => loadMessagesMap(userId))
   const [typingState,      setTypingState]      = useState({})
   const [notificationToast, setNotificationToast] = useState(null)
-  /** Channels: advisor channel always first, then enrollment-based course channels */
+  /** Channels: advisor channel always first, then enrollment/access-based course channels */
   const [channelConvs, setChannelConvs] = useState(
-    () => [ADVISOR_CHANNEL, ...channelService.getChannelsForUser(user.id)]
+    () => [ADVISOR_CHANNEL, ...channelService.getChannelsForUser(userId, userRole)]
   )
+  const [availableUsers, setAvailableUsers] = useState(MOCK_USERS)
+  const [loadingUsers,   setLoadingUsers]   = useState(false)
+
+  const prevUserIdRef = useRef(userId)
+
+  // ── Sync state when logged-in user changes (e.g. login as different user) ──
+  useEffect(() => {
+    if (prevUserIdRef.current !== userId) {
+      prevUserIdRef.current = userId
+      const userConvs = loadConversations(userId)
+      setConversations(userConvs)
+      const lastActive = loadActiveConvId(userId)
+      setActiveConvId(lastActive || userConvs[0]?.id || null)
+      setMessagesMap(loadMessagesMap(userId))
+      setChannelConvs([ADVISOR_CHANNEL, ...channelService.getChannelsForUser(userId, userRole)])
+    }
+  }, [userId, userRole])
+
+  // ── Persist to localStorage whenever state changes (for the current user) ──
+  useEffect(() => {
+    if (prevUserIdRef.current === userId) {
+      saveConversations(userId, conversations)
+    }
+  }, [userId, conversations])
+
+  useEffect(() => {
+    if (prevUserIdRef.current === userId) {
+      saveActiveConvId(userId, activeConvId)
+    }
+  }, [userId, activeConvId])
 
   const activeConversation = conversations.find(c => c.id === activeConvId)
     || channelConvs.find(c => c.id === activeConvId)
     || conversations[0]
+  const resolvedActiveId   = activeConversation?.id || activeConvId
   const activeRecipient    = activeConversation?.recipient
-  const currentMessages    = messagesMap[activeConvId] || []
+  const currentMessages    = messagesMap[resolvedActiveId] || loadRoomMessages(resolvedActiveId) || []
 
-  // Subscribe to dmService events
+  // Ensure activeConvId tracks the active conversation
+  useEffect(() => {
+    if (!activeConvId && resolvedActiveId) {
+      setActiveConvId(resolvedActiveId)
+    }
+  }, [activeConvId, resolvedActiveId])
+
+  // ── Cross-tab localStorage sync ──────────────────────────────────────────────
+  // When another browser tab writes DM data to localStorage, the `storage` event
+  // updates messagesMap and conversations immediately without a page refresh.
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (!e.key) return
+
+      // A message was written to ANY room
+      if (e.key.startsWith('cc_dm_room_')) {
+        const roomId = e.key.replace('cc_dm_room_', '')
+        const freshMessages = loadRoomMessages(roomId)
+        setMessagesMap(prev => ({
+          ...prev,
+          [roomId]: freshMessages
+        }))
+      }
+
+      // The current user's conversation list was updated
+      if (e.key === `cc_dm_conversations_${userId}`) {
+        const fresh = loadConversations(userId)
+        setConversations(fresh)
+      }
+    }
+
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [userId])
+
+  // Subscribe to dmService events (both local and cross-tab via BroadcastChannel)
   useEffect(() => {
     const unsubscribe = dmService.subscribe(({ event, payload }) => {
       if (event === 'MESSAGE_RECEIVED') {
         const { message, conversationId } = payload
-        setMessagesMap(prev => ({
-          ...prev,
-          [conversationId]: [...(prev[conversationId] || []), message]
-        }))
-        setConversations(prevConvs =>
-          prevConvs.map(conv => {
+        if (!message) return
+
+        // ── Security & Isolation Check ──────────────────────────────────────
+        // A message must ONLY be processed in this tab if the current user
+        // is either the sender OR the intended recipient. Messages between
+        // two other users (e.g. sent in another account/tab) must be discarded!
+        const isParticipant =
+          message.senderId === user.id ||
+          message.recipientId === user.id ||
+          (!message.recipientId && (activeRecipient?.id === message.senderId));
+
+        if (!isParticipant) {
+          return;
+        }
+
+        setMessagesMap(prev => {
+          const current = prev[conversationId] || loadRoomMessages(conversationId) || []
+          if (current.some(m => m.id === message.id)) return prev
+          return {
+            ...prev,
+            [conversationId]: [...current, message]
+          }
+        })
+        setConversations(prevConvs => {
+          const exists = prevConvs.some(c => c.id === conversationId)
+          if (!exists) {
+            const fresh = loadConversations(userId)
+            if (fresh.some(c => c.id === conversationId)) {
+              return fresh
+            }
+            // If not yet in saved list, construct the conversation entry for the recipient
+            const otherUser = message.senderId === user.id ? payload.recipientUser : payload.senderUser
+            if (otherUser && otherUser.id !== user.id) {
+              const newConvEntry = {
+                id: conversationId,
+                isGroup: false,
+                recipient: { ...otherUser },
+                lastMessage: message,
+                unreadCount: conversationId === resolvedActiveId ? 0 : 1
+              }
+              const merged = [newConvEntry, ...fresh]
+              saveConversations(userId, merged)
+              return merged
+            }
+            return fresh
+          }
+          return prevConvs.map(conv => {
             if (conv.id === conversationId) {
               return {
                 ...conv,
                 lastMessage: message,
-                unreadCount: conv.id === activeConvId ? 0 : conv.unreadCount + 1
+                unreadCount: conv.id === resolvedActiveId ? 0 : ((conv.unreadCount || 0) + 1)
               }
             }
             return conv
           })
-        )
+        })
       } else if (event === 'TYPING_STATUS_CHANGED') {
-        const { conversationId, isTyping } = payload
-        setTypingState(prev => ({ ...prev, [conversationId]: isTyping }))
+        const { conversationId, isTyping, senderId: typingSenderId, recipientId: typingRecipientId } = payload
+        // Only show the typing bubble when the OTHER person is typing specifically to this user
+        if (typingSenderId !== user.id && (!typingRecipientId || typingRecipientId === user.id)) {
+          setTypingState(prev => ({ ...prev, [conversationId]: isTyping }))
+        }
+
       } else if (event === 'OFFLINE_NOTIFICATION_DISPATCHED') {
-        setNotificationToast(`Notification queued for ${payload.recipientId}: "${payload.snippet}"`)
-        setTimeout(() => setNotificationToast(null), 4000)
+        if (payload.recipientId === user.id) {
+          setNotificationToast(`Notification queued for ${payload.recipientId}: "${payload.snippet}"`)
+          setTimeout(() => setNotificationToast(null), 4000)
+        }
       }
     })
     return () => unsubscribe()
-  }, [activeConvId])
+  }, [userId, resolvedActiveId, user.id, activeRecipient?.id])
 
   // Sync with backend enrolled/advised courses on mount
   useEffect(() => {
-    const user = getStoredUser()
-    const studentId = user?.userId || 'STU001'
+    if (user?.role === 'ADMIN') {
+      const all = channelService.getAllChannels()
+      setChannelConvs([ADVISOR_CHANNEL, ...all])
+      return
+    }
+
+    const studentId = user?.userId || user?.id || 'STU001'
 
     Promise.all([
       apiClient.get(`/api/registration/my?studentId=${studentId}`).then(r => r.ok ? r.json() : []).catch(() => []),
@@ -107,9 +235,39 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
       const enrolledChannels = channelService.syncUserChannels(studentId, activeCourses)
       setChannelConvs([ADVISOR_CHANNEL, ...enrolledChannels])
     })
-  }, [])
+  }, [userId, userRole])
 
-  // Subscribe to channelService – push new channel or remove channel on change
+  // Fetch real registered users from backend database for Direct Messaging
+  useEffect(() => {
+    let isMounted = true
+    setLoadingUsers(true)
+    const currentId = user?.id || user?.userId || ''
+
+    apiClient.get(`/api/users?excludeUserId=${encodeURIComponent(currentId)}`)
+      .then(r => r.ok ? r.json() : [])
+      .then(users => {
+        if (!isMounted) return
+        if (Array.isArray(users) && users.length > 0) {
+          const formatted = users.map(u => ({
+            id: u.userId,
+            username: u.email || u.userId,
+            displayName: u.fullName,
+            role: u.role,
+            status: 'ONLINE',
+            isAdvisor: u.isAdvisor,
+          }))
+          setAvailableUsers(formatted)
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setLoadingUsers(false)
+      })
+
+    return () => { isMounted = false }
+  }, [userId, userRole])
+
+  // Subscribe to channelService and BroadcastChannel for live channel access updates
   useEffect(() => {
     const unsub = channelService.subscribe(({ event, payload }) => {
       if (event === 'CHANNEL_JOINED') {
@@ -122,10 +280,42 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
       } else if (event === 'CHANNEL_LEFT') {
         const { channelId } = payload
         setChannelConvs(prev => prev.filter(c => c.id !== channelId))
+      } else if (event === 'CHANNEL_ACCESS_CHANGED') {
+        const { channelId, userId: targetUserId, action } = payload
+        if (targetUserId === userId) {
+          if (action === 'REMOVE') {
+            setChannelConvs(prev => prev.filter(c => c.id !== channelId))
+            setActiveConvId(prev => (prev === channelId ? ADVISOR_CHANNEL.id : prev))
+          } else if (action === 'ADD') {
+            const allChs = channelService.getChannelsForUser(userId, userRole)
+            setChannelConvs([ADVISOR_CHANNEL, ...allChs])
+          }
+        }
       }
     })
-    return () => unsub()
-  }, [])
+
+    let bc
+    try {
+      bc = new BroadcastChannel('campusconnect_channel_access')
+      bc.onmessage = (e) => {
+        const { channelId, userId: targetUserId, action } = e.data || {}
+        if (targetUserId === userId) {
+          if (action === 'REMOVE') {
+            setChannelConvs(prev => prev.filter(c => c.id !== channelId))
+            setActiveConvId(prev => (prev === channelId ? ADVISOR_CHANNEL.id : prev))
+          } else if (action === 'ADD') {
+            const allChs = channelService.getChannelsForUser(userId, userRole)
+            setChannelConvs([ADVISOR_CHANNEL, ...allChs])
+          }
+        }
+      }
+    } catch (ignored) {}
+
+    return () => {
+      unsub()
+      try { bc?.close() } catch (ignored) {}
+    }
+  }, [userId, userRole])
 
   /* ── Handlers ─────────────────────────────────────────────── */
 
@@ -134,13 +324,17 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
     const textContent = typeof payload === 'string' ? payload : (payload?.content || '')
     const attachments = typeof payload === 'object' && payload?.attachments ? payload.attachments : []
 
+    const roomTargetId = getDeterministicRoomId(user.id, activeRecipient.id)
+
     const newMessage = await dmService.sendDirectMessage({
       senderId: user.id,
       recipientId: activeRecipient.id,
       content: textContent,
       attachments,
-      conversationId: activeConvId,
-      recipientPresence: activeRecipient.status
+      conversationId: roomTargetId,
+      recipientPresence: activeRecipient.status,
+      senderUser: user,
+      recipientUser: activeRecipient,
     })
 
     if (onMessageSent) onMessageSent(newMessage)
@@ -154,6 +348,10 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
 
   const handleSelectConversation = (convId) => {
     setActiveConvId(convId)
+    const fresh = loadRoomMessages(convId)
+    if (fresh) {
+      setMessagesMap(prev => ({ ...prev, [convId]: fresh }))
+    }
     setConversations(prev =>
       prev.map(c => (c.id === convId ? { ...c, unreadCount: 0 } : c))
     )
@@ -187,8 +385,9 @@ export function useMessagingController(user = CURRENT_USER, onMessageSent) {
     // Derived
     activeConversation,
     activeRecipient,
-    // Static data passed through for the View
-    availableUsers: MOCK_USERS,
+    // Dynamic database users for New DM
+    availableUsers,
+    loadingUsers,
     currentUser: user,
     // Handlers
     handleSendMessage,

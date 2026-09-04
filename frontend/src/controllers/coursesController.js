@@ -12,7 +12,8 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { FACULTIES, YEARS, SEMESTERS } from '../models/coursesModel.js'
 import { courseService } from '../services/courseService.js'
 import { channelService } from '../services/channelService.js'
-import { CURRENT_USER } from '../models/messagingModel.js'
+import { getCurrentUser } from '../models/messagingModel.js'
+import { getPreferredSemester, loadPreferences, toSemesterSeason } from '../models/accountSettingsModel.js'
 
 const ENROLLED_IDS_KEY = 'cc_enrolled_course_ids_v1'
 
@@ -69,8 +70,16 @@ export function useCoursesController() {
   const [searchQuery,    setSearchQuery]    = useState('')
   const [activeFaculty,  setActiveFaculty]  = useState('all')
   const [activeYear,     setActiveYear]     = useState('All Years')
-  const [activeSemester, setActiveSemester] = useState('All Semesters')
-  const [viewMode,       setViewMode]       = useState('grid')
+  // The account preference seeds this filter once. Subsequent choices made on
+  // this page remain fully controlled by the user.
+  const [activeSemester, setActiveSemester] = useState(() => {
+    const preferredSeason = toSemesterSeason(getPreferredSemester())
+    return SEMESTERS.includes(preferredSeason) ? preferredSeason : 'All Semesters'
+  })
+  const [viewMode, setViewMode] = useState(() => {
+    const preferredView = loadPreferences().academic?.courseView
+    return preferredView === 'list' ? 'list' : 'grid'
+  })
 
   /** Enrolled IDs: sourced from DB, cached in localStorage */
   const [enrolledIds, setEnrolledIds] = useState(() => {
@@ -93,7 +102,15 @@ export function useCoursesController() {
     courseService.getCatalog()
       .then(data => {
         if (!cancelled) {
-          setAllCourses(data.map(normaliseCourse))
+          const courses = data.map(normaliseCourse)
+          setAllCourses(courses)
+          // A saved semester preference must not make a populated catalog look
+          // empty when the imported dataset contains a different semester.
+          setActiveSemester(current =>
+            current === 'All Semesters' || courses.some(course => course.semester === current)
+              ? current
+              : 'All Semesters'
+          )
           setLoading(false)
         }
       })
@@ -119,12 +136,12 @@ export function useCoursesController() {
       const next = new Set([...prev, String(course.id)])
       try {
         localStorage.setItem(ENROLLED_IDS_KEY, JSON.stringify(Array.from(next)))
-      } catch (e) { /* ignore */ }
+      } catch { /* ignore unavailable storage */ }
       return next
     })
 
     try {
-      const channel = await channelService.onEnrollment({ userId: CURRENT_USER.id, course })
+      const channel = await channelService.onEnrollment({ userId: getCurrentUser().id, course })
       setEnrollToast(`✅ Joined ${course.code} discussion · Channel ${channel.name} ready!`)
     } catch {
       setEnrollToast(`✅ Joined ${course.code}!`)

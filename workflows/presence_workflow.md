@@ -97,11 +97,13 @@ All other pages, Sidebar, auth logic, course/assignment/attendance features — 
 
 ---
 
-## Presence Timing
+## Presence Timing (2-Minute Inactivity Rule)
 
 | Parameter | Value | Reason |
 |---|---|---|
-| Heartbeat interval | 25 seconds | Must be < TTL to keep entry alive |
-| TTL | 60 seconds | Gives 2+ missed heartbeats tolerance |
-| TTL sweep | Every 20 seconds | Fine-grained eviction for dropped connections |
+| Heartbeat interval | 20 seconds | Kept active while user interacts with the app |
+| Client Inactivity Timeout | 2 minutes (120s) | Detects mouse/key/scroll idle time; pauses heartbeats & sends disconnect |
+| Backend TTL | 120 seconds (2m) | Heartbeat entries expire after 2 minutes of no heartbeat (e.g. closed tab) |
+| Backend TTL sweep | Every 15 seconds | Evicts expired users and broadcasts OFFLINE |
 | Reconnect delay | 8 seconds | STOMP auto-reconnect on network hiccup |
+| Resuming activity | Instant | Touching mouse/keyboard immediately marks user ONLINE again |

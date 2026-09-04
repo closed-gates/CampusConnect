@@ -2,6 +2,30 @@ import React from 'react';
 
 export default function UserAvatar({ user, size = 40, className = '' }) {
   const isFaculty = user?.role === 'FACULTY';
+  const isAdmin   = user?.role === 'ADMIN';
+
+  if (isAdmin) {
+    return (
+      <div
+        className={`univ-avatar-icon admin ${className}`}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%)',
+          border: '1.5px solid #ef4444',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          boxShadow: '0 2px 6px rgba(239, 68, 68, 0.25)'
+        }}
+        title={`${user?.displayName || 'Admin'} (System Administrator)`}
+      >
+        <span style={{ fontSize: size * 0.5 }}>🛡️</span>
+      </div>
+    );
+  }
 
   if (isFaculty) {
     return (

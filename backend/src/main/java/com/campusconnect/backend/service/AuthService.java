@@ -98,6 +98,10 @@ public class AuthService {
 
         AppUser user = userOpt.get();
 
+        if (!user.isActive()) {
+            return new AuthResponse(false, "ACCOUNT_FROZEN: Your CampusConnect account has been frozen by an administrator. Please contact an administrator for assistance.");
+        }
+
         // Validate BCrypt password
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             return new AuthResponse(false, "Incorrect password. Please try again.");

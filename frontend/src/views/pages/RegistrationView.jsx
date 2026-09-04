@@ -33,6 +33,7 @@ export default function RegistrationSection() {
       <MyRegistrations
         myRegistrations={ctrl.myRegistrations}
         registeredCredits={ctrl.registeredCredits}
+        preferredSemester={ctrl.preferredSemester}
         windowStatus={ctrl.windowStatus}
         onDrop={ctrl.handleDrop}
       />
@@ -76,14 +77,14 @@ function AdvisingWindowBanner({ windowStatus }) {
 }
 
 /* ─── My Registered Courses ──────────────────────────────────── */
-function MyRegistrations({ myRegistrations = [], registeredCredits = 0, windowStatus, onDrop }) {
+function MyRegistrations({ myRegistrations = [], registeredCredits = 0, preferredSemester, windowStatus, onDrop }) {
   const creditLimit = windowStatus?.open ? 15 : 0
   const creditPct   = creditLimit > 0 ? Math.min(100, Math.round((registeredCredits / creditLimit) * 100)) : 0
 
   return (
     <div className="section-card reg-my-card">
       <div className="section-header">
-        <h2 className="section-title">My Registered Courses</h2>
+        <h2 className="section-title">My Registered Courses · {preferredSemester}</h2>
         <span className="reg-credit-badge">{registeredCredits} / {creditLimit} credits</span>
       </div>
 
@@ -248,6 +249,20 @@ function SectionCard({ section: sec, windowOpen, onRegister, onDrop }) {
         <div className="reg-card-codes">
           <span className="reg-code-badge">{sec.code}</span>
           <span className="reg-section-num">Sec {sec.section}</span>
+          {sec.isTestCourse && (
+            <span style={{
+              background: '#E0F2FE',
+              color: '#0369A1',
+              fontWeight: 700,
+              fontSize: 10,
+              padding: '2px 6px',
+              borderRadius: 4,
+              border: '1px solid #BAE6FD',
+              marginLeft: 4
+            }}>
+              🧪 Test Section
+            </span>
+          )}
         </div>
         <div className="reg-status-badge" style={{ color: cfg.color, background: cfg.bg }}>
           {cfg.label}

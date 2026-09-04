@@ -1,19 +1,26 @@
-﻿import React, { useState } from 'react';
-import { getPresenceColor, getDeterministicRoomId } from '../../../utils/dmUtils.js';
+import React from 'react';
 import UserAvatar from './UserAvatar.jsx';
 
-export default function DMHeader({ currentUser, activeConversation }) {
-  const [showKeyDetails, setShowKeyDetails] = useState(false);
-
+/**
+ * DMHeader
+ *
+ * Shows the recipient's avatar, name, role badge, and a live presence dot.
+ * Presence is driven by the `onlineUsers` Map from usePresenceController —
+ * a green dot means the backend received a heartbeat from that user in the
+ * last 60 seconds; grey means offline / no signal.
+ *
+ * MVC Role: View (pure rendering, no state)
+ */
+export default function DMHeader({ activeConversation, onlineUsers }) {
   if (!activeConversation) return null;
 
-  const recipient = activeConversation.recipient;
-  const presenceColor = getPresenceColor(recipient?.status);
-  const isFaculty = recipient?.role === 'FACULTY';
+  const recipient  = activeConversation.recipient;
+  const isFaculty  = recipient?.role === 'FACULTY';
 
-  const deterministicKey = activeConversation.isGroup
-    ? activeConversation.id
-    : getDeterministicRoomId(currentUser.id, recipient.id);
+  // Derive presence from the live STOMP-backed map
+  const isOnline     = onlineUsers?.has(recipient?.id) ?? false;
+  const presenceColor = isOnline ? '#10b981' : '#94a3b8';
+  const presenceLabel = isOnline ? 'Online' : 'Offline';
 
   return (
     <header className="univ-window-header">
@@ -23,6 +30,7 @@ export default function DMHeader({ currentUser, activeConversation }) {
           <span
             className="univ-presence-badge"
             style={{ backgroundColor: presenceColor, width: 12, height: 12 }}
+            title={`${recipient?.displayName} is ${presenceLabel}`}
           />
         </div>
 
@@ -35,19 +43,19 @@ export default function DMHeader({ currentUser, activeConversation }) {
           </h3>
           <p>
             @{recipient?.username} • {recipient?.title || (isFaculty ? 'Faculty Member' : 'Student')}
+            <span
+              style={{
+                marginLeft: 8,
+                fontSize: 11,
+                color: presenceColor,
+                fontWeight: 600,
+                letterSpacing: '0.03em',
+              }}
+            >
+              ● {presenceLabel}
+            </span>
           </p>
         </div>
-      </div>
-
-      <div>
-        <button
-          className="univ-key-badge"
-          onClick={() => setShowKeyDetails(!showKeyDetails)}
-          title="Click to view Deterministic WebSocket Room Key"
-        >
-          <span>🔑</span>
-          <span>{showKeyDetails ? `Room: ${deterministicKey}` : `Key: ${deterministicKey.substring(0, 18)}...`}</span>
-        </button>
       </div>
     </header>
   );

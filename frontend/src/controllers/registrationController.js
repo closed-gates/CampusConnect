@@ -18,13 +18,10 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Client } from '@stomp/stompjs'
-import {
-  CURRENT_TERM,
-  getStatusConfig,
-} from '../models/registrationModel.js'
 import { channelService } from '../services/channelService.js'
 import { getStoredUser } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
+import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
 const API_BASE = '/api/registration'
 
@@ -53,6 +50,8 @@ function sortSections(sections, order) {
 }
 
 export function useRegistrationController() {
+  const preferredSemester = getPreferredSemester()
+  const preferredTerm = toSemesterApiTerm(preferredSemester)
 
   const [sections,        setSections]        = useState([])
   const [myRegistrations, setMyRegistrations] = useState([])
@@ -74,8 +73,8 @@ export function useRegistrationController() {
     const studentId = getStudentId()
     try {
       const [secRes, myRes, winRes] = await Promise.all([
-        apiClient.get(`${API_BASE}/sections?studentId=${studentId}`),
-        apiClient.get(`${API_BASE}/my?studentId=${studentId}`),
+        apiClient.get(`${API_BASE}/sections?studentId=${studentId}&term=${encodeURIComponent(preferredTerm)}`),
+        apiClient.get(`${API_BASE}/my?studentId=${studentId}&term=${encodeURIComponent(preferredTerm)}`),
         apiClient.get(`${API_BASE}/window/${studentId}`),
       ])
       if (!secRes.ok) throw new Error(`API ${secRes.status}`)
@@ -87,25 +86,25 @@ export function useRegistrationController() {
       setSections(secData)
       setMyRegistrations(myData)
       setWindowStatus(winData)
-    } catch (e) {
+    } catch {
       setError('Could not load sections. Is the backend running?')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [preferredTerm])
 
   /* ── Fetch only the seat counts (fast refresh after change) ── */
   const refreshSeats = useCallback(async () => {
     const studentId = getStudentId()
     try {
-      const res = await apiClient.get(`${API_BASE}/sections?studentId=${studentId}`)
+      const res = await apiClient.get(`${API_BASE}/sections?studentId=${studentId}&term=${encodeURIComponent(preferredTerm)}`)
       if (!res.ok) return
       const data = await res.json()
       setSections(data)
-      const myRes = await apiClient.get(`${API_BASE}/my?studentId=${studentId}`)
+      const myRes = await apiClient.get(`${API_BASE}/my?studentId=${studentId}&term=${encodeURIComponent(preferredTerm)}`)
       if (myRes.ok) setMyRegistrations(await myRes.json())
     } catch { /* silent */ }
-  }, [])
+  }, [preferredTerm])
 
   /* ── WebSocket: connect ──────────────────────────────────── */
   const connectWs = useCallback(() => {
@@ -206,7 +205,7 @@ export function useRegistrationController() {
     ))
 
     try {
-      const res = await apiClient.post(`${API_BASE}/register`, { studentId, sectionId })
+      const res = await apiClient.post(`${API_BASE}/register`, { studentId, sectionId, term: preferredTerm })
       const data = await res.json()
 
       if (data.success) {
@@ -240,7 +239,7 @@ export function useRegistrationController() {
     }
 
     await refreshSeats()
-  }, [showToast, refreshSeats, sections])
+  }, [showToast, refreshSeats, sections, preferredTerm])
 
   /* ── Drop ─────────────────────────────────────────────────── */
   const handleDrop = useCallback(async (sectionId) => {
@@ -262,7 +261,7 @@ export function useRegistrationController() {
     }
 
     try {
-      const res = await apiClient.delete(`${API_BASE}/drop/${studentId}/${sectionId}`)
+      const res = await apiClient.delete(`${API_BASE}/drop/${studentId}/${sectionId}?term=${encodeURIComponent(preferredTerm)}`)
       const data = await res.json()
 
       if (data.success) {
@@ -275,7 +274,7 @@ export function useRegistrationController() {
     }
 
     await refreshSeats()
-  }, [showToast, refreshSeats, sections])
+  }, [showToast, refreshSeats, sections, preferredTerm])
 
   /* ── Derived: filtered + sorted sections ─────────────────── */
   const displayedSections = useMemo(() => {
@@ -309,6 +308,7 @@ export function useRegistrationController() {
     handleDrop,
     fetchAll,
     STUDENT_ID: getStudentId(),
-    CURRENT_TERM,
+    CURRENT_TERM: preferredTerm,
+    preferredSemester,
   }
 }

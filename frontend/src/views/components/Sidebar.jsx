@@ -14,6 +14,7 @@ import { getStoredUser, ROLE_LABELS } from '../../models/authModel.js'
 const NAV_ITEMS = [
   { id: 'home',              label: 'Home',             icon: <HomeIcon />,      route: '/dashboard' },
   { id: 'courses',           label: 'Courses',           icon: <CoursesIcon />,   route: '/courses' },
+  { id: 'faculty-directory', label: 'Faculty Directory', icon: <DirectoryIcon />, route: '/faculty-directory' },
   { id: 'assignments',       label: 'Assignments',       icon: <AssignmentIcon />, route: '/assignments' },
   { id: 'advising',          label: 'Advising',          icon: <AdvisingIcon />,  route: '/advising' },
   { id: 'messaging',         label: 'Messaging Board',   icon: <MessagingIcon />, route: '/messaging' },
@@ -31,11 +32,22 @@ export default function Sidebar({ activeItem = 'home' }) {
 
   const roleLabel = user?.role ? (ROLE_LABELS[user.role] || user.role) : ''
   const isAdmin   = user?.role === 'ADMIN'
+  const isFaculty = user?.role === 'FACULTY'
   const isStudent = !user?.role || user?.role === 'STUDENT'
 
   // Build nav items dynamically: include "View Routine" below Advising for students, and Admin tools
   const navItems = []
   NAV_ITEMS.forEach(item => {
+    // Access control:
+    // 1. Create Routine is student-only (hidden from admin and faculty)
+    if (item.id === 'routine' && !isStudent) {
+      return
+    }
+    // 2. Payments tab is hidden from faculty (visible to students and admins)
+    if (item.id === 'payments' && isFaculty) {
+      return
+    }
+
     navItems.push(item)
     if (item.id === 'advising' && isStudent) {
       navItems.push({
@@ -46,6 +58,16 @@ export default function Sidebar({ activeItem = 'home' }) {
       })
     }
   })
+
+  // Student-only: GPA Calculator
+  if (isStudent) {
+    navItems.push({
+      id: 'gpa-calculator',
+      label: 'Calculate GPA',
+      icon: <GpaIcon />,
+      route: '/gpa-calculator'
+    })
+  }
 
   if (isAdmin) {
     navItems.push({
@@ -99,8 +121,17 @@ export default function Sidebar({ activeItem = 'home' }) {
         ))}
       </nav>
 
-      {/* Logout */}
+      {/* Bottom actions: Settings + Logout */}
       <div className="sidebar-bottom">
+        <button
+          id="nav-settings"
+          className={`sidebar-nav-item ${activeItem === 'settings' ? 'active' : ''}`}
+          aria-current={activeItem === 'settings' ? 'page' : undefined}
+          onClick={() => navigate('/settings')}
+        >
+          <SettingsIcon />
+          Settings
+        </button>
         <button
           id="sidebar-logout-btn"
           className="sidebar-logout"
@@ -153,6 +184,16 @@ function AdvisingIcon() {
       <circle cx="9" cy="7" r="4"/>
       <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
       <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  )
+}
+
+function DirectoryIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
+      <path d="M16 4h5M16 8h5M18 12h3"/>
     </svg>
   )
 }
@@ -265,4 +306,22 @@ function ViewRoutineIcon() {
   )
 }
 
+function GpaIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+      <line x1="2" y1="20" x2="22" y2="20" />
+    </svg>
+  )
+}
 
+function SettingsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  )
+}

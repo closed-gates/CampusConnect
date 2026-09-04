@@ -58,6 +58,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/health").permitAll()
                 // Public — WebSocket handshake
                 .requestMatchers("/ws/**").permitAll()
+                // Public — User directory for direct messaging
+                .requestMatchers("/api/users/**").permitAll()
+                // In-app notifications
+                .requestMatchers("/api/notifications/**").authenticated()
+                // Course channel access management
+                .requestMatchers("/api/channels/**").permitAll()
                 // Everything else requires a valid JWT
                 .anyRequest().authenticated()
             )

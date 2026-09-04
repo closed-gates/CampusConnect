@@ -1,5 +1,5 @@
 import React from 'react'
-import { ROUTINE_DAYS, ROUTINE_TIME_SLOTS } from '../../models/dashboardModel.js'
+import { ROUTINE_DAYS, ROUTINE_TIME_SLOTS, sortTimeSlots } from '../../models/dashboardModel.js'
 
 /**
  * StudentRoutineModal – Modal showing weekly class routine matrix for student's registered courses.
@@ -12,11 +12,11 @@ export default function StudentRoutineModal({ isOpen, onClose, courses, routineG
   // Always include all standard university lecture days including Saturday
   const activeDays = ROUTINE_DAYS
   const gridSlots = Object.keys(routineGrid).map(k => k.split('|')[1]).filter(Boolean)
-  const activeSlots = [...new Set([...ROUTINE_TIME_SLOTS, ...gridSlots])]
+  const activeSlots = sortTimeSlots([...new Set([...ROUTINE_TIME_SLOTS, ...gridSlots])])
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="modal-content modal-lg" onClick={e => e.stopPropagation()}>
+      <div className="modal-content modal-xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">
           <div>

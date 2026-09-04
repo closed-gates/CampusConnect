@@ -47,6 +47,14 @@ public class AppUser {
     @Column(name = "is_advisor")
     private Boolean isAdvisor = false;
 
+    /** Soft-deactivation flag. Null is treated as active for legacy rows. */
+    @Column(name = "active")
+    private Boolean active = true;
+
+    /** Lead time used by the assignment deadline notification scheduler. */
+    @Column(name = "reminder_hours")
+    private Integer reminderHours = 24;
+
     // ── Constructors ──────────────────────────────────────────
     public AppUser() {}
 
@@ -91,4 +99,9 @@ public class AppUser {
     public Boolean getIsAdvisor()                   { return isAdvisor; }
     public void    setIsAdvisor(Boolean isAdvisor)  { this.isAdvisor = isAdvisor != null ? isAdvisor : false; }
     public boolean isAdvisor()                      { return Boolean.TRUE.equals(isAdvisor); }
+    public Boolean getActive()                      { return active; }
+    public void setActive(Boolean active)            { this.active = active; }
+    public boolean isActive()                        { return active == null || Boolean.TRUE.equals(active); }
+    public Integer getReminderHours()                 { return reminderHours != null ? reminderHours : 24; }
+    public void setReminderHours(Integer hours)       { this.reminderHours = hours; }
 }

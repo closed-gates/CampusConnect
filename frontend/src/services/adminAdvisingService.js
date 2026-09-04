@@ -68,5 +68,29 @@ export const adminAdvisingService = {
     const res = await apiClient.get(`/api/advisors/status/${userId}`)
     if (!res.ok) return { isAdvisor: false }
     return res.json()
+  },
+
+  /**
+   * Fetch the current advising portal open/closed status.
+   * Accessible to any authenticated user.
+   * @returns {Promise<{isOpen: boolean, message: string, updatedBy: string, updatedAt: string}>}
+   */
+  async getPortalStatus() {
+    const res = await apiClient.get('/api/admin/advising-portal/status')
+    if (!res.ok) return { isOpen: true, message: '' }
+    return res.json()
+  },
+
+  /**
+   * Set the advising portal open/closed state (Admin only).
+   * @param {boolean} isOpen
+   * @param {string}  [message] - Optional custom notice for students
+   * @returns {Promise<Object>}
+   */
+  async setPortalStatus(isOpen, message = '') {
+    const res = await apiClient.post('/api/admin/advising-portal/toggle', { isOpen, message })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message || 'Failed to update portal status')
+    return data
   }
 }

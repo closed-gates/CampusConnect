@@ -1,6 +1,6 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { channelService } from "../../../services/channelService.js";
-import { CURRENT_USER } from "../../../models/messagingModel.js";
+import { getCurrentUser } from "../../../models/messagingModel.js";
 import "./CourseChannelView.css";
 
 function getAvatarColor(id) {
@@ -29,6 +29,9 @@ function formatDate(iso) {
 }
 
 export default function CourseChannelView({ channel }) {
+  // Resolve the real logged-in user at render time (student / faculty / admin)
+  const currentUser = getCurrentUser();
+
   const subChannels = channelService.getSubChannels(channel.id);
   const members     = channelService.getMembers(channel.id);
 
@@ -62,9 +65,9 @@ export default function CourseChannelView({ channel }) {
     if (!content || activeSub?.readOnly) return;
     channelService.sendSubChannelMessage(channel.id, activeSubId, {
       id: `msg_${Date.now()}`,
-      authorId: CURRENT_USER.id,
-      authorName: CURRENT_USER.displayName,
-      authorRole: CURRENT_USER.role,
+      authorId:   currentUser.id,
+      authorName: currentUser.displayName,
+      authorRole: currentUser.role,
       content,
       createdAt: new Date().toISOString(),
     });
@@ -209,9 +212,9 @@ export default function CourseChannelView({ channel }) {
                       files.forEach(file => {
                         channelService.sendSubChannelMessage(channel.id, activeSubId, {
                           id: `msg_${Date.now()}_${file.name}`,
-                          authorId: CURRENT_USER.id,
-                          authorName: CURRENT_USER.displayName,
-                          authorRole: CURRENT_USER.role,
+                          authorId:   currentUser.id,
+                          authorName: currentUser.displayName,
+                          authorRole: currentUser.role,
                           content: `Uploaded: ${file.name}`,
                           createdAt: new Date().toISOString(),
                           attachments: [{ name: file.name, type: file.name.split(".").pop(), size: (file.size / 1024).toFixed(1) + " KB" }],

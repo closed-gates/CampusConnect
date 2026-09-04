@@ -6,25 +6,16 @@
  * Opens a dedicated lightweight STOMP session for presence tracking,
  * separate from the chat STOMP session so the two lifecycles are independent.
  *
- * On mount:
- *   1. Connects to /ws via SockJS + STOMP
- *   2. Publishes presence.connect  → backend marks this user ONLINE
- *   3. Subscribes to /topic/presence → receives all ONLINE/OFFLINE deltas
- *   4. Sets a 25s heartbeat interval to keep the TTL alive
- *
- * On unmount (or page unload):
- *   1. Clears heartbeat interval
- *   2. Publishes presence.disconnect → backend marks OFFLINE immediately
- *   3. Deactivates the STOMP client
+ * Inactivity Rule:
+ *   - Users are NOT marked offline immediately upon unmount or closing.
+ *   - Activity is tracked via user interactions (mouse, keyboard, scroll, touch).
+ *   - While active, heartbeats are sent every 20s.
+ *   - After 2 minutes (120s) of inactivity (or tab close), the user is marked OFFLINE.
+ *   - Any subsequent interaction brings the user back ONLINE immediately.
  *
  * Exported state:
  *   - onlineUsers: Map<userId, { displayName, lastActiveAt }>
  *   - isUserOnline: (userId: string) => boolean
- *
- * Graceful fallback: if the WebSocket is unavailable, the hook resolves
- * silently with an empty onlineUsers map (no errors surfaced to UI).
- *
- * No JSX. No styles.
  *
  * Feature: Online/Offline Presence Indicators
  */
@@ -38,34 +29,38 @@ import {
   PRESENCE_DISCONNECT_DEST,
   PRESENCE_TOPIC,
   HEARTBEAT_INTERVAL_MS,
+  INACTIVITY_TIMEOUT_MS,
   STATUS_ONLINE,
 } from '../models/presenceModel.js'
 import { CHAT_WS_URL } from '../models/courseChatModel.js'
-import { CURRENT_USER } from '../models/messagingModel.js'
+import { getCurrentUser } from '../models/messagingModel.js'
 
 /**
  * usePresenceController
  *
- * @param {object} [currentUser] - Authenticated user, defaults to CURRENT_USER
+ * @param {object} [currentUser] - Authenticated user, defaults to getCurrentUser()
  * @returns {{ onlineUsers: Map, isUserOnline: (id: string) => boolean }}
  */
-export function usePresenceController(currentUser = CURRENT_USER) {
+export function usePresenceController(currentUser = getCurrentUser()) {
   // Map<userId, { displayName, lastActiveAt }>
   const [onlineUsers, setOnlineUsers] = useState(() => new Map())
 
-  const stompRef     = useRef(null)
-  const heartbeatRef = useRef(null)
-  const connectedRef = useRef(false)
+  const stompRef        = useRef(null)
+  const heartbeatRef    = useRef(null)
+  const connectedRef    = useRef(false)
+  const lastActivityRef = useRef(Date.now())
+  const isInactiveRef   = useRef(false)
 
   /* ── Send helpers (safe to call at any time) ─────────────────── */
 
   const publishConnect = useCallback((client) => {
+    if (!client?.connected) return
     client.publish({
       destination: PRESENCE_CONNECT_DEST,
       body: JSON.stringify({
-        userId:      currentUser.id,
-        displayName: currentUser.displayName,
-        status:      STATUS_ONLINE,
+        userId:       currentUser.id,
+        displayName:  currentUser.displayName,
+        status:       STATUS_ONLINE,
         lastActiveAt: new Date().toISOString(),
       }),
     })
@@ -76,9 +71,9 @@ export function usePresenceController(currentUser = CURRENT_USER) {
     client.publish({
       destination: PRESENCE_HEARTBEAT_DEST,
       body: JSON.stringify({
-        userId:      currentUser.id,
-        displayName: currentUser.displayName,
-        status:      STATUS_ONLINE,
+        userId:       currentUser.id,
+        displayName:  currentUser.displayName,
+        status:       STATUS_ONLINE,
         lastActiveAt: new Date().toISOString(),
       }),
     })
@@ -90,14 +85,48 @@ export function usePresenceController(currentUser = CURRENT_USER) {
       client.publish({
         destination: PRESENCE_DISCONNECT_DEST,
         body: JSON.stringify({
-          userId:      currentUser.id,
-          displayName: currentUser.displayName,
-          status:      'OFFLINE',
+          userId:       currentUser.id,
+          displayName:  currentUser.displayName,
+          status:       'OFFLINE',
           lastActiveAt: new Date().toISOString(),
         }),
       })
     } catch (_) { /* ignore — session may already be gone */ }
   }, [currentUser.id, currentUser.displayName])
+
+  /* ── Inactivity & user interaction detection ─────────────────── */
+
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      lastActivityRef.current = Date.now()
+
+      // If user was previously idle and marked offline, bring them back online
+      if (isInactiveRef.current) {
+        isInactiveRef.current = false
+        if (stompRef.current && connectedRef.current) {
+          publishConnect(stompRef.current)
+        }
+      }
+    }
+
+    const activityEvents = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart']
+    let throttleTimer = null
+    const throttledHandler = () => {
+      if (!throttleTimer) {
+        handleUserInteraction()
+        throttleTimer = setTimeout(() => {
+          throttleTimer = null
+        }, 2000)
+      }
+    }
+
+    activityEvents.forEach(evt => window.addEventListener(evt, throttledHandler, { passive: true }))
+
+    return () => {
+      if (throttleTimer) clearTimeout(throttleTimer)
+      activityEvents.forEach(evt => window.removeEventListener(evt, throttledHandler))
+    }
+  }, [publishConnect])
 
   /* ── STOMP lifecycle ─────────────────────────────────────────── */
 
@@ -107,7 +136,9 @@ export function usePresenceController(currentUser = CURRENT_USER) {
       reconnectDelay:   8000,
 
       onConnect: () => {
-        connectedRef.current = true
+        connectedRef.current    = true
+        isInactiveRef.current   = false
+        lastActivityRef.current = Date.now()
 
         // 1. Announce online
         publishConnect(client)
@@ -132,9 +163,19 @@ export function usePresenceController(currentUser = CURRENT_USER) {
           }
         })
 
-        // 3. Start heartbeat
+        // 3. Periodic heartbeat and 2-min inactivity check
         heartbeatRef.current = setInterval(() => {
-          publishHeartbeat(client)
+          const idleTime = Date.now() - lastActivityRef.current
+          if (idleTime >= INACTIVITY_TIMEOUT_MS) {
+            // Inactive for 2 minutes or more: mark offline
+            if (!isInactiveRef.current) {
+              isInactiveRef.current = true
+              publishDisconnect(client)
+            }
+          } else {
+            // Active: send heartbeat to keep backend TTL refreshed
+            publishHeartbeat(client)
+          }
         }, HEARTBEAT_INTERVAL_MS)
       },
 
@@ -152,19 +193,17 @@ export function usePresenceController(currentUser = CURRENT_USER) {
     stompRef.current = client
     client.activate()
 
-    // Page unload — best effort publish before the socket dies
-    const handleUnload = () => publishDisconnect(client)
-    window.addEventListener('beforeunload', handleUnload)
-
+    // Notice: We intentionally do NOT call publishDisconnect immediately on beforeunload/unmount.
+    // That way, quick page reloads or navigation do NOT flicker the user offline.
+    // The backend PresenceStore TTL (120s / 2 minutes) cleanly sweeps them offline
+    // if no heartbeats are received within 2 minutes.
     return () => {
-      window.removeEventListener('beforeunload', handleUnload)
       clearInterval(heartbeatRef.current)
-      publishDisconnect(client)
       client.deactivate()
-      stompRef.current    = null
+      stompRef.current     = null
       connectedRef.current = false
     }
-  }, [currentUser.id]) // reconnect only if user changes
+  }, [currentUser.id, publishConnect, publishHeartbeat, publishDisconnect])
 
   /* ── isUserOnline helper ─────────────────────────────────────── */
 

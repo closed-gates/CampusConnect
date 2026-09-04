@@ -1299,6 +1299,107 @@ input {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  background: var(--course-header-color, var(--color-bg));
+}
+
+.stat-card-icon.red { background: rgba(239, 68, 68, 0.14); color: #dc2626; }
+.stat-card:has(.stat-card-icon.red) .stat-card-value { color: #dc2626; }
+
+:root[data-accent='blue'] { --color-teal: #3B82F6; --color-teal-dark: #2563EB; --color-teal-light: #DBEAFE; }
+:root[data-accent='purple'] { --color-teal: #8B5CF6; --color-teal-dark: #7C3AED; --color-teal-light: #EDE9FE; }
+:root[data-font-size='large'] { font-size: 112.5%; }
+:root[data-font-size='x-large'] { font-size: 125%; }
+:root[data-high-contrast] {
+  --color-bg: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-white: #FFFFFF;
+  --color-text: #000000;
+  --color-text-sub: #111111;
+  --color-text-light: #262626;
+  --color-border: #111111;
+  --color-teal: #006B5B;
+  --color-teal-dark: #004C40;
+  --color-teal-light: #D7FFF7;
+  --color-sidebar-bg: #FFFFFF;
+}
+
+:root[data-theme='dark'][data-high-contrast] {
+  --color-bg: #000000;
+  --color-surface: #090909;
+  --color-white: #090909;
+  --color-text: #FFFFFF;
+  --color-text-sub: #F5F5F5;
+  --color-text-light: #D4D4D4;
+  --color-border: #D4D4D4;
+  --color-teal: #5EEAD4;
+  --color-teal-dark: #2DD4BF;
+  --color-teal-light: #123C38;
+  --color-sidebar-bg: #000000;
+}
+
+:root[data-high-contrast] .sidebar,
+:root[data-high-contrast] .settings-card,
+:root[data-high-contrast] .profile-hero,
+:root[data-high-contrast] .course-card,
+:root[data-high-contrast] .stat-card,
+:root[data-high-contrast] input,
+:root[data-high-contrast] select {
+  border-color: var(--color-border) !important;
+  border-width: 2px;
+}
+
+:root[data-high-contrast] button:focus-visible,
+:root[data-high-contrast] a:focus-visible,
+:root[data-high-contrast] input:focus-visible,
+:root[data-high-contrast] select:focus-visible {
+  outline: 3px solid #F59E0B !important;
+  outline-offset: 3px;
+}
+
+:root[data-high-contrast] .sidebar-nav-item.active,
+:root[data-high-contrast] .settings-tab.active,
+:root[data-high-contrast] .btn-primary {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+:root[data-theme='dark'] .course-card-header,
+:root[data-theme='dark'] .course-details-header {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--course-accent, var(--color-teal)) 22%, var(--color-surface)),
+    color-mix(in srgb, var(--course-accent, var(--color-teal)) 7%, var(--color-surface))
+  );
+}
+
+:root[data-theme='dark'] .course-card {
+  border-color: color-mix(in srgb, var(--course-accent, var(--color-teal)) 20%, var(--color-border));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+:root[data-theme='dark'] .course-card-header {
+  border-top: 3px solid color-mix(in srgb, var(--course-accent, var(--color-teal)) 72%, white);
+  padding-top: 15px;
+}
+
+:root[data-theme='dark'] .course-card-code {
+  color: color-mix(in srgb, var(--course-accent, var(--color-teal)) 45%, white);
+  background: color-mix(in srgb, var(--course-accent, var(--color-teal)) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--course-accent, var(--color-teal)) 28%, transparent);
+}
+
+:root[data-theme='dark'] .course-bookmark-btn {
+  background: rgba(15, 23, 42, 0.58);
+  color: var(--color-text-sub);
+}
+
+:root[data-theme='dark'] .course-enroll-btn {
+  background: color-mix(in srgb, var(--course-accent, var(--color-teal)) 72%, #0f172a);
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .course-enroll-btn:hover {
+  background: color-mix(in srgb, var(--course-accent, var(--color-teal)) 86%, #0f172a);
 }
 
 .course-card-emoji { font-size: 28px; line-height: 1; }
@@ -2481,6 +2582,7 @@ input {
   border-radius: 18px 18px 0 0;
   color: #fff;
   position: relative;
+  background: var(--course-header-color, var(--color-bg));
 }
 
 .course-details-emoji { font-size: 32px; flex-shrink: 0; }
@@ -2619,6 +2721,7 @@ input {
 
 .modal-md { width: 100%; max-width: 640px; }
 .modal-lg { width: 100%; max-width: 900px; }
+.modal-xl { width: 100%; max-width: 1150px; }
 
 .modal-header {
   padding: 20px 24px;
@@ -2807,6 +2910,7 @@ input {
   color: #4B5563;
   white-space: nowrap;
   vertical-align: middle;
+  min-width: 135px;
 }
 
 .routine-cell {

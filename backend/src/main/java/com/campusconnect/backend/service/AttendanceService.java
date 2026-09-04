@@ -4,6 +4,7 @@ import com.campusconnect.backend.model.AttendanceRecord;
 import com.campusconnect.backend.model.SectionRegistration;
 import com.campusconnect.backend.repository.AttendanceRecordRepository;
 import com.campusconnect.backend.repository.SectionRegistrationRepository;
+import com.campusconnect.backend.repository.AdvisedCourseRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +27,14 @@ public class AttendanceService {
 
     private final AttendanceRecordRepository      repo;
     private final SectionRegistrationRepository   regRepo;
+    private final AdvisedCourseRepository          advisedCourseRepo;
 
     public AttendanceService(AttendanceRecordRepository repo,
-                             SectionRegistrationRepository regRepo) {
+                             SectionRegistrationRepository regRepo,
+                             AdvisedCourseRepository advisedCourseRepo) {
         this.repo    = repo;
         this.regRepo = regRepo;
+        this.advisedCourseRepo = advisedCourseRepo;
     }
 
     // ── Seed data on first startup ────────────────────────────────
@@ -334,13 +338,18 @@ public class AttendanceService {
         // section.code == courseId (e.g. "CSE110"), all terms
         List<SectionRegistration> registrations = regRepo.findAll().stream()
                 .filter(sr -> sr.getSection() != null &&
-                              courseId.equalsIgnoreCase(sr.getSection().getCode()))
+                              (courseId.equalsIgnoreCase(sr.getSection().getCode()) ||
+                               courseId.equalsIgnoreCase(sr.getSection().getId())))
                 .collect(Collectors.toList());
 
         for (SectionRegistration sr : registrations) {
             // Use studentId as both key and fallback name if unknown
             studentMap.putIfAbsent(sr.getStudentId(), sr.getStudentId());
         }
+
+        advisedCourseRepo.findAll().stream()
+                .filter(ac -> courseId.equalsIgnoreCase(ac.getCourseCode()) || courseId.equalsIgnoreCase(ac.getSectionId()))
+                .forEach(ac -> studentMap.putIfAbsent(ac.getStudentProfile().getStudentId(), ac.getStudentProfile().getStudentName()));
 
         List<Map<String, String>> result = new ArrayList<>();
         for (Map.Entry<String, String> entry : studentMap.entrySet()) {
@@ -418,6 +427,29 @@ public class AttendanceService {
             courseMap.put("presentCount",   present);
             courseMap.put("lateCount",      late);
             courseMap.put("absentCount",    absent);
+            courseMap.put("attendanceRate", Math.round(rate * 10.0) / 10.0);
+            result.add(courseMap);
+        }
+
+        // Advisor-assigned courses are authoritative even before a student
+        // completes self-registration for the section.
+        var advisedCourses = term != null && !term.isBlank()
+                ? advisedCourseRepo.findForTerm(studentId, term)
+                : advisedCourseRepo.findByStudentProfile_StudentId(studentId);
+        for (var advised : advisedCourses) {
+            String code = advised.getCourseCode();
+            if (!seenCodes.add(code)) continue;
+            List<AttendanceRecord> courseRecs = byCourse.getOrDefault(code, Collections.emptyList());
+            long total = courseRecs.size();
+            long present = courseRecs.stream().filter(r -> "PRESENT".equalsIgnoreCase(r.getStatus())).count();
+            long late = courseRecs.stream().filter(r -> "LATE".equalsIgnoreCase(r.getStatus())).count();
+            long absent = courseRecs.stream().filter(r -> "ABSENT".equalsIgnoreCase(r.getStatus())).count();
+            double rate = total > 0 ? (double) (present + late) / total * 100.0 : 0.0;
+            Map<String, Object> courseMap = new LinkedHashMap<>();
+            courseMap.put("courseId", code); courseMap.put("courseName", advised.getCourseTitle());
+            courseMap.put("section", advised.getSection()); courseMap.put("faculty", advised.getFaculty());
+            courseMap.put("totalSessions", total); courseMap.put("presentCount", present);
+            courseMap.put("lateCount", late); courseMap.put("absentCount", absent);
             courseMap.put("attendanceRate", Math.round(rate * 10.0) / 10.0);
             result.add(courseMap);
         }

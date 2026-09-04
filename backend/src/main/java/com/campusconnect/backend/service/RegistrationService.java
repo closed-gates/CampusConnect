@@ -57,6 +57,12 @@ public class RegistrationService {
     private final SimpMessagingTemplate         messaging;
     private final ScheduleClashValidator        clashValidator;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.campusconnect.backend.repository.TestSectionRepository testSectionRepo;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.campusconnect.backend.repository.AdvisingPortalStatusRepository portalStatusRepo;
+
     public RegistrationService(SectionRegistrationRepository regRepo,
                                CourseSectionRepository sectionRepo,
                                StudentProfileRepository studentRepo,
@@ -81,11 +87,16 @@ public class RegistrationService {
      *   - prerequisiteCodes  string
      */
     public List<Map<String, Object>> getSections(String studentId) {
+        return getSections(studentId, CURRENT_TERM);
+    }
+
+    public List<Map<String, Object>> getSections(String studentId, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         StudentProfile student = studentRepo.findById(studentId).orElse(null);
         Set<String> completedCodes = parseCompletedCourses(student);
 
-        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM);
-        List<AdvisedCourse> advisedCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
+        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, term);
+        List<AdvisedCourse> advisedCourses = advisedCourseRepo.findForTerm(studentId, term);
 
         Set<String> registeredSectionIds = new HashSet<>();
         Set<String> registeredCourseCodes = new HashSet<>();
@@ -99,7 +110,37 @@ public class RegistrationService {
             registeredCourseCodes.add(ac.getCourseCode().toUpperCase());
         }
 
-        return sectionRepo.findAll().stream()
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        if (testSectionRepo != null) {
+            for (com.campusconnect.backend.model.TestSection ts : testSectionRepo.findAll()) {
+                Map<String, Object> m = new LinkedHashMap<>();
+                String secId = ts.getSectionId() != null ? ts.getSectionId() : String.valueOf(ts.getId());
+                m.put("id", secId);
+                m.put("code", ts.getCourse().getCode());
+                m.put("section", ts.getSectionNumber());
+                m.put("title", ts.getCourse().getName());
+                m.put("faculty", ts.getFaculty().getName());
+                m.put("time", ts.getScheduleTime());
+                m.put("room", ts.getRoom());
+                m.put("examDay", "TBA");
+                m.put("totalSeats", ts.getTotalSeats());
+                m.put("booked", ts.getBookedSeats());
+                m.put("seatsRemaining", Math.max(0, ts.getTotalSeats() - ts.getBookedSeats()));
+                boolean isRegistered = registeredSectionIds.contains(secId);
+                m.put("registeredByStudent", isRegistered);
+                m.put("prerequisiteCodes", ts.getCourse().getPrerequisites() != null ? ts.getCourse().getPrerequisites() : "");
+                m.put("prerequisiteMet", true);
+                m.put("unmetPrerequisites", Collections.emptyList());
+                boolean courseAlreadyRegistered = registeredCourseCodes.contains(ts.getCourse().getCode().toUpperCase())
+                        && !registeredSectionIds.contains(secId);
+                m.put("courseAlreadyRegistered", courseAlreadyRegistered);
+                m.put("isTestCourse", true);
+                result.add(m);
+            }
+        }
+
+        result.addAll(sectionRepo.findAll().stream()
                 .map(sec -> {
                     Map<String, Object> m = enrichSection(sec, studentId, registeredSectionIds, completedCodes);
                     // Flag sections whose course code is already taken (in a different section)
@@ -108,14 +149,20 @@ public class RegistrationService {
                     m.put("courseAlreadyRegistered", courseAlreadyRegistered);
                     return m;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+        return result;
     }
 
     /** Returns a student's registered sections for the current term. */
     public List<Map<String, Object>> getStudentRegistrations(String studentId) {
+        return getStudentRegistrations(studentId, CURRENT_TERM);
+    }
+
+    public List<Map<String, Object>> getStudentRegistrations(String studentId, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         // Sync any advised_courses records into section_registrations if not yet present
-        List<AdvisedCourse> advisedCourses = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
-        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM);
+        List<AdvisedCourse> advisedCourses = advisedCourseRepo.findForTerm(studentId, term);
+        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, term);
         Set<String> existingSectionIds = myRegs.stream().map(r -> r.getSection().getId()).collect(Collectors.toSet());
 
         for (AdvisedCourse ac : advisedCourses) {
@@ -125,7 +172,7 @@ public class RegistrationService {
                     SectionRegistration reg = SectionRegistration.builder()
                             .studentId(studentId)
                             .section(secOpt.get())
-                            .term(CURRENT_TERM)
+                            .term(term)
                             .build();
                     regRepo.save(reg);
                     myRegs.add(reg);
@@ -134,9 +181,33 @@ public class RegistrationService {
             }
         }
 
-        return myRegs.stream()
+        List<Map<String, Object>> list = myRegs.stream()
                 .map(r -> enrichSection(r.getSection(), studentId, new HashSet<>(), new HashSet<>()))
                 .collect(Collectors.toList());
+
+        for (AdvisedCourse ac : advisedCourses) {
+            if (existingSectionIds.contains(ac.getSectionId())) continue;
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", ac.getSectionId());
+            m.put("code", ac.getCourseCode());
+            m.put("section", ac.getSection());
+            m.put("title", ac.getCourseTitle());
+            m.put("faculty", ac.getFaculty());
+            m.put("time", ac.getTime());
+            m.put("room", ac.getRoom());
+            m.put("examDay", "TBA");
+            m.put("totalSeats", 35);
+            m.put("booked", 1);
+            m.put("seatsRemaining", 34);
+            m.put("registeredByStudent", true);
+            m.put("prerequisiteMet", true);
+            m.put("unmetPrerequisites", Collections.emptyList());
+            m.put("courseAlreadyRegistered", false);
+            m.put("isTestCourse", true);
+            list.add(m);
+        }
+
+        return list;
     }
 
     // ── Advising window ───────────────────────────────────────────
@@ -208,6 +279,12 @@ public class RegistrationService {
      */
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Map<String, Object> registerSection(String studentId, String sectionId) {
+        return registerSection(studentId, sectionId, CURRENT_TERM);
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Map<String, Object> registerSection(String studentId, String sectionId, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         Map<String, Object> result = new LinkedHashMap<>();
 
         // 1. Load student profile
@@ -216,6 +293,19 @@ public class RegistrationService {
             result.put("success", false);
             result.put("message", "Student profile not found.");
             return result;
+        }
+
+        // 1b. Check if admin has closed the advising portal globally
+        if (portalStatusRepo != null) {
+            com.campusconnect.backend.model.AdvisingPortalStatus portalStatus =
+                portalStatusRepo.findById(1L).orElse(null);
+            if (portalStatus != null && !portalStatus.isOpen()) {
+                result.put("success", false);
+                result.put("message", portalStatus.getMessage() != null
+                    ? portalStatus.getMessage()
+                    : "The advising portal is currently closed by the administrator.");
+                return result;
+            }
         }
 
         // 2. Check advising window
@@ -228,6 +318,58 @@ public class RegistrationService {
 
         // 3. Load section
         CourseSection section = sectionRepo.findById(sectionId).orElse(null);
+        if (section == null && testSectionRepo != null) {
+            Optional<com.campusconnect.backend.model.TestSection> tsOpt = testSectionRepo.findBySectionId(sectionId);
+            if (tsOpt.isEmpty()) {
+                try {
+                    tsOpt = testSectionRepo.findById(Long.parseLong(sectionId));
+                } catch (NumberFormatException ignored) {}
+            }
+            if (tsOpt.isPresent()) {
+                com.campusconnect.backend.model.TestSection ts = tsOpt.get();
+                if (ts.getBookedSeats() >= ts.getTotalSeats()) {
+                    result.put("success", false);
+                    result.put("message", "Section " + sectionId + " is full.");
+                    return result;
+                }
+                String newCourseCode = ts.getCourse().getCode().toUpperCase();
+                boolean alreadyHasCourse = regRepo.findByStudentIdAndTerm(studentId, term)
+                        .stream()
+                        .anyMatch(r -> r.getSection().getCode().equalsIgnoreCase(newCourseCode))
+                        || advisedCourseRepo.existsForTerm(studentId, newCourseCode, term);
+                if (alreadyHasCourse) {
+                    result.put("success", false);
+                    result.put("message", "You are already registered in another section of " + newCourseCode + ".");
+                    return result;
+                }
+                ts.setBookedSeats(ts.getBookedSeats() + 1);
+                testSectionRepo.save(ts);
+
+                AdvisedCourse ac = AdvisedCourse.builder()
+                        .sectionId(ts.getSectionId())
+                        .studentProfile(student)
+                        .courseCode(ts.getCourse().getCode())
+                        .courseTitle(ts.getCourse().getName())
+                        .section(ts.getSectionNumber())
+                        .credits(ts.getCourse().getCredits() != null ? ts.getCourse().getCredits().intValue() : 3)
+                        .time(ts.getScheduleTime())
+                        .room(ts.getRoom())
+                        .faculty(ts.getFaculty().getName())
+                        .assignedAt(LocalDateTime.now().toString())
+                        .assignedBy("Self-Registration")
+                        .term(term)
+                        .build();
+                advisedCourseRepo.save(ac);
+                student.getAdvisedCourses().add(ac);
+                studentRepo.save(student);
+
+                result.put("success", true);
+                result.put("message", "Successfully registered in " + ts.getCourse().getCode() + " Sec " + ts.getSectionNumber() + ".");
+                result.put("sectionId", sectionId);
+                result.put("seatsRemaining", Math.max(0, ts.getTotalSeats() - ts.getBookedSeats()));
+                return result;
+            }
+        }
         if (section == null) {
             result.put("success", false);
             result.put("message", "Section not found: " + sectionId);
@@ -235,7 +377,7 @@ public class RegistrationService {
         }
 
         // 4. Duplicate check — same section
-        if (regRepo.existsByStudentIdAndSection_IdAndTerm(studentId, sectionId, CURRENT_TERM)) {
+        if (regRepo.existsByStudentIdAndSection_IdAndTerm(studentId, sectionId, term)) {
             result.put("success", false);
             result.put("message", "You are already registered in section " + sectionId + ".");
             return result;
@@ -243,10 +385,10 @@ public class RegistrationService {
 
         // 4b. One-section-per-course rule — cannot take two sections of the same course code
         String newCourseCode = section.getCode().toUpperCase();
-        boolean alreadyHasCourse = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM)
+        boolean alreadyHasCourse = regRepo.findByStudentIdAndTerm(studentId, term)
                 .stream()
                 .anyMatch(r -> r.getSection().getCode().equalsIgnoreCase(newCourseCode))
-                || advisedCourseRepo.existsByStudentProfile_StudentIdAndCourseCode(studentId, newCourseCode);
+                || advisedCourseRepo.existsForTerm(studentId, newCourseCode, term);
 
         if (alreadyHasCourse) {
             result.put("success", false);
@@ -257,11 +399,11 @@ public class RegistrationService {
 
         // 4c. Load existing sections for schedule & exam clash checks
         List<CourseSection> existingSections = new ArrayList<>();
-        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, CURRENT_TERM);
+        List<SectionRegistration> myRegs = regRepo.findByStudentIdAndTerm(studentId, term);
         for (SectionRegistration r : myRegs) {
             if (r.getSection() != null) existingSections.add(r.getSection());
         }
-        List<AdvisedCourse> myAdvised = advisedCourseRepo.findByStudentProfile_StudentId(studentId);
+        List<AdvisedCourse> myAdvised = advisedCourseRepo.findForTerm(studentId, term);
         for (AdvisedCourse ac : myAdvised) {
             sectionRepo.findById(ac.getSectionId()).ifPresent(s -> {
                 if (existingSections.stream().noneMatch(existing -> existing.getId().equalsIgnoreCase(s.getId()))) {
@@ -304,7 +446,7 @@ public class RegistrationService {
         }
 
         // 6. Credit limit check
-        long currentSections = regRepo.countByStudentIdAndTerm(studentId, CURRENT_TERM);
+        long currentSections = regRepo.countByStudentIdAndTerm(studentId, term);
         int  currentCredits  = (int) currentSections * CREDITS_PER_SECTION;
         if (currentCredits + CREDITS_PER_SECTION > student.getCreditLimit()) {
             result.put("success", false);
@@ -326,12 +468,12 @@ public class RegistrationService {
         SectionRegistration reg = SectionRegistration.builder()
                 .studentId(studentId)
                 .section(section)
-                .term(CURRENT_TERM)
+                .term(term)
                 .build();
         regRepo.save(reg);
 
         // Also synchronize with advised_courses so Advisor panel and Student routine show this course
-        if (!advisedCourseRepo.existsByStudentProfile_StudentIdAndCourseCode(studentId, section.getCode())) {
+        if (!advisedCourseRepo.existsForTerm(studentId, section.getCode(), term)) {
             AdvisedCourse ac = AdvisedCourse.builder()
                     .sectionId(section.getId())
                     .studentProfile(student)
@@ -344,6 +486,7 @@ public class RegistrationService {
                     .faculty(section.getFaculty())
                     .assignedAt(LocalDateTime.now().toString())
                     .assignedBy("Self-Registered (Student)")
+                    .term(term)
                     .build();
             advisedCourseRepo.save(ac);
             student.getAdvisedCourses().add(ac);
@@ -368,12 +511,49 @@ public class RegistrationService {
      */
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Map<String, Object> dropSection(String studentId, String sectionId) {
+        return dropSection(studentId, sectionId, CURRENT_TERM);
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Map<String, Object> dropSection(String studentId, String sectionId, String requestedTerm) {
+        String term = normalizeTerm(requestedTerm);
         Map<String, Object> result = new LinkedHashMap<>();
 
         // 1. Find the registration record
         Optional<SectionRegistration> regOpt =
-                regRepo.findByStudentIdAndSection_IdAndTerm(studentId, sectionId, CURRENT_TERM);
+                regRepo.findByStudentIdAndSection_IdAndTerm(studentId, sectionId, term);
         if (regOpt.isEmpty()) {
+            if (testSectionRepo != null) {
+                Optional<com.campusconnect.backend.model.TestSection> tsOpt = testSectionRepo.findBySectionId(sectionId);
+                if (tsOpt.isEmpty()) {
+                    try {
+                        tsOpt = testSectionRepo.findById(Long.parseLong(sectionId));
+                    } catch (NumberFormatException ignored) {}
+                }
+                if (tsOpt.isPresent()) {
+                    com.campusconnect.backend.model.TestSection ts = tsOpt.get();
+                    if (ts.getBookedSeats() > 0) {
+                        ts.setBookedSeats(ts.getBookedSeats() - 1);
+                        testSectionRepo.save(ts);
+                    }
+                    StudentProfile student = studentRepo.findById(studentId).orElse(null);
+                    if (student != null) {
+                        advisedCourseRepo.findForTerm(studentId, term).stream()
+                                .filter(ac -> ac.getSectionId().equalsIgnoreCase(sectionId))
+                                .findFirst()
+                                .ifPresent(ac -> {
+                                    student.getAdvisedCourses().remove(ac);
+                                    advisedCourseRepo.delete(ac);
+                                    studentRepo.save(student);
+                                });
+                    }
+                    result.put("success", true);
+                    result.put("message", "Successfully dropped section " + sectionId + ".");
+                    result.put("sectionId", sectionId);
+                    result.put("seatsRemaining", Math.max(0, ts.getTotalSeats() - ts.getBookedSeats()));
+                    return result;
+                }
+            }
             result.put("success", false);
             result.put("message", "You are not registered in section " + sectionId + ".");
             return result;
@@ -385,7 +565,7 @@ public class RegistrationService {
         // Also remove from advised_courses
         StudentProfile student = studentRepo.findById(studentId).orElse(null);
         if (student != null) {
-            advisedCourseRepo.findByStudentProfile_StudentId(studentId).stream()
+            advisedCourseRepo.findForTerm(studentId, term).stream()
                     .filter(ac -> ac.getSectionId().equalsIgnoreCase(sectionId))
                     .findFirst()
                     .ifPresent(ac -> {
@@ -481,5 +661,11 @@ public class RegistrationService {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toSet());
+    }
+
+    private String normalizeTerm(String term) {
+        if (term == null || term.isBlank()) return CURRENT_TERM;
+        String normalized = term.replaceAll("\\s+", "");
+        return normalized.matches("(?i)(Spring|Summer|Fall)\\d{4}") ? normalized : CURRENT_TERM;
     }
 }

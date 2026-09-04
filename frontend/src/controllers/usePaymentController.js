@@ -22,6 +22,7 @@ import {
 } from '../models/paymentModel.js'
 import { getStoredUser } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
+import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
 const API_BASE = '/api/payments'
 
@@ -29,7 +30,17 @@ export function usePaymentController() {
   const storedUser = getStoredUser()
   const role       = storedUser?.role?.toLowerCase() || localStorage.getItem('userRole') || 'student'
   const isAdmin    = role.toLowerCase() === 'admin'
-  const studentId  = storedUser?.userId || localStorage.getItem('studentId') || 'STU001'
+  const preferredSemester = getPreferredSemester()
+  const preferredTerm = toSemesterApiTerm(preferredSemester)
+
+  // Admin student selector: list of available student IDs; starts empty so nothing is shown until selected
+  const [studentIds, setStudentIds]                 = useState([])
+  const [studentIdsLoading, setStudentIdsLoading]   = useState(false)
+  const [selectedStudentId, setSelectedStudentId]   = useState('')
+
+  // Effective student ID: for admin it's selectedStudentId (can be empty); for students it's their own userId
+  const effectiveStudentId = isAdmin ? selectedStudentId : (storedUser?.userId || 'STU001')
+  const studentId = effectiveStudentId
 
   // Top Tabs: 'receipt' (Current Term Clearance) | 'history' (Payment Records in DB)
   const [activeViewTab, setActiveViewTab] = useState('receipt')
@@ -53,6 +64,17 @@ export function usePaymentController() {
   const [receiptNumber, setReceiptNumber] = useState(null)
   const [paidAt, setPaidAt] = useState(null)
 
+  // Admin Action States: Bypass, Edit, Delete
+  const [bypassModalOpen, setBypassModalOpen]   = useState(false)
+  const [bypassReason, setBypassReason]         = useState('Administrative Scholarship / Waiver')
+  const [bypassSubmitting, setBypassSubmitting] = useState(false)
+
+  const [editingRecord, setEditingRecord]       = useState(null)
+  const [editSubmitting, setEditSubmitting]     = useState(false)
+
+  const [deletingRecord, setDeletingRecord]     = useState(null)
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false)
+
   // Offline Payment & Map State
   const [mapVisible, setMapVisible] = useState(false)
   const [userLocation, setUserLocation] = useState(null)
@@ -63,51 +85,172 @@ export function usePaymentController() {
   const [mapError, setMapError] = useState(null)
   const [selectedBankFilter, setSelectedBankFilter] = useState('all')
 
+  // Load student IDs for Admin selector on mount
+  useEffect(() => {
+    if (!isAdmin) return
+    let active = true
+    setStudentIdsLoading(true)
+    apiClient.get(`${API_BASE}/students`)
+      .then(async res => {
+        if (res.ok && active) {
+          const ids = await res.json()
+          setStudentIds(Array.isArray(ids) ? ids : [])
+        }
+      })
+      .catch(err => console.warn('Failed to load student IDs:', err))
+      .finally(() => {
+        if (active) setStudentIdsLoading(false)
+      })
+    return () => { active = false }
+  }, [isAdmin])
+
   /**
    * Fetch student's course fee receipt from backend.
    */
   const fetchReceipt = useCallback(async () => {
+    // If admin and no student selected yet, do not fetch
+    if (isAdmin && !selectedStudentId) {
+      setReceipt(null)
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get(`${API_BASE}/receipt/${encodeURIComponent(studentId)}`)
+      const res = await apiClient.get(`${API_BASE}/receipt/${encodeURIComponent(effectiveStudentId)}?term=${encodeURIComponent(preferredTerm)}`)
       if (!res.ok) {
-        throw new Error(`Could not load your fee receipt. Please try again later. (${res.status})`)
+        throw new Error(`Could not load fee receipt (${res.status})`)
       }
       const data = await res.json()
       setReceipt(data)
     } catch (err) {
       console.warn('Failed to load receipt from backend:', err)
-      setError(err.message || 'Unable to load fee receipt. Please check your connection.')
+      setError(err.message || 'Unable to load fee receipt.')
     } finally {
       setLoading(false)
     }
-  }, [studentId])
+  }, [isAdmin, selectedStudentId, effectiveStudentId, preferredTerm])
 
   /**
    * Fetch payment records from database (role-isolated: student vs admin).
    */
   const fetchPaymentHistory = useCallback(async () => {
+    // If admin and no student selected yet, do not fetch
+    if (isAdmin && !selectedStudentId) {
+      setPaymentHistory([])
+      setHistoryLoading(false)
+      return
+    }
+
     setHistoryLoading(true)
     try {
       const res = await apiClient.get(
-        `${API_BASE}/history?studentId=${encodeURIComponent(studentId)}&role=${encodeURIComponent(role)}`
+        `${API_BASE}/history?studentId=${encodeURIComponent(effectiveStudentId)}&role=${encodeURIComponent(role)}`
       )
       if (res.ok) {
         const data = await res.json()
-        setPaymentHistory(data)
+        const historyList = Array.isArray(data) ? data : []
+        setPaymentHistory(historyList)
+
+        // Check if any payment in history is for the current term and already paid/bypassed
+        const currentPaid = historyList.find(
+          p => (p.studentId === effectiveStudentId) &&
+               toSemesterApiTerm(p.term) === preferredTerm &&
+               (p.paymentStatus === 'PAID' || p.paymentStatus === 'CONFIRMED' || p.paymentMethod === 'ADMIN_BYPASS')
+        )
+        if (currentPaid) {
+          setPaymentSuccess(true)
+          setReceiptNumber(currentPaid.receiptNumber)
+          setTransactionId(currentPaid.transactionId)
+          setPaidAt(currentPaid.paidAt ? new Date(currentPaid.paidAt).toLocaleString('en-GB') : null)
+        } else {
+          setPaymentSuccess(false)
+        }
       }
     } catch (err) {
       console.warn('Failed to fetch payment history from DB:', err)
     } finally {
       setHistoryLoading(false)
     }
-  }, [studentId, role])
+  }, [isAdmin, selectedStudentId, effectiveStudentId, role, preferredTerm])
 
   useEffect(() => {
     fetchReceipt()
     fetchPaymentHistory()
   }, [fetchReceipt, fetchPaymentHistory])
+
+  /**
+   * Admin: Bypass current term payment for the selected student.
+   */
+  const handleBypassPayment = useCallback(async (customReason) => {
+    if (!isAdmin || !effectiveStudentId) return
+    setBypassSubmitting(true)
+    try {
+      const reasonToUse = customReason || bypassReason || 'Administrative Fee Waiver'
+      const res = await apiClient.post(`${API_BASE}/bypass`, {
+        studentId: effectiveStudentId,
+        term: receipt?.term || preferredTerm,
+        reason: reasonToUse,
+        bypassedBy: storedUser?.fullName || 'Administrator'
+      })
+      if (!res.ok) throw new Error(`Bypass failed (${res.status})`)
+      const savedRecord = await res.json()
+      setReceiptNumber(savedRecord.receiptNumber)
+      setTransactionId(savedRecord.transactionId)
+      setPaidAt(new Date().toLocaleString('en-GB'))
+      setPaymentSuccess(true)
+      setBypassModalOpen(false)
+      fetchPaymentHistory()
+      fetchReceipt()
+    } catch (err) {
+      console.error('Bypass payment failed:', err)
+      alert(err.message || 'Failed to bypass payment.')
+    } finally {
+      setBypassSubmitting(false)
+    }
+  }, [isAdmin, effectiveStudentId, receipt, bypassReason, storedUser, fetchPaymentHistory, fetchReceipt, preferredTerm])
+
+  /**
+   * Admin: Delete an existing payment record by ID from database.
+   */
+  const handleDeletePayment = useCallback(async (id) => {
+    if (!isAdmin || !id) return
+    setDeleteSubmitting(true)
+    try {
+      const res = await apiClient.delete(`${API_BASE}/${id}`)
+      if (!res.ok) throw new Error(`Failed to delete record (${res.status})`)
+      setPaymentHistory(prev => prev.filter(p => p.id !== id))
+      setDeletingRecord(null)
+      fetchReceipt()
+    } catch (err) {
+      console.error('Failed to delete payment record:', err)
+      alert(err.message || 'Failed to delete payment record.')
+    } finally {
+      setDeleteSubmitting(false)
+    }
+  }, [isAdmin, fetchReceipt])
+
+  /**
+   * Admin: Edit an existing payment record in database.
+   */
+  const handleSaveEditPayment = useCallback(async (id, updatedFields) => {
+    if (!isAdmin || !id) return
+    setEditSubmitting(true)
+    try {
+      const res = await apiClient.put(`${API_BASE}/${id}`, updatedFields)
+      if (!res.ok) throw new Error(`Failed to update record (${res.status})`)
+      const updated = await res.json()
+      setPaymentHistory(prev => prev.map(p => p.id === id ? updated : p))
+      setEditingRecord(null)
+      fetchReceipt()
+    } catch (err) {
+      console.error('Failed to update payment record:', err)
+      alert(err.message || 'Failed to update payment record.')
+    } finally {
+      setEditSubmitting(false)
+    }
+  }, [isAdmin, fetchReceipt])
 
   /**
    * Fetch nearby banks using real OpenStreetMap Overpass data & Nominatim geocoder
@@ -284,7 +427,7 @@ export function usePaymentController() {
         studentId: studentId,
         studentName: 'Student',
         department: 'CSE',
-        term: 'Fall 2026',
+        term: preferredSemester,
         items: [],
         totalAcademicCredits: 12,
         totalFinancialCredits: 12,
@@ -332,7 +475,7 @@ export function usePaymentController() {
       doc.text(`Student Name: ${data.studentName || 'Student'}`, 40, 102)
       doc.text(`Department: ${data.department || 'CSE'}`, 40, 116)
 
-      doc.text(`Term: ${data.term || 'Fall 2026'}`, 380, 88)
+      doc.text(`Term: ${data.term || preferredSemester}`, 380, 88)
       doc.text(`Issue Date: ${new Date().toLocaleDateString('en-GB')}`, 380, 102)
       if (paymentSuccess && (transactionId || receiptNumber)) {
         doc.text(`Receipt No: ${receiptNumber || 'REC-2026'}`, 380, 116)
@@ -458,7 +601,7 @@ export function usePaymentController() {
     } catch (pdfErr) {
       console.error('PDF generation error:', pdfErr)
     }
-  }, [receipt, studentId, paymentSuccess, transactionId, receiptNumber, handleOpenBankMap])
+  }, [receipt, studentId, paymentSuccess, transactionId, receiptNumber, handleOpenBankMap, preferredSemester])
 
   /**
    * Generate PDF for a historical receipt record from database.
@@ -595,7 +738,7 @@ export function usePaymentController() {
           amount: Math.round(netAmount * 100),
           currency: 'bdt',
           studentId: studentId,
-          description: `Fall 2026 Registration Fee - ${receipt?.studentName || studentId}`
+          description: `${preferredSemester} Registration Fee - ${receipt?.studentName || studentId}`
       })
 
       let clientSecret = null
@@ -630,7 +773,7 @@ export function usePaymentController() {
           studentId: receipt?.studentId || studentId,
           studentName: receipt?.studentName || 'Student',
           department: receipt?.department || 'CSE',
-          term: receipt?.term || 'Fall2026',
+          term: receipt?.term || preferredTerm,
           totalCourseFee: receipt?.totalCourseFee || 90000,
           semesterFee: receipt?.semesterFee || 11500,
           grossPayable: receipt?.grossPayable || 101500,
@@ -670,6 +813,28 @@ export function usePaymentController() {
     studentId,
     role,
     isAdmin,
+    preferredSemester,
+    // Admin Student Selector State
+    studentIds,
+    studentIdsLoading,
+    selectedStudentId,
+    setSelectedStudentId,
+    // Admin Bypass Payment State & Handlers
+    bypassModalOpen,
+    setBypassModalOpen,
+    bypassReason,
+    setBypassReason,
+    bypassSubmitting,
+    handleBypassPayment,
+    // Admin Edit & Delete State & Handlers
+    editingRecord,
+    setEditingRecord,
+    editSubmitting,
+    handleSaveEditPayment,
+    deletingRecord,
+    setDeletingRecord,
+    deleteSubmitting,
+    handleDeletePayment,
     // Tab state
     activeViewTab,
     setActiveViewTab,

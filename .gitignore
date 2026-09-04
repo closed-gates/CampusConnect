@@ -5,11 +5,17 @@
 backend/.env
 frontend/.env
 backend/run-backend.bat
-
+backend/run.cmd
+test_admin_payments.ps1
+.runtime
 # === Build outputs ===
 backend/target/
+backend/backend.log
 frontend/dist/
 frontend/node_modules/
+.m2repo/
+.pnpm-store/
+
 
 # === IDE ===
 .vscode/

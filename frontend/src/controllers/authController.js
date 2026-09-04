@@ -32,6 +32,7 @@ export function useLoginController() {
   const [formData, setFormData] = useState(INITIAL_LOGIN_FORM)
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
+  const [frozenMessage, setFrozenMessage] = useState('')
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -67,7 +68,12 @@ export function useLoginController() {
       const data = await res.json()
 
       if (!res.ok || !data.success) {
-        setError(data.message || 'Login failed. Please check your credentials.')
+        const message = data.message || 'Login failed. Please check your credentials.'
+        if (message.startsWith('ACCOUNT_FROZEN:')) {
+          setFrozenMessage(message.replace('ACCOUNT_FROZEN:', '').trim())
+        } else {
+          setError(message)
+        }
         return
       }
 
@@ -83,7 +89,7 @@ export function useLoginController() {
     }
   }
 
-  return { formData, loading, error, handleChange, handleLogin }
+  return { formData, loading, error, frozenMessage, dismissFrozenMessage: () => setFrozenMessage(''), handleChange, handleLogin }
 }
 
 // ── Signup Controller ─────────────────────────────────────────────────────────

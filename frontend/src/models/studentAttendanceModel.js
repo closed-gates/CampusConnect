@@ -46,6 +46,11 @@ export function getAttendanceStatus(rate) {
   return              { label: 'Critical – Risk', color: '#ef4444' }
 }
 
+export function getLowestAttendanceRate(courses) {
+  const measured = courses.filter(course => (course.totalSessions || 0) > 0)
+  return measured.length ? Math.min(...measured.map(course => Number(course.attendanceRate) || 0)) : 0
+}
+
 /** Empty state for a course attendance entry */
 export const EMPTY_COURSE_ATTENDANCE = {
   courseId:       '',

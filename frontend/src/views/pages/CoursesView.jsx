@@ -134,8 +134,15 @@ function CourseCard({ course, faculty }) {
 
   return (
     <>
-      <div className="course-card" id={'course-card-' + course.id}>
-        <div className="course-card-header" style={{ background: faculty?.color || '#F1F5F9' }}>
+      <div
+        className="course-card"
+        id={'course-card-' + course.id}
+        style={{
+          '--course-header-color': faculty?.color || '#F1F5F9',
+          '--course-accent': faculty?.accent || '#2563EB',
+        }}
+      >
+        <div className="course-card-header">
           <span className="course-card-emoji" aria-hidden="true">{faculty?.icon || '📚'}</span>
           <div className="course-card-header-right">
             <span className="course-card-code">{course.code}</span>
@@ -170,7 +177,7 @@ function CourseCard({ course, faculty }) {
           <button
             className="course-enroll-btn"
             id={'view-details-btn-' + course.id}
-            style={{ background: faculty?.accent || '#2563EB', marginTop: '12px' }}
+            style={{ marginTop: '12px' }}
             onClick={() => setShowDetails(true)}
           >
             📋 View Course Details
@@ -190,7 +197,7 @@ function CourseCard({ course, faculty }) {
         >
           <div className="course-details-modal">
             {/* Modal header */}
-            <div className="course-details-header" style={{ background: faculty?.color || '#F1F5F9' }}>
+            <div className="course-details-header" style={{ '--course-header-color': faculty?.color || '#F1F5F9' }}>
               <span className="course-details-emoji">{faculty?.icon || '📚'}</span>
               <div className="course-details-title-wrap">
                 <span className="course-details-code">{course.code}</span>
