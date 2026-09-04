@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { adminAdvisingService } from '../services/adminAdvisingService.js'
 
 /**
- * useAdminAdvisingController – Custom hook managing Admin section creation and bypass enrolment.
+ * useAdminAdvisingController – Custom hook managing Admin section creation,
+ * bypass enrolment, and the global advising portal open/close toggle.
  *
  * MVC Role: Controller
  */
@@ -28,13 +29,62 @@ export function useAdminAdvisingController({ onSectionCreated, onStudentEnrolled
   })
   const [enrollingBypass, setEnrollingBypass] = useState(false)
 
+  // ── Advising Portal Toggle state ────────────────────────────────
+  const [isPortalOpen,    setIsPortalOpen]    = useState(true)
+  const [portalMessage,   setPortalMessage]   = useState('')
+  const [portalUpdatedBy, setPortalUpdatedBy] = useState('')
+  const [portalUpdatedAt, setPortalUpdatedAt] = useState('')
+  const [portalLoading,   setPortalLoading]   = useState(false)
+  const [portalUpdating,  setPortalUpdating]  = useState(false)
+  const [customMessage,   setCustomMessage]   = useState('')
+
   const [toast,     setToast]     = useState(null)
   const [toastType, setToastType] = useState('success')
 
   const showToast = (msg, type = 'success') => {
     setToast(msg)
     setToastType(type)
-    setTimeout(() => setToast(null), 3500)
+    setTimeout(() => setToast(null), 4000)
+  }
+
+  // Load portal status on mount
+  const loadPortalStatus = useCallback(async () => {
+    setPortalLoading(true)
+    try {
+      const data = await adminAdvisingService.getPortalStatus()
+      setIsPortalOpen(data.isOpen !== false)
+      setPortalMessage(data.message || '')
+      setPortalUpdatedBy(data.updatedBy || '')
+      setPortalUpdatedAt(data.updatedAt || '')
+    } catch {
+      setIsPortalOpen(true)
+    } finally {
+      setPortalLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadPortalStatus()
+  }, [loadPortalStatus])
+
+  const handleTogglePortal = async (open, msgOverride) => {
+    setPortalUpdating(true)
+    try {
+      const msg = msgOverride !== undefined ? msgOverride : customMessage
+      const data = await adminAdvisingService.setPortalStatus(open, msg)
+      setIsPortalOpen(data.isOpen)
+      setPortalMessage(data.message || '')
+      setPortalUpdatedBy(data.updatedBy || '')
+      setPortalUpdatedAt(data.updatedAt || '')
+      showToast(
+        open ? '✅ Advising portal is now OPEN for all students.' : '🔒 Advising portal has been CLOSED.',
+        open ? 'success' : 'error'
+      )
+    } catch (err) {
+      showToast(err.message || 'Failed to update portal status', 'error')
+    } finally {
+      setPortalUpdating(false)
+    }
   }
 
   const handleSectionFieldChange = (field, value) => {
@@ -107,6 +157,16 @@ export function useAdminAdvisingController({ onSectionCreated, onStudentEnrolled
     enrollingBypass,
     handleBypassFieldChange,
     handleForceRegister,
+    // Portal toggle
+    isPortalOpen,
+    portalMessage,
+    portalUpdatedBy,
+    portalUpdatedAt,
+    portalLoading,
+    portalUpdating,
+    customMessage,
+    setCustomMessage,
+    handleTogglePortal,
     toast,
     toastType,
   }

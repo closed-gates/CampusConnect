@@ -16,6 +16,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { CREDITS_PER_COURSE } from '../models/advisingModel.js'
 import { courseService } from '../services/courseService.js'
+import { testCourseService } from '../services/testCourseService.js'
 import { channelService } from '../services/channelService.js'
 import { getStoredUser } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
@@ -132,6 +133,7 @@ export function useAdvisorController() {
   const [profile,         setProfile]         = useState(null)
   const [allCourses,      setAllCourses]      = useState([])
   const [courseSearch,    setCourseSearch]     = useState('')
+  const [catalogFilter,   setCatalogFilter]    = useState('all') // 'all' | 'test' | 'catalog'
   const [loading,         setLoading]         = useState(false)
   const [profileLoading,  setProfileLoading]  = useState(false)
   const [coursesLoading,  setCoursesLoading]  = useState(false)
@@ -153,11 +155,32 @@ export function useAdvisorController() {
       apiClient.get(`${API_BASE}/students?term=${encodeURIComponent(preferredTerm)}`).then(r => r.json()),
       apiClient.get(`${API_BASE}/seat-updates`).then(r => r.json()).catch(() => ({})),
       courseService.getSections().catch(() => apiClient.get('/api/courses/sections').then(r => r.json()).catch(() => [])),
+      testCourseService.getSections().catch(() => apiClient.get('/api/test-courses/sections').then(r => r.json()).catch(() => [])),
     ])
-      .then(([studentsData, seatData, coursesData]) => {
+      .then(([studentsData, seatData, coursesData, testSectionsData]) => {
         setStudents(studentsData || [])
         setSeatUpdates(seatData || {})
-        setAllCourses(coursesData || [])
+
+        const mappedTestCourses = (testSectionsData || []).map(s => ({
+          id: s.sectionId || `TEST-${s.id}`,
+          sectionId: s.sectionId,
+          code: s.courseCode,
+          title: s.courseTitle,
+          section: s.sectionNumber,
+          time: s.scheduleTime,
+          room: s.room,
+          faculty: s.facultyName,
+          totalSeats: s.totalSeats,
+          booked: s.bookedSeats,
+          seatsRemaining: s.seatsRemaining ?? Math.max(0, (s.totalSeats || 0) - (s.bookedSeats || 0)),
+          credits: s.credits || 3,
+          department: s.department,
+          term: s.term,
+          isTestCourse: true,
+        }))
+
+        // Test courses first, followed by regular courses
+        setAllCourses([...mappedTestCourses, ...(coursesData || [])])
         if (studentsData && studentsData.length > 0) loadStudent(studentsData[0].studentId)
       })
       .catch(() => showToast('Could not load advising data', 'error'))
@@ -312,6 +335,11 @@ export function useAdvisorController() {
   /* Derived: filtered & sorted course sections */
   const filteredCourses = useMemo(() => {
     let list = [...allCourses]
+    if (catalogFilter === 'test') {
+      list = list.filter(c => c.isTestCourse)
+    } else if (catalogFilter === 'catalog') {
+      list = list.filter(c => !c.isTestCourse)
+    }
     if (courseSearch.trim()) {
       const q = courseSearch.toLowerCase()
       list = list.filter(c =>
@@ -322,11 +350,13 @@ export function useAdvisorController() {
       )
     }
     return list.sort(sortCoursesByCodeAndSection)
-  }, [allCourses, courseSearch])
+  }, [allCourses, courseSearch, catalogFilter])
 
   return {
     students, selectedStudent, profile,
     courseSearch, setCourseSearch,
+    catalogFilter, setCatalogFilter,
+    allCourses,
     filteredCourses,
     studentRoutine,
     loading, profileLoading, coursesLoading, confirming,

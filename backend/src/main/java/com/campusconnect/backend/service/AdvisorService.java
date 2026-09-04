@@ -50,6 +50,9 @@ public class AdvisorService {
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private NotificationService notificationService;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.campusconnect.backend.repository.TestSectionRepository testSectionRepo;
+
     public AdvisorService(AdvisorRepository advisorRepo,
                           StudentProfileRepository studentRepo,
                           AdvisedCourseRepository advisedCourseRepo,
@@ -254,6 +257,26 @@ public class AdvisorService {
             }
         }
 
+        // Check if courseId is a TestSection
+        if (targetSecOpt.isEmpty() && testSectionRepo != null) {
+            Optional<com.campusconnect.backend.model.TestSection> tsOpt = testSectionRepo.findBySectionId(courseId);
+            if (tsOpt.isEmpty()) {
+                try {
+                    tsOpt = testSectionRepo.findById(Long.parseLong(courseId));
+                } catch (NumberFormatException ignored) {}
+            }
+            if (tsOpt.isPresent()) {
+                com.campusconnect.backend.model.TestSection ts = tsOpt.get();
+                if (ts.getBookedSeats() >= ts.getTotalSeats()) {
+                    result.put("success", false);
+                    result.put("message", "Test Section " + courseId + " is full (" + ts.getBookedSeats() + "/" + ts.getTotalSeats() + ").");
+                    return result;
+                }
+                ts.setBookedSeats(ts.getBookedSeats() + 1);
+                testSectionRepo.save(ts);
+            }
+        }
+
         String finalFaculty = (faculty != null && !faculty.isBlank()) ? faculty : targetSecOpt.map(CourseSection::getFaculty).orElse("TBA");
         String finalRoom    = (room != null && !room.isBlank()) ? room : targetSecOpt.map(CourseSection::getRoom).orElse("TBA");
         String finalTitle   = (courseTitle != null && !courseTitle.isBlank()) ? courseTitle : targetSecOpt.map(CourseSection::getTitle).orElse(courseCode);
@@ -366,6 +389,25 @@ public class AdvisorService {
                             });
                         });
             } catch (Exception ignored) {}
+
+            // Release TestSection seat if applicable
+            if (testSectionRepo != null && secId != null) {
+                try {
+                    Optional<com.campusconnect.backend.model.TestSection> tsOpt = testSectionRepo.findBySectionId(secId);
+                    if (tsOpt.isEmpty()) {
+                        try {
+                            tsOpt = testSectionRepo.findById(Long.parseLong(secId));
+                        } catch (NumberFormatException ignored) {}
+                    }
+                    if (tsOpt.isPresent()) {
+                        com.campusconnect.backend.model.TestSection ts = tsOpt.get();
+                        if (ts.getBookedSeats() > 0) {
+                            ts.setBookedSeats(ts.getBookedSeats() - 1);
+                            testSectionRepo.save(ts);
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
 
             result.put("success", true);
             result.put("message", "Course removed successfully.");

@@ -1,6 +1,7 @@
 package com.campusconnect.backend.service;
 
 import com.campusconnect.backend.model.AdvisedCourse;
+import com.campusconnect.backend.model.AdvisingPortalStatus;
 import com.campusconnect.backend.model.AppUser;
 import com.campusconnect.backend.model.CourseCatalog;
 import com.campusconnect.backend.model.CourseSection;
@@ -28,17 +29,18 @@ import java.util.*;
 @Service
 public class AdminAdvisingService {
 
-    private final AppUserRepository             userRepo;
-    private final TestFacultyRepository         facultyRepo;
-    private final CourseSectionRepository       sectionRepo;
-    private final CourseCatalogRepository       catalogRepo;
-    private final TestCourseRepository          testCourseRepo;
-    private final TestSectionRepository         testSectionRepo;
-    private final SectionRegistrationRepository regRepo;
-    private final StudentProfileRepository      studentRepo;
-    private final AdvisedCourseRepository       advisedCourseRepo;
-    private final SimpMessagingTemplate         messaging;
-    private final ScheduleClashValidator        clashValidator;
+    private final AppUserRepository              userRepo;
+    private final TestFacultyRepository          facultyRepo;
+    private final CourseSectionRepository        sectionRepo;
+    private final CourseCatalogRepository        catalogRepo;
+    private final TestCourseRepository           testCourseRepo;
+    private final TestSectionRepository          testSectionRepo;
+    private final SectionRegistrationRepository  regRepo;
+    private final StudentProfileRepository       studentRepo;
+    private final AdvisedCourseRepository        advisedCourseRepo;
+    private final AdvisingPortalStatusRepository portalStatusRepo;
+    private final SimpMessagingTemplate          messaging;
+    private final ScheduleClashValidator         clashValidator;
 
     public AdminAdvisingService(AppUserRepository userRepo,
                                 TestFacultyRepository facultyRepo,
@@ -49,6 +51,7 @@ public class AdminAdvisingService {
                                 SectionRegistrationRepository regRepo,
                                 StudentProfileRepository studentRepo,
                                 AdvisedCourseRepository advisedCourseRepo,
+                                AdvisingPortalStatusRepository portalStatusRepo,
                                 SimpMessagingTemplate messaging,
                                 ScheduleClashValidator clashValidator) {
         this.userRepo          = userRepo;
@@ -60,6 +63,7 @@ public class AdminAdvisingService {
         this.regRepo           = regRepo;
         this.studentRepo       = studentRepo;
         this.advisedCourseRepo = advisedCourseRepo;
+        this.portalStatusRepo  = portalStatusRepo;
         this.messaging         = messaging;
         this.clashValidator    = clashValidator;
     }
@@ -70,6 +74,62 @@ public class AdminAdvisingService {
         try {
             sectionRepo.normalizeOverbookedSections();
         } catch (Exception ignored) {}
+        // Ensure the singleton portal-status row exists (open by default)
+        try {
+            portalStatusRepo.findById(1L).orElseGet(() ->
+                portalStatusRepo.save(AdvisingPortalStatus.builder()
+                    .id(1L)
+                    .open(true)
+                    .updatedBy("system")
+                    .updatedAt(LocalDateTime.now())
+                    .message("Advising portal is open.")
+                    .build())
+            );
+        } catch (Exception ignored) {}
+    }
+
+    // ── 0. Advising Portal Open/Close Toggle (Admin Only) ────────────
+
+    /**
+     * Returns the current advising portal status (open or closed).
+     */
+    public Map<String, Object> getAdvisingPortalStatus() {
+        AdvisingPortalStatus status = portalStatusRepo.findById(1L)
+            .orElse(AdvisingPortalStatus.builder()
+                .id(1L).open(true)
+                .message("Advising portal is open.").build());
+        return Map.of(
+            "isOpen",    status.isOpen(),
+            "updatedBy", status.getUpdatedBy() != null ? status.getUpdatedBy() : "system",
+            "updatedAt", status.getUpdatedAt() != null ? status.getUpdatedAt().toString() : "",
+            "message",   status.getMessage() != null ? status.getMessage() : ""
+        );
+    }
+
+    /**
+     * Sets the advising portal open/closed state.
+     * @param open    true = open for students, false = closed
+     * @param adminId the admin user ID performing the action
+     * @param message optional custom message for students
+     */
+    @Transactional
+    public Map<String, Object> setAdvisingPortalStatus(boolean open, String adminId, String message) {
+        AdvisingPortalStatus status = portalStatusRepo.findById(1L)
+            .orElse(AdvisingPortalStatus.builder().id(1L).build());
+        status.setOpen(open);
+        status.setUpdatedBy(adminId != null ? adminId : "admin");
+        status.setUpdatedAt(LocalDateTime.now());
+        status.setMessage(message != null && !message.isBlank() ? message
+            : (open ? "Advising portal is now open for student registration."
+                    : "Advising portal is currently closed. Please check back later."));
+        portalStatusRepo.save(status);
+        return Map.of(
+            "success",   true,
+            "isOpen",    open,
+            "updatedBy", status.getUpdatedBy(),
+            "updatedAt", status.getUpdatedAt().toString(),
+            "message",   status.getMessage()
+        );
     }
 
     // ── 1. Faculty Advisor Management ────────────────────────────────
