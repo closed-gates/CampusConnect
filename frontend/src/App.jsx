@@ -20,6 +20,7 @@ import GpaView             from './views/pages/GpaView'
 import AccountSettingsView from './views/pages/AccountSettingsView'
 import FacultyDirectoryView from './views/pages/FacultyDirectoryView'
 import VideoLectureView    from './views/pages/VideoLectureView'
+import CourseMaterialView  from './views/pages/CourseMaterialView'
 
 // ── Route guard ──────────────────────────────────────────────
 import ProtectedRoute       from './views/components/ProtectedRoute'
@@ -80,6 +81,7 @@ export default function App() {
         <Route path="/settings"          element={<AccountSettingsView />} />
         <Route path="/faculty-directory" element={<FacultyDirectoryView />} />
         <Route path="/video-lectures"    element={<VideoLectureView />} />
+        <Route path="/course-materials"  element={<CourseMaterialView />} />
       </Route>
 
       {/* ── Catch-all → login ──────────────────────── */}

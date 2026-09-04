@@ -19,12 +19,16 @@ sequenceDiagram
     participant Ctrl as Controller (assignmentController)
     participant Model as Model (assignmentModel)
     participant Svc as Service (assignmentService)
-    participant API as Backend (AssignmentController / AssignmentService)
+    participant CourseSvc as Service (courseService)
+    participant API as Backend (AssignmentController / CourseController)
     participant DB as Neon PostgreSQL
 
     %% Load Assignments List
     Note over User, View: --- Load Assignments ---
     View->>Ctrl: useAssignmentController() mounts
+    Ctrl->>CourseSvc: getCatalog()
+    CourseSvc->>API: GET /api/courses/catalog
+    API->>Ctrl: All catalog courses as create-form options
     Ctrl->>Svc: getAssignments()
     Svc->>API: GET /api/assignments
     API->>DB: SELECT * FROM assignments ORDER BY deadline
@@ -122,7 +126,7 @@ The frontend uses these three explicit capabilities: `canManageAssignments`, `ca
 ### Frontend (React MVC)
 - **Model:** [assignmentModel.js](file:///e:/CampusConnect/frontend/src/models/assignmentModel.js) — Constants, status configs, deadline helpers, file formatters, course color mappings. Pure JS, no React.
 - **Service:** [assignmentService.js](file:///e:/CampusConnect/frontend/src/services/assignmentService.js) — API wrapper for all fetch() calls to the backend. Multipart upload support for file submissions.
-- **Controller:** [assignmentController.js](file:///e:/CampusConnect/frontend/src/controllers/assignmentController.js) — Exports `useAssignmentController()` hook. Manages assignment list, detail selection, file upload state, turn-in/unsubmit, teacher create form, and grading.
+- **Controller:** [assignmentController.js](file:///e:/CampusConnect/frontend/src/controllers/assignmentController.js) — Exports `useAssignmentController()` hook. Manages assignment list, detail selection, file upload state, turn-in/unsubmit, teacher create form, and grading. Course dropdown options come from `GET /api/courses/catalog`, not a hardcoded list.
 - **Views:**
   - [AssignmentView.jsx](file:///e:/CampusConnect/frontend/src/views/pages/AssignmentView.jsx) — Main page with Google Classroom-style layout: assignment list cards, detail view with description/attachment, student "Your Work" panel with file drop zone + turn-in/unsubmit, teacher create modal, and grading table.
   - [AssignmentPage.css](file:///e:/CampusConnect/frontend/src/views/pages/AssignmentPage.css) — Dedicated styles for assignment cards, detail layout, file drop zone, turn-in buttons, create modal, grading table, and animations.

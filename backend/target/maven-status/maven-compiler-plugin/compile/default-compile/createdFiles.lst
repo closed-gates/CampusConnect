@@ -3,6 +3,7 @@ com\campusconnect\backend\exception\GlobalExceptionHandler.class
 com\campusconnect\backend\model\Application.class
 com\campusconnect\backend\controller\VideoLectureController.class
 com\campusconnect\backend\controller\FileUploadController.class
+com\campusconnect\backend\dto\CourseMaterialDTO$CourseMaterialDTOBuilder.class
 com\campusconnect\backend\dto\VideoProgressDTO$VideoProgressDTOBuilder.class
 com\campusconnect\backend\model\SectionRegistration$SectionRegistrationBuilder.class
 com\campusconnect\backend\repository\CourseCatalogRepository.class
@@ -62,6 +63,7 @@ com\campusconnect\backend\controller\AdminAdvisingController.class
 com\campusconnect\backend\dto\GpaPredictRequest$CourseGradePair.class
 com\campusconnect\backend\service\AccountFreezeService.class
 com\campusconnect\backend\repository\RecruitmentRepository.class
+com\campusconnect\backend\service\CourseMaterialService.class
 com\campusconnect\backend\model\StudentProfile$StudentProfileBuilder.class
 com\campusconnect\backend\dto\AdvisorMatchResponse.class
 com\campusconnect\backend\service\VideoLectureCatalogStore.class
@@ -112,6 +114,7 @@ com\campusconnect\backend\model\AppUser.class
 com\campusconnect\backend\service\ExamScheduleService.class
 com\campusconnect\backend\dto\ExamScheduleDTO$ExamScheduleDTOBuilder.class
 com\campusconnect\backend\model\StudentCompletedCourse$StudentCompletedCourseBuilder.class
+com\campusconnect\backend\service\CourseMaterialCatalogStore$CatalogSnapshot.class
 com\campusconnect\backend\dto\PaymentIntentResponse$PaymentIntentResponseBuilder.class
 com\campusconnect\backend\model\TestCourse.class
 com\campusconnect\backend\config\PasswordEncoderConfig.class
@@ -123,6 +126,7 @@ com\campusconnect\backend\service\InAppNotificationPreferenceService.class
 com\campusconnect\backend\config\SecurityConfig.class
 com\campusconnect\backend\controller\GpaController.class
 com\campusconnect\backend\repository\ApplicationRepository.class
+com\campusconnect\backend\repository\CourseMaterialRepository.class
 com\campusconnect\backend\controller\RegistrationController.class
 com\campusconnect\backend\service\ClubService.class
 com\campusconnect\backend\service\UserService.class
@@ -139,6 +143,7 @@ com\campusconnect\backend\service\VideoLectureCatalogStore$CatalogProgress.class
 com\campusconnect\backend\service\AccountSettingsService.class
 com\campusconnect\backend\model\Notification.class
 com\campusconnect\backend\service\DeadlineNotificationWorker.class
+com\campusconnect\backend\model\CourseMaterial.class
 com\campusconnect\backend\model\AdvisingPortalStatus.class
 com\campusconnect\backend\model\SectionRegistration.class
 com\campusconnect\backend\controller\AttendanceController.class
@@ -150,6 +155,7 @@ com\campusconnect\backend\model\CourseCatalog$CourseCatalogBuilder.class
 com\campusconnect\backend\controller\package-info.class
 com\campusconnect\backend\dto\PaymentIntentRequest$PaymentIntentRequestBuilder.class
 com\campusconnect\backend\dto\PaymentConfirmRequest.class
+com\campusconnect\backend\service\CourseMaterialCatalogStore.class
 com\campusconnect\backend\repository\ClubNoticeRepository.class
 com\campusconnect\backend\dto\ChatMessageDto.class
 com\campusconnect\backend\dto\BankInfoDTO$BankInfoDTOBuilder.class
@@ -191,11 +197,14 @@ com\campusconnect\backend\dto\GpaPredictRequest.class
 com\campusconnect\backend\controller\BypassCourseController.class
 com\campusconnect\backend\dto\UpdateProfileRequest.class
 com\campusconnect\backend\exception\ResourceNotFoundException.class
+com\campusconnect\backend\controller\CourseMaterialController.class
 com\campusconnect\backend\service\AiChatService.class
+com\campusconnect\backend\service\CourseMaterialCatalogStore$CatalogRow.class
 com\campusconnect\backend\service\VideoLectureCatalogStore$CatalogSnapshot.class
 com\campusconnect\backend\model\CourseSection$CourseSectionBuilder.class
 com\campusconnect\backend\dto\UpdateReminderPreferenceRequest.class
 com\campusconnect\backend\security\package-info.class
+com\campusconnect\backend\dto\CourseMaterialDTO.class
 com\campusconnect\backend\repository\VideoWatchProgressRepository.class
 com\campusconnect\backend\dto\AuthResponse.class
 com\campusconnect\backend\model\ClubNotice.class
