@@ -13,6 +13,8 @@ backend/target/
 backend/backend.log
 frontend/dist/
 frontend/node_modules/
+.m2repo/
+.pnpm-store/
 
 
 # === IDE ===

@@ -196,6 +196,25 @@ None.
 
 # Session Notes
 
+## Session 5 (2026-09-04)
+
+### Faculty/Staff Directory — Static Frontend Phase
+
+- Added an isolated MVC directory feature at `/faculty-directory`.
+- Static model contains faculty and staff contact, expertise, department, role, and advising availability data.
+- Controller provides live text search, department/role filters, advisors-only filtering, grouped results, reset, and expandable advising details.
+- Responsive view follows the supplied faculty directory reference while using CampusConnect design tokens and dark/high-contrast-compatible styling.
+- Added one sidebar entry and route; no backend/database connection is included in this phase.
+- Workflow documented in `workflows/faculty_staff_directory_workflow.md`.
+
+### Faculty/Staff Directory — Database Integration
+
+- Removed all static directory people from the frontend model.
+- Added the `faculty_directory_entries` JPA entity/table, repository, DTO, service, and read-only API at `GET /api/faculty-directory`.
+- Added a verified 287-record TSV import sourced from the BRACU CSE faculty directory and thesis-supervisor data. The import runs only when the directory table is empty.
+- Frontend now fetches directory records from the backend and supports loading, retry, search, category filtering, thesis-status filtering, profile links, and thesis eligibility details.
+- Thesis status values are `Accepting`, `Not Accepting`, and `Not listed`; absence from the supervisor page is never treated as rejection.
+
 ## Session 2 (2026-08-02)
 
 ### Club Recruitment Form Improvement (Arham)
