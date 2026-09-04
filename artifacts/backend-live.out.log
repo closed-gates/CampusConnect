@@ -95458,3 +95458,35 @@ Hibernate:
         fde1_0.thesis_status 
     from
         faculty_directory_entries fde1_0
+2026-09-05T02:35:24.755+06:00 DEBUG 2640 --- [campusconnect-backend] [essageBroker-11] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.attachment_data,
+        a1_0.attachment_name,
+        a1_0.attachment_type,
+        a1_0.course_code,
+        a1_0.course_name,
+        a1_0.created_at,
+        a1_0.created_by,
+        a1_0.deadline,
+        a1_0.description,
+        a1_0.title,
+        a1_0.total_points 
+    from
+        assignments a1_0
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.attachment_data,
+        a1_0.attachment_name,
+        a1_0.attachment_type,
+        a1_0.course_code,
+        a1_0.course_name,
+        a1_0.created_at,
+        a1_0.created_by,
+        a1_0.deadline,
+        a1_0.description,
+        a1_0.title,
+        a1_0.total_points 
+    from
+        assignments a1_0
