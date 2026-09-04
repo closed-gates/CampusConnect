@@ -18,6 +18,7 @@ import {
 import { dashboardService } from '../services/dashboardService.js'
 import { getStoredUser } from '../models/authModel.js'
 import { loadPreferences, PREFERENCE_CHANGE_EVENT } from '../models/accountSettingsModel.js'
+import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
 /**
  * useDashboardController
@@ -29,6 +30,8 @@ export function useDashboardController() {
   const storedUser = getStoredUser()
   const studentId  = storedUser?.userId || 'STU001'
   const fullName   = storedUser?.fullName || 'Student'
+  const isStudent  = !storedUser?.role || storedUser.role === 'STUDENT'
+  const attendanceTerm = toSemesterApiTerm(getPreferredSemester())
   const [courses,          setCourses]          = useState([])
   const [attendanceReport, setAttendanceReport] = useState(null)
   const [loading,          setLoading]          = useState(true)
@@ -68,7 +71,7 @@ export function useDashboardController() {
 
     Promise.all([
       dashboardService.getStudentRegisteredCourses(studentId),
-      dashboardService.getStudentAttendanceSummary(studentId),
+      isStudent ? dashboardService.getStudentAttendanceSummary(studentId, attendanceTerm) : Promise.resolve(null),
     ])
       .then(([coursesData, attendanceData]) => {
         if (!cancelled) {
@@ -88,7 +91,7 @@ export function useDashboardController() {
     return () => {
       cancelled = true
     }
-  }, [studentId])
+  }, [studentId, isStudent, attendanceTerm])
 
   // Computed metrics
   const enrolledCount     = courses.length
@@ -153,7 +156,7 @@ export function useDashboardController() {
     {
       id: 'attendance',
       icon: '✅',
-      iconColor: 'orange',
+      iconColor: lowestRate !== null && lowestRate < 70 ? 'red' : 'orange',
       value: loading
         ? '...'
         : lowestRate !== null
@@ -168,7 +171,7 @@ export function useDashboardController() {
       isActive: false,
       onClick: openAttendanceModal,
     },
-  ], [
+  ].filter(stat => isStudent || stat.id !== 'attendance'), [
     loading,
     enrolledCount,
     weeklyClassCount,
@@ -177,6 +180,7 @@ export function useDashboardController() {
     openDetailsModal,
     openRoutineModal,
     openAttendanceModal,
+    isStudent,
   ])
 
   return {
@@ -195,5 +199,6 @@ export function useDashboardController() {
     openAttendanceModal,
     closeModal,
     showUpcomingExams,
+    isStudent,
   }
 }

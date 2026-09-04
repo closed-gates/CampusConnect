@@ -68,12 +68,17 @@ export async function getStudentRegisteredCourses(studentId = 'STU001') {
  * @param {string} studentId
  * @returns {Promise<Object>}
  */
-export async function getStudentAttendanceSummary(studentId = 'STU001') {
+export async function getStudentAttendanceSummary(studentId = 'STU001', term = '') {
   try {
-    const res = await apiClient.get(`${ATTENDANCE_API_BASE}/student/${encodeURIComponent(studentId)}`)
+    const res = await apiClient.get(`${ATTENDANCE_API_BASE}/student-courses?studentId=${encodeURIComponent(studentId)}&term=${encodeURIComponent(term)}`)
     if (!res.ok) throw new Error(`Attendance API returned ${res.status}`)
     const json = await res.json()
-    return json.data || null
+    const courseBreakdown = json.data || []
+    const totalSessions = courseBreakdown.reduce((sum, course) => sum + (course.totalSessions || 0), 0)
+    const presentCount = courseBreakdown.reduce((sum, course) => sum + (course.presentCount || 0), 0)
+    const lateCount = courseBreakdown.reduce((sum, course) => sum + (course.lateCount || 0), 0)
+    const absentCount = courseBreakdown.reduce((sum, course) => sum + (course.absentCount || 0), 0)
+    return { totalSessions, presentCount, lateCount, absentCount, attendanceRate: totalSessions ? Math.round((presentCount + lateCount) / totalSessions * 1000) / 10 : 0, courseBreakdown, history: [] }
   } catch (err) {
     console.error('[dashboardService] Failed to fetch student attendance:', err)
     return null

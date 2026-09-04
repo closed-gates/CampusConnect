@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import authIllustration from '../../assets/auth_illustration.png'
 import { useLoginController } from '../../controllers/authController.js'
+import FrozenAccountDialog from '../components/FrozenAccountDialog.jsx'
 
 /**
  * LoginView – View layer for the Login page.
@@ -12,10 +13,11 @@ import { useLoginController } from '../../controllers/authController.js'
  * Shows real error messages from the backend.
  */
 export default function LoginView() {
-  const { formData, loading, error, handleChange, handleLogin } = useLoginController()
+  const { formData, loading, error, frozenMessage, dismissFrozenMessage, handleChange, handleLogin } = useLoginController()
 
   return (
     <div className="auth-wrapper">
+      <FrozenAccountDialog message={frozenMessage} onClose={dismissFrozenMessage} />
       {/* ── Form Panel (left) ─────────────────────────── */}
       <div className="auth-form-panel">
         {/* Logo */}

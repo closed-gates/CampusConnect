@@ -3,6 +3,7 @@ package com.campusconnect.backend.controller;
 import com.campusconnect.backend.model.AttendanceRecord;
 import com.campusconnect.backend.service.AttendanceService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,9 +33,11 @@ import java.util.Map;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    private final com.campusconnect.backend.service.AttendanceAccessService accessService;
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, com.campusconnect.backend.service.AttendanceAccessService accessService) {
         this.attendanceService = attendanceService;
+        this.accessService = accessService;
     }
 
     // ── GET /api/attendance ───────────────────────────────────────
@@ -44,8 +47,9 @@ public class AttendanceController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAttendance(
             @RequestParam String courseId,
-            @RequestParam String date) {
-        List<AttendanceRecord> data = attendanceService.getAttendance(courseId, date);
+            @RequestParam String date, Authentication authentication) {
+        accessService.requireReadSection(authentication.getName(), courseId);
+        List<AttendanceRecord> data = attendanceService.getAttendance(accessService.attendanceCourseId(courseId), date);
         return ResponseEntity.ok(Map.of(
             "success", true,
             "count",   data.size(),
@@ -58,15 +62,17 @@ public class AttendanceController {
      * Mark or update attendance for a student.
      */
     @PostMapping
-    public ResponseEntity<Map<String, Object>> markAttendance(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, Object>> markAttendance(@RequestBody Map<String, String> body, Authentication authentication) {
+        accessService.requireMarkSection(authentication.getName(), body.get("courseId"));
+        var marker = accessService.requireUser(authentication.getName());
         AttendanceRecord record = attendanceService.markAttendance(
-            body.get("courseId"),
+            accessService.attendanceCourseId(body.get("courseId")),
             body.get("courseName"),
             body.get("studentId"),
             body.get("studentName"),
             body.get("date"),
             body.get("status"),
-            body.get("markedBy")
+            marker.getFullName()
         );
         return ResponseEntity.ok(Map.of(
             "success", true,
@@ -81,8 +87,9 @@ public class AttendanceController {
      */
     @GetMapping("/summary")
     public ResponseEntity<Map<String, Object>> getCourseSummary(
-            @RequestParam String courseId) {
-        Map<String, Object> summary = attendanceService.getCourseSummary(courseId);
+            @RequestParam String courseId, Authentication authentication) {
+        accessService.requireReadSection(authentication.getName(), courseId);
+        Map<String, Object> summary = attendanceService.getCourseSummary(accessService.attendanceCourseId(courseId));
         return ResponseEntity.ok(Map.of(
             "success", true,
             "data",    summary
@@ -95,8 +102,9 @@ public class AttendanceController {
      */
     @GetMapping("/history")
     public ResponseEntity<Map<String, Object>> getCourseHistory(
-            @RequestParam String courseId) {
-        List<AttendanceRecord> data = attendanceService.getCourseHistory(courseId);
+            @RequestParam String courseId, Authentication authentication) {
+        accessService.requireReadSection(authentication.getName(), courseId);
+        List<AttendanceRecord> data = attendanceService.getCourseHistory(accessService.attendanceCourseId(courseId));
         return ResponseEntity.ok(Map.of(
             "success", true,
             "count",   data.size(),
@@ -110,7 +118,8 @@ public class AttendanceController {
      */
     @GetMapping("/student/{studentId}")
     public ResponseEntity<Map<String, Object>> getStudentAttendance(
-            @PathVariable String studentId) {
+            @PathVariable String studentId, Authentication authentication) {
+        accessService.requireStudentSelf(authentication.getName(), studentId);
         Map<String, Object> data = attendanceService.getStudentAttendanceReport(studentId);
         return ResponseEntity.ok(Map.of(
             "success", true,
@@ -126,9 +135,8 @@ public class AttendanceController {
      * @param markedBy Faculty name stored during attendance marking
      */
     @GetMapping("/faculty-courses")
-    public ResponseEntity<Map<String, Object>> getFacultyCourses(
-            @RequestParam String markedBy) {
-        var courses = attendanceService.getFacultyCourses(markedBy);
+    public ResponseEntity<Map<String, Object>> getFacultyCourses(Authentication authentication) {
+        var courses = accessService.visibleSections(authentication.getName());
         return ResponseEntity.ok(Map.of(
             "success", true,
             "count",   courses.size(),
@@ -146,7 +154,8 @@ public class AttendanceController {
      */
     @GetMapping("/enrolled-students")
     public ResponseEntity<Map<String, Object>> getEnrolledStudents(
-            @RequestParam String courseId) {
+            @RequestParam String courseId, Authentication authentication) {
+        accessService.requireReadSection(authentication.getName(), courseId);
         var students = attendanceService.getEnrolledStudents(courseId);
         return ResponseEntity.ok(Map.of(
             "success", true,
@@ -168,7 +177,8 @@ public class AttendanceController {
     @GetMapping("/student-courses")
     public ResponseEntity<Map<String, Object>> getStudentCourses(
             @RequestParam String studentId,
-            @RequestParam(required = false) String term) {
+            @RequestParam(required = false) String term, Authentication authentication) {
+        accessService.requireStudentSelf(authentication.getName(), studentId);
         var courses = attendanceService.getStudentCourses(studentId, term);
         return ResponseEntity.ok(Map.of(
             "success", true,

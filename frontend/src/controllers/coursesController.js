@@ -13,7 +13,7 @@ import { FACULTIES, YEARS, SEMESTERS } from '../models/coursesModel.js'
 import { courseService } from '../services/courseService.js'
 import { channelService } from '../services/channelService.js'
 import { getCurrentUser } from '../models/messagingModel.js'
-import { getPreferredSemester, toSemesterSeason } from '../models/accountSettingsModel.js'
+import { getPreferredSemester, loadPreferences, toSemesterSeason } from '../models/accountSettingsModel.js'
 
 const ENROLLED_IDS_KEY = 'cc_enrolled_course_ids_v1'
 
@@ -76,7 +76,10 @@ export function useCoursesController() {
     const preferredSeason = toSemesterSeason(getPreferredSemester())
     return SEMESTERS.includes(preferredSeason) ? preferredSeason : 'All Semesters'
   })
-  const [viewMode,       setViewMode]       = useState('grid')
+  const [viewMode, setViewMode] = useState(() => {
+    const preferredView = loadPreferences().academic?.courseView
+    return preferredView === 'list' ? 'list' : 'grid'
+  })
 
   /** Enrolled IDs: sourced from DB, cached in localStorage */
   const [enrolledIds, setEnrolledIds] = useState(() => {
@@ -99,7 +102,15 @@ export function useCoursesController() {
     courseService.getCatalog()
       .then(data => {
         if (!cancelled) {
-          setAllCourses(data.map(normaliseCourse))
+          const courses = data.map(normaliseCourse)
+          setAllCourses(courses)
+          // A saved semester preference must not make a populated catalog look
+          // empty when the imported dataset contains a different semester.
+          setActiveSemester(current =>
+            current === 'All Semesters' || courses.some(course => course.semester === current)
+              ? current
+              : 'All Semesters'
+          )
           setLoading(false)
         }
       })

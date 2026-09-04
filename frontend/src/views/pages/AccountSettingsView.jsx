@@ -5,6 +5,7 @@ import {
   formatJoinDate, formatCgpa, YEAR_LABELS,
 } from '../../models/accountSettingsModel.js'
 import Sidebar from '../components/Sidebar.jsx'
+import AccountFreezePanel from './AccountFreezeView.jsx'
 
 /**
  * AccountSettingsView - View layer for Account Preferences & Settings.
@@ -40,6 +41,7 @@ export default function AccountSettingsView() {
             { key: 'profile',     icon: '👤', label: 'Profile' },
             { key: 'security',    icon: '🔒', label: 'Security' },
             { key: 'preferences', icon: '⚙️', label: 'Preferences' },
+            ...(ctrl.profile.role === 'ADMIN' ? [{ key: 'account-access', icon: '🧊', label: 'Account Access' }] : []),
           ].map(tab => (
             <button
               key={tab.key}
@@ -63,6 +65,9 @@ export default function AccountSettingsView() {
         )}
         {ctrl.activeTab === 'preferences' && (
           <PreferencesTab ctrl={ctrl} />
+        )}
+        {ctrl.activeTab === 'account-access' && ctrl.profile.role === 'ADMIN' && (
+          <AccountFreezePanel />
         )}
       </main>
     </div>
@@ -389,7 +394,8 @@ function SecurityTab({ ctrl }) {
 function PreferencesTab({ ctrl }) {
   const { preferences, profile, handlePreferenceChange, handleNestedPreferenceChange,
     handleAvatarChange, handleExportData, handleResetPreferences,
-    handleDeactivateAccount, handleSignOut, handleReminderHoursChange,
+    handleSignOut, handleReminderHoursChange,
+    handleInAppNotificationChange,
     preferenceError } = ctrl
 
   return (
@@ -433,7 +439,7 @@ function PreferencesTab({ ctrl }) {
               <span className="toggle-slider" />
             </label>
           </div>
-          {Object.entries(preferences.emailNotifications).map(([key, enabled]) => <ToggleRow key={key} label={`Email: ${key[0].toUpperCase()}${key.slice(1)}`} description={`Receive ${key} updates by email`} checked={enabled} onChange={value => handleNestedPreferenceChange('emailNotifications', key, value)} />)}
+          {Object.entries(preferences.inAppNotifications).map(([key, enabled]) => <ToggleRow key={key} label={`In-app: ${key[0].toUpperCase()}${key.slice(1)}`} description={`${enabled ? 'Receive' : 'Mute'} ${key} notifications in CampusConnect`} checked={enabled} onChange={value => handleInAppNotificationChange(key, value)} />)}
 
           <PreferenceHeading title="Accessibility" />
           <div className="pref-row"><div className="pref-info"><span className="pref-label">🔠 Font Size</span><span className="pref-desc">Adjust text across the portal</span></div><select className="pref-select" value={preferences.accessibility.fontSize} onChange={e => handleNestedPreferenceChange('accessibility', 'fontSize', e.target.value)}><option value="normal">Normal</option><option value="large">Large</option><option value="x-large">Extra large</option></select></div>
@@ -453,8 +459,6 @@ function PreferencesTab({ ctrl }) {
           <div className="pref-row"><div className="pref-info"><span className="pref-label">📥 Download Account Data</span><span className="pref-desc">Download your account and academic profile as a PDF</span></div><button className="btn-secondary" onClick={handleExportData}>Download PDF</button></div>
           <div className="pref-row"><div className="pref-info"><span className="pref-label">♻️ Reset Preferences</span><span className="pref-desc">Restore all display and portal defaults</span></div><button className="btn-secondary" onClick={handleResetPreferences}>Reset</button></div>
           <div className="pref-row"><div className="pref-info"><span className="pref-label">🕘 Account Activity</span><span className="pref-desc">Member since {formatJoinDate(profile.createdAt)} · Profile loaded this session</span></div></div>
-          <PreferenceHeading title="Danger zone" />
-          <div className="pref-row danger-row"><div className="pref-info"><span className="pref-label">Deactivate Account</span><span className="pref-desc">Disable this account and sign out</span></div><button className="btn-danger" onClick={handleDeactivateAccount}>Deactivate</button></div>
         </div>
       </div>
     </div>

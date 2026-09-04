@@ -38,11 +38,13 @@ public class NotificationService {
     public static final String TYPE_DEADLINE_APPROACHING = "DEADLINE_APPROACHING";
     public static final String TYPE_ANNOUNCEMENT_POSTED  = "ANNOUNCEMENT_POSTED";
     public static final String TYPE_ADVISING_CONFIRMED   = "ADVISING_CONFIRMED";
+    public static final String TYPE_EXAM_SCHEDULED       = "EXAM_SCHEDULED";
 
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final SectionRegistrationRepository sectionRegistrationRepository;
     private final AppUserRepository appUserRepository;
+    private final InAppNotificationPreferenceService notificationPreferenceService;
 
     // ── Core Dispatcher ──────────────────────────────────────────────────────────
 
@@ -55,6 +57,10 @@ public class NotificationService {
     public NotificationDto dispatch(String userId, String type, String title, String payload, String link) {
         if (userId == null || userId.isBlank()) {
             log.warn("[NotificationService] Cannot dispatch notification: userId is blank");
+            return null;
+        }
+        if (!notificationPreferenceService.allows(userId.trim(), type)) {
+            log.info("[NotificationService] Skipped muted {} notification for user={}", type, userId);
             return null;
         }
 

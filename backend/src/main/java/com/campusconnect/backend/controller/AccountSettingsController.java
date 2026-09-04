@@ -58,12 +58,6 @@ public class AccountSettingsController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deactivateAccount(Authentication authentication) {
-        service.deactivateAccount(authentication.getName());
-        return ResponseEntity.noContent().build();
-    }
-
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleAccountError(ResponseStatusException ex) {
         Map<String, Object> body = new LinkedHashMap<>();

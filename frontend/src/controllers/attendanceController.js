@@ -36,13 +36,15 @@ function getFacultyName() {
 }
 
 export function useAttendanceController() {
-  const role      = localStorage.getItem('userRole') || 'student'
+  const role      = (getStoredUser()?.role || 'STUDENT').toLowerCase()
   const isFaculty = role === 'faculty' || role === 'admin'
+  const isAdmin   = role === 'admin'
+  const canMark   = role === 'faculty'
 
   // ── Core State ──────────────────────────────────────────────
   const [selectedCourse, setSelectedCourse] = useState('')
   const [selectedDate,   setSelectedDate]   = useState(getToday())
-  const [activeTab,      setActiveTab]      = useState('mark')  // 'mark' | 'history' | 'summary'
+  const [activeTab,      setActiveTab]      = useState(isAdmin ? 'history' : 'mark')
   const [toast,          setToast]          = useState(null)
 
   // ── Course & Student State (live from API) ───────────────────
@@ -83,16 +85,15 @@ export function useAttendanceController() {
     async function loadCourses() {
       setLoadingCourses(true)
       try {
-        const facultyName = getFacultyName()
-        const res = await apiClient.get(
-          `${API_BASE}/attendance/faculty-courses?markedBy=${encodeURIComponent(facultyName)}`
-        )
+        const res = await apiClient.get(`${API_BASE}/attendance/faculty-courses`)
         if (res.ok) {
           const json = await res.json()
           const raw  = json.data || []
           const enriched = raw.map(c => ({
             id:            c.courseId,
             name:          c.courseName,
+            section:       c.section,
+            faculty:       c.faculty,
             totalStudents: c.studentCount,
             color:         getCourseColor(c.courseId),
           }))
@@ -239,6 +240,10 @@ export function useAttendanceController() {
 
   /** Submit attendance for the current course/date — posts each student to the backend */
   async function submitAttendance() {
+    if (!canMark) {
+      showToast('Only assigned faculty members can mark attendance.', 'error')
+      return
+    }
     const unmarked = courseStudents.filter(s => !currentMarks[s.id])
     if (unmarked.length > 0) {
       showToast(`⚠️ Please mark attendance for all students (${unmarked.length} remaining)`, 'error')
@@ -301,7 +306,7 @@ export function useAttendanceController() {
   /** Change the selected course */
   function selectCourse(courseId) {
     setSelectedCourse(courseId)
-    setActiveTab('mark')
+    setActiveTab(isAdmin ? 'history' : 'mark')
     setCurrentMarks({})
     setHasSubmitted(false)
     setDateRecords([])
@@ -312,6 +317,8 @@ export function useAttendanceController() {
   return {
     // Role
     isFaculty,
+    isAdmin,
+    canMark,
     // Course selection (live from API)
     courses,
     selectedCourse,

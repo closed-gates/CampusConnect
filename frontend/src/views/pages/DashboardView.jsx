@@ -86,11 +86,11 @@ export default function DashboardView() {
           weeklyClassCount={weeklyClassCount}
         />
 
-        <StudentAttendanceModal
+        {isStudent && <StudentAttendanceModal
           isOpen={activeModal === 'attendance'}
           onClose={closeModal}
           attendanceData={attendanceReport}
-        />
+        />}
       </main>
     </div>
   )
