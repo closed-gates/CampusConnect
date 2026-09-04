@@ -38,6 +38,9 @@ public class Recruitment {
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @Column(name = "pinned")
+    private Boolean pinned = false;
+
     // ── Constructors ──────────────────────────────────────────
     public Recruitment() {}
 
@@ -77,4 +80,6 @@ public class Recruitment {
 
     public boolean isActive()                { return active; }
     public void    setActive(boolean active) { this.active = active; }
+    public boolean isPinned()                { return Boolean.TRUE.equals(pinned); }
+    public void    setPinned(boolean value)  { this.pinned = value; }
 }

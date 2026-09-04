@@ -15,5 +15,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
     // Standard JPA CRUD operations are sufficient for now.
-    // Future: findByClubName(), findByStudentEmail(), findByStatus() etc.
+    java.util.List<Application> findByClubNameIgnoreCaseOrderByAppliedAtDesc(String clubName);
 }

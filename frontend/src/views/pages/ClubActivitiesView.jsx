@@ -23,13 +23,17 @@ import './ClubActivitiesPage.css'
 export default function ClubActivitiesView() {
   const {
     isAdmin,
+    isPanelMember, assignedClubs, clubs, canManage,
+    panelMembers, assignmentForm, setAssignmentForm, applications,
     activeTab, setActiveTab,
     notices, recruitments, toast,
     expandedNotice, setExpandedNotice,
     noticeForm, setNoticeForm,
     noticeSubmitting, handlePostNotice,
+    assignPanelMember, removePanelMember, deleteNotice, toggleNoticePin, updateNotice,
     recruitForm, setRecruitForm,
     recruitSubmitting, handlePostRecruitment,
+    deleteRecruitment, toggleRecruitmentPin, updateRecruitment, loadApplications,
     applyTarget,
     applyStep,
     applyForm,
@@ -51,21 +55,31 @@ export default function ClubActivitiesView() {
         {/* Header */}
         <div className="dashboard-header">
           <h1 className="dashboard-greeting">
-            {isAdmin ? '🛡️ Club Activities — Admin' : '🏛️ Club Activities'}
+            {isAdmin ? '🛡️ Club Activities — Admin' : isPanelMember ? '🏛️ Club Activities — Panel Member' : '🏛️ Club Activities'}
           </h1>
           <p className="dashboard-date">
             {isAdmin
               ? 'Post notices and manage club recruitment listings.'
-              : 'Browse club notices and apply for open positions.'}
+              : isPanelMember ? `Manage ${assignedClubs.join(', ')} and browse club updates.` : 'Browse club notices and apply for open positions.'}
           </p>
         </div>
 
         {/* Role badge */}
         <div className="club-role-badge-row">
           <span className={`club-role-badge ${isAdmin ? 'admin' : 'student'}`}>
-            {isAdmin ? '🛡️ Admin' : '🎓 Student'}
+            {isAdmin ? '🛡️ Admin' : isPanelMember ? '⭐ Club Panel Member' : '🎓 Student'}
           </span>
         </div>
+
+        {isAdmin && <div className="section-card club-post-form club-panel-admin">
+          <div className="section-header"><h2 className="section-title">⭐ Assign Club Panel Member</h2></div>
+          <form className="club-form-row" onSubmit={assignPanelMember}>
+            <div className="form-group"><label className="form-label">Student ID</label><input className="form-input" value={assignmentForm.studentId} onChange={e=>setAssignmentForm(p=>({...p,studentId:e.target.value}))} placeholder="STU001" required /></div>
+            <div className="form-group"><label className="form-label">Club name</label><select className="form-input" value={assignmentForm.clubName} onChange={e=>setAssignmentForm(p=>({...p,clubName:e.target.value}))} required><option value="">Select club</option>{clubs.map(club=><option key={club.id} value={club.name}>{club.name}</option>)}</select></div>
+            <button className="btn btn-primary" type="submit">Assign</button>
+          </form>
+          <div className="club-panel-list">{panelMembers.map(member=><span key={member.id} className="club-meta-chip">{member.studentId} · {member.clubName} <button onClick={()=>removePanelMember(member.id)} aria-label={`Remove ${member.studentId}`}>×</button></span>)}</div>
+        </div>}
 
         {/* Tab Nav */}
         <div className="club-tabs" role="tablist">
@@ -95,7 +109,7 @@ export default function ClubActivitiesView() {
         {activeTab === 'notices' && (
           <div className="club-tab-content">
             {/* Admin: post notice form */}
-            {isAdmin && (
+            {canManage && (
               <div className="section-card club-post-form">
                 <div className="section-header">
                   <h2 className="section-title">📝 Post a New Notice</h2>
@@ -104,14 +118,13 @@ export default function ClubActivitiesView() {
                   <div className="club-form-row">
                     <div className="form-group">
                       <label className="form-label" htmlFor="notice-clubname">Club Name</label>
-                      <input
+                      {isAdmin ? <select
                         id="notice-clubname"
                         className="form-input"
-                        placeholder="e.g. Robotics Club"
                         value={noticeForm.clubName}
                         onChange={e => setNoticeForm(p => ({ ...p, clubName: e.target.value }))}
                         required
-                      />
+                      ><option value="">Select club</option>{clubs.map(club=><option key={club.id} value={club.name}>{club.name}</option>)}</select> : <select id="notice-clubname" className="form-input" value={noticeForm.clubName} onChange={e=>setNoticeForm(p=>({...p,clubName:e.target.value}))} required><option value="">Select assigned club</option>{assignedClubs.map(c=><option key={c}>{c}</option>)}</select>}
                     </div>
                     <div className="form-group" style={{ flex: 2 }}>
                       <label className="form-label" htmlFor="notice-title">Notice Title</label>
@@ -175,6 +188,7 @@ export default function ClubActivitiesView() {
                       <p>{notice.body}</p>
                       <div className="club-notice-footer">
                         <span>Posted by <strong>{notice.postedBy}</strong></span>
+                        {(isAdmin || assignedClubs.includes(notice.clubName)) && <span className="club-manage-actions"><button className="btn btn-secondary" onClick={()=>updateNotice(notice)}>Edit</button><button className="btn btn-secondary" onClick={()=>deleteNotice(notice.id)}>Delete</button>{isAdmin&&<button className="btn btn-secondary" onClick={()=>toggleNoticePin(notice)}>{notice.pinned?'Unpin':'Pin'}</button>}</span>}
                       </div>
                     </div>
                   )}
@@ -188,7 +202,7 @@ export default function ClubActivitiesView() {
         {activeTab === 'recruitment' && (
           <div className="club-tab-content">
             {/* Admin: post recruitment form */}
-            {isAdmin && (
+            {canManage && (
               <div className="section-card club-post-form">
                 <div className="section-header">
                   <h2 className="section-title">📋 Post a Recruitment Listing</h2>
@@ -197,9 +211,9 @@ export default function ClubActivitiesView() {
                   <div className="club-form-row">
                     <div className="form-group">
                       <label className="form-label" htmlFor="recruit-club">Club Name</label>
-                      <input id="recruit-club" className="form-input" placeholder="e.g. Coding Club"
+                      {isAdmin ? <select id="recruit-club" className="form-input"
                         value={recruitForm.clubName}
-                        onChange={e => setRecruitForm(p => ({ ...p, clubName: e.target.value }))} required />
+                        onChange={e => setRecruitForm(p => ({ ...p, clubName: e.target.value }))} required><option value="">Select club</option>{clubs.map(club=><option key={club.id} value={club.name}>{club.name}</option>)}</select> : <select id="recruit-club" className="form-input" value={recruitForm.clubName} onChange={e=>setRecruitForm(p=>({...p,clubName:e.target.value}))} required><option value="">Select assigned club</option>{assignedClubs.map(c=><option key={c}>{c}</option>)}</select>}
                     </div>
                     <div className="form-group">
                       <label className="form-label" htmlFor="recruit-role">Role / Position</label>
@@ -247,6 +261,7 @@ export default function ClubActivitiesView() {
                       <h3 className="club-recruit-role">{rec.role}</h3>
                     </div>
                   </div>
+                  {rec.pinned && <span className="club-pinned-badge">📌 Pinned</span>}
                   <p className="club-recruit-desc">{rec.description}</p>
                   <div className="club-recruit-meta">
                     <span className="club-meta-chip deadline">🗓️ Deadline: {rec.deadline}</span>
@@ -262,9 +277,11 @@ export default function ClubActivitiesView() {
                     </button>
                   )}
                   {isAdmin && <div className="club-admin-tag">✅ Published</div>}
+                  {(isAdmin || assignedClubs.includes(rec.clubName)) && <div className="club-manage-actions"><button className="btn btn-secondary" onClick={()=>updateRecruitment(rec)}>Edit</button><button className="btn btn-secondary" onClick={()=>deleteRecruitment(rec.id)}>Delete</button><button className="btn btn-secondary" onClick={()=>loadApplications(rec.clubName)}>Applicants</button>{isAdmin&&<button className="btn btn-secondary" onClick={()=>toggleRecruitmentPin(rec)}>{rec.pinned?'Unpin':'Pin'}</button>}</div>}
                 </div>
               ))}
             </div>
+            {applications.length > 0 && <div className="section-card club-applicants"><h2 className="section-title">Recruitment Applications</h2>{applications.map(app=><div key={app.id} className="club-applicant-row"><strong>{app.studentName}</strong><span>{app.studentEmail}</span><span>{app.clubName} · {app.role}</span><p>{app.motivation}</p></div>)}</div>}
           </div>
         )}
 

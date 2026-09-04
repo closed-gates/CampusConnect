@@ -953,3 +953,10 @@
     display: none;
   }
 }
+.club-panel-list, .club-manage-actions { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem; }
+.club-panel-list button { border:0; background:transparent; cursor:pointer; font-weight:800; }
+.club-panel-admin .club-form-row { align-items:end; }
+.club-applicants { margin-top:1rem; }
+.club-applicant-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.5rem; padding:.8rem 0; border-bottom:1px solid var(--color-border); }
+.club-applicant-row p { grid-column:1/-1; margin:0; color:var(--color-text-sub); }
+@media(max-width:700px){.club-applicant-row{grid-template-columns:1fr}.club-applicant-row p{grid-column:auto}}

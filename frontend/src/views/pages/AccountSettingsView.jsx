@@ -6,6 +6,7 @@ import {
 } from '../../models/accountSettingsModel.js'
 import Sidebar from '../components/Sidebar.jsx'
 import AccountFreezePanel from './AccountFreezeView.jsx'
+import AdminProfileManagementView from './AdminProfileManagementView.jsx'
 
 /**
  * AccountSettingsView - View layer for Account Preferences & Settings.
@@ -42,6 +43,7 @@ export default function AccountSettingsView() {
             { key: 'security',    icon: '🔒', label: 'Security' },
             { key: 'preferences', icon: '⚙️', label: 'Preferences' },
             ...(ctrl.profile.role === 'ADMIN' ? [{ key: 'account-access', icon: '🧊', label: 'Account Access' }] : []),
+            ...(ctrl.profile.role === 'ADMIN' ? [{ key: 'profile-management', icon: '🛡️', label: 'Manage Profiles' }] : []),
           ].map(tab => (
             <button
               key={tab.key}
@@ -68,6 +70,9 @@ export default function AccountSettingsView() {
         )}
         {ctrl.activeTab === 'account-access' && ctrl.profile.role === 'ADMIN' && (
           <AccountFreezePanel />
+        )}
+        {ctrl.activeTab === 'profile-management' && ctrl.profile.role === 'ADMIN' && (
+          <AdminProfileManagementView />
         )}
       </main>
     </div>
@@ -148,7 +153,7 @@ function ProfileTab({ ctrl }) {
       <div className="settings-card">
         <div className="settings-card-header">
           <span className="settings-card-title">Account Information</span>
-          {!editMode && (
+          {!editMode && profile.role === 'ADMIN' && (
             <button
               id="btn-edit-profile"
               className="btn-outline-edit"
@@ -406,11 +411,13 @@ function PreferencesTab({ ctrl }) {
       <div className="settings-card-body" style={{ padding: '0 1.5rem' }}>
         <div className="pref-list">
           {preferenceError && <div className="alert alert-error">{preferenceError}</div>}
-          <PreferenceHeading title="Profile photo" />
-          <div className="pref-row">
-            <div className="pref-info"><span className="pref-label">🖼️ Profile Picture</span><span className="pref-desc">PNG or JPG, up to 2 MB</span></div>
-            <label className="btn-secondary pref-file-btn">Choose photo<input type="file" accept="image/*" onChange={e => handleAvatarChange(e.target.files?.[0])} /></label>
-          </div>
+          {profile.role === 'ADMIN' && <>
+            <PreferenceHeading title="Profile photo" />
+            <div className="pref-row">
+              <div className="pref-info"><span className="pref-label">🖼️ Profile Picture</span><span className="pref-desc">PNG or JPG, up to 2 MB</span></div>
+              <label className="btn-secondary pref-file-btn">Choose photo<input type="file" accept="image/*" onChange={e => handleAvatarChange(e.target.files?.[0])} /></label>
+            </div>
+          </>}
           <PreferenceHeading title="Appearance" />
           {/* Theme */}
           <div className="pref-row">

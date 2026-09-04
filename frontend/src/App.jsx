@@ -67,7 +67,7 @@ export default function App() {
         <Route path="/dashboard"         element={<DashboardView />} />
         <Route path="/academic-calendar" element={<AcademicCalendarView />} />
         <Route path="/messaging"         element={<MessagingView />} />
-        <Route path="/club-activities"   element={<ClubActivitiesView />} />
+        <Route path="/club-activities"   element={<NonFacultyRoute><ClubActivitiesView /></NonFacultyRoute>} />
         <Route path="/courses"           element={<CoursesView />} />
         <Route path="/routine"           element={<StudentOnlyRoute><RoutineView /></StudentOnlyRoute>} />
         <Route path="/attendance"        element={<AttendanceView />} />
