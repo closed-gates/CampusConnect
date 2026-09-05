@@ -14,6 +14,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -63,7 +64,6 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
     }
 
     @Override
-    @Transactional
     public void run(ApplicationArguments args) {
         ensureSchema();
         restoreIfEmpty();
@@ -72,8 +72,11 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
     /**
      * Neon/prod may not have had these tables if Hibernate update did not run.
      * CREATE IF NOT EXISTS is safe on PostgreSQL and H2.
+     * Runs outside any active transaction (NOT_SUPPORTED) so a DDL failure
+     * does not leave a PostgreSQL transaction in an error state.
      */
-    private void ensureSchema() {
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void ensureSchema() {
         try {
             jdbcTemplate.execute("""
                     CREATE TABLE IF NOT EXISTS video_lectures (
@@ -122,7 +125,8 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
         }
     }
 
-    private void restoreIfEmpty() {
+    @Transactional
+    public void restoreIfEmpty() {
         if (lectureRepo.count() > 0 || !Files.exists(catalogFile)) {
             return;
         }
