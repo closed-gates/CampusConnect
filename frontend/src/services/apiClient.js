@@ -9,7 +9,7 @@
  *   3. 401 responses clear auth and redirect to login automatically.
  *
  * Usage:
- *   import { apiClient } from './apiClient.js'
+ *   import apiClient from './apiClient.js'
  *   const data = await apiClient.get('/api/courses/catalog')
  *   const result = await apiClient.post('/api/auth/login', { identifier, password })
  *   // For multipart (file upload):

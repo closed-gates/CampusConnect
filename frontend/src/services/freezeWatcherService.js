@@ -8,7 +8,7 @@
 
 import { Client } from "@stomp/stompjs"
 import SockJS from "sockjs-client"
-import { apiClient } from "./apiClient.js"
+import apiClient from "./apiClient.js"
 
 const WS_URL = "/ws"
 
