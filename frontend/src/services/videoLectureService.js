@@ -11,8 +11,8 @@ const API_BASE = '/api/video-lectures'
 
 export async function getLectures() {
   const res = await apiClient.get(API_BASE)
-  if (!res.ok) throw new Error(`Failed to load lectures: ${res.status}`)
-  const json = await res.json()
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(json.message || `Failed to load lectures: ${res.status}`)
   return json.data || []
 }
 

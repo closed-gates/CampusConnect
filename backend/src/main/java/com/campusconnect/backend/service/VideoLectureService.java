@@ -7,6 +7,7 @@ import com.campusconnect.backend.model.VideoLecture;
 import com.campusconnect.backend.model.VideoWatchProgress;
 import com.campusconnect.backend.repository.VideoLectureRepository;
 import com.campusconnect.backend.repository.VideoWatchProgressRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * VideoLectureService – create, stream, delete lectures and persist watch progress.
@@ -70,11 +70,18 @@ public class VideoLectureService {
         }
     }
 
-    @Transactional(readOnly = true)
     public List<VideoLectureDTO> listLectures(String userId) {
-        Map<Long, VideoWatchProgress> progressByLecture = progressRepo.findByUserId(userId).stream()
-                .filter(progress -> progress.getLectureId() != null)
-                .collect(Collectors.toMap(VideoWatchProgress::getLectureId, p -> p, (a, b) -> a));
+        catalogStore.ensureSchema();
+        Map<Long, VideoWatchProgress> progressByLecture = new java.util.HashMap<>();
+        try {
+            for (VideoWatchProgress progress : progressRepo.findByUserId(userId)) {
+                if (progress.getLectureId() != null) {
+                    progressByLecture.putIfAbsent(progress.getLectureId(), progress);
+                }
+            }
+        } catch (DataAccessException ignored) {
+            catalogStore.ensureSchema();
+        }
         return lectureRepo.findAllByOrderByCreatedAtDesc().stream()
                 .map(lecture -> toDto(lecture, progressByLecture.get(lecture.getId())))
                 .toList();
@@ -96,6 +103,7 @@ public class VideoLectureService {
                                          String embedUrl,
                                          MultipartFile file,
                                          String createdBy) {
+        catalogStore.ensureSchema();
         if (!StringUtils.hasText(title)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required.");
         }
@@ -419,9 +427,9 @@ public class VideoLectureService {
                 .fileSize(lecture.getFileSize())
                 .createdBy(lecture.getCreatedBy())
                 .createdAt(lecture.getCreatedAt())
-                .positionSeconds(progress != null ? progress.getPositionSeconds() : 0.0)
-                .durationSeconds(progress != null ? progress.getDurationSeconds() : 0.0)
-                .percentWatched(progress != null ? progress.getPercentWatched() : 0)
+                .positionSeconds(progress != null && progress.getPositionSeconds() != null ? progress.getPositionSeconds() : 0.0)
+                .durationSeconds(progress != null && progress.getDurationSeconds() != null ? progress.getDurationSeconds() : 0.0)
+                .percentWatched(progress != null && progress.getPercentWatched() != null ? progress.getPercentWatched() : 0)
                 .completed(progress != null && progress.isCompleted())
                 .build();
     }
@@ -430,9 +438,9 @@ public class VideoLectureService {
         return VideoProgressDTO.builder()
                 .lectureId(progress.getLectureId())
                 .userId(progress.getUserId())
-                .positionSeconds(progress.getPositionSeconds())
-                .durationSeconds(progress.getDurationSeconds())
-                .percentWatched(progress.getPercentWatched())
+                .positionSeconds(progress.getPositionSeconds() != null ? progress.getPositionSeconds() : 0.0)
+                .durationSeconds(progress.getDurationSeconds() != null ? progress.getDurationSeconds() : 0.0)
+                .percentWatched(progress.getPercentWatched() != null ? progress.getPercentWatched() : 0)
                 .completed(progress.isCompleted())
                 .build();
     }
