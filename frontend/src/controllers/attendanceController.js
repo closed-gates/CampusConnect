@@ -1,4 +1,4 @@
-/**
+﻿/**
  * attendanceController.js – Controller layer for the Faculty Attendance Tracking page.
  *
  * MVC Role: Controller
@@ -29,7 +29,6 @@ import apiClient from '../services/apiClient.js'
 const API_BASE = '/api'
 
 // Get the logged-in faculty member's name from the JWT token.
-// Falls back to a default for backward compatibility.
 function getFacultyName() {
   const user = getStoredUser()
   return user?.fullName || 'Dr. Mahbubur Rahman'
@@ -44,7 +43,7 @@ export function useAttendanceController() {
   // ── Core State ──────────────────────────────────────────────
   const [selectedCourse, setSelectedCourse] = useState('')
   const [selectedDate,   setSelectedDate]   = useState(getToday())
-  const [activeTab,      setActiveTab]      = useState(isAdmin ? 'history' : 'mark')
+  const [activeTab,      setActiveTab]      = useState(isAdmin ? 'students' : 'mark')
   const [toast,          setToast]          = useState(null)
 
   // ── Course & Student State (live from API) ───────────────────
@@ -80,7 +79,7 @@ export function useAttendanceController() {
     setToast({ message, type })
   }
 
-  // ── Load faculty courses from API on mount ───────────────────
+  // ── Load faculty / admin courses from API on mount ───────────
   useEffect(() => {
     async function loadCourses() {
       setLoadingCourses(true)
@@ -98,7 +97,7 @@ export function useAttendanceController() {
             color:         getCourseColor(c.courseId),
           }))
           setCourses(enriched)
-          if (enriched.length > 0) setSelectedCourse(enriched[0].id)
+          if (!isAdmin && enriched.length > 0) setSelectedCourse(enriched[0].id)
         }
       } catch (err) {
         console.error('[AttendanceController] Failed to load faculty courses:', err)
@@ -238,7 +237,7 @@ export function useAttendanceController() {
     setCurrentMarks(marks)
   }
 
-  /** Submit attendance for the current course/date — posts each student to the backend */
+  /** Submit attendance for the current course/date */
   async function submitAttendance() {
     if (!canMark) {
       showToast('Only assigned faculty members can mark attendance.', 'error')
@@ -303,10 +302,10 @@ export function useAttendanceController() {
     }
   }
 
-  /** Change the selected course */
+  /** Change the selected course (pass empty string to go back to grid) */
   function selectCourse(courseId) {
     setSelectedCourse(courseId)
-    setActiveTab(isAdmin ? 'history' : 'mark')
+    setActiveTab(courseId === '' ? 'students' : isAdmin ? 'students' : 'mark')
     setCurrentMarks({})
     setHasSubmitted(false)
     setDateRecords([])

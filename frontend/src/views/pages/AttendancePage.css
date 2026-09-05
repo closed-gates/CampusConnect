@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    AttendancePage – Faculty Attendance Tracking Styles
    Follows the CampusConnect design system from index.css
    ============================================================ */
@@ -1083,6 +1083,17 @@
 }
 
 /* ── Responsive ────────────────────────────────────────────── */
+
+/* -- Responsive (600px) ---------------------------------------- */
+@media (max-width: 768px) {
+  .att-admin-detail-header {
+    flex-direction: column;
+  }
+  .att-admin-rate-badge {
+    align-self: flex-start;
+  }
+}
+
 @media (max-width: 600px) {
   .student-att-summary-card {
     flex-direction: column;
@@ -1092,4 +1103,120 @@
   .student-att-course-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================================
+   Admin Section Detail View
+   ============================================================ */
+
+.att-admin-detail {
+  animation: attFadeIn 0.2s ease;
+}
+
+.att-admin-detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.att-admin-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.att-admin-back-btn:hover {
+  background: var(--color-teal-light);
+  border-color: var(--color-teal);
+  color: var(--color-teal-dark);
+}
+
+.att-admin-detail-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.att-admin-detail-code {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-teal);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.att-admin-detail-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 6px;
+}
+
+.att-admin-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+.att-admin-rate-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #F0FDFA, #E6F5F2);
+  border: 1.5px solid var(--color-teal);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.att-admin-rate-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-teal-dark);
+  line-height: 1;
+}
+
+.att-admin-rate-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-teal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+.att-admin-view-hint {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-teal);
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.att-course-card:hover .att-admin-view-hint {
+  opacity: 1;
 }
