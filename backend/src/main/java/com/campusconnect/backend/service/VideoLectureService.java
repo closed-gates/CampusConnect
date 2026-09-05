@@ -130,6 +130,7 @@ public class VideoLectureService {
         lecture.setCourseCode(courseCode);
         lecture.setCourseName(courseName);
         lecture.setCreatedBy(createdBy);
+        lecture.setTeacherName(StringUtils.hasText(createdBy) ? createdBy : "Instructor");
         lecture.setCreatedAt(LocalDateTime.now());
 
         if (VideoLecture.SOURCE_EMBED.equals(type)) {

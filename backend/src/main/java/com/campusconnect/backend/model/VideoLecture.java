@@ -55,6 +55,9 @@ public class VideoLecture {
     @Column(name = "created_by", length = 100)
     private String createdBy;
 
+    @Column(name = "teacher_name", length = 200)
+    private String teacherName;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -95,6 +98,9 @@ public class VideoLecture {
 
     public String getCreatedBy() { return createdBy; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+
+    public String getTeacherName() { return teacherName; }
+    public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

@@ -124,6 +124,10 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS content_type VARCHAR(120)");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS file_size BIGINT");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS created_by VARCHAR(100)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS teacher_name VARCHAR(200)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ALTER COLUMN teacher_name SET DEFAULT 'Instructor'");
+                    runQuietly(statement, "ALTER TABLE video_lectures ALTER COLUMN teacher_name DROP NOT NULL");
+                    runQuietly(statement, "UPDATE video_lectures SET teacher_name = COALESCE(NULLIF(teacher_name, ''), created_by, 'Instructor') WHERE teacher_name IS NULL OR teacher_name = ''");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS created_at TIMESTAMP");
                     runQuietly(statement, """
                             CREATE UNIQUE INDEX IF NOT EXISTS uk_vl_progress_lecture_user
@@ -224,6 +228,7 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
         public String contentType;
         public Long fileSize;
         public String createdBy;
+        public String teacherName;
         public LocalDateTime createdAt;
 
         static CatalogLecture from(VideoLecture lecture) {
@@ -240,6 +245,7 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
             row.contentType = lecture.getContentType();
             row.fileSize = lecture.getFileSize();
             row.createdBy = lecture.getCreatedBy();
+            row.teacherName = lecture.getTeacherName();
             row.createdAt = lecture.getCreatedAt();
             return row;
         }
@@ -257,6 +263,9 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
             lecture.setContentType(contentType);
             lecture.setFileSize(fileSize);
             lecture.setCreatedBy(createdBy);
+            lecture.setTeacherName(teacherName != null && !teacherName.isBlank()
+                    ? teacherName
+                    : (createdBy != null && !createdBy.isBlank() ? createdBy : "Instructor"));
             lecture.setCreatedAt(createdAt != null ? createdAt : LocalDateTime.now());
             return lecture;
         }
