@@ -7,9 +7,7 @@
  * The Anthropic API key is NEVER present here — it stays server-side.
  */
 
-import { getStoredToken } from '../models/authModel.js'
-
-const BASE_URL = '/api/ai'
+import apiClient from './apiClient.js'
 
 /**
  * Send a message to the AI chatbot backend.
@@ -19,15 +17,7 @@ const BASE_URL = '/api/ai'
  * @returns {Promise<{ reply: string, topic: string, fallback: boolean }>}
  */
 export async function sendChatMessage(message, history = []) {
-  const token = getStoredToken()
-  const response = await fetch(`${BASE_URL}/chat`, {
-    method:  'POST',
-    headers: {
-      'Content-Type':  'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify({ message, history }),
-  })
+  const response = await apiClient.post('/api/ai/chat', { message, history })
 
   if (!response.ok) {
     const text = await response.text().catch(() => '')

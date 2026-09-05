@@ -127,9 +127,15 @@ public class AiChatService {
             if (effectiveOpenAiKey != null) {
                 log.info("[AiChatService] Generating reply via OpenAI ({})", (openaiModel != null && !openaiModel.isBlank()) ? openaiModel : DEFAULT_OPENAI_MODEL);
                 reply = callOpenAI(effectiveOpenAiKey, systemPrompt, request.getHistory(), userMessage);
-            } else {
+            } else if (hasValidAnthropicKey()) {
                 log.info("[AiChatService] Generating reply via Anthropic ({})", CLAUDE_MODEL);
                 reply = callClaude(systemPrompt, request.getHistory(), userMessage);
+            } else {
+                log.warn("[AiChatService] No valid AI provider key is configured");
+                return buildResult(
+                    "The AI assistant is not configured yet. Please ask an administrator to set OPENAI_API_KEY or ANTHROPIC_API_KEY on the backend service.",
+                    topic.name(), true
+                );
             }
             return buildResult(reply, topic.name(), false);
         } catch (Exception e) {
@@ -511,6 +517,13 @@ public class AiChatService {
             return anthropicApiKey.trim();
         }
         return null;
+    }
+
+    private boolean hasValidAnthropicKey() {
+        return anthropicApiKey != null
+            && !anthropicApiKey.isBlank()
+            && anthropicApiKey.startsWith("sk-ant-")
+            && !anthropicApiKey.contains("replace");
     }
 
     private String callOpenAI(String apiKey,

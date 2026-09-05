@@ -14,7 +14,7 @@ User types message in ChatbotWidget.jsx
 chatbotController.js
          │  builds history array, calls service
          ▼
-chatbotService.js → POST /api/ai/chat  (JWT in Authorization header)
+chatbotService.js → apiClient → POST /api/ai/chat  (deployment base URL + JWT header)
          │
          ▼  (Spring Security validates JWT)
 AiChatController.java
