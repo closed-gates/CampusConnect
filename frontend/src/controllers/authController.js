@@ -17,6 +17,7 @@ import {
   storeAuth,
   clearAuth,
 } from '../models/authModel.js'
+import apiClient from '../services/apiClient.js'
 
 const AUTH_API = '/api/auth'
 
@@ -56,13 +57,9 @@ export function useLoginController() {
 
     setLoading(true)
     try {
-      const res = await fetch(`${AUTH_API}/login`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          identifier: formData.identifier.trim(),
-          password:   formData.password,
-        }),
+      const res = await apiClient.post(`${AUTH_API}/login`, {
+        identifier: formData.identifier.trim(),
+        password:   formData.password,
       })
 
       const data = await res.json()
@@ -130,16 +127,12 @@ export function useSignupController() {
 
     setLoading(true)
     try {
-      const res = await fetch(`${AUTH_API}/register`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          fullName: formData.fullName.trim(),
-          userId:   formData.userId.trim().toUpperCase(),
-          email:    formData.email.trim().toLowerCase(),
-          password: formData.password,
-          role:     formData.role,
-        }),
+      const res = await apiClient.post(`${AUTH_API}/register`, {
+        fullName: formData.fullName.trim(),
+        userId:   formData.userId.trim().toUpperCase(),
+        email:    formData.email.trim().toLowerCase(),
+        password: formData.password,
+        role:     formData.role,
       })
 
       const data = await res.json()
@@ -181,10 +174,7 @@ export function createLogoutHandler(navigate) {
     try {
       const token = localStorage.getItem('cc_token')
       if (token) {
-        await fetch('/api/auth/logout', {
-          method:  'POST',
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await apiClient.post('/api/auth/logout', {})
       }
     } catch {
       // Ignore network errors on logout — client-side clear is sufficient
