@@ -15,10 +15,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -139,28 +141,104 @@ public class VideoLectureService {
         catalogStore.persistSnapshot();
     }
 
-    public void streamLecture(Long id, HttpServletResponse response) throws IOException {
+    public void streamLecture(Long id, HttpServletRequest request, HttpServletResponse response) throws IOException {
         VideoLecture lecture = requireLecture(id);
         if (!VideoLecture.SOURCE_UPLOAD.equals(lecture.getSourceType()) || lecture.getStoredFilename() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This lecture is an embed and has no uploaded file.");
         }
         Path file = storageDir.resolve(lecture.getStoredFilename()).normalize();
         if (!file.startsWith(storageDir) || !Files.exists(file)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Video file was not found on disk.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Video file was not found on disk. Uploaded files do not survive Render restarts; re-upload the lecture or use a YouTube/Vimeo embed.");
         }
         String contentType = lecture.getContentType();
         if (contentType == null || contentType.isBlank() || !contentType.contains("/")) {
             contentType = "video/mp4";
         }
+        writeRangedVideo(file, contentType, request, response);
+    }
+
+    private void writeRangedVideo(Path file, String contentType, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         long length = Files.size(file);
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType(contentType);
         response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
-        response.setContentLengthLong(length);
-        try (InputStream in = Files.newInputStream(file)) {
-            in.transferTo(response.getOutputStream());
+        response.setContentType(contentType);
+
+        String rangeHeader = request.getHeader(HttpHeaders.RANGE);
+        if (rangeHeader == null || rangeHeader.isBlank()) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentLengthLong(length);
+            Files.copy(file, response.getOutputStream());
             response.getOutputStream().flush();
+            return;
         }
+
+        String spec = rangeHeader.trim();
+        if (!spec.startsWith("bytes=")) {
+            response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+            response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes */" + length);
+            return;
+        }
+        spec = spec.substring(6);
+        int comma = spec.indexOf(',');
+        if (comma >= 0) {
+            spec = spec.substring(0, comma);
+        }
+        int dash = spec.indexOf('-');
+        if (dash < 0) {
+            response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+            response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes */" + length);
+            return;
+        }
+
+        long start;
+        long end = length - 1;
+        try {
+            String startPart = spec.substring(0, dash).trim();
+            String endPart = spec.substring(dash + 1).trim();
+            if (startPart.isEmpty()) {
+                long suffix = Long.parseLong(endPart);
+                start = Math.max(0, length - suffix);
+            } else {
+                start = Long.parseLong(startPart);
+                if (!endPart.isEmpty()) {
+                    end = Long.parseLong(endPart);
+                }
+            }
+        } catch (NumberFormatException ex) {
+            response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+            response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes */" + length);
+            return;
+        }
+
+        if (start < 0 || start >= length || end < start) {
+            response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+            response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes */" + length);
+            return;
+        }
+        end = Math.min(end, length - 1);
+        long contentLength = end - start + 1;
+        response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+        response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + length);
+        response.setContentLengthLong(contentLength);
+        try (InputStream in = Files.newInputStream(file)) {
+            in.skipNBytes(start);
+            copyLimited(in, response.getOutputStream(), contentLength);
+        }
+    }
+
+    private static void copyLimited(InputStream in, OutputStream out, long count) throws IOException {
+        byte[] buffer = new byte[8192];
+        long remaining = count;
+        while (remaining > 0) {
+            int read = in.read(buffer, 0, (int) Math.min(buffer.length, remaining));
+            if (read < 0) {
+                break;
+            }
+            out.write(buffer, 0, read);
+            remaining -= read;
+        }
+        out.flush();
     }
 
     @Transactional

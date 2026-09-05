@@ -45,16 +45,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain         filterChain
     ) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        final String token = resolveToken(request);
 
-        // No Bearer token → skip authentication (publicly accessible endpoints
-        // will pass through; protected ones will be rejected by SecurityConfig)
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        // No token → skip authentication (public endpoints pass through;
+        // protected ones are rejected by SecurityConfig)
+        if (token == null || token.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        final String token = authHeader.substring(7); // strip "Bearer "
 
         if (!jwtService.isTokenValid(token)) {
             filterChain.doFilter(request, response);
@@ -71,5 +69,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * HTML {@code <video src>} cannot send Authorization headers, so uploaded
+     * lecture streams also accept {@code ?access_token=} on the stream path only.
+     */
+    private static String resolveToken(HttpServletRequest request) {
+        final String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        String path = request.getRequestURI();
+        if (path != null && path.contains("/api/video-lectures/") && path.endsWith("/stream")) {
+            String queryToken = request.getParameter("access_token");
+            if (queryToken != null && !queryToken.isBlank()) {
+                return queryToken;
+            }
+        }
+        return null;
     }
 }

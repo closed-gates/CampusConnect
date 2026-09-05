@@ -5,6 +5,7 @@
  */
 
 import apiClient from './apiClient.js'
+import { getStoredToken } from '../models/authModel.js'
 
 const API_BASE = '/api/video-lectures'
 
@@ -36,15 +37,15 @@ export async function deleteLecture(id) {
   return true
 }
 
-export async function getStreamObjectUrl(id) {
-  const res = await apiClient.get(`${API_BASE}/${id}/stream`)
-  const contentType = res.headers.get('content-type') || ''
-  if (!res.ok || contentType.includes('json') || contentType.includes('text/html')) {
-    throw new Error('Could not load the uploaded video file.')
-  }
-  const buffer = await res.arrayBuffer()
-  const blob = new Blob([buffer], { type: contentType.startsWith('video/') ? contentType : 'video/mp4' })
-  return URL.createObjectURL(blob)
+/**
+ * Direct URL for {@code <video src>}. The browser streams with Range requests
+ * and sends the JWT as access_token because media elements cannot set Authorization.
+ */
+export function getAuthenticatedStreamUrl(id) {
+  const origin = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+  const token = getStoredToken()
+  const query = token ? `?access_token=${encodeURIComponent(token)}` : ''
+  return `${origin}${API_BASE}/${id}/stream${query}`
 }
 
 export async function saveProgress(id, positionSeconds, durationSeconds) {

@@ -61,7 +61,13 @@ public class CorsConfig {
         ));
 
         // Expose the Authorization header to the frontend for JWT
-        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setExposedHeaders(List.of(
+                "Authorization",
+                "Accept-Ranges",
+                "Content-Range",
+                "Content-Length",
+                "Content-Type"
+        ));
 
         // Allow credentials (needed for JWT Authorization header)
         configuration.setAllowCredentials(true);
