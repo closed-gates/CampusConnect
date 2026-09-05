@@ -97,15 +97,14 @@ export function useChatController(channel, activeSubId, currentUser = getCurrent
 
     localFallbackRef.current = false
 
-    // 30-second timeout: Render free-tier cold-starts can take up to 30s.
-    // Only after that do we fall back to local mode silently.
+    // 4-second timeout: if not connected, fall back to local mode silently
     connTimeoutRef.current = setTimeout(() => {
       if (!stompClientRef.current?.connected) {
         localFallbackRef.current = true
         setConnected(false)
         setError(null) // silent fallback — no scary error for the user
       }
-    }, 30000)
+    }, 4000)
 
     const topic       = buildTopicDestination(courseId, activeSubId)
     const histTopic   = buildHistoryTopicDestination(courseId, activeSubId)

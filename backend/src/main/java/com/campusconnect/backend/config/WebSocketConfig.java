@@ -11,22 +11,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  *
  * MVC Role: Infrastructure Config
  *
- * Real-time messages are pushed via:
- *   /topic/seats/{sectionId}          ← seat-count updates per section
- *   /topic/course.{id}.{sub}          ← course chat messages per sub-channel
- *   /topic/dm.{roomId}                ← direct messages between two users
- *   /topic/dm.{roomId}.history        ← DM history on room join
+ * Real-time seat count updates are pushed via:
+ *   /topic/seats/{sectionId}  ← subscribed by frontend per visible section
  *
  * Registration events flow:
  *   1. Student clicks Register (POST /api/registration/register)
  *   2. RegistrationService commits seat change to DB
  *   3. SimpMessagingTemplate.convertAndSend("/topic/seats/{id}", payload)
  *   4. All subscribed frontend clients update the seat counter immediately
- *
- * Direct Message flow:
- *   1. Client A publishes to /app/dm.send
- *   2. DirectMessageController persists → stamps → broadcasts to /topic/dm.{roomId}
- *   3. Client B (subscribed to /topic/dm.{roomId}) receives the message live
  *
  * SockJS fallback ensures compatibility with browsers/networks that do
  * not support raw WebSocket connections.
@@ -37,8 +29,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // Enable simple in-memory broker for /topic (broadcast) and /queue (user-specific)
-        registry.enableSimpleBroker("/topic", "/queue");
+        // Enable a simple in-memory topic broker for seat-update broadcasts
+        registry.enableSimpleBroker("/topic");
         // Application-level destinations are prefixed with /app
         registry.setApplicationDestinationPrefixes("/app");
     }
