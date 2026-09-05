@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Sidebar from '../components/Sidebar.jsx'
 import { useCoursesController, getAvailability } from '../../controllers/coursesController.js'
 import { YEARS, SEMESTERS } from '../../models/coursesModel.js'
+import './CoursesView.css'
 
 /**
  * CoursesView – View layer for the Courses Catalog page.
@@ -25,11 +26,12 @@ export default function CoursesView() {
     <div className="dashboard-wrapper">
       <Sidebar activeItem="courses" />
 
-      <main className="dashboard-main" aria-label="Course catalog">
+      <main className="dashboard-main course-catalog-main" aria-label="Course catalog">
 
         {/* Header */}
         <div className="courses-page-header">
           <div>
+            <span className="courses-eyebrow">Academic resources</span>
             <h1 className="dashboard-greeting">Course Catalog 📚</h1>
             <p className="dashboard-date">Browse {totalCourses} courses across {FACULTIES.length} departments</p>
           </div>
@@ -168,7 +170,7 @@ function CourseCard({ course, faculty }) {
           </div>
 
           {course.prereqs && course.prereqs !== 'None' && (
-            <p style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
+            <p className="course-prerequisites">
               Pre: {course.prereqs}
             </p>
           )}
@@ -258,7 +260,7 @@ function CourseCard({ course, faculty }) {
               {course.desc && (
                 <div className="course-details-desc" style={{ marginTop: '12px' }}>
                   <span className="course-details-label">Description</span>
-                  <p style={{ fontSize: '13px', lineHeight: 1.6, color: '#374151' }}>{course.desc}</p>
+                  <p>{course.desc}</p>
                 </div>
               )}
 

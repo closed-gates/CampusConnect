@@ -1,0 +1,112 @@
+/* Match the faculty directory while keeping catalog styles local. */
+:root[data-theme='dark'] .course-catalog-main {
+  --color-teal-dark: #99f6e4;
+  --color-teal-light: #123c38;
+}
+.course-catalog-main .courses-page-header {
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  background: linear-gradient(125deg, #0f2b3d 0%, #116b66 72%, #1a9882 100%);
+  box-shadow: var(--shadow-md);
+}
+.courses-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: #99f6e4;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.course-catalog-main .dashboard-greeting {
+  color: #fff;
+  font-size: clamp(26px, 3vw, 38px);
+  letter-spacing: -.04em;
+}
+.course-catalog-main .dashboard-date { color: #d9f5ef; line-height: 1.6; }
+.course-catalog-main .view-toggle,
+.course-catalog-main .courses-search-bar,
+.course-catalog-main .filter-pill,
+:root .course-catalog-main .course-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.course-catalog-main .courses-filter-row {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+.course-catalog-main .filter-select { background-color: var(--color-bg); }
+.course-catalog-main .courses-search-input { min-width: 0; }
+.course-catalog-main .courses-search-input::placeholder,
+.course-catalog-main .search-clear-btn { color: var(--color-text-sub); opacity: 1; }
+.course-catalog-main .filter-pill.active,
+.course-catalog-main .filter-pill:hover,
+.course-catalog-main .view-toggle-btn.active,
+:root .course-catalog-main .course-enroll-btn,
+:root .course-catalog-main .course-bookmark-btn.bookmarked {
+  color: var(--color-teal-dark);
+  background: var(--color-teal-light);
+  border-color: var(--color-teal-dark);
+  box-shadow: none;
+}
+:root .course-catalog-main .course-enroll-btn { font-weight: 800; border-radius: 8px; }
+:root .course-catalog-main .course-enroll-btn:hover {
+  background: var(--color-teal-light);
+  opacity: 1;
+  filter: brightness(.97);
+}
+.course-catalog-main .faculty-section-header {
+  padding: 0 0 10px;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  background: transparent;
+}
+.course-catalog-main .faculty-name { font-size: 20px; }
+:root .course-catalog-main .course-card { border-radius: 15px; }
+:root .course-catalog-main .course-card:hover {
+  border-color: color-mix(in srgb, var(--color-teal) 45%, var(--color-border));
+  box-shadow: var(--shadow-md);
+}
+:root .course-catalog-main .course-card-header {
+  background: var(--color-bg);
+  border-top: 0;
+  border-bottom: 1px solid var(--color-border);
+  padding-top: 18px;
+}
+:root .course-catalog-main .course-card-code,
+:root .course-catalog-main .course-bookmark-btn {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+.course-prerequisites { font-size: 12px; color: var(--color-text-sub); margin-top: 6px; }
+:root .course-catalog-main .course-details-header {
+  background: linear-gradient(125deg, #0f2b3d, #116b66);
+}
+.course-catalog-main .course-details-code { color: #ccfbf1; opacity: 1; }
+.course-catalog-main .course-details-note { background: var(--color-bg); }
+.course-catalog-main .course-details-note strong { color: var(--color-text); }
+.course-catalog-main .courses-empty-state {
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+.course-catalog-main :is(button, select):focus-visible {
+  outline: 3px solid var(--color-teal-dark);
+  outline-offset: 3px;
+}
+.course-catalog-main .course-list .course-card-header { width: 150px; }
+@media (max-width: 720px) {
+  .course-catalog-main .courses-page-header { padding: 24px; flex-direction: column; align-items: flex-start; }
+  .course-catalog-main .filter-selects { flex-wrap: wrap; }
+  .course-catalog-main .course-list .course-card { flex-direction: column; }
+  .course-catalog-main .course-list .course-card-header { width: auto; }
+}
