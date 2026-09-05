@@ -6,7 +6,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,6 +32,8 @@ import java.util.Map;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // ─── Custom exceptions ──────────────────────────────────────────────
 
@@ -91,6 +96,20 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, "The requested resource was not found.");
     }
 
+    /**
+     * Preserve @ResponseStatus / ResponseStatusException codes (400, 404, …)
+     * instead of collapsing them into a generic 500.
+     */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
+        HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+        if (status == null) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        String message = ex.getReason() != null ? ex.getReason() : status.getReasonPhrase();
+        return buildErrorResponse(status, message);
+    }
+
     // ─── Catch-all ──────────────────────────────────────────────────────
 
     /**
@@ -99,6 +118,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        log.error("Unhandled exception", ex);
         return buildErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "An unexpected error occurred. Please try again later."
