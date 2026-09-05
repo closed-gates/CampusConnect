@@ -214,11 +214,12 @@ public class RegistrationService {
 
     /**
      * Returns the advising window status for a student.
-     * Priority is determined by completedCredits (descending).
+     * Priority metadata is determined by completedCredits (descending), while
+     * the administrator's global portal toggle is the authoritative access gate.
      * Tier thresholds:
-     *   Tier 1 ≥ 60 cr → window open (highest priority)
-     *   Tier 2 30–59   → window open
-     *   Tier 3 < 30    → window closed (demo: not yet reached)
+     *   Tier 1 ≥ 60 cr (highest priority)
+     *   Tier 2 30–59 cr
+     *   Tier 3 < 30 cr
      */
     public Map<String, Object> getAdvisingWindow(String studentId) {
         StudentProfile student = studentRepo.findById(studentId).orElse(null);
@@ -241,16 +242,14 @@ public class RegistrationService {
         }
 
         int tier;
-        boolean open;
-        String opensAt;
         int credits = student.getCompletedCredits();
 
         if (credits >= 60) {
-            tier = 1; open = true;  opensAt = "Now open";
+            tier = 1;
         } else if (credits >= 30) {
-            tier = 2; open = true;  opensAt = "Now open";
+            tier = 2;
         } else {
-            tier = 3; open = false; opensAt = "Day 3 of advising period";
+            tier = 3;
         }
 
         com.campusconnect.backend.model.AdvisingPortalStatus portal = portalStatusRepo.findById(1L).orElse(null);
@@ -258,17 +257,18 @@ public class RegistrationService {
         String portalMessage = portal != null && portal.getMessage() != null ? portal.getMessage() : "";
         result.put("portalOpen", portalOpen);
         result.put("portalMessage", portalMessage);
-        result.put("open",        open && portalOpen);
+        // Opening the portal grants advising access to every student. The tier is
+        // still returned for display/ranking purposes, but must not override the
+        // administrator's explicit portal state.
+        result.put("open",        portalOpen);
         result.put("tier",        tier);
         result.put("rank",        rank);
         result.put("totalStudents", totalStudents);
-        result.put("opensAt",     portalOpen ? opensAt : "Awaiting administrator reopening");
+        result.put("opensAt",     portalOpen ? "Now open" : "Awaiting administrator reopening");
         result.put("completedCredits", credits);
         result.put("message", !portalOpen
                 ? (portalMessage.isBlank() ? "The advising portal is currently closed by the administrator." : portalMessage)
-                : open
-                ? "Your advising window is open. You may register for courses."
-                : "Your advising window opens on Day 3. High-credit students register first.");
+                : "The advising portal is open. You may register for courses.");
         return result;
     }
 

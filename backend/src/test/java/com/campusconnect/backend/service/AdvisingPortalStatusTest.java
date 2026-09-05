@@ -53,11 +53,12 @@ class AdvisingPortalStatusTest {
             .containsEntry("open", false).containsEntry("message", "Reopens Tuesday");
     }
 
-    @Test void openingPortalPreservesStudentPriorityWindow() {
+    @Test void openingPortalGrantsAccessRegardlessOfStudentPriorityTier() {
         student.setCompletedCredits(12);
         admin.setAdvisingPortalStatus(true, "admin", "Priority registration open");
         assertThat(registration.getAdvisingWindow("student"))
-            .containsEntry("portalOpen", true).containsEntry("open", false).containsEntry("tier", 3);
+            .containsEntry("portalOpen", true).containsEntry("open", true).containsEntry("tier", 3)
+            .containsEntry("opensAt", "Now open");
     }
 
     @Test void closedPortalBlocksRegistrationBeforeAnySeatMutation() {
