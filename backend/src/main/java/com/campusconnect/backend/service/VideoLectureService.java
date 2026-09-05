@@ -73,6 +73,7 @@ public class VideoLectureService {
     @Transactional(readOnly = true)
     public List<VideoLectureDTO> listLectures(String userId) {
         Map<Long, VideoWatchProgress> progressByLecture = progressRepo.findByUserId(userId).stream()
+                .filter(progress -> progress.getLectureId() != null)
                 .collect(Collectors.toMap(VideoWatchProgress::getLectureId, p -> p, (a, b) -> a));
         return lectureRepo.findAllByOrderByCreatedAtDesc().stream()
                 .map(lecture -> toDto(lecture, progressByLecture.get(lecture.getId())))
