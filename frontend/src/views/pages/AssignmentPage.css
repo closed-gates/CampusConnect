@@ -996,3 +996,63 @@
 .asgn-course-option[aria-pressed='true'] { box-shadow: inset 4px 0 var(--color-teal); font-weight: 700; }
 .asgn-course-option:focus-visible { outline: 2px solid var(--color-teal); outline-offset: -3px; }
 .asgn-selected-course { color: var(--color-text); font-size: 13px; line-height: 1.5; }
+
+/* ── Card delete button (faculty/admin) ─────────────────────── */
+.asgn-card-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin-top: 8px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.asgn-card-delete-btn:hover {
+  background: rgba(185, 28, 28, 0.08);
+  border-color: rgba(185, 28, 28, 0.3);
+  color: #b91c1c;
+}
+
+.asgn-card-delete-btn:active {
+  transform: scale(0.93);
+}
+
+/* ── Delete modal header ────────────────────────────────────── */
+.asgn-delete-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 28px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.asgn-delete-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--color-text);
+}
+
+.asgn-delete-modal-icon {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.asgn-delete-msg {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-sub);
+  margin: 0;
+}
+
+.asgn-delete-msg strong {
+  color: var(--color-text);
+}

@@ -1,17 +1,13 @@
-/**
+﻿/**
  * AssignmentView.jsx – View layer for the Assignment Submission feature.
  *
  * MVC Role: View
  * Renders the assignment list, detail, file upload, and grading UI.
  * All state and logic comes from useAssignmentController().
- *
- * Layout: Google Classroom-style
- *   - Left: Assignment detail (title, description, attachment)
- *   - Right: "Your Work" panel (student) or "Submissions" (teacher)
  */
 
-import Sidebar from '../components/Sidebar'
-import { useAssignmentController } from '../../controllers/assignmentController'
+import Sidebar from "../components/Sidebar"
+import { useAssignmentController } from "../../controllers/assignmentController"
 import {
   STATUS_CONFIG,
   getDeadlineStatus,
@@ -21,41 +17,29 @@ import {
   getCourseConfig,
   deriveStatus,
   formatDate,
-} from '../../models/assignmentModel'
-import * as assignmentService from '../../services/assignmentService'
-import './AssignmentPage.css'
+} from "../../models/assignmentModel"
+import * as assignmentService from "../../services/assignmentService"
+import "./AssignmentPage.css"
 
 export default function AssignmentView() {
   const ctrl = useAssignmentController()
-
   return (
     <div className="dashboard-wrapper">
       <Sidebar activeItem="assignments" />
       <main className="dashboard-main">
-        {/* ── Toast notification ─────────────────────────── */}
         {ctrl.toast && (
-          <div className={`asgn-toast ${ctrl.toast.type}`}>
-            {ctrl.toast.message}
-          </div>
+          <div className={`asgn-toast ${ctrl.toast.type}`}>{ctrl.toast.message}</div>
         )}
-
-        {ctrl.selectedAssignment
-          ? <AssignmentDetail ctrl={ctrl} />
-          : <AssignmentList   ctrl={ctrl} />
-        }
-
-        {/* ── Teacher: Create Assignment Modal ───────────── */}
+        {ctrl.selectedAssignment ? <AssignmentDetail ctrl={ctrl} /> : <AssignmentList ctrl={ctrl} />}
         {ctrl.showCreateForm && <CreateAssignmentModal ctrl={ctrl} />}
-        {ctrl.deleteTarget && <DeleteAssignmentModal ctrl={ctrl} />}
-        {ctrl.preview && <SubmissionPreviewModal ctrl={ctrl} />}
+        {ctrl.deleteTarget  && <DeleteAssignmentModal  ctrl={ctrl} />}
+        {ctrl.preview       && <SubmissionPreviewModal ctrl={ctrl} />}
       </main>
     </div>
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   Assignment List
-   ══════════════════════════════════════════════════════════════ */
+/* ══ Assignment List ══════════════════════════════════════════ */
 function AssignmentList({ ctrl }) {
   return (
     <>
@@ -64,51 +48,40 @@ function AssignmentList({ ctrl }) {
           <h1 className="asgn-page-title">Assignments</h1>
           <p className="asgn-page-subtitle">
             {ctrl.canManageAssignments
-              ? 'Manage and create assignments for your courses'
-              : 'View and submit your course assignments'}
+              ? "Manage and create assignments for your courses"
+              : "View and submit your course assignments"}
           </p>
         </div>
         {ctrl.canManageAssignments && (
-          <button
-            className="asgn-create-btn"
-            onClick={() => ctrl.setShowCreateForm(true)}
-            id="asgn-create-btn"
-          >
-            <PlusIcon />
-            Create Assignment
+          <button className="asgn-create-btn" onClick={() => ctrl.setShowCreateForm(true)} id="asgn-create-btn">
+            <PlusIcon /> Create Assignment
           </button>
         )}
       </div>
 
       <div className="asgn-search-row">
         <input className="asgn-search" type="search" aria-label="Search assignments"
-          placeholder="Search by assignment, course, or faculty…" value={ctrl.searchQuery}
+          placeholder="Search by assignment, course, or faculty..." value={ctrl.searchQuery}
           onChange={e => ctrl.setSearchQuery(e.target.value)} />
-        {ctrl.searchQuery && <button className="asgn-create-cancel-btn" onClick={() => ctrl.setSearchQuery('')}>Clear search</button>}
+        {ctrl.searchQuery && (
+          <button className="asgn-create-cancel-btn" onClick={() => ctrl.setSearchQuery("")}>Clear search</button>
+        )}
       </div>
 
       {ctrl.overdueCount > 0 && (
-        <button
-          className="asgn-overdue-toggle"
-          onClick={() => ctrl.setShowOverdue(!ctrl.showOverdue)}
-          id="asgn-overdue-toggle"
-        >
+        <button className="asgn-overdue-toggle" onClick={() => ctrl.setShowOverdue(!ctrl.showOverdue)} id="asgn-overdue-toggle">
           {ctrl.showOverdue
-            ? 'Hide past-deadline assignments'
+            ? "Hide past-deadline assignments"
             : `Show past-deadline assignments (${ctrl.overdueCount})`}
         </button>
       )}
 
-      {/* Loading skeletons */}
       {ctrl.loading && (
         <div className="asgn-list">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="asgn-skeleton asgn-skeleton-card" />
-          ))}
+          {[1,2,3,4].map(i => <div key={i} className="asgn-skeleton asgn-skeleton-card" />)}
         </div>
       )}
 
-      {/* Error */}
       {ctrl.error && !ctrl.loading && (
         <div className="asgn-empty">
           <div className="asgn-empty-icon">⚠️</div>
@@ -116,20 +89,18 @@ function AssignmentList({ ctrl }) {
         </div>
       )}
 
-      {/* Empty state */}
       {!ctrl.loading && !ctrl.error && ctrl.assignments.length === 0 && (
         <div className="asgn-empty">
           <div className="asgn-empty-icon">📋</div>
-          <div className="asgn-empty-text">{ctrl.searchQuery ? 'No assignments match your search' : 'No assignments yet'}</div>
+          <div className="asgn-empty-text">{ctrl.searchQuery ? "No assignments match your search" : "No assignments yet"}</div>
           <div className="asgn-empty-hint">
             {ctrl.canManageAssignments
-              ? 'Create your first assignment using the button above.'
-              : 'Your teachers haven\'t posted any assignments yet.'}
+              ? "Create your first assignment using the button above."
+              : "Your teachers haven't posted any assignments yet."}
           </div>
         </div>
       )}
 
-      {/* Assignment cards */}
       {!ctrl.loading && !ctrl.error && ctrl.assignments.length > 0 && (
         <div className="asgn-list">
           {ctrl.assignments.map(a => (
@@ -137,6 +108,8 @@ function AssignmentList({ ctrl }) {
               key={a.id}
               assignment={a}
               onClick={() => ctrl.selectAssignment(a)}
+              canManageAssignments={ctrl.canManageAssignments}
+              onDelete={e => { e.stopPropagation(); ctrl.setDeleteTarget(a) }}
             />
           ))}
         </div>
@@ -145,8 +118,8 @@ function AssignmentList({ ctrl }) {
   )
 }
 
-/* ── Assignment Card ───────────────────────────────────────── */
-function AssignmentCard({ assignment, onClick }) {
+/* ── Assignment Card ─────────────────────────────────────────── */
+function AssignmentCard({ assignment, onClick, canManageAssignments, onDelete }) {
   const config   = getCourseConfig(assignment.courseCode)
   const deadline = getDeadlineStatus(assignment.deadline)
 
@@ -157,20 +130,12 @@ function AssignmentCard({ assignment, onClick }) {
       id={`asgn-card-${assignment.id}`}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+      onKeyDown={e => e.key === "Enter" && onClick()}
     >
-      <div
-        className="asgn-card-icon"
-        style={{ background: config.bg }}
-      >
-        {config.icon}
-      </div>
+      <div className="asgn-card-icon" style={{ background: config.bg }}>{config.icon}</div>
 
       <div className="asgn-card-body">
-        <div
-          className="asgn-card-course"
-          style={{ color: config.accent }}
-        >
+        <div className="asgn-card-course" style={{ color: config.accent }}>
           {assignment.courseCode} · {assignment.courseName}
         </div>
         <div className="asgn-card-title">{assignment.title}</div>
@@ -181,122 +146,105 @@ function AssignmentCard({ assignment, onClick }) {
       </div>
 
       <div className="asgn-card-right">
-        <div className={`asgn-deadline-badge ${
-          deadline.overdue ? 'overdue' : deadline.urgent ? 'urgent' : 'normal'
-        }`}>
+        <div className={`asgn-deadline-badge ${deadline.overdue ? "overdue" : deadline.urgent ? "urgent" : "normal"}`}>
           ⏰ {deadline.label}
         </div>
+        {canManageAssignments && (
+          <button
+            className="asgn-card-delete-btn"
+            onClick={onDelete}
+            title="Delete assignment"
+            id={`asgn-delete-${assignment.id}`}
+            aria-label={`Delete: ${assignment.title}`}
+          >
+            <TrashIcon />
+          </button>
+        )}
       </div>
     </div>
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   Assignment Detail (Google Classroom Layout)
-   ══════════════════════════════════════════════════════════════ */
+/* ══ Assignment Detail ════════════════════════════════════════ */
 function AssignmentDetail({ ctrl }) {
-  const a        = ctrl.selectedAssignment
-  const config   = getCourseConfig(a.courseCode)
-  const deadline = getDeadlineStatus(a.deadline)
-  const status   = deriveStatus(ctrl.submission, a.deadline)
+  const a         = ctrl.selectedAssignment
+  const config    = getCourseConfig(a.courseCode)
+  const deadline  = getDeadlineStatus(a.deadline)
+  const status    = deriveStatus(ctrl.submission, a.deadline)
   const statusCfg = STATUS_CONFIG[status]
 
-  if (ctrl.detailLoading) {
-    return <div className="asgn-skeleton asgn-skeleton-detail" />
-  }
+  if (ctrl.detailLoading) return <div className="asgn-skeleton asgn-skeleton-detail" />
 
   return (
     <>
-      <button
-        className="asgn-back-btn"
-        onClick={ctrl.backToList}
-        id="asgn-back-btn"
-      >
-        <BackIcon />
-        All Assignments
+      <button className="asgn-back-btn" onClick={ctrl.backToList} id="asgn-back-btn">
+        <BackIcon /> All Assignments
       </button>
 
       <div className="asgn-detail-wrapper">
-        {/* ── Left: Assignment Info ───────────────────────── */}
+        {/* Left: Assignment info */}
         <div className="asgn-detail-main">
           <div className="asgn-detail-header">
-            <div
-              className="asgn-detail-icon"
-              style={{ background: config.bg }}
-            >
-              {config.icon}
-            </div>
+            <div className="asgn-detail-icon" style={{ background: config.bg }}>{config.icon}</div>
             <div>
               <h1 className="asgn-detail-title">{a.title}</h1>
-              <div className="asgn-detail-teacher">
-                {a.createdBy} · {formatDate(a.createdAt)}
-                {a.createdAt !== a.deadline && (
-                  <span style={{ marginLeft: 6, opacity: 0.7 }}>
-                    (Edited {formatDate(a.createdAt)})
-                  </span>
-                )}
-              </div>
+              <div className="asgn-detail-teacher">{a.createdBy} · {formatDate(a.createdAt)}</div>
               <div className="asgn-detail-meta-row">
-                <span className={`asgn-deadline-badge ${
-                  deadline.overdue ? 'overdue' : deadline.urgent ? 'urgent' : 'normal'
-                }`}>
+                <span className={`asgn-deadline-badge ${deadline.overdue ? "overdue" : deadline.urgent ? "urgent" : "normal"}`}>
                   Due {formatDeadline(a.deadline)}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Description */}
-          {a.description && (
-            <div className="asgn-detail-description">
-              {a.description}
-            </div>
-          )}
+          {a.description && <div className="asgn-detail-description">{a.description}</div>}
 
-          {/* Attachment */}
           {a.hasAttachment && a.attachmentName && (
             <button
               type="button"
               onClick={() => ctrl.handleDownload(assignmentService.getAttachmentUrl(a.id), a.attachmentName)}
               className="asgn-attachment"
             >
-              <span className="asgn-attachment-icon">
-                {getFileIcon(a.attachmentType)}
-              </span>
+              <span className="asgn-attachment-icon">{getFileIcon(a.attachmentType)}</span>
               <div className="asgn-attachment-info">
                 <div className="asgn-attachment-name">{a.attachmentName}</div>
                 <div className="asgn-attachment-type">
-                  {a.attachmentType ? a.attachmentType.split('/').pop().toUpperCase() : 'FILE'}
+                  {a.attachmentType ? a.attachmentType.split("/").pop().toUpperCase() : "FILE"}
                 </div>
               </div>
               <span className="asgn-attachment-download">Download ↓</span>
             </button>
           )}
 
-          {/* Teacher: Submissions table */}
-          {ctrl.canViewSubmissions && (
-            <SubmissionsTable ctrl={ctrl} />
-          )}
+          {ctrl.canViewSubmissions && <SubmissionsTable ctrl={ctrl} />}
         </div>
 
-        {/* ── Right: "Your Work" Panel (Student) ─────────── */}
+        {/* Right: Manage actions for faculty/admin */}
         {ctrl.canManageAssignments && (
           <div className="asgn-manage-actions">
-            <button className="asgn-turnin-btn secondary" onClick={() => ctrl.openEditAssignment(a)}>Edit assignment</button>
-            <button className="asgn-turnin-btn asgn-danger-btn" onClick={() => ctrl.setDeleteTarget(a)}>Delete assignment</button>
+            <button
+              className="asgn-turnin-btn secondary"
+              onClick={() => ctrl.openEditAssignment(a)}
+              id="asgn-edit-btn"
+            >
+              ✏️ Edit assignment
+            </button>
+            <button
+              className="asgn-turnin-btn asgn-danger-btn"
+              onClick={() => ctrl.setDeleteTarget(a)}
+              id="asgn-detail-delete-btn"
+            >
+              <TrashIcon /> Delete assignment
+            </button>
           </div>
         )}
 
+        {/* Right: Student "Your Work" panel */}
         {ctrl.canSubmit && (
           <div className="asgn-work-panel">
             <div className="asgn-work-header">
               <span className="asgn-work-title">Your work</span>
-              <span
-                className="asgn-work-status"
-                style={{ color: statusCfg.color }}
-              >
-                {statusCfg.label}
-              </span>
+              <span className="asgn-work-status" style={{ color: statusCfg.color }}>{statusCfg.label}</span>
             </div>
             <div className="asgn-work-body">
               <StudentWorkPanel ctrl={ctrl} deadline={deadline} />
@@ -308,185 +256,111 @@ function AssignmentDetail({ ctrl }) {
   )
 }
 
-/* ── Student "Your Work" Panel Content ─────────────────────── */
+/* ── Student Work Panel ──────────────────────────────────────── */
 function StudentWorkPanel({ ctrl, deadline }) {
-  const isTurnedIn = ctrl.submission && ctrl.submission.status === 'TURNED_IN'
+  const isTurnedIn = ctrl.submission && ctrl.submission.status === "TURNED_IN"
   const isOverdue  = deadline.overdue
 
-  // Turned in state
   if (isTurnedIn && ctrl.submission) {
     return (
       <>
         {ctrl.submission.fileName && (
           <div className="asgn-submitted-file">
-            <span className="asgn-file-icon">
-              {getFileIcon(ctrl.submission.fileType)}
-            </span>
+            <span className="asgn-file-icon">{getFileIcon(ctrl.submission.fileType)}</span>
             <div className="asgn-file-info">
               <div className="asgn-file-name">{ctrl.submission.fileName}</div>
-              <div className="asgn-file-size">{ctrl.submission.fileType?.split('/').pop().toUpperCase()}</div>
-              <button className="asgn-download-link" onClick={() => ctrl.handlePreview(ctrl.submission)}>View submitted file</button>
+              <div className="asgn-file-size">{ctrl.submission.fileType?.split("/").pop().toUpperCase()}</div>
+              <button className="asgn-download-link" onClick={() => ctrl.handlePreview(ctrl.submission)}>
+                View submitted file
+              </button>
             </div>
           </div>
         )}
-
-        <button
-          className="asgn-turnin-btn secondary"
-          onClick={ctrl.handleUnsubmit}
-          disabled={ctrl.unsubmitting || isOverdue}
-          id="asgn-unsubmit-btn"
-        >
-          {ctrl.unsubmitting ? 'Unsubmitting...' : 'Unsubmit'}
+        <button className="asgn-turnin-btn secondary" onClick={ctrl.handleUnsubmit}
+          disabled={ctrl.unsubmitting || isOverdue} id="asgn-unsubmit-btn">
+          {ctrl.unsubmitting ? "Unsubmitting..." : "Unsubmit"}
         </button>
-
-        {isOverdue && (
-          <div className="asgn-deadline-warning">
-            Your teacher is not accepting work at this time
-          </div>
-        )}
+        {isOverdue && <div className="asgn-deadline-warning">Your teacher is not accepting work at this time</div>}
       </>
     )
   }
 
-  // Default: Upload + Turn In state
   return (
     <>
-      {/* File drop zone */}
       <div
-        className={`asgn-dropzone ${ctrl.dragActive ? 'drag-active' : ''} ${isOverdue ? 'disabled' : ''}`}
-        onDrop={ctrl.handleDrop}
-        onDragOver={ctrl.handleDragOver}
-        onDragLeave={ctrl.handleDragLeave}
+        className={`asgn-dropzone ${ctrl.dragActive ? "drag-active" : ""} ${isOverdue ? "disabled" : ""}`}
+        onDrop={ctrl.handleDrop} onDragOver={ctrl.handleDragOver} onDragLeave={ctrl.handleDragLeave}
       >
         <span className="asgn-dropzone-icon">📁</span>
-        <div className="asgn-dropzone-text">
-          Drag your file here or <strong>browse</strong>
-        </div>
-        <div className="asgn-dropzone-hint">
-          PDF, DOCX, ZIP, PY, Java, images — up to 10 MB
-        </div>
-        {!isOverdue && (
-          <input
-            type="file"
-            onChange={(e) => ctrl.handleFileSelect(e.target.files[0])}
-            id="asgn-file-input"
-          />
-        )}
+        <div className="asgn-dropzone-text">Drag your file here or <strong>browse</strong></div>
+        <div className="asgn-dropzone-hint">PDF, DOCX, ZIP, PY, Java, images — up to 10 MB</div>
+        {!isOverdue && <input type="file" onChange={e => ctrl.handleFileSelect(e.target.files[0])} id="asgn-file-input" />}
       </div>
 
-      {/* Uploaded file preview */}
       {ctrl.uploadedFile && (
         <div className="asgn-file-preview">
-          <span className="asgn-file-icon">
-            {getFileIcon(ctrl.uploadedFile.type)}
-          </span>
+          <span className="asgn-file-icon">{getFileIcon(ctrl.uploadedFile.type)}</span>
           <div className="asgn-file-info">
             <div className="asgn-file-name">{ctrl.uploadedFile.name}</div>
             <div className="asgn-file-size">{formatFileSize(ctrl.uploadedFile.size)}</div>
           </div>
-          <button
-            className="asgn-file-remove"
-            onClick={ctrl.removeFile}
-            title="Remove file"
-            id="asgn-remove-file-btn"
-          >
-            ✕
-          </button>
+          <button className="asgn-file-remove" onClick={ctrl.removeFile} title="Remove file" id="asgn-remove-file-btn">✕</button>
         </div>
       )}
 
-      {/* Turn In button */}
-      <button
-        className="asgn-turnin-btn primary"
-        onClick={ctrl.handleTurnIn}
-        disabled={!ctrl.uploadedFile || ctrl.turningIn || isOverdue}
-        id="asgn-turnin-btn"
-      >
-        {ctrl.turningIn ? 'Turning in...' : 'Turn in'}
+      <button className="asgn-turnin-btn primary" onClick={ctrl.handleTurnIn}
+        disabled={!ctrl.uploadedFile || ctrl.turningIn || isOverdue} id="asgn-turnin-btn">
+        {ctrl.turningIn ? "Turning in..." : "Turn in"}
       </button>
-
-      {isOverdue && (
-        <div className="asgn-deadline-warning">
-          Your teacher is not accepting work at this time
-        </div>
-      )}
+      {isOverdue && <div className="asgn-deadline-warning">Your teacher is not accepting work at this time</div>}
     </>
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   Teacher: Submissions Table
-   ══════════════════════════════════════════════════════════════ */
+/* ══ Submissions Table ════════════════════════════════════════ */
 function SubmissionsTable({ ctrl }) {
   if (ctrl.submissionsLoading) {
-    return (
-      <div className="asgn-submissions-section">
-        <div className="asgn-skeleton" style={{ height: 200 }} />
-      </div>
-    )
+    return <div className="asgn-submissions-section"><div className="asgn-skeleton" style={{ height: 200 }} /></div>
   }
-
   return (
     <div className="asgn-submissions-section">
-      <h3 className="asgn-submissions-title">
-        Student Submissions ({ctrl.allSubmissions.length})
-      </h3>
+      <h3 className="asgn-submissions-title">Student Submissions ({ctrl.allSubmissions.length})</h3>
       <input className="asgn-search" type="search" aria-label="Search submissions"
-        placeholder="Search student name, ID, or file…" value={ctrl.submissionSearch}
+        placeholder="Search student name, ID, or file..." value={ctrl.submissionSearch}
         onChange={e => ctrl.setSubmissionSearch(e.target.value)} />
-
       {ctrl.filteredSubmissions.length === 0 ? (
-        <div className="asgn-empty" style={{ padding: '30px 20px' }}>
+        <div className="asgn-empty" style={{ padding: "30px 20px" }}>
           <div className="asgn-empty-icon">📭</div>
-          <div className="asgn-empty-text">{ctrl.submissionSearch ? 'No matching submissions' : 'No submissions yet'}</div>
+          <div className="asgn-empty-text">{ctrl.submissionSearch ? "No matching submissions" : "No submissions yet"}</div>
         </div>
       ) : (
         <table className="asgn-submissions-table">
-          <thead>
-            <tr>
-              <th>Student</th>
-              <th>Status</th>
-              <th>File</th>
-              <th>Submitted At</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Student</th><th>Status</th><th>File</th><th>Submitted At</th></tr></thead>
           <tbody>
             {ctrl.filteredSubmissions.map(sub => {
               const statusCfg = STATUS_CONFIG[sub.status] || STATUS_CONFIG.ASSIGNED
-
               return (
                 <tr key={sub.id}>
                   <td>
                     <strong>{sub.studentName || sub.studentId}</strong>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-sub)' }}>
-                      {sub.studentId}
-                    </div>
+                    <div style={{ fontSize: 11, color: "var(--color-text-sub)" }}>{sub.studentId}</div>
                   </td>
                   <td>
-                    <span
-                      className="asgn-status-badge"
-                      style={{ background: statusCfg.bg, color: statusCfg.color }}
-                    >
+                    <span className="asgn-status-badge" style={{ background: statusCfg.bg, color: statusCfg.color }}>
                       {statusCfg.label}
                     </span>
                   </td>
                   <td>
                     {sub.hasFile && sub.fileName ? (
-                      <button
-                        type="button"
-                        onClick={() => ctrl.handlePreview(sub)}
-                        className="asgn-download-link"
-                      >
+                      <button type="button" onClick={() => ctrl.handlePreview(sub)} className="asgn-download-link">
                         {getFileIcon(sub.fileType)} View {sub.fileName}
                       </button>
                     ) : (
-                      <span style={{ color: 'var(--color-text-light)', fontSize: 12 }}>
-                        No file
-                      </span>
+                      <span style={{ color: "var(--color-text-light)", fontSize: 12 }}>No file</span>
                     )}
                   </td>
-                  <td style={{ fontSize: 13, color: 'var(--color-text-sub)' }}>
-                    {sub.submittedAt ? formatDeadline(sub.submittedAt) : '—'}
+                  <td style={{ fontSize: 13, color: "var(--color-text-sub)" }}>
+                    {sub.submittedAt ? formatDeadline(sub.submittedAt) : "—"}
                   </td>
                 </tr>
               )
@@ -498,34 +372,25 @@ function SubmissionsTable({ ctrl }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   Create Assignment Modal (Teacher)
-   ══════════════════════════════════════════════════════════════ */
+/* ══ Create / Edit Modal ══════════════════════════════════════ */
 function CreateAssignmentModal({ ctrl }) {
   return (
-    <div
-      className="asgn-create-overlay"
-      onClick={(e) => e.target === e.currentTarget && ctrl.closeAssignmentForm()}
-    >
+    <div className="asgn-create-overlay" onClick={e => e.target === e.currentTarget && ctrl.closeAssignmentForm()}>
       <div className="asgn-create-modal">
         <div className="asgn-create-modal-header">
-          <h2>{ctrl.editingAssignmentId ? 'Edit Assignment' : 'Create Assignment'}</h2>
-          <button
-            className="asgn-create-close"
-            onClick={() => ctrl.closeAssignmentForm()}
-            id="asgn-create-close"
-          >
-            ✕
-          </button>
+          <h2>{ctrl.editingAssignmentId ? "Edit Assignment" : "Create Assignment"}</h2>
+          <button className="asgn-create-close" onClick={() => ctrl.closeAssignmentForm()} id="asgn-create-close">✕</button>
         </div>
-
         <div className="asgn-create-form">
-          {/* Course */}
           <div className="asgn-form-group">
             <label htmlFor="asgn-course-search">Select a course</label>
-            <input id="asgn-course-search" type="search" placeholder="Search course code or name…"
+            <input id="asgn-course-search" type="search" placeholder="Search course code or name..."
               value={ctrl.courseSearch} onChange={e => ctrl.setCourseSearch(e.target.value)} />
-            {ctrl.createForm.courseCode && <p className="asgn-selected-course" role="status">Selected: <strong>{ctrl.createForm.courseCode}</strong> — {ctrl.createForm.courseName}</p>}
+            {ctrl.createForm.courseCode && (
+              <p className="asgn-selected-course" role="status">
+                Selected: <strong>{ctrl.createForm.courseCode}</strong> — {ctrl.createForm.courseName}
+              </p>
+            )}
             <div className="asgn-course-results" role="group" aria-label="Matching courses" id="asgn-create-course">
               {ctrl.filteredCourseOptions.map(c => (
                 <button type="button" key={c.code} className="asgn-course-option"
@@ -537,101 +402,53 @@ function CreateAssignmentModal({ ctrl }) {
             </div>
             {ctrl.filteredCourseOptions.length === 0 && <p role="status">No matching courses. Try another code or name.</p>}
           </div>
-
-          {/* Title */}
           <div className="asgn-form-group">
             <label>Title</label>
-            <input
-              type="text"
-              value={ctrl.createForm.title}
-              onChange={(e) => ctrl.updateCreateForm('title', e.target.value)}
-              placeholder="e.g. Lab 5 – Process Scheduling"
-              id="asgn-create-title"
-            />
+            <input type="text" value={ctrl.createForm.title}
+              onChange={e => ctrl.updateCreateForm("title", e.target.value)}
+              placeholder="e.g. Lab 5 – Process Scheduling" id="asgn-create-title" />
           </div>
-
-          {/* Description */}
           <div className="asgn-form-group">
             <label>Instructions</label>
-            <textarea
-              value={ctrl.createForm.description}
-              onChange={(e) => ctrl.updateCreateForm('description', e.target.value)}
-              placeholder="Describe the assignment requirements..."
-              id="asgn-create-description"
-            />
+            <textarea value={ctrl.createForm.description}
+              onChange={e => ctrl.updateCreateForm("description", e.target.value)}
+              placeholder="Describe the assignment requirements..." id="asgn-create-description" />
           </div>
-
-          {/* Deadline */}
           <div className="asgn-form-group">
             <label>Deadline</label>
-            <input
-              type="datetime-local"
-              value={ctrl.createForm.deadline}
-              onChange={(e) => ctrl.updateCreateForm('deadline', e.target.value)}
-              id="asgn-create-deadline"
-            />
+            <input type="datetime-local" value={ctrl.createForm.deadline}
+              onChange={e => ctrl.updateCreateForm("deadline", e.target.value)} id="asgn-create-deadline" />
           </div>
-
-          {/* Teacher Name */}
           <div className="asgn-form-group">
             <label>Your Name</label>
-            <input
-              type="text"
-              value={ctrl.createForm.createdBy}
-              onChange={(e) => ctrl.updateCreateForm('createdBy', e.target.value)}
-              placeholder="e.g. Dr. Md. Rashedul Islam"
-              id="asgn-create-teacher"
-            />
+            <input type="text" value={ctrl.createForm.createdBy}
+              onChange={e => ctrl.updateCreateForm("createdBy", e.target.value)}
+              placeholder="e.g. Dr. Md. Rashedul Islam" id="asgn-create-teacher" />
           </div>
-
-          {/* File Attachment */}
           <div className="asgn-form-group">
             <label>Attach Question File (optional)</label>
             {ctrl.createFile ? (
               <div className="asgn-file-preview">
-                <span className="asgn-file-icon">
-                  {getFileIcon(ctrl.createFile.type)}
-                </span>
+                <span className="asgn-file-icon">{getFileIcon(ctrl.createFile.type)}</span>
                 <div className="asgn-file-info">
                   <div className="asgn-file-name">{ctrl.createFile.name}</div>
                   <div className="asgn-file-size">{formatFileSize(ctrl.createFile.size)}</div>
                 </div>
-                <button
-                  className="asgn-file-remove"
-                  onClick={() => ctrl.handleCreateFileSelect(null)}
-                >
-                  ✕
-                </button>
+                <button className="asgn-file-remove" onClick={() => ctrl.handleCreateFileSelect(null)}>✕</button>
               </div>
             ) : (
-              <div className="asgn-dropzone" style={{ minHeight: 80, padding: '16px 14px' }}>
-                <span className="asgn-dropzone-text">
-                  <strong>Browse</strong> to attach a file
-                </span>
-                <input
-                  type="file"
-                  onChange={(e) => ctrl.handleCreateFileSelect(e.target.files[0])}
-                  id="asgn-create-file"
-                />
+              <div className="asgn-dropzone" style={{ minHeight: 80, padding: "16px 14px" }}>
+                <span className="asgn-dropzone-text"><strong>Browse</strong> to attach a file</span>
+                <input type="file" onChange={e => ctrl.handleCreateFileSelect(e.target.files[0])} id="asgn-create-file" />
               </div>
             )}
           </div>
         </div>
-
         <div className="asgn-create-actions">
-          <button
-            className="asgn-create-cancel-btn"
-            onClick={() => ctrl.closeAssignmentForm()}
-          >
-            Cancel
-          </button>
-          <button
-            className="asgn-create-submit-btn"
-            onClick={ctrl.handleCreateAssignment}
-            disabled={ctrl.creating}
-            id="asgn-create-submit"
-          >
-            {ctrl.creating ? 'Saving...' : ctrl.editingAssignmentId ? 'Save Changes' : 'Create Assignment'}
+          <button className="asgn-create-cancel-btn" onClick={() => ctrl.closeAssignmentForm()}>Cancel</button>
+          <button className="asgn-create-submit-btn" onClick={ctrl.handleCreateAssignment}
+            disabled={ctrl.creating} id="asgn-create-submit">
+            {ctrl.creating ? "Saving..." : ctrl.editingAssignmentId ? "Save Changes" : "Create Assignment"}
           </button>
         </div>
       </div>
@@ -639,21 +456,30 @@ function CreateAssignmentModal({ ctrl }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SVG Icons (scoped to this view)
-   ══════════════════════════════════════════════════════════════ */
+/* ══ Delete Confirmation Modal ════════════════════════════════ */
 function DeleteAssignmentModal({ ctrl }) {
   return (
-    <div className="asgn-create-overlay">
-      <section className="asgn-create-modal" role="dialog" aria-modal="true" aria-labelledby="asgn-delete-title">
-        <div className="asgn-create-modal-header"><h2 id="asgn-delete-title">Delete assignment?</h2></div>
+    <div className="asgn-create-overlay"
+      onClick={e => e.target === e.currentTarget && !ctrl.deleting && ctrl.setDeleteTarget(null)}>
+      <section className="asgn-create-modal asgn-delete-modal" role="dialog" aria-modal="true" aria-labelledby="asgn-delete-title">
+        <div className="asgn-delete-modal-header">
+          <div className="asgn-delete-modal-icon">🗑️</div>
+          <h2 id="asgn-delete-title">Delete Assignment?</h2>
+        </div>
         <div className="asgn-create-form">
-          <p>Delete <strong>{ctrl.deleteTarget.title}</strong> and all its student submissions? This cannot be undone.</p>
+          <p className="asgn-delete-msg">
+            You are about to permanently delete <strong>"{ctrl.deleteTarget.title}"</strong> and all student
+            submissions for it. This action <strong>cannot be undone</strong>.
+          </p>
         </div>
         <div className="asgn-create-actions">
-          <button autoFocus className="asgn-create-cancel-btn" disabled={ctrl.deleting} onClick={() => ctrl.setDeleteTarget(null)}>Cancel</button>
-          <button className="asgn-create-submit-btn asgn-danger-btn" disabled={ctrl.deleting} onClick={ctrl.confirmDeleteAssignment}>
-            {ctrl.deleting ? 'Deleting…' : 'Delete assignment'}
+          <button autoFocus className="asgn-create-cancel-btn"
+            disabled={ctrl.deleting} onClick={() => ctrl.setDeleteTarget(null)}>
+            Cancel
+          </button>
+          <button className="asgn-create-submit-btn asgn-danger-btn"
+            disabled={ctrl.deleting} onClick={ctrl.confirmDeleteAssignment} id="asgn-confirm-delete-btn">
+            {ctrl.deleting ? "Deleting…" : "Delete assignment"}
           </button>
         </div>
       </section>
@@ -661,42 +487,52 @@ function DeleteAssignmentModal({ ctrl }) {
   )
 }
 
+/* ══ Submission Preview Modal ═════════════════════════════════ */
 function SubmissionPreviewModal({ ctrl }) {
   const preview = ctrl.preview
   return (
     <div className="asgn-create-overlay" onClick={e => e.target === e.currentTarget && ctrl.closePreview()}>
-      <section className="asgn-create-modal asgn-preview-modal" role="dialog" aria-modal="true" aria-labelledby="asgn-preview-title"
-        onKeyDown={e => e.key === 'Escape' && ctrl.closePreview()}>
+      <section className="asgn-create-modal asgn-preview-modal" role="dialog" aria-modal="true"
+        aria-labelledby="asgn-preview-title" onKeyDown={e => e.key === "Escape" && ctrl.closePreview()}>
         <div className="asgn-create-modal-header">
           <h2 id="asgn-preview-title">{preview.name}</h2>
           <button autoFocus className="asgn-create-close" aria-label="Close preview" onClick={ctrl.closePreview}>✕</button>
         </div>
         <div className="asgn-preview-content">
           {preview.loading && <p role="status">Loading preview…</p>}
-          {preview.error && <p role="alert">{preview.error}</p>}
-          {preview.kind === 'pdf' && <iframe title={preview.name} src={preview.url} />}
-          {preview.kind === 'image' && <img alt={preview.name} src={preview.url} />}
-          {preview.kind === 'text' && <pre>{preview.text}</pre>}
-          {preview.kind === 'unsupported' && <p>A preview is not available for this file format. PDF, images, text, source code, DOCX, and ZIP file listings can be viewed here.</p>}
+          {preview.error   && <p role="alert">{preview.error}</p>}
+          {preview.kind === "pdf"         && <iframe title={preview.name} src={preview.url} />}
+          {preview.kind === "image"       && <img alt={preview.name} src={preview.url} />}
+          {preview.kind === "text"        && <pre>{preview.text}</pre>}
+          {preview.kind === "unsupported" && <p>A preview is not available for this file format.</p>}
         </div>
       </section>
     </div>
   )
 }
 
+/* ══ Icons ════════════════════════════════════════════════════ */
 function PlusIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
+      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   )
 }
-
 function BackIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15 18 9 12 15 6" />
+    </svg>
+  )
+}
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15, display: "inline-block", verticalAlign: "middle" }}>
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+      <path d="M10 11v6M14 11v6" />
+      <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
     </svg>
   )
 }
