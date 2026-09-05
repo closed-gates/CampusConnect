@@ -14,7 +14,10 @@ import { TIME_SLOTS, DAYS } from '../models/routineModel.js'
 import { courseService } from '../services/courseService.js'
 import { formatExamDate } from '../models/examScheduleModel.js'
 import { jsPDF } from 'jspdf'
-import 'jspdf-autotable'
+import { applyPlugin } from 'jspdf-autotable'
+
+// jspdf-autotable v5 requires explicit registration
+applyPlugin(jsPDF)
 
 /* ── Pure helper functions (no side effects) ─────────────────── */
 
