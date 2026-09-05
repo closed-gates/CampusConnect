@@ -6,18 +6,16 @@
  * Redirects unauthenticated users to the login page.
  * Wraps all protected routes in App.jsx.
  *
- * Uses isTokenValid() from authModel to check if:
- *   - A JWT token exists in localStorage
- *   - The token has not expired (client-side expiry check)
- *
- * Note: Server-side token validation happens automatically on every
- * API call (the backend returns 401 if the token is invalid/expired).
- * On 401, individual feature controllers should call clearAuth() + navigate('/').
+ * Also mounts the account-freeze WebSocket watcher so that if an admin
+ * freezes this user while they are actively browsing, a full-screen
+ * dialog appears immediately and the session is terminated.
  */
 
 import { Navigate, Outlet } from 'react-router-dom'
 import { isTokenValid } from '../../models/authModel.js'
 import ChatbotWidget from './ChatbotWidget.jsx'
+import FrozenAccountDialog from './FrozenAccountDialog.jsx'
+import { useFreezeWatcher } from '../../controllers/useFreezeWatcher.js'
 
 /**
  * ProtectedRoute
@@ -35,11 +33,23 @@ export default function ProtectedRoute() {
     return <Navigate to="/" replace />
   }
 
-  // Authenticated → render child routes + floating AI assistant
+  // Authenticated → render child routes + floating AI assistant + freeze watcher
+  return <AuthenticatedShell />
+}
+
+/** Inner shell — rendered only when authenticated, so hooks run unconditionally. */
+function AuthenticatedShell() {
+  const { freezeMessage, handleFreezeAcknowledge } = useFreezeWatcher()
+
   return (
     <>
       <Outlet />
       <ChatbotWidget />
+      {/* Full-screen freeze dialog — shown immediately when admin freezes this account */}
+      <FrozenAccountDialog
+        message={freezeMessage}
+        onClose={handleFreezeAcknowledge}
+      />
     </>
   )
 }

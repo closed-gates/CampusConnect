@@ -1,1 +1,121 @@
-.frozen-dialog-backdrop{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.68);backdrop-filter:blur(4px)}.frozen-dialog{width:min(430px,100%);padding:30px;border-radius:18px;background:var(--color-bg-primary,#fff);color:var(--color-text-primary,#0f172a);text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.32)}.frozen-dialog-icon{font-size:44px}.frozen-dialog h2{margin:10px 0 8px}.frozen-dialog p{margin:0 0 22px;color:var(--color-text-sub,#64748b);line-height:1.55}.frozen-dialog button{width:100%}
+﻿/* ── Backdrop ───────────────────────────────────────────────────────── */
+.frozen-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(4, 18, 46, 0.82);
+  backdrop-filter: blur(8px);
+  animation: frozenFadeIn 0.3s ease;
+}
+
+@keyframes frozenFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Dialog card ────────────────────────────────────────────────────── */
+.frozen-dialog {
+  width: min(460px, 100%);
+  padding: 36px 32px 28px;
+  border-radius: 22px;
+  background: #fff;
+  color: #0f172a;
+  text-align: center;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(99, 102, 241, 0.12);
+  animation: frozenSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes frozenSlideUp {
+  from { opacity: 0; transform: translateY(32px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* ── Icon ───────────────────────────────────────────────────────────── */
+.frozen-dialog-icon {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 12px;
+  animation: icePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes icePulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(99, 172, 255, 0)); }
+  50%       { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(99, 172, 255, 0.7)); }
+}
+
+/* ── Text ───────────────────────────────────────────────────────────── */
+.frozen-dialog-title {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.3px;
+}
+
+.frozen-dialog-body {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.frozen-dialog-contact {
+  margin: 0 0 22px;
+  font-size: 12px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ── Countdown progress bar ─────────────────────────────────────────── */
+.frozen-dialog-progress-wrap {
+  height: 5px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.frozen-dialog-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.frozen-dialog-countdown {
+  margin: 0 0 20px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.frozen-dialog-countdown strong {
+  color: #6366f1;
+  font-weight: 700;
+}
+
+/* ── Button ─────────────────────────────────────────────────────────── */
+.frozen-dialog-btn {
+  width: 100%;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.frozen-dialog-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.frozen-dialog-btn:active {
+  transform: scale(0.98);
+}
