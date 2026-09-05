@@ -1,7 +1,7 @@
 export const CURRENT_USER = {
-  id: 'usr_eusha_001',
-  username: 'eusha.k',
-  displayName: 'Eusha Kayenat',
+  id: 'STU001',
+  username: 'student@campus.edu',
+  displayName: 'Alex Johnson',
   role: 'STUDENT',
   department: 'Computer Science & Engineering',
   avatarUrl: null,
@@ -69,7 +69,7 @@ export const MOCK_USERS = [
 
 export const MOCK_CONVERSATIONS = [
   {
-    id: `dm_usr_eusha_001_usr_faculty_001`,
+    id: `dm_STU001_usr_faculty_001`,
     isGroup: false,
     recipient: MOCK_USERS[0],
     unreadCount: 1,
@@ -80,35 +80,35 @@ export const MOCK_CONVERSATIONS = [
     }
   },
   {
-    id: `dm_usr_eusha_001_usr_alex_002`,
+    id: `dm_STU001_usr_alex_002`,
     isGroup: false,
     recipient: MOCK_USERS[2],
     unreadCount: 0,
     lastMessage: {
-      content: 'Hey Eusha! Are the DM WebSocket event endpoints ready?',
+      content: 'Hey Alex! Are the DM WebSocket event endpoints ready?',
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
       senderId: 'usr_alex_002'
     }
   },
   {
-    id: `dm_usr_eusha_001_usr_sarah_003`,
+    id: `dm_STU001_usr_sarah_003`,
     isGroup: false,
     recipient: MOCK_USERS[3],
     unreadCount: 0,
     lastMessage: {
       content: 'Thanks for sending over the schema documentation!',
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-      senderId: 'usr_eusha_001'
+      senderId: 'STU001'
     }
   }
 ];
 
 export const INITIAL_MESSAGES = {
-  [`dm_usr_eusha_001_usr_faculty_001`]: [
+  [`dm_STU001_usr_faculty_001`]: [
     {
       id: 'msg_fac_001',
-      conversationId: 'dm_usr_eusha_001_usr_faculty_001',
-      senderId: 'usr_eusha_001',
+      conversationId: 'dm_STU001_usr_faculty_001',
+      senderId: 'STU001',
       content: 'Respected Sir, I have submitted the Direct Messaging project proposal PDF and modular schema file for your review.',
       createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
       attachments: [
@@ -124,19 +124,19 @@ export const INITIAL_MESSAGES = {
     },
     {
       id: 'msg_fac_002',
-      conversationId: 'dm_usr_eusha_001_usr_faculty_001',
+      conversationId: 'dm_STU001_usr_faculty_001',
       senderId: 'usr_faculty_001',
-      content: 'Thank you Eusha! 🎓 I have reviewed the architecture PDF.',
+      content: 'Thank you Alex! 🎓 I have reviewed the architecture PDF.',
       createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
       isRead: false
     }
   ],
-  [`dm_usr_eusha_001_usr_alex_002`]: [
+  [`dm_STU001_usr_alex_002`]: [
     {
       id: 'msg_001',
-      conversationId: 'dm_usr_eusha_001_usr_alex_002',
+      conversationId: 'dm_STU001_usr_alex_002',
       senderId: 'usr_alex_002',
-      content: 'Hi Eusha! How is the CSE470 project coming along?',
+      content: 'Hi Alex! How is the CSE470 project coming along?',
       createdAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
       isRead: true
     }

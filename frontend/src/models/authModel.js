@@ -54,15 +54,25 @@ const KEYS = {
   IS_ADVISOR: 'cc_isAdvisor',
 }
 
+const CANONICAL_ACCOUNT_NAMES = {
+  STU001: 'Alex Johnson',
+}
+
+/** Resolve names for built-in accounts whose older demo data used another identity. */
+export function getCanonicalFullName(userId, fullName = '') {
+  return CANONICAL_ACCOUNT_NAMES[String(userId || '').toUpperCase()] || fullName
+}
+
 /**
  * Persist the full auth payload after a successful login / registration.
  * @param {{ token, role, userId, fullName, email, expiresIn, isAdvisor }} payload
  */
 export function storeAuth(payload) {
+  const fullName = getCanonicalFullName(payload.userId, payload.fullName)
   localStorage.setItem(KEYS.TOKEN,      payload.token)
   localStorage.setItem(KEYS.ROLE,       payload.role)
   localStorage.setItem(KEYS.USER_ID,    payload.userId)
-  localStorage.setItem(KEYS.FULL_NAME,  payload.fullName)
+  localStorage.setItem(KEYS.FULL_NAME,  fullName)
   localStorage.setItem(KEYS.EMAIL,      payload.email)
   localStorage.setItem(KEYS.IS_ADVISOR, payload.isAdvisor ? 'true' : 'false')
   // Store absolute expiry timestamp
@@ -94,9 +104,11 @@ export function getStoredRole() {
 export function getStoredUser() {
   const token = getStoredToken()
   if (!token) return null
+  const userId = localStorage.getItem(KEYS.USER_ID) || ''
+  const storedFullName = localStorage.getItem(KEYS.FULL_NAME) || ''
   return {
-    userId:    localStorage.getItem(KEYS.USER_ID)    || '',
-    fullName:  localStorage.getItem(KEYS.FULL_NAME)  || '',
+    userId,
+    fullName:  getCanonicalFullName(userId, storedFullName),
     email:     localStorage.getItem(KEYS.EMAIL)      || '',
     role:      localStorage.getItem(KEYS.ROLE)       || '',
     isAdvisor: localStorage.getItem(KEYS.IS_ADVISOR) === 'true',
