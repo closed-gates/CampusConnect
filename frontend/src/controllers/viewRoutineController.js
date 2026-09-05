@@ -58,11 +58,13 @@ export function useViewRoutineController() {
       }
 
       setCourses(advisedList)
-      setStudentProfile(profData || {
-        studentName: user?.fullName || 'Student',
+      setStudentProfile({
+        ...(profData || {}),
+        // Account identity is authoritative for the signed-in student's name.
+        studentName: user?.fullName || profData?.studentName || 'Student',
         studentId: studentId,
-        department: 'Computer Science and Engineering',
-        program: 'CS'
+        department: profData?.department || 'Computer Science and Engineering',
+        program: profData?.program || 'CS'
       })
     } catch {
       setError('Could not load routine. Please ensure backend is active.')

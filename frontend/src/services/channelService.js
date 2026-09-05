@@ -4,7 +4,7 @@
  */
 
 const MOCK_MEMBERS_POOL = [
-  { id: 'usr_eusha_001',   username: 'eusha.k',     displayName: 'Eusha Kayenat',      role: 'STUDENT', status: 'ONLINE'  },
+  { id: 'STU001',          username: 'student@campus.edu', displayName: 'Alex Johnson', role: 'STUDENT', status: 'ONLINE'  },
   { id: 'usr_alex_002',    username: 'alex_dev',    displayName: 'Alex Rivers',         role: 'STUDENT', status: 'ONLINE'  },
   { id: 'usr_sarah_003',   username: 'sarah_m',     displayName: 'Sarah Miller',        role: 'STUDENT', status: 'IDLE'    },
   { id: 'usr_rafi_004',    username: 'rafi.hasan',  displayName: 'Rafi Hasan',          role: 'STUDENT', status: 'OFFLINE' },

@@ -42,6 +42,11 @@ export function usePaymentController() {
   const effectiveStudentId = isAdmin ? selectedStudentId : (storedUser?.userId || 'STU001')
   const studentId = effectiveStudentId
 
+  const normalizeStudentIdentity = useCallback(data => {
+    if (!data || isAdmin || data.studentId !== storedUser?.userId) return data
+    return { ...data, studentName: storedUser.fullName || data.studentName }
+  }, [isAdmin, storedUser?.userId, storedUser?.fullName])
+
   // Top Tabs: 'receipt' (Current Term Clearance) | 'history' (Payment Records in DB)
   const [activeViewTab, setActiveViewTab] = useState('receipt')
 
@@ -123,14 +128,14 @@ export function usePaymentController() {
         throw new Error(`Could not load fee receipt (${res.status})`)
       }
       const data = await res.json()
-      setReceipt(data)
+      setReceipt(normalizeStudentIdentity(data))
     } catch (err) {
       console.warn('Failed to load receipt from backend:', err)
       setError(err.message || 'Unable to load fee receipt.')
     } finally {
       setLoading(false)
     }
-  }, [isAdmin, selectedStudentId, effectiveStudentId, preferredTerm])
+  }, [isAdmin, selectedStudentId, effectiveStudentId, preferredTerm, normalizeStudentIdentity])
 
   /**
    * Fetch payment records from database (role-isolated: student vs admin).
@@ -150,7 +155,7 @@ export function usePaymentController() {
       )
       if (res.ok) {
         const data = await res.json()
-        const historyList = Array.isArray(data) ? data : []
+        const historyList = Array.isArray(data) ? data.map(normalizeStudentIdentity) : []
         setPaymentHistory(historyList)
 
         // Check if any payment in history is for the current term and already paid/bypassed
@@ -173,7 +178,7 @@ export function usePaymentController() {
     } finally {
       setHistoryLoading(false)
     }
-  }, [isAdmin, selectedStudentId, effectiveStudentId, role, preferredTerm])
+  }, [isAdmin, selectedStudentId, effectiveStudentId, role, preferredTerm, normalizeStudentIdentity])
 
   useEffect(() => {
     fetchReceipt()
