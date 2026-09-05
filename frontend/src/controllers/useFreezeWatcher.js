@@ -14,7 +14,10 @@
 import { useEffect, useState, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { getStoredUser, clearAuth } from "../models/authModel.js"
-import { subscribeToFreezeEvents } from "../services/freezeWatcherService.js"
+import { getCurrentFreezeState, subscribeToFreezeEvents } from "../services/freezeWatcherService.js"
+
+const FREEZE_CHECK_INTERVAL_MS = 5000
+const DEFAULT_FREEZE_MESSAGE = "Your account has been frozen by an administrator. You will be signed out."
 
 export function useFreezeWatcher() {
   const [freezeMessage, setFreezeMessage] = useState(null)
@@ -24,18 +27,29 @@ export function useFreezeWatcher() {
     const user = getStoredUser()
     if (!user?.userId) return
 
-    const unsubscribe = subscribeToFreezeEvents(user.userId, (payload) => {
+    let mounted = true
+    const showFrozenState = (payload) => {
       if (payload.frozen) {
-        // Show the freeze dialog immediately
-        setFreezeMessage(
-          payload.message || "Your account has been frozen by an administrator."
-        )
+        setFreezeMessage(payload.message || DEFAULT_FREEZE_MESSAGE)
       }
-      // If unfrozen while session was already valid – silently ignore
-      // (the user will see normal access restored on next interaction)
-    })
+    }
+    const verifyCurrentState = async () => {
+      try {
+        const payload = await getCurrentFreezeState()
+        if (mounted) showFrozenState(payload)
+      } catch {
+        // A transient check failure must not interrupt an otherwise valid session.
+      }
+    }
+    const unsubscribe = subscribeToFreezeEvents(user.userId, showFrozenState, verifyCurrentState)
+    verifyCurrentState()
+    const interval = window.setInterval(verifyCurrentState, FREEZE_CHECK_INTERVAL_MS)
 
-    return () => unsubscribe()
+    return () => {
+      mounted = false
+      window.clearInterval(interval)
+      unsubscribe()
+    }
   }, [])
 
   const handleFreezeAcknowledge = useCallback(() => {

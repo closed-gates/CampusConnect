@@ -22,10 +22,10 @@ export default function AccountFreezePanel() {
               <thead><tr><th>User</th><th>ID</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
               <tbody>{c.visibleAccounts.length === 0 ? <tr><td colSpan="5" className="freeze-empty">No matching student or faculty account.</td></tr> : c.visibleAccounts.map(account => (
                 <tr key={account.userId}>
-                  <td><strong>{account.fullName}</strong><small>{account.email}</small></td>
-                  <td><code>{account.userId}</code></td><td>{ACCOUNT_ROLES[account.role] || account.role}</td>
-                  <td><span className={`freeze-status ${account.frozen ? 'is-frozen' : 'is-active'}`}>{account.frozen ? 'Frozen' : 'Active'}</span></td>
-                  <td><button className={`freeze-action ${account.frozen ? 'unfreeze' : ''}`} disabled={c.updatingId === account.userId} onClick={() => c.handleToggleFreeze(account)}>{c.updatingId === account.userId ? 'Updating…' : account.frozen ? 'Unfreeze' : 'Freeze'}</button></td>
+                  <td data-label="User"><strong>{account.fullName}</strong><small>{account.email}</small></td>
+                  <td data-label="ID"><code>{account.userId}</code></td><td data-label="Role">{ACCOUNT_ROLES[account.role] || account.role}</td>
+                  <td data-label="Status"><span className={`freeze-status ${account.frozen ? 'is-frozen' : 'is-active'}`}>{account.frozen ? 'Frozen' : 'Active'}</span></td>
+                  <td data-label="Action"><button className={`freeze-action ${account.frozen ? 'unfreeze' : ''}`} disabled={c.updatingId === account.userId} onClick={() => c.handleToggleFreeze(account)}>{c.updatingId === account.userId ? 'Updating…' : account.frozen ? 'Unfreeze' : 'Freeze'}</button></td>
                 </tr>
               ))}</tbody>
             </table></div>

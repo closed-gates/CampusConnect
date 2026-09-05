@@ -33,6 +33,12 @@ public class AccountFreezeService {
                 .toList();
     }
 
+    public boolean isFrozen(String userId) {
+        AppUser user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user not found."));
+        return !user.isActive();
+    }
+
     @Transactional
     public AccountFreezeDTO setFrozen(String adminId, String userId, boolean frozen) {
         requireAdmin(adminId);

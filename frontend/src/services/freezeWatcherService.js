@@ -8,6 +8,7 @@
 
 import { Client } from "@stomp/stompjs"
 import SockJS from "sockjs-client"
+import { apiClient } from "./apiClient.js"
 
 const WS_URL = "/ws"
 
@@ -18,13 +19,14 @@ const WS_URL = "/ws"
  * @param {function} onFrozen – Called with { frozen, message } when event arrives.
  * @returns {function} – Call to unsubscribe and disconnect.
  */
-export function subscribeToFreezeEvents(userId, onFrozen) {
+export function subscribeToFreezeEvents(userId, onFrozen, onConnected) {
   if (!userId) return () => {}
 
   const client = new Client({
     webSocketFactory: () => new SockJS(WS_URL),
     reconnectDelay: 5000,
     onConnect: () => {
+      onConnected?.()
       client.subscribe(`/topic/account-frozen.${userId}`, (frame) => {
         try {
           const payload = JSON.parse(frame.body)
@@ -44,4 +46,10 @@ export function subscribeToFreezeEvents(userId, onFrozen) {
   return () => {
     client.deactivate().catch(() => {})
   }
+}
+
+export async function getCurrentFreezeState() {
+  const response = await apiClient.get("/api/admin/account-freezes/me")
+  if (!response.ok) throw new Error(`Account state request failed (${response.status})`)
+  return response.json()
 }

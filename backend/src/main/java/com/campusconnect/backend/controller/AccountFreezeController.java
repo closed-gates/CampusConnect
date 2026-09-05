@@ -23,6 +23,11 @@ public class AccountFreezeController {
         return service.listManageableAccounts(authentication.getName());
     }
 
+    @GetMapping("/me")
+    public Map<String, Boolean> currentAccountState(Authentication authentication) {
+        return Map.of("frozen", service.isFrozen(authentication.getName()));
+    }
+
     @PutMapping("/{userId}")
     public ResponseEntity<AccountFreezeDTO> setFrozen(@PathVariable String userId,
                                                        @RequestBody Map<String, Boolean> body,

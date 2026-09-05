@@ -47,7 +47,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns(
-                        "https://*.onrender.com"
+                        "https://*.onrender.com",
+                        "http://localhost:*",
+                        "http://127.0.0.1:*"
                 )
                 .withSockJS();                     // SockJS fallback for broad compatibility
     }
