@@ -12,8 +12,9 @@
 
 /* ── WebSocket / STOMP configuration ─────────────────────────────── */
 
-/** SockJS endpoint exposed by the Spring Boot backend. */
-export const CHAT_WS_URL = 'http://localhost:8080/ws'
+/** SockJS endpoint exposed by the Spring Boot backend on Render. */
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+export const CHAT_WS_URL = `${API_BASE}/ws`
 
 /** Application prefix for client → server messages. */
 export const CHAT_APP_PREFIX = '/app'

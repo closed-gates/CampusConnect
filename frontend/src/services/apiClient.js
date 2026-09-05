@@ -5,7 +5,7 @@
  *
  * Every API call in CampusConnect should go through this client so that:
  *   1. The JWT Bearer token is automatically attached to every request.
- *   2. All URLs are relative (proxied to http://localhost:8080 via Vite).
+ *   2. Target URLs are resolved against the deployed Render backend (VITE_API_BASE_URL).
  *   3. 401 responses clear auth and redirect to login automatically.
  *
  * Usage:
@@ -18,6 +18,9 @@
 
 import { getStoredToken, clearAuth } from '../models/authModel.js'
 
+/** Deployed backend base URL on Render (defaults to empty string if not configured) */
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+
 /** Redirect to login and clear auth data */
 function handleUnauthorized() {
   clearAuth()
@@ -27,7 +30,7 @@ function handleUnauthorized() {
 /**
  * Core fetch wrapper — adds Authorization header and handles 401.
  *
- * @param {string} url  - Relative URL (e.g. '/api/courses/catalog')
+ * @param {string} url  - Relative URL (e.g. '/api/courses/catalog') or absolute URL
  * @param {RequestInit} options - Standard fetch options
  * @returns {Promise<Response>}
  */
@@ -48,7 +51,11 @@ async function authFetch(url, options = {}) {
     headers['Content-Type'] = headers['Content-Type'] || 'application/json'
   }
 
-  const response = await fetch(url, { ...options, headers })
+  const targetUrl = url.startsWith('http://') || url.startsWith('https://')
+    ? url
+    : `${API_BASE}${url.startsWith('/') ? url : `/${url}`}`
+
+  const response = await fetch(targetUrl, { ...options, headers })
 
   // If server says token is invalid/expired → logout and redirect
   if (response.status === 401) {
