@@ -3,6 +3,7 @@ package com.campusconnect.backend.controller;
 import com.campusconnect.backend.model.Assignment;
 import com.campusconnect.backend.model.Submission;
 import com.campusconnect.backend.service.AssignmentService;
+import com.campusconnect.backend.service.AssignmentPreviewService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,9 +49,11 @@ import java.util.Optional;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+    private final AssignmentPreviewService previewService;
 
-    public AssignmentController(AssignmentService assignmentService) {
+    public AssignmentController(AssignmentService assignmentService, AssignmentPreviewService previewService) {
         this.assignmentService = assignmentService;
+        this.previewService = previewService;
     }
 
     // ── GET /api/assignments ──────────────────────────────────────
@@ -166,6 +169,13 @@ public class AssignmentController {
     }
 
     // ── GET /api/assignments/{id}/attachment ───────────────────────
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deleteAssignment(@PathVariable Long id, Authentication authentication) {
+        requireAssignmentManager(authentication);
+        assignmentService.deleteAssignment(id, authentication.getName(), authenticatedRole(authentication));
+        return ResponseEntity.ok(Map.of("success", true, "message", "Assignment deleted."));
+    }
+
     /**
      * Download the teacher's question file attachment.
      */
@@ -302,16 +312,7 @@ public class AssignmentController {
      */
     @GetMapping("/submissions/{subId}/file")
     public ResponseEntity<byte[]> downloadSubmissionFile(@PathVariable Long subId, Authentication authentication) {
-        requireAssignmentManager(authentication);
-        Optional<Submission> opt = assignmentService.getSubmissionById(subId);
-        if (opt.isEmpty() || opt.get().getFileData() == null) {
-            return ResponseEntity.notFound().build();
-        }
-        if (!assignmentService.canAccessAssignment(opt.get().getAssignmentId(), authentication.getName(), authenticatedRole(authentication))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have access to this submission.");
-        }
-
-        Submission s = opt.get();
+        Submission s = assignmentService.getAccessibleSubmissionFile(subId, authentication.getName(), authenticatedRole(authentication));
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -322,6 +323,12 @@ public class AssignmentController {
     }
 
     // ── Private helper: Assignment → JSON map (summary, no binary) ──
+    @GetMapping("/submissions/{subId}/preview-text")
+    public ResponseEntity<Map<String, Object>> previewSubmissionText(@PathVariable Long subId, Authentication authentication) {
+        Submission submission = assignmentService.getAccessibleSubmissionFile(subId, authentication.getName(), authenticatedRole(authentication));
+        return ResponseEntity.ok(Map.of("text", previewService.preview(submission.getFileName(), submission.getFileData())));
+    }
+
     private Map<String, Object> toSummaryMap(Assignment a) {
         Map<String, Object> map = new HashMap<>();
         map.put("id",             a.getId());

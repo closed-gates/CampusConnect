@@ -16,12 +16,13 @@
  *   POST   /api/assignments/submissions/{id}/grade → grade submission (teacher)
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   EMPTY_CREATE_FORM,
   MAX_FILE_SIZE,
-  deriveStatus,
   toCourseOptions,
+  matchesAssignmentSearch,
+  submissionPreviewKind,
 } from '../models/assignmentModel.js'
 import * as assignmentService from '../services/assignmentService.js'
 import { getCatalog } from '../services/courseService.js'
@@ -40,6 +41,50 @@ export function useAssignmentController() {
 
   // ── Assignments list state ────────────────────────────────────
   const [assignments, setAssignments] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [courseSearch, setCourseSearch] = useState('')
+  const [submissionSearch, setSubmissionSearch] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleting, setDeleting] = useState(false)
+  const [preview, setPreview] = useState(null)
+  const previewRequest = useRef(0)
+  const previewUrl = useRef(null)
+
+  const closePreview = useCallback(() => {
+    previewRequest.current += 1
+    if (previewUrl.current) URL.revokeObjectURL(previewUrl.current)
+    previewUrl.current = null
+    setPreview(null)
+  }, [])
+
+  useEffect(() => () => {
+    previewRequest.current += 1
+    if (previewUrl.current) URL.revokeObjectURL(previewUrl.current)
+  }, [])
+
+  async function handlePreview(sub) {
+    closePreview()
+    const request = previewRequest.current
+    setPreview({ name: sub.fileName, loading: true })
+    try {
+      if (submissionPreviewKind(sub.fileName, sub.fileType || '') === 'document') {
+        const text = await assignmentService.getSubmissionTextPreview(sub.id)
+        if (request === previewRequest.current) setPreview({ name: sub.fileName, kind: 'text', text })
+        return
+      }
+      const blob = await assignmentService.getSubmissionFile(sub.id)
+      const kind = submissionPreviewKind(sub.fileName, sub.fileType || blob.type)
+      const text = kind === 'text' ? await blob.text() : null
+      if (request !== previewRequest.current) return
+      const url = ['pdf', 'image'].includes(kind)
+        ? URL.createObjectURL(kind === 'pdf' ? new Blob([blob], { type: 'application/pdf' }) : blob) : null
+      previewUrl.current = url
+      setPreview({ name: sub.fileName, kind, text, url })
+    } catch (err) {
+      if (request === previewRequest.current) setPreview({ name: sub.fileName, error: err.message })
+    }
+  }
+
   const [courseOptions, setCourseOptions] = useState([])
   const [showOverdue, setShowOverdue] = useState(false)
   const [overdueCount, setOverdueCount] = useState(0)
@@ -120,6 +165,7 @@ export function useAssignmentController() {
     setSubmission(null)
     setUploadedFile(null)
     setAllSubmissions([])
+    setSubmissionSearch('')
 
     try {
       const detail = await assignmentService.getAssignment(id)
@@ -167,6 +213,22 @@ export function useAssignmentController() {
   }, [])
 
   // ── Student: File upload handlers ─────────────────────────────
+  async function confirmDeleteAssignment() {
+    if (!deleteTarget || deleting || !canManageAssignments) return
+    setDeleting(true)
+    try {
+      await assignmentService.deleteAssignment(deleteTarget.id)
+      backToList()
+      setDeleteTarget(null)
+      showToast('Assignment and its submissions deleted.')
+      await loadAssignments()
+    } catch (err) {
+      showToast(err.message, 'error')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   const handleFileSelect = useCallback((file) => {
     if (!file) return
 
@@ -282,11 +344,12 @@ export function useAssignmentController() {
         ? await assignmentService.updateAssignment(editingAssignmentId, formData)
         : await assignmentService.createAssignment(formData)
       if (editingAssignmentId) setSelectedAssignment(updated)
-      showToast('✅ Assignment created successfully!')
+      showToast(editingAssignmentId ? '✅ Assignment updated successfully!' : '✅ Assignment created successfully!')
 
       // Reset form and reload list
       setCreateForm({ ...EMPTY_CREATE_FORM })
       setCreateFile(null)
+      setCourseSearch('')
       setShowCreateForm(false)
       setEditingAssignmentId(null)
       await loadAssignments()
@@ -299,6 +362,7 @@ export function useAssignmentController() {
   }, [createForm, createFile, editingAssignmentId])
 
   const openEditAssignment = useCallback((assignment) => {
+    setCourseSearch('')
     setEditingAssignmentId(assignment.id)
     setCreateForm({
       courseCode: assignment.courseCode || '', courseName: assignment.courseName || '',
@@ -319,6 +383,8 @@ export function useAssignmentController() {
   }, [])
 
   const closeAssignmentForm = useCallback(() => {
+    setCourseSearch('')
+    setCreateForm({ ...EMPTY_CREATE_FORM })
     setShowCreateForm(false)
     setEditingAssignmentId(null)
     setCreateFile(null)
@@ -326,13 +392,19 @@ export function useAssignmentController() {
 
   // ── Derived state ─────────────────────────────────────────────
   // Compute status for each assignment in the list (for student)
-  const assignmentsWithStatus = assignments.map(a => ({
+  const assignmentsWithStatus = assignments.filter(a => matchesAssignmentSearch(searchQuery, a.title, a.courseCode, a.courseName, a.createdBy)).map(a => ({
     ...a,
     // Status will be properly computed when detail is selected
     deadlineStatus: null,
   }))
 
   return {
+    searchQuery, setSearchQuery, courseSearch, setCourseSearch,
+    submissionSearch, setSubmissionSearch,
+    filteredSubmissions: allSubmissions.filter(s => matchesAssignmentSearch(submissionSearch, s.studentName, s.studentId, s.fileName)),
+    filteredCourseOptions: courseOptions.filter(c => c.code === createForm.courseCode || matchesAssignmentSearch(courseSearch, c.code, c.name)),
+    deleteTarget, setDeleteTarget, deleting, confirmDeleteAssignment,
+    preview, handlePreview, closePreview,
     // Role
     canManageAssignments,
     canViewSubmissions,

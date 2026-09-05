@@ -46,6 +46,8 @@ export default function AssignmentView() {
 
         {/* ── Teacher: Create Assignment Modal ───────────── */}
         {ctrl.showCreateForm && <CreateAssignmentModal ctrl={ctrl} />}
+        {ctrl.deleteTarget && <DeleteAssignmentModal ctrl={ctrl} />}
+        {ctrl.preview && <SubmissionPreviewModal ctrl={ctrl} />}
       </main>
     </div>
   )
@@ -76,6 +78,13 @@ function AssignmentList({ ctrl }) {
             Create Assignment
           </button>
         )}
+      </div>
+
+      <div className="asgn-search-row">
+        <input className="asgn-search" type="search" aria-label="Search assignments"
+          placeholder="Search by assignment, course, or faculty…" value={ctrl.searchQuery}
+          onChange={e => ctrl.setSearchQuery(e.target.value)} />
+        {ctrl.searchQuery && <button className="asgn-create-cancel-btn" onClick={() => ctrl.setSearchQuery('')}>Clear search</button>}
       </div>
 
       {ctrl.overdueCount > 0 && (
@@ -111,7 +120,7 @@ function AssignmentList({ ctrl }) {
       {!ctrl.loading && !ctrl.error && ctrl.assignments.length === 0 && (
         <div className="asgn-empty">
           <div className="asgn-empty-icon">📋</div>
-          <div className="asgn-empty-text">No assignments yet</div>
+          <div className="asgn-empty-text">{ctrl.searchQuery ? 'No assignments match your search' : 'No assignments yet'}</div>
           <div className="asgn-empty-hint">
             {ctrl.canManageAssignments
               ? 'Create your first assignment using the button above.'
@@ -272,9 +281,10 @@ function AssignmentDetail({ ctrl }) {
 
         {/* ── Right: "Your Work" Panel (Student) ─────────── */}
         {ctrl.canManageAssignments && (
-          <button className="asgn-turnin-btn secondary" onClick={() => ctrl.openEditAssignment(a)}>
-            Edit assignment
-          </button>
+          <div className="asgn-manage-actions">
+            <button className="asgn-turnin-btn secondary" onClick={() => ctrl.openEditAssignment(a)}>Edit assignment</button>
+            <button className="asgn-turnin-btn asgn-danger-btn" onClick={() => ctrl.setDeleteTarget(a)}>Delete assignment</button>
+          </div>
         )}
 
         {ctrl.canSubmit && (
@@ -315,6 +325,7 @@ function StudentWorkPanel({ ctrl, deadline }) {
             <div className="asgn-file-info">
               <div className="asgn-file-name">{ctrl.submission.fileName}</div>
               <div className="asgn-file-size">{ctrl.submission.fileType?.split('/').pop().toUpperCase()}</div>
+              <button className="asgn-download-link" onClick={() => ctrl.handlePreview(ctrl.submission)}>View submitted file</button>
             </div>
           </div>
         )}
@@ -420,11 +431,14 @@ function SubmissionsTable({ ctrl }) {
       <h3 className="asgn-submissions-title">
         Student Submissions ({ctrl.allSubmissions.length})
       </h3>
+      <input className="asgn-search" type="search" aria-label="Search submissions"
+        placeholder="Search student name, ID, or file…" value={ctrl.submissionSearch}
+        onChange={e => ctrl.setSubmissionSearch(e.target.value)} />
 
-      {ctrl.allSubmissions.length === 0 ? (
+      {ctrl.filteredSubmissions.length === 0 ? (
         <div className="asgn-empty" style={{ padding: '30px 20px' }}>
           <div className="asgn-empty-icon">📭</div>
-          <div className="asgn-empty-text">No submissions yet</div>
+          <div className="asgn-empty-text">{ctrl.submissionSearch ? 'No matching submissions' : 'No submissions yet'}</div>
         </div>
       ) : (
         <table className="asgn-submissions-table">
@@ -437,7 +451,7 @@ function SubmissionsTable({ ctrl }) {
             </tr>
           </thead>
           <tbody>
-            {ctrl.allSubmissions.map(sub => {
+            {ctrl.filteredSubmissions.map(sub => {
               const statusCfg = STATUS_CONFIG[sub.status] || STATUS_CONFIG.ASSIGNED
 
               return (
@@ -460,10 +474,10 @@ function SubmissionsTable({ ctrl }) {
                     {sub.hasFile && sub.fileName ? (
                       <button
                         type="button"
-                        onClick={() => ctrl.handleDownload(assignmentService.getSubmissionFileUrl(sub.id), sub.fileName)}
+                        onClick={() => ctrl.handlePreview(sub)}
                         className="asgn-download-link"
                       >
-                        {getFileIcon(sub.fileType)} {sub.fileName}
+                        {getFileIcon(sub.fileType)} View {sub.fileName}
                       </button>
                     ) : (
                       <span style={{ color: 'var(--color-text-light)', fontSize: 12 }}>
@@ -508,19 +522,23 @@ function CreateAssignmentModal({ ctrl }) {
         <div className="asgn-create-form">
           {/* Course */}
           <div className="asgn-form-group">
-            <label>Course</label>
+            <label htmlFor="asgn-course-search">Search courses</label>
+            <input id="asgn-course-search" type="search" placeholder="Search course code or name…"
+              value={ctrl.courseSearch} onChange={e => ctrl.setCourseSearch(e.target.value)} />
+            <label htmlFor="asgn-create-course">Course</label>
             <select
               value={ctrl.createForm.courseCode}
               onChange={(e) => ctrl.handleCourseSelect(e.target.value)}
               id="asgn-create-course"
             >
               <option value="">Select a course...</option>
-              {ctrl.courseOptions.map(c => (
+              {ctrl.filteredCourseOptions.map(c => (
                 <option key={c.code} value={c.code}>
                   {c.code} – {c.name}
                 </option>
               ))}
             </select>
+            {ctrl.filteredCourseOptions.length === 0 && <p role="status">No matching courses. Try another code or name.</p>}
           </div>
 
           {/* Title */}
@@ -627,6 +645,48 @@ function CreateAssignmentModal({ ctrl }) {
 /* ══════════════════════════════════════════════════════════════
    SVG Icons (scoped to this view)
    ══════════════════════════════════════════════════════════════ */
+function DeleteAssignmentModal({ ctrl }) {
+  return (
+    <div className="asgn-create-overlay">
+      <section className="asgn-create-modal" role="dialog" aria-modal="true" aria-labelledby="asgn-delete-title">
+        <div className="asgn-create-modal-header"><h2 id="asgn-delete-title">Delete assignment?</h2></div>
+        <div className="asgn-create-form">
+          <p>Delete <strong>{ctrl.deleteTarget.title}</strong> and all its student submissions? This cannot be undone.</p>
+        </div>
+        <div className="asgn-create-actions">
+          <button autoFocus className="asgn-create-cancel-btn" disabled={ctrl.deleting} onClick={() => ctrl.setDeleteTarget(null)}>Cancel</button>
+          <button className="asgn-create-submit-btn asgn-danger-btn" disabled={ctrl.deleting} onClick={ctrl.confirmDeleteAssignment}>
+            {ctrl.deleting ? 'Deleting…' : 'Delete assignment'}
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function SubmissionPreviewModal({ ctrl }) {
+  const preview = ctrl.preview
+  return (
+    <div className="asgn-create-overlay" onClick={e => e.target === e.currentTarget && ctrl.closePreview()}>
+      <section className="asgn-create-modal asgn-preview-modal" role="dialog" aria-modal="true" aria-labelledby="asgn-preview-title"
+        onKeyDown={e => e.key === 'Escape' && ctrl.closePreview()}>
+        <div className="asgn-create-modal-header">
+          <h2 id="asgn-preview-title">{preview.name}</h2>
+          <button autoFocus className="asgn-create-close" aria-label="Close preview" onClick={ctrl.closePreview}>✕</button>
+        </div>
+        <div className="asgn-preview-content">
+          {preview.loading && <p role="status">Loading preview…</p>}
+          {preview.error && <p role="alert">{preview.error}</p>}
+          {preview.kind === 'pdf' && <iframe title={preview.name} src={preview.url} />}
+          {preview.kind === 'image' && <img alt={preview.name} src={preview.url} />}
+          {preview.kind === 'text' && <pre>{preview.text}</pre>}
+          {preview.kind === 'unsupported' && <p>A preview is not available for this file format. PDF, images, text, source code, DOCX, and ZIP file listings can be viewed here.</p>}
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function PlusIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">

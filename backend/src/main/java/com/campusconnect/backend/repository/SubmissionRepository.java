@@ -16,6 +16,7 @@ import java.util.Optional;
  */
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
+    void deleteByAssignmentId(Long assignmentId);
 
     /**
      * Find a specific student's submission for an assignment.

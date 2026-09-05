@@ -8,6 +8,8 @@ import com.campusconnect.backend.repository.SectionRegistrationRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -226,6 +228,32 @@ public class AssignmentService {
     }
 
     // ── Submission operations ─────────────────────────────────────
+    /** Delete the assignment and its submissions atomically, after checking ownership. */
+    @Transactional
+    public void deleteAssignment(Long id, String userId, String role) {
+        if (!"FACULTY".equals(role) && !"ADMIN".equals(role)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only faculty and admins can delete assignments.");
+        }
+        Assignment assignment = assignmentRepo.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found."));
+        if (!"ADMIN".equals(role) && !userId.equals(assignment.getCreatedBy())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own assignments.");
+        }
+        submissionRepo.deleteByAssignmentId(id);
+        assignmentRepo.delete(assignment);
+    }
+
+    @Transactional(readOnly = true)
+    public Submission getAccessibleSubmissionFile(Long id, String userId, String role) {
+        Submission submission = submissionRepo.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found."));
+        boolean allowed = "ADMIN".equals(role)
+            || ("STUDENT".equals(role) && userId.equals(submission.getStudentId()))
+            || ("FACULTY".equals(role) && canAccessAssignment(submission.getAssignmentId(), userId, role));
+        if (!allowed) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have access to this submission.");
+        if (submission.getFileData() == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No submitted file.");
+        return submission;
+    }
 
     /**
      * Student turns in work for an assignment.

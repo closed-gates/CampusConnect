@@ -214,3 +214,19 @@ export function formatDate(dateStr) {
   const d = new Date(dateStr)
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
+
+/** All query words must occur in the searchable fields, regardless of case. */
+export function matchesAssignmentSearch(query, ...fields) {
+  const text = fields.filter(Boolean).join(' ').toLowerCase()
+  return query.trim().toLowerCase().split(/\s+/).every(word => text.includes(word))
+}
+
+/** Only passive formats are embedded; source and markup are rendered as plain text. */
+export function submissionPreviewKind(name = '', type = '') {
+  const extension = name.split('.').pop().toLowerCase()
+  if (['docx', 'zip'].includes(extension)) return 'document'
+  if (extension === 'pdf' || type === 'application/pdf') return 'pdf'
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'].includes(extension)) return 'image'
+  if (type.startsWith('text/') || ['txt', 'md', 'csv', 'json', 'xml', 'html', 'svg', 'py', 'java', 'c', 'cpp', 'h', 'js', 'ts', 'css', 'sql', 'ipynb'].includes(extension)) return 'text'
+  return 'unsupported'
+}

@@ -22,6 +22,24 @@ import apiClient from './apiClient.js'
 
 const API_BASE = '/api/assignments'
 
+export async function deleteAssignment(id) {
+  const res = await apiClient.delete(`${API_BASE}/${id}`)
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.message || 'Unable to delete assignment.')
+}
+
+export async function getSubmissionFile(id) {
+  const res = await apiClient.get(getSubmissionFileUrl(id))
+  if (!res.ok) throw new Error('Unable to preview this submission. You may not have access or the file was removed.')
+  return res.blob()
+}
+
+export async function getSubmissionTextPreview(id) {
+  const res = await apiClient.get(`${API_BASE}/submissions/${id}/preview-text`)
+  if (!res.ok) throw new Error('Unable to preview this document. It may be damaged or too large to extract.')
+  return (await res.json()).text
+}
+
 /**
  * Fetch all assignments (summary, no binary data).
  * @returns {Promise<Array>}

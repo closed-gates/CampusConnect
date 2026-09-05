@@ -1,0 +1,12 @@
+# Assignment search, deletion, and submitted-file previews
+
+Students can search assignments and view submitted work in the page. Faculty and admins can search courses when creating or editing assignments, search student submissions, and delete assignments after confirmation.
+
+1. AssignmentView sends search input to useAssignmentController. The assignment model matches query words against assignment title, course code/name, and creator. Course search filters the upload form's catalog choices while preserving the selected course. Submission search matches student name, ID, and filename. Search respects the existing overdue filter and server-authorized list.
+2. Faculty/admin select Delete assignment and confirm the named assignment plus all associated submissions. The controller calls assignmentService DELETE /api/assignments/{id}. The backend controller checks role; AssignmentService checks faculty ownership (admins may delete any), then deletes submissions and the assignment in one transaction. The frontend reloads the list and overdue count only after success; errors retain the confirmation for retry.
+3. View submitted file calls the frontend controller and authenticated API service. AssignmentService permits the submission's student, the assignment's faculty owner, or an admin. PDFs and raster images display through temporary object URLs; text/source/markup displays as escaped text. DOCX and ZIP use the authenticated preview-text endpoint and AssignmentPreviewService for bounded, external-entity-disabled extraction. DOCX shows text without layout or embedded images; ZIP shows an entry listing. Unsupported formats display an explanation. Files stay within the application and are not sent to external viewers.
+4. The controller revokes object URLs on close/unmount and ignores stale preview responses. Existing explicit question-file downloads remain available.
+
+Files: frontend/src/models/assignmentModel.js, frontend/src/controllers/assignmentController.js, frontend/src/services/assignmentService.js, frontend/src/views/pages/AssignmentView.jsx, frontend/src/views/pages/AssignmentPage.css; backend AssignmentController.java, AssignmentService.java, AssignmentPreviewService.java, SubmissionRepository.java.
+
+Verification: assignmentModel.test.js exercises matching and passive preview classification; AssignmentAccessTest covers deletion permissions, submission access, missing files, and deletion order; AssignmentPreviewServiceTest covers extraction, malformed/oversized documents, and external entities.
