@@ -32,6 +32,28 @@ export function formatMessageTime(dateInput) {
   return `${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${timeStr}`;
 }
 
+export function formatConversationTime(dateInput) {
+  if (!dateInput) return '';
+  const date = new Date(dateInput);
+  const now = new Date();
+
+  const isToday = date.toDateString() === now.toDateString();
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  if (isToday) {
+    return timeStr;
+  }
+  if (isYesterday) {
+    return 'Yesterday';
+  }
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
 export function getPresenceColor(status) {
   if (status?.toUpperCase() === 'ONLINE') {
     return '#10b981'; // Green for Online

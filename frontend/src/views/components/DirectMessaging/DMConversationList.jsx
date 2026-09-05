@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getPresenceColor, formatMessageTime } from '../../../utils/dmUtils.js';
+import { getPresenceColor, formatMessageTime, formatConversationTime } from '../../../utils/dmUtils.js';
 import UserAvatar from './UserAvatar.jsx';
 
 export default function DMConversationList({
@@ -254,15 +254,18 @@ function renderChatItem(conv, activeConvId, onSelectConversation, onlineUsers) {
 
       <div className="univ-chat-meta">
         <div className="univ-chat-top-line">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flex: 1 }}>
             <span className="univ-chat-name">{recipient?.displayName}</span>
-            <span className={`role-badge ${recipient?.role === 'FACULTY' ? 'faculty' : recipient?.role === 'ADMIN' ? 'admin' : 'student'}`}>
+            <span
+              className={`role-badge ${recipient?.role === 'FACULTY' ? 'faculty' : recipient?.role === 'ADMIN' ? 'admin' : 'student'}`}
+              style={{ flexShrink: 0 }}
+            >
               {recipient?.role}
             </span>
           </div>
           {conv.lastMessage && (
-            <span className="univ-chat-time">
-              {formatMessageTime(conv.lastMessage.createdAt)}
+            <span className="univ-chat-time" style={{ flexShrink: 0, marginLeft: 6 }}>
+              {formatConversationTime(conv.lastMessage.createdAt)}
             </span>
           )}
         </div>
@@ -302,7 +305,7 @@ function renderAdvisorChannelItem(ch, activeConvId, onSelectConversation) {
 
       <div className="univ-chat-meta">
         <div className="univ-chat-top-line">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flex: 1 }}>
             <span className="univ-chat-name">{ch.name}</span>
             <span
               style={{
@@ -310,6 +313,7 @@ function renderAdvisorChannelItem(ch, activeConvId, onSelectConversation) {
                 borderRadius: 4, background: 'rgba(26,152,130,0.25)',
                 color: '#1A9882', border: '1px solid rgba(26,152,130,0.4)',
                 textTransform: 'uppercase', letterSpacing: '0.4px',
+                flexShrink: 0
               }}
             >
               ADVISOR
@@ -347,7 +351,7 @@ function renderChannelItem(ch, activeConvId, onSelectConversation) {
 
       <div className="univ-chat-meta">
         <div className="univ-chat-top-line">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flex: 1 }}>
             <span className="univ-chat-name">{ch.name}</span>
             <span
               style={{
@@ -355,6 +359,7 @@ function renderChannelItem(ch, activeConvId, onSelectConversation) {
                 borderRadius: 4, background: 'var(--color-teal-light, #E6F5F2)',
                 color: 'var(--color-teal, #1A9882)', border: '1px solid rgba(26,152,130,0.3)',
                 textTransform: 'uppercase', letterSpacing: '0.4px',
+                flexShrink: 0
               }}
             >
               CHANNEL

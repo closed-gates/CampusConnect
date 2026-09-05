@@ -133,8 +133,8 @@
    COLUMN 2 – Conversation List Sidebar
    ═══════════════════════════════════════════════════════════ */
 .univ-chats-sidebar {
-  width: 300px;
-  min-width: 260px;
+  width: 330px;
+  min-width: 290px;
   background: var(--color-surface, #FFFFFF);
   display: flex;
   flex-direction: column;
@@ -438,6 +438,48 @@
   border-radius: 10px;
 }
 
+/* ── Welcome banner ────────────────────────────────────────── */
+.univ-welcome-card {
+  background: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #E5E7EB);
+  border-radius: var(--radius-md, 12px);
+  padding: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+}
+
+.univ-welcome-avatar {
+  margin-bottom: 4px;
+}
+
+.univ-welcome-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.univ-welcome-desc {
+  font-size: 13px;
+  color: var(--color-text-sub, #6B7280);
+  max-width: 480px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.univ-welcome-highlight {
+  color: var(--color-teal, #1A9882);
+  font-weight: 600;
+}
+
 .univ-msg-card {
   display: flex;
   gap: 12px;
@@ -632,7 +674,7 @@
    Input Area
    ═══════════════════════════════════════════════════════════ */
 .univ-input-section {
-  padding: 0 20px 20px 20px;
+  padding: 0 88px 20px 20px;
   position: relative;
 }
 
@@ -870,4 +912,343 @@
 
 @media (max-width: 640px) {
   .univ-chats-sidebar { display: none; }
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES (:root[data-theme='dark'])
+   Harmonized with CampusConnect website dark theme
+   Palette: #090e17 (deep bg), #0d1726 (surfaces), #111c30 (panels/bubbles), #1e293b (borders)
+   ============================================================ */
+:root[data-theme='dark'] .univ-dm-root {
+  background: #090e17;
+  color: #f8fafc;
+}
+
+/* ── Sidebar & Nav ─────────────────────────────────────────── */
+:root[data-theme='dark'] .univ-nav-sidebar {
+  background: #0d1726;
+  border-right-color: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-nav-item {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-nav-item:hover,
+:root[data-theme='dark'] .univ-nav-item.active {
+  background: rgba(26, 152, 130, 0.15);
+  color: #2dd4bf;
+}
+
+:root[data-theme='dark'] .univ-chats-sidebar {
+  background: #0d1726;
+  border-right-color: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-chats-header {
+  border-bottom-color: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-chats-title {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-search-input-box {
+  background: #111c30;
+  border-color: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-search-input-box:focus-within {
+  border-color: #1A9882;
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.2);
+}
+
+:root[data-theme='dark'] .univ-search-input-box input {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-search-input-box input::placeholder {
+  color: #64748b;
+}
+
+:root[data-theme='dark'] .univ-filter-tabs {
+  border-bottom-color: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-tab-btn {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-tab-btn:hover {
+  color: #2dd4bf;
+  background: rgba(26, 152, 130, 0.15);
+}
+
+:root[data-theme='dark'] .univ-tab-btn.active {
+  background: rgba(26, 152, 130, 0.2);
+  color: #2dd4bf;
+  border-color: rgba(45, 212, 191, 0.4);
+}
+
+:root[data-theme='dark'] .univ-category-label {
+  color: #64748b;
+}
+
+:root[data-theme='dark'] .univ-chat-item:hover {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+:root[data-theme='dark'] .univ-chat-item.active {
+  background: rgba(26, 152, 130, 0.15);
+  border-color: rgba(26, 152, 130, 0.5);
+}
+
+:root[data-theme='dark'] .univ-chat-name {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-chat-time {
+  color: #64748b;
+}
+
+:root[data-theme='dark'] .univ-chat-preview {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-presence-badge {
+  border-color: #0d1726;
+}
+
+/* ── Message Window & Header ───────────────────────────────── */
+:root[data-theme='dark'] .univ-message-window {
+  background: #090e17;
+}
+
+:root[data-theme='dark'] .univ-window-header {
+  background: #0d1726;
+  border-bottom-color: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-header-details h3 {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-header-details p {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-key-badge {
+  background: #111c30;
+  border-color: #1e293b;
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-key-badge:hover {
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+  background: rgba(26, 152, 130, 0.15);
+}
+
+/* ── Welcome Card (Dark Mode) ──────────────────────────────── */
+:root[data-theme='dark'] .univ-welcome-card {
+  background: #0d1726;
+  border-color: #1e293b;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme='dark'] .univ-welcome-title {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-welcome-desc {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-welcome-highlight {
+  color: #2dd4bf;
+}
+
+/* ── Message Bubbles ───────────────────────────────────────── */
+:root[data-theme='dark'] .univ-msg-bubble {
+  background: #111c30;
+  border-color: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+:root[data-theme='dark'] .univ-msg-author {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-msg-timestamp {
+  color: #64748b;
+}
+
+:root[data-theme='dark'] .univ-msg-text {
+  color: #e2e8f0;
+}
+
+:root[data-theme='dark'] .univ-msg-card.self .univ-msg-bubble {
+  background: linear-gradient(135deg, #1A9882 0%, #137462 100%);
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
+}
+
+:root[data-theme='dark'] .univ-msg-card.self .univ-msg-author {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+:root[data-theme='dark'] .univ-msg-card.self .univ-msg-timestamp {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+:root[data-theme='dark'] .univ-msg-card.self .univ-msg-text {
+  color: #ffffff;
+}
+
+/* ── Role Badges in Dark Mode ──────────────────────────────── */
+:root[data-theme='dark'] .role-badge.faculty {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+:root[data-theme='dark'] .role-badge.student {
+  background: rgba(99, 102, 241, 0.18);
+  color: #a5b4fc;
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+:root[data-theme='dark'] .role-badge.admin {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* ── File Attachments ──────────────────────────────────────── */
+:root[data-theme='dark'] .univ-file-card {
+  background: #0d1726;
+  border-color: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-file-card:hover {
+  border-color: #1A9882;
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.15);
+}
+
+:root[data-theme='dark'] .univ-file-ext-badge {
+  background: rgba(26, 152, 130, 0.2);
+  color: #2dd4bf;
+  border-color: rgba(45, 212, 191, 0.3);
+}
+
+:root[data-theme='dark'] .univ-file-name {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-file-size {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-file-download-btn {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-file-download-btn:hover {
+  background: #1A9882;
+  color: #ffffff;
+}
+
+:root[data-theme='dark'] .univ-msg-card.self .univ-file-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+:root[data-theme='dark'] .univ-image-preview {
+  border-color: #1e293b;
+}
+
+/* ── Staged Files & Input ──────────────────────────────────── */
+:root[data-theme='dark'] .univ-staged-files-bar {
+  background: #111c30;
+  border-color: #1A9882;
+}
+
+:root[data-theme='dark'] .univ-staged-chip {
+  background: rgba(26, 152, 130, 0.2);
+  border-color: rgba(26, 152, 130, 0.4);
+  color: #2dd4bf;
+}
+
+:root[data-theme='dark'] .univ-input-form-box {
+  background: #111c30;
+  border-color: #1e293b;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme='dark'] .univ-input-form-box:focus-within {
+  border-color: #1A9882;
+  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.2);
+}
+
+:root[data-theme='dark'] .univ-input-field {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-input-field::placeholder {
+  color: #64748b;
+}
+
+:root[data-theme='dark'] .univ-action-btn {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-action-btn:hover {
+  background: rgba(26, 152, 130, 0.15);
+  color: #2dd4bf;
+}
+
+/* ── Emoji Picker ──────────────────────────────────────────── */
+:root[data-theme='dark'] .univ-emoji-picker-modal {
+  background: #0d1726;
+  border-color: #1e293b;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme='dark'] .univ-emoji-header {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-emoji-category {
+  color: #2dd4bf;
+}
+
+:root[data-theme='dark'] .univ-emoji-btn:hover {
+  background: rgba(26, 152, 130, 0.2);
+}
+
+/* ── Empty State & Typing ──────────────────────────────────── */
+:root[data-theme='dark'] .univ-empty-state h3 {
+  color: #f8fafc;
+}
+
+:root[data-theme='dark'] .univ-empty-state p {
+  color: #94a3b8;
+}
+
+:root[data-theme='dark'] .univ-typing-indicator-bubble {
+  background: #111c30;
+  border: 1.5px solid #1e293b;
+  color: #94a3b8;
+}
+
+/* ── Scrollbars ────────────────────────────────────────────── */
+:root[data-theme='dark'] .univ-msg-feed::-webkit-scrollbar-thumb,
+:root[data-theme='dark'] .univ-chat-list::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+
+:root[data-theme='dark'] .univ-msg-feed::-webkit-scrollbar-thumb:hover,
+:root[data-theme='dark'] .univ-chat-list::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
