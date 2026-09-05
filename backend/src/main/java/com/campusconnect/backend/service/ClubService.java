@@ -298,6 +298,32 @@ public class ClubService {
      * @return The newly created Application
      */
     @Transactional
+    public Application applyToClub(Map<String, String> data) {
+        Application app = new Application();
+        app.setRecruitmentId(data.getOrDefault("recruitmentId", ""));
+        app.setClubName(data.getOrDefault("clubName", ""));
+        app.setRole(data.getOrDefault("role", ""));
+        app.setStudentName(data.getOrDefault("studentName", ""));
+        app.setStudentEmail(data.getOrDefault("studentEmail", ""));
+        app.setMotivation(data.getOrDefault("motivation", ""));
+        app.setStudentId(data.getOrDefault("studentId", ""));
+        app.setPhone(data.getOrDefault("phone", ""));
+        app.setDepartment(data.getOrDefault("department", ""));
+        app.setYearSemester(data.getOrDefault("yearSemester", ""));
+        app.setInterestedTeams(data.getOrDefault("interestedTeams", ""));
+        app.setSkills(data.getOrDefault("skills", ""));
+        app.setHasPreviousExperience(data.getOrDefault("hasPreviousExperience", ""));
+        app.setExperienceDescription(data.getOrDefault("experienceDescription", ""));
+        app.setPortfolioLink(data.getOrDefault("portfolioLink", ""));
+        app.setTimeCommitment(data.getOrDefault("timeCommitment", ""));
+        app.setWillingToParticipate(data.getOrDefault("willingToParticipate", ""));
+        app.setBringToClub(data.getOrDefault("bringToClub", ""));
+        app.setAppliedAt(LocalDateTime.now().toString());
+        app.setStatus("PENDING");
+        return appRepo.save(app);
+    }
+
+    @Transactional
     public Application applyToClub(String recruitmentId, String clubName, String role,
                                    String studentName, String studentEmail, String motivation) {
         Application app = new Application();
