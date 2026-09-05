@@ -47,6 +47,9 @@ public class InAppNotificationPreferenceService {
             case NotificationService.TYPE_ADVISING_CONFIRMED -> p.isAdvising();
             case NotificationService.TYPE_EXAM_SCHEDULED -> p.isExams();
             case NotificationService.TYPE_ANNOUNCEMENT_POSTED -> p.isAnnouncements();
+            case StudentActivityNotificationService.TYPE_ASSIGNMENT_UPLOADED -> p.isAssignments();
+            case StudentActivityNotificationService.TYPE_ADVISING_PORTAL -> p.isAdvising();
+            case StudentActivityNotificationService.TYPE_COURSE_MATERIAL_UPLOADED -> p.isAnnouncements();
             default -> true;
         };
     }

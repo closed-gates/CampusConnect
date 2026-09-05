@@ -12,6 +12,12 @@ export const NOTIFICATION_TYPES = {
   DEADLINE_APPROACHING: 'DEADLINE_APPROACHING',
   ANNOUNCEMENT_POSTED:  'ANNOUNCEMENT_POSTED',
   ADVISING_CONFIRMED:   'ADVISING_CONFIRMED',
+  ASSIGNMENT_UPLOADED:  'ASSIGNMENT_UPLOADED',
+  VIDEO_UPLOADED:       'VIDEO_UPLOADED',
+  COURSE_MATERIAL_UPLOADED: 'COURSE_MATERIAL_UPLOADED',
+  ADVISING_PORTAL:      'ADVISING_PORTAL',
+  DM_MESSAGE:           'DM_MESSAGE',
+  ATTENDANCE_LOW:       'ATTENDANCE_LOW',
 };
 
 /**
@@ -50,6 +56,54 @@ export const NOTIFICATION_CONFIG = {
     bgColor: 'rgba(6, 182, 212, 0.12)',
     badgeClass: 'advising-badge',
     defaultLink: '/advising',
+  },
+  [NOTIFICATION_TYPES.ASSIGNMENT_UPLOADED]: {
+    label: 'New Assignment',
+    icon: '📝',
+    accentColor: '#8b5cf6',
+    bgColor: 'rgba(139, 92, 246, 0.12)',
+    badgeClass: 'assignment-badge',
+    defaultLink: '/assignments',
+  },
+  [NOTIFICATION_TYPES.VIDEO_UPLOADED]: {
+    label: 'New Video Lecture',
+    icon: '🎬',
+    accentColor: '#ef4444',
+    bgColor: 'rgba(239, 68, 68, 0.12)',
+    badgeClass: 'video-badge',
+    defaultLink: '/video-lectures',
+  },
+  [NOTIFICATION_TYPES.COURSE_MATERIAL_UPLOADED]: {
+    label: 'Course Material',
+    icon: '📎',
+    accentColor: '#6366f1',
+    bgColor: 'rgba(99, 102, 241, 0.12)',
+    badgeClass: 'material-badge',
+    defaultLink: '/course-materials',
+  },
+  [NOTIFICATION_TYPES.ADVISING_PORTAL]: {
+    label: 'Advising Portal',
+    icon: '🚪',
+    accentColor: '#0d9488',
+    bgColor: 'rgba(13, 148, 136, 0.12)',
+    badgeClass: 'advising-badge',
+    defaultLink: '/advising',
+  },
+  [NOTIFICATION_TYPES.DM_MESSAGE]: {
+    label: 'Direct Message',
+    icon: '💬',
+    accentColor: '#2563eb',
+    bgColor: 'rgba(37, 99, 235, 0.12)',
+    badgeClass: 'dm-badge',
+    defaultLink: '/messaging',
+  },
+  [NOTIFICATION_TYPES.ATTENDANCE_LOW]: {
+    label: 'Low Attendance',
+    icon: '📉',
+    accentColor: '#dc2626',
+    bgColor: 'rgba(220, 38, 38, 0.12)',
+    badgeClass: 'attendance-badge',
+    defaultLink: '/attendance',
   },
 };
 
