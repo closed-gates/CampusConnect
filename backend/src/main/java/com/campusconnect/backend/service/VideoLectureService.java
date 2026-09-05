@@ -137,8 +137,10 @@ public class VideoLectureService {
             String normalized = normalizeEmbedUrl(embedUrl);
             lecture.setSourceType(VideoLecture.SOURCE_EMBED);
             lecture.setEmbedUrl(normalized);
+            lecture.setVideoUrl(normalized);
         } else if (VideoLecture.SOURCE_UPLOAD.equals(type)) {
             storeUpload(lecture, file);
+            lecture.setVideoUrl("upload:" + lecture.getStoredFilename());
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sourceType must be UPLOAD or EMBED.");
         }

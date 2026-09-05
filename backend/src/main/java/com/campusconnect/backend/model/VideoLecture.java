@@ -40,6 +40,9 @@ public class VideoLecture {
     @Column(name = "embed_url", length = 1000)
     private String embedUrl;
 
+    @Column(name = "video_url", length = 1000)
+    private String videoUrl;
+
     @Column(name = "stored_filename", length = 400)
     private String storedFilename;
 
@@ -83,6 +86,9 @@ public class VideoLecture {
 
     public String getEmbedUrl() { return embedUrl; }
     public void setEmbedUrl(String embedUrl) { this.embedUrl = embedUrl; }
+
+    public String getVideoUrl() { return videoUrl; }
+    public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }
 
     public String getStoredFilename() { return storedFilename; }
     public void setStoredFilename(String storedFilename) { this.storedFilename = storedFilename; }

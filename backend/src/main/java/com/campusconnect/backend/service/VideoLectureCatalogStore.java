@@ -119,6 +119,10 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS course_name VARCHAR(200)");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS source_type VARCHAR(20)");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS embed_url VARCHAR(1000)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS video_url VARCHAR(1000)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ALTER COLUMN video_url SET DEFAULT ''");
+                    runQuietly(statement, "ALTER TABLE video_lectures ALTER COLUMN video_url DROP NOT NULL");
+                    runQuietly(statement, "UPDATE video_lectures SET video_url = COALESCE(NULLIF(video_url, ''), embed_url, stored_filename, 'upload') WHERE video_url IS NULL OR video_url = ''");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS stored_filename VARCHAR(400)");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS original_filename VARCHAR(400)");
                     runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS content_type VARCHAR(120)");
@@ -223,6 +227,7 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
         public String courseName;
         public String sourceType;
         public String embedUrl;
+        public String videoUrl;
         public String storedFilename;
         public String originalFilename;
         public String contentType;
@@ -240,6 +245,7 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
             row.courseName = lecture.getCourseName();
             row.sourceType = lecture.getSourceType();
             row.embedUrl = lecture.getEmbedUrl();
+            row.videoUrl = lecture.getVideoUrl();
             row.storedFilename = lecture.getStoredFilename();
             row.originalFilename = lecture.getOriginalFilename();
             row.contentType = lecture.getContentType();
@@ -258,6 +264,9 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
             lecture.setCourseName(courseName);
             lecture.setSourceType(sourceType);
             lecture.setEmbedUrl(embedUrl);
+            lecture.setVideoUrl(videoUrl != null && !videoUrl.isBlank()
+                    ? videoUrl
+                    : (embedUrl != null && !embedUrl.isBlank() ? embedUrl : "upload"));
             lecture.setStoredFilename(storedFilename);
             lecture.setOriginalFilename(originalFilename);
             lecture.setContentType(contentType);
