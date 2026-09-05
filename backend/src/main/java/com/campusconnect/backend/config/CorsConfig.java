@@ -32,11 +32,18 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allowed origins — update with production URL when deploying
-        // Vite falls back to 5174+ when 5173 is already in use.
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:*"
-        ));
+        // Allowed origins for Render production deployment
+        String frontendUrl = System.getenv("FRONTEND_URL");
+        if (frontendUrl != null && !frontendUrl.isBlank()) {
+            configuration.setAllowedOriginPatterns(List.of(
+                    "https://*.onrender.com",
+                    frontendUrl.trim()
+            ));
+        } else {
+            configuration.setAllowedOriginPatterns(List.of(
+                    "https://*.onrender.com"
+            ));
+        }
 
         // Allowed HTTP methods
         configuration.setAllowedMethods(List.of(

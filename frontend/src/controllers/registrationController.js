@@ -110,8 +110,10 @@ export function useRegistrationController() {
   const connectWs = useCallback(() => {
     if (stompClientRef.current?.connected) return
 
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const brokerURL  = `${wsProtocol}//${window.location.host}/ws/websocket`
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+    const wsProtocol = apiBase.startsWith('https') ? 'wss:' : 'ws:'
+    const brokerHost = apiBase.replace(/^https?:\/\//, '') || window.location.host
+    const brokerURL  = `${wsProtocol}//${brokerHost}/ws/websocket`
 
     const client = new Client({
       brokerURL,

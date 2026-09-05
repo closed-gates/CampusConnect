@@ -39,9 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns(
-                        "http://localhost:5173",   // Vite dev server
-                        "http://localhost:3000",   // React dev server
-                        "http://localhost:*"       // any local port
+                        "https://*.onrender.com"
                 )
                 .withSockJS();                     // SockJS fallback for broad compatibility
     }
