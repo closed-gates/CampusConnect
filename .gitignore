@@ -41,6 +41,8 @@ artifacts/*.log
 .idea/
 **/.idea/
 *.iml
+.agents/
+**/.agents/
 
 # === OS Files ===
 .DS_Store
