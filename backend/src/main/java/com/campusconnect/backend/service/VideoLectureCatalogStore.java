@@ -84,7 +84,7 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
                 boolean previous = connection.getAutoCommit();
                 connection.setAutoCommit(true);
                 try (var statement = connection.createStatement()) {
-                    statement.execute("""
+                    runQuietly(statement, """
                             CREATE TABLE IF NOT EXISTS video_lectures (
                                 id BIGSERIAL PRIMARY KEY,
                                 title VARCHAR(300) NOT NULL,
@@ -101,7 +101,7 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
                                 created_at TIMESTAMP
                             )
                             """);
-                    statement.execute("""
+                    runQuietly(statement, """
                             CREATE TABLE IF NOT EXISTS video_watch_progress (
                                 id BIGSERIAL PRIMARY KEY,
                                 lecture_id BIGINT NOT NULL,
@@ -113,7 +113,19 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
                                 updated_at TIMESTAMP
                             )
                             """);
-                    statement.execute("""
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS title VARCHAR(300)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS description TEXT");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS course_code VARCHAR(20)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS course_name VARCHAR(200)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS source_type VARCHAR(20)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS embed_url VARCHAR(1000)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS stored_filename VARCHAR(400)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS original_filename VARCHAR(400)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS content_type VARCHAR(120)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS file_size BIGINT");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS created_by VARCHAR(100)");
+                    runQuietly(statement, "ALTER TABLE video_lectures ADD COLUMN IF NOT EXISTS created_at TIMESTAMP");
+                    runQuietly(statement, """
                             CREATE UNIQUE INDEX IF NOT EXISTS uk_vl_progress_lecture_user
                             ON video_watch_progress (lecture_id, user_id)
                             """);
@@ -127,14 +139,22 @@ public class VideoLectureCatalogStore implements ApplicationRunner {
         }
     }
 
+    private void runQuietly(java.sql.Statement statement, String sql) {
+        try {
+            statement.execute(sql);
+        } catch (Exception ex) {
+            log.warn("Video lecture DDL skipped: {} ({})", ex.getMessage(), sql.replaceAll("\\s+", " "));
+        }
+    }
+
     @Transactional
     public void persistSnapshot() {
-        CatalogSnapshot snapshot = new CatalogSnapshot();
-        snapshot.lectures = lectureRepo.findAll().stream().map(CatalogLecture::from).toList();
-        snapshot.progress = progressRepo.findAll().stream().map(CatalogProgress::from).toList();
         try {
+            CatalogSnapshot snapshot = new CatalogSnapshot();
+            snapshot.lectures = lectureRepo.findAll().stream().map(CatalogLecture::from).toList();
+            snapshot.progress = progressRepo.findAll().stream().map(CatalogProgress::from).toList();
             mapper.writerWithDefaultPrettyPrinter().writeValue(catalogFile.toFile(), snapshot);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.warn("Could not write video lecture catalog: {}", ex.getMessage());
         }
     }

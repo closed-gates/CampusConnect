@@ -7,6 +7,8 @@ import com.campusconnect.backend.model.VideoLecture;
 import com.campusconnect.backend.model.VideoWatchProgress;
 import com.campusconnect.backend.repository.VideoLectureRepository;
 import com.campusconnect.backend.repository.VideoWatchProgressRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,8 @@ import java.util.UUID;
  */
 @Service
 public class VideoLectureService {
+
+    private static final Logger log = LoggerFactory.getLogger(VideoLectureService.class);
 
     public static final long MAX_UPLOAD_BYTES = 200L * 1024L * 1024L;
 
@@ -82,9 +86,20 @@ public class VideoLectureService {
         } catch (DataAccessException ignored) {
             catalogStore.ensureSchema();
         }
-        return lectureRepo.findAllByOrderByCreatedAtDesc().stream()
-                .map(lecture -> toDto(lecture, progressByLecture.get(lecture.getId())))
-                .toList();
+        try {
+            return lectureRepo.findAllByOrderByCreatedAtDesc().stream()
+                    .map(lecture -> toDto(lecture, progressByLecture.get(lecture.getId())))
+                    .toList();
+        } catch (DataAccessException ex) {
+            catalogStore.ensureSchema();
+            try {
+                return lectureRepo.findAllByOrderByCreatedAtDesc().stream()
+                        .map(lecture -> toDto(lecture, progressByLecture.get(lecture.getId())))
+                        .toList();
+            } catch (DataAccessException second) {
+                throw databaseError(second);
+            }
+        }
     }
 
     @Transactional(readOnly = true)
@@ -127,9 +142,17 @@ public class VideoLectureService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sourceType must be UPLOAD or EMBED.");
         }
 
-        VideoLectureDTO created = toDto(lectureRepo.save(lecture), null);
-        catalogStore.persistSnapshot();
-        return created;
+        try {
+            VideoLectureDTO created = toDto(lectureRepo.saveAndFlush(lecture), null);
+            try {
+                catalogStore.persistSnapshot();
+            } catch (RuntimeException ex) {
+                log.warn("Video lecture catalog snapshot skipped: {}", ex.getMessage());
+            }
+            return created;
+        } catch (DataAccessException ex) {
+            throw databaseError(ex);
+        }
     }
 
     @Transactional
@@ -406,6 +429,13 @@ public class VideoLectureService {
         if (amp < 0) return q;
         if (q < 0) return amp;
         return Math.min(amp, q);
+    }
+
+    private ResponseStatusException databaseError(DataAccessException ex) {
+        Throwable root = ex.getMostSpecificCause();
+        String message = root != null && root.getMessage() != null ? root.getMessage() : ex.getMessage();
+        log.error("Video lecture database error: {}", message);
+        return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 
     private VideoLecture requireLecture(Long id) {
