@@ -13,7 +13,7 @@ export default function RoutineView() {
     availSearch, setAvailSearch,
     selSearch,   setSelSearch,
     highlighted, setHighlighted,
-    available, filteredSelected, conflicts,
+    available, selected, filteredSelected, conflicts,
     highlightedCourse,
     isHighlightedSelected, isHighlightedAvailable,
     totalCredits, scheduleGrid,
@@ -192,11 +192,20 @@ export default function RoutineView() {
           <button
             id="routine-download-btn"
             className="btn btn-primary routine-download-btn"
-            disabled={filteredSelected.length === 0}
+            disabled={selected.length === 0}
             onClick={handleDownload}
+            title={selected.length === 0 ? 'Add at least one course to download' : `Download routine as PDF (${selected.length} course${selected.length !== 1 ? 's' : ''})`}
           >
             ⬇ Download the Routine
           </button>
+          {selected.length === 0 && (
+            <span className="routine-download-hint">Add at least one course to enable download</span>
+          )}
+          {selected.length > 0 && (
+            <span className="routine-download-hint ready">
+              📄 PDF with schedule grid + {selected.length} course{selected.length !== 1 ? 's' : ''}
+            </span>
+          )}
         </div>
 
       </main>
