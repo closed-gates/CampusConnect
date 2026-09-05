@@ -47,19 +47,19 @@ export default function DMChatWindow({
 
   return (
     <div className="univ-msg-feed" ref={scrollRef}>
-      <div style={{ textAlign: 'center', padding: '24px 16px', borderBottom: '1px solid var(--color-border, #E5E7EB)', marginBottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#ffffff', borderRadius: 12, margin: '16px 16px 8px' }}>
-        <div style={{ marginBottom: 12 }}>
+      <div className="univ-welcome-card">
+        <div className="univ-welcome-avatar">
           <UserAvatar user={recipientUser} size={64} />
         </div>
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text, #111827)', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <h2 className="univ-welcome-title">
           <span>{recipientUser?.displayName}</span>
           <span className={`role-badge ${isFacultyRecipient ? 'faculty' : 'student'}`}>
             {recipientUser?.role}
           </span>
         </h2>
-        <p style={{ fontSize: 13, color: 'var(--color-text-sub, #6B7280)', margin: 0 }}>
+        <p className="univ-welcome-desc">
           This is the start of your direct communication history with {isFacultyRecipient ? 'Faculty Instructor' : 'Student'}{' '}
-          <strong>{recipientUser?.displayName}</strong> (@{recipientUser?.username}).
+          <strong className="univ-welcome-highlight">{recipientUser?.displayName}</strong> (@{recipientUser?.username}).
         </p>
       </div>
 
