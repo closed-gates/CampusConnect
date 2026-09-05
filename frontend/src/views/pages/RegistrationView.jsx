@@ -53,7 +53,7 @@ export default function RegistrationSection() {
 
 /* ─── Advising Window Banner ─────────────────────────────────── */
 function AdvisingWindowBanner({ windowStatus }) {
-  if (!windowStatus) return null
+  if (!windowStatus) return <div className="reg-window-banner" role="status">Checking advising portal status…</div>
   const tier   = ADVISING_TIERS.find(t => t.tier === windowStatus.tier) || ADVISING_TIERS[2]
   const isOpen = windowStatus.open
 
@@ -61,8 +61,9 @@ function AdvisingWindowBanner({ windowStatus }) {
     <div className={`reg-window-banner reg-window-banner--${isOpen ? 'open' : 'closed'}`} role="status">
       <div className="reg-window-icon">{tier.icon}</div>
       <div className="reg-window-content">
-        <div className="reg-window-tier">{tier.label}</div>
+        <div className="reg-window-tier">{windowStatus.unavailable ? 'Advising status unavailable' : windowStatus.portalOpen === false ? 'Advising Portal is Closed' : tier.label}</div>
         <div className="reg-window-msg">{windowStatus.message}</div>
+        {windowStatus.portalOpen && windowStatus.portalMessage && <div className="reg-window-msg">{windowStatus.portalMessage}</div>}
         <div className="reg-window-meta">
           Rank <strong>{windowStatus.rank}</strong> of <strong>{windowStatus.totalStudents}</strong> students
           &nbsp;·&nbsp; {windowStatus.completedCredits} credits completed
@@ -70,7 +71,7 @@ function AdvisingWindowBanner({ windowStatus }) {
         </div>
       </div>
       <div className={`reg-window-badge ${isOpen ? 'reg-window-badge--open' : 'reg-window-badge--closed'}`}>
-        {isOpen ? '✅ Window Open' : '🔒 Not Yet Open'}
+        {windowStatus.unavailable ? 'Reconnecting…' : windowStatus.portalOpen === false ? '🔒 Portal Closed' : isOpen ? '✅ Window Open' : '🔒 Not Yet Open'}
       </div>
     </div>
   )

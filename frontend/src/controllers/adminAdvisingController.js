@@ -30,7 +30,8 @@ export function useAdminAdvisingController({ onSectionCreated, onStudentEnrolled
   const [enrollingBypass, setEnrollingBypass] = useState(false)
 
   // ── Advising Portal Toggle state ────────────────────────────────
-  const [isPortalOpen,    setIsPortalOpen]    = useState(true)
+  const [isPortalOpen,    setIsPortalOpen]    = useState(null)
+  const [portalError, setPortalError] = useState(null)
   const [portalMessage,   setPortalMessage]   = useState('')
   const [portalUpdatedBy, setPortalUpdatedBy] = useState('')
   const [portalUpdatedAt, setPortalUpdatedAt] = useState('')
@@ -50,14 +51,17 @@ export function useAdminAdvisingController({ onSectionCreated, onStudentEnrolled
   // Load portal status on mount
   const loadPortalStatus = useCallback(async () => {
     setPortalLoading(true)
+    setPortalError(null)
     try {
       const data = await adminAdvisingService.getPortalStatus()
       setIsPortalOpen(data.isOpen !== false)
       setPortalMessage(data.message || '')
+      setCustomMessage(data.message || '')
       setPortalUpdatedBy(data.updatedBy || '')
       setPortalUpdatedAt(data.updatedAt || '')
-    } catch {
-      setIsPortalOpen(true)
+    } catch (error) {
+      setIsPortalOpen(null)
+      setPortalError(error.message)
     } finally {
       setPortalLoading(false)
     }
@@ -68,6 +72,7 @@ export function useAdminAdvisingController({ onSectionCreated, onStudentEnrolled
   }, [loadPortalStatus])
 
   const handleTogglePortal = async (open, msgOverride) => {
+    if (portalUpdating || portalLoading || isPortalOpen === null) return
     setPortalUpdating(true)
     try {
       const msg = msgOverride !== undefined ? msgOverride : customMessage
@@ -77,7 +82,7 @@ export function useAdminAdvisingController({ onSectionCreated, onStudentEnrolled
       setPortalUpdatedBy(data.updatedBy || '')
       setPortalUpdatedAt(data.updatedAt || '')
       showToast(
-        open ? '✅ Advising portal is now OPEN for all students.' : '🔒 Advising portal has been CLOSED.',
+        open === isPortalOpen ? 'Student notice updated.' : open ? '✅ Advising portal is now OPEN. Student advising windows still apply.' : '🔒 Advising portal has been CLOSED.',
         open ? 'success' : 'error'
       )
     } catch (err) {
@@ -164,6 +169,8 @@ export function useAdminAdvisingController({ onSectionCreated, onStudentEnrolled
     portalUpdatedAt,
     portalLoading,
     portalUpdating,
+    portalError,
+    loadPortalStatus,
     customMessage,
     setCustomMessage,
     handleTogglePortal,

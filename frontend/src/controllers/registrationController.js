@@ -72,26 +72,54 @@ export function useRegistrationController() {
   const fetchAll = useCallback(async () => {
     const studentId = getStudentId()
     try {
-      const [secRes, myRes, winRes] = await Promise.all([
+      const [secRes, myRes] = await Promise.all([
         apiClient.get(`${API_BASE}/sections?studentId=${studentId}&term=${encodeURIComponent(preferredTerm)}`),
         apiClient.get(`${API_BASE}/my?studentId=${studentId}&term=${encodeURIComponent(preferredTerm)}`),
-        apiClient.get(`${API_BASE}/window/${studentId}`),
       ])
       if (!secRes.ok) throw new Error(`API ${secRes.status}`)
-      const [secData, myData, winData] = await Promise.all([
+      const [secData, myData] = await Promise.all([
         secRes.json(),
         myRes.json().catch(() => []),
-        winRes.json().catch(() => null),
       ])
       setSections(secData)
       setMyRegistrations(myData)
-      setWindowStatus(winData)
     } catch {
       setError('Could not load sections. Is the backend running?')
     } finally {
       setLoading(false)
     }
   }, [preferredTerm])
+
+  // Refresh the authoritative combined portal/tier status while this page is open.
+  useEffect(() => {
+    let active = true
+    let fetching = false
+    const refreshWindow = async () => {
+      if (fetching) return
+      fetching = true
+      try {
+        const response = await apiClient.get(`${API_BASE}/window/${getStudentId()}`)
+        if (!response.ok) throw new Error('Status unavailable')
+        const status = await response.json()
+        if (typeof status.open !== 'boolean') throw new Error('Invalid status')
+        if (active) setWindowStatus(status)
+      } catch {
+        if (active) setWindowStatus(previous => ({ ...previous, open: false, unavailable: true,
+          message: 'Unable to verify advising status. Registration is paused while we reconnect.' }))
+      } finally { fetching = false }
+    }
+    const onVisible = () => { if (document.visibilityState === 'visible') refreshWindow() }
+    refreshWindow()
+    const timer = setInterval(refreshWindow, 5000)
+    window.addEventListener('focus', refreshWindow)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      active = false
+      clearInterval(timer)
+      window.removeEventListener('focus', refreshWindow)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [])
 
   /* ── Fetch only the seat counts (fast refresh after change) ── */
   const refreshSeats = useCallback(async () => {
@@ -199,6 +227,10 @@ export function useRegistrationController() {
 
   /* ── Register ────────────────────────────────────────────── */
   const handleRegister = useCallback(async (sectionId) => {
+    if (!windowStatus?.open) {
+      showToast(windowStatus?.message || 'Checking advising status. Please wait.', 'error')
+      return
+    }
     const studentId = getStudentId()
     setSections(prev => prev.map(s =>
       s.id === sectionId
@@ -241,7 +273,7 @@ export function useRegistrationController() {
     }
 
     await refreshSeats()
-  }, [showToast, refreshSeats, sections, preferredTerm])
+  }, [showToast, refreshSeats, sections, preferredTerm, windowStatus])
 
   /* ── Drop ─────────────────────────────────────────────────── */
   const handleDrop = useCallback(async (sectionId) => {

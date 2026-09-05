@@ -27,7 +27,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/registration")
-@CrossOrigin(origins = "*")
 public class RegistrationController {
 
     private final RegistrationService registrationService;
@@ -68,7 +67,7 @@ public class RegistrationController {
     @GetMapping("/window/{studentId}")
     public ResponseEntity<Map<String, Object>> getAdvisingWindow(
             @PathVariable String studentId) {
-        return ResponseEntity.ok(registrationService.getAdvisingWindow(studentId));
+        return ResponseEntity.ok().cacheControl(org.springframework.http.CacheControl.noStore()).body(registrationService.getAdvisingWindow(studentId));
     }
 
     // ── POST /api/registration/register ───────────────────────────

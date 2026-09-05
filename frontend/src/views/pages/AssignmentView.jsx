@@ -522,22 +522,19 @@ function CreateAssignmentModal({ ctrl }) {
         <div className="asgn-create-form">
           {/* Course */}
           <div className="asgn-form-group">
-            <label htmlFor="asgn-course-search">Search courses</label>
+            <label htmlFor="asgn-course-search">Select a course</label>
             <input id="asgn-course-search" type="search" placeholder="Search course code or name…"
               value={ctrl.courseSearch} onChange={e => ctrl.setCourseSearch(e.target.value)} />
-            <label htmlFor="asgn-create-course">Course</label>
-            <select
-              value={ctrl.createForm.courseCode}
-              onChange={(e) => ctrl.handleCourseSelect(e.target.value)}
-              id="asgn-create-course"
-            >
-              <option value="">Select a course...</option>
+            {ctrl.createForm.courseCode && <p className="asgn-selected-course" role="status">Selected: <strong>{ctrl.createForm.courseCode}</strong> — {ctrl.createForm.courseName}</p>}
+            <div className="asgn-course-results" role="group" aria-label="Matching courses" id="asgn-create-course">
               {ctrl.filteredCourseOptions.map(c => (
-                <option key={c.code} value={c.code}>
-                  {c.code} – {c.name}
-                </option>
+                <button type="button" key={c.code} className="asgn-course-option"
+                  aria-pressed={ctrl.createForm.courseCode === c.code} onClick={() => ctrl.handleCourseSelect(c.code)}>
+                  <strong>{c.code}</strong><span>{c.name}</span>
+                  {ctrl.createForm.courseCode === c.code && <span aria-hidden="true">✓</span>}
+                </button>
               ))}
-            </select>
+            </div>
             {ctrl.filteredCourseOptions.length === 0 && <p role="status">No matching courses. Try another code or name.</p>}
           </div>
 

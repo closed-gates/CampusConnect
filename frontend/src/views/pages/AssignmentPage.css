@@ -989,3 +989,10 @@
 .asgn-preview-content img { display: block; max-width: 100%; max-height: 65vh; margin: auto; object-fit: contain; }
 .asgn-preview-content pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.6; }
 .asgn-submissions-section > .asgn-search { margin-bottom: 16px; }
+.asgn-course-results { max-height: 220px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 9px; }
+.asgn-course-option { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px; border: 0; border-bottom: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); font: inherit; font-size: 13px; }
+.asgn-course-option strong { flex-shrink: 0; }
+.asgn-course-option:hover, .asgn-course-option[aria-pressed='true'] { background: var(--color-bg); }
+.asgn-course-option[aria-pressed='true'] { box-shadow: inset 4px 0 var(--color-teal); font-weight: 700; }
+.asgn-course-option:focus-visible { outline: 2px solid var(--color-teal); outline-offset: -3px; }
+.asgn-selected-course { color: var(--color-text); font-size: 13px; line-height: 1.5; }

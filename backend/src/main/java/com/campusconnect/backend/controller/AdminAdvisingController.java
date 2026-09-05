@@ -4,6 +4,9 @@ import com.campusconnect.backend.service.AdminAdvisingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.CacheControl;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +22,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "*")
 public class AdminAdvisingController {
 
     private final AdminAdvisingService adminAdvisingService;
@@ -69,13 +71,22 @@ public class AdminAdvisingController {
 
     @GetMapping("/advising-portal/status")
     public ResponseEntity<Map<String, Object>> getAdvisingPortalStatus() {
-        return ResponseEntity.ok(adminAdvisingService.getAdvisingPortalStatus());
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(adminAdvisingService.getAdvisingPortalStatus());
     }
 
     @PostMapping("/advising-portal/toggle")
     public ResponseEntity<Map<String, Object>> setAdvisingPortalStatus(
             @RequestBody Map<String, Object> body,
             Authentication auth) {
+        if (auth == null || auth.getAuthorities().stream().noneMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only admins can change the advising portal status.");
+        }
+        if (!(body.get("isOpen") instanceof Boolean)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "isOpen must be a boolean.");
+        }
+        if (body.get("message") instanceof String message && message.length() > 512) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Message must not exceed 512 characters.");
+        }
         boolean open   = Boolean.TRUE.equals(body.get("isOpen"));
         String  msg    = body.get("message") instanceof String m ? m : null;
         String  adminId = auth != null ? auth.getName() : "admin";

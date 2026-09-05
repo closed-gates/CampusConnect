@@ -253,13 +253,20 @@ public class RegistrationService {
             tier = 3; open = false; opensAt = "Day 3 of advising period";
         }
 
-        result.put("open",        open);
+        com.campusconnect.backend.model.AdvisingPortalStatus portal = portalStatusRepo.findById(1L).orElse(null);
+        boolean portalOpen = portal == null || portal.isOpen();
+        String portalMessage = portal != null && portal.getMessage() != null ? portal.getMessage() : "";
+        result.put("portalOpen", portalOpen);
+        result.put("portalMessage", portalMessage);
+        result.put("open",        open && portalOpen);
         result.put("tier",        tier);
         result.put("rank",        rank);
         result.put("totalStudents", totalStudents);
-        result.put("opensAt",     opensAt);
+        result.put("opensAt",     portalOpen ? opensAt : "Awaiting administrator reopening");
         result.put("completedCredits", credits);
-        result.put("message", open
+        result.put("message", !portalOpen
+                ? (portalMessage.isBlank() ? "The advising portal is currently closed by the administrator." : portalMessage)
+                : open
                 ? "Your advising window is open. You may register for courses."
                 : "Your advising window opens on Day 3. High-credit students register first.");
         return result;

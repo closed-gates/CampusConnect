@@ -402,7 +402,7 @@ export function useAssignmentController() {
     searchQuery, setSearchQuery, courseSearch, setCourseSearch,
     submissionSearch, setSubmissionSearch,
     filteredSubmissions: allSubmissions.filter(s => matchesAssignmentSearch(submissionSearch, s.studentName, s.studentId, s.fileName)),
-    filteredCourseOptions: courseOptions.filter(c => c.code === createForm.courseCode || matchesAssignmentSearch(courseSearch, c.code, c.name)),
+    filteredCourseOptions: courseOptions.filter(c => matchesAssignmentSearch(courseSearch, c.code, c.name)),
     deleteTarget, setDeleteTarget, deleting, confirmDeleteAssignment,
     preview, handlePreview, closePreview,
     // Role

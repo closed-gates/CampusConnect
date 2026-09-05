@@ -3,6 +3,12 @@
 ## Overview
 This feature allows the **Admin** to globally open or close the student advising portal from the Admin Advising sidebar. When closed, students cannot self-register for any courses; only admin force-enrolment continues to work.
 
+## Status synchronization update
+
+StudentPanel delegates all status display to RegistrationView. Its registrationController polls GET /api/registration/window/{studentId} every five seconds and on tab focus/visibility. RegistrationService combines the persisted global portal flag with the student's priority window, and returns portalOpen, portalMessage, and effective open status. The same response controls the banner and Register buttons. Closed portals override all priority tiers; reopening preserves the existing tier restrictions. Failed requests pause registration and display a reconnecting state rather than assuming open. The polling loop avoids concurrent requests and ignores responses after unmount.
+
+Admin notices can be saved independently using Save notice. Invalid requests and non-admin toggles are rejected. Both status endpoints return no-store responses. Advising controllers rely on the central CORS configuration instead of conflicting wildcard annotations. Regression tests are in AdvisingPortalStatusTest and AdvisingPortalControllerTest.
+
 ## Sequential Communication Path
 
 ```

@@ -68,14 +68,6 @@ export default function AdvisingView() {
    1. STUDENT PANEL
 ═══════════════════════════════════════════════════════════════ */
 function StudentPanel() {
-  const [portalStatus, setPortalStatus] = useState(null)
-
-  useEffect(() => {
-    adminAdvisingService.getPortalStatus()
-      .then(s => setPortalStatus(s))
-      .catch(() => setPortalStatus({ isOpen: true }))
-  }, [])
-
   return (
     <>
       <div className="dashboard-header">
@@ -84,30 +76,6 @@ function StudentPanel() {
           <p className="dashboard-date">Browse open sections and register during your advising window</p>
         </div>
       </div>
-
-      {/* Portal closed banner */}
-      {portalStatus !== null && !portalStatus.isOpen && (
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.06))',
-          border: '1.5px solid rgba(239,68,68,0.35)',
-          borderRadius: 12,
-          padding: '18px 22px',
-          marginBottom: 20,
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 14,
-        }}>
-          <span style={{ fontSize: 28, flexShrink: 0 }}>🔒</span>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#DC2626', marginBottom: 4 }}>
-              Advising Portal is Closed
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--color-text-sub)', lineHeight: 1.6 }}>
-              {portalStatus.message || 'The advising portal is currently closed by the administrator. Please check back later.'}
-            </div>
-          </div>
-        </div>
-      )}
 
       <RegistrationSection />
     </>
@@ -572,6 +540,8 @@ function AdminAdvisingPanel() {
     portalUpdatedAt,
     portalLoading,
     portalUpdating,
+    portalError,
+    loadPortalStatus,
     customMessage,
     setCustomMessage,
     handleTogglePortal,
@@ -649,6 +619,8 @@ function AdminAdvisingPanel() {
           portalUpdatedAt={portalUpdatedAt}
           portalLoading={portalLoading}
           portalUpdating={portalUpdating}
+          portalError={portalError}
+          loadPortalStatus={loadPortalStatus}
           customMessage={customMessage}
           setCustomMessage={setCustomMessage}
           handleTogglePortal={handleTogglePortal}
@@ -864,7 +836,7 @@ function AdminAdvisingPanel() {
 ═══════════════════════════════════════════════════════════════ */
 function PortalControlPanel({
   isPortalOpen, portalMessage, portalUpdatedBy, portalUpdatedAt,
-  portalLoading, portalUpdating, customMessage, setCustomMessage, handleTogglePortal
+  portalLoading, portalUpdating, portalError, loadPortalStatus, customMessage, setCustomMessage, handleTogglePortal
 }) {
   const fmtDate = (iso) => {
     if (!iso) return 'Not set'
@@ -873,6 +845,7 @@ function PortalControlPanel({
 
   return (
     <div style={{ maxWidth: 700, margin: '0 auto' }}>
+      {portalError && <div role="alert"><p>{portalError}</p><button className="btn btn--outline" onClick={loadPortalStatus}>Retry status</button></div>}
       {/* Status Banner */}
       <div style={{
         borderRadius: 16,
@@ -911,7 +884,7 @@ function PortalControlPanel({
             marginBottom: 4,
             letterSpacing: '-0.3px'
           }}>
-            {portalLoading ? 'Loading…' : isPortalOpen ? 'Advising Portal is OPEN' : 'Advising Portal is CLOSED'}
+            {portalLoading ? 'Loading…' : isPortalOpen === null ? 'Advising portal status unavailable' : isPortalOpen ? 'Advising Portal is OPEN' : 'Advising Portal is CLOSED'}
           </div>
           <div style={{ fontSize: 13, color: 'var(--color-text-sub)', lineHeight: 1.6, marginBottom: 8 }}>
             {portalMessage || (isPortalOpen ? 'Students can currently self-register for courses.' : 'Students cannot register while the portal is closed.')}
@@ -957,6 +930,7 @@ function PortalControlPanel({
           </label>
           <textarea
             id="portal-custom-message"
+            maxLength={512}
             className="adv-course-search-input"
             style={{ resize: 'vertical', minHeight: 72, fontFamily: 'inherit', fontSize: 13, lineHeight: 1.5 }}
             placeholder="e.g. Advising portal will reopen on Monday 9 AM. Thank you for your patience."
@@ -964,8 +938,10 @@ function PortalControlPanel({
             onChange={e => setCustomMessage(e.target.value)}
           />
           <p style={{ fontSize: 11, color: 'var(--color-text-sub)', marginTop: 4 }}>
-            This message will be shown to all students when the portal is closed.
+            Students see this notice and status updates automatically within five seconds.
           </p>
+          <button type="button" className="btn btn--outline" disabled={portalUpdating || portalLoading || isPortalOpen === null}
+            onClick={() => handleTogglePortal(isPortalOpen)}>Save notice</button>
         </div>
 
         {/* Toggle buttons */}
@@ -984,7 +960,7 @@ function PortalControlPanel({
               flex: 1,
               minWidth: 140,
             }}
-            disabled={portalUpdating || portalLoading || isPortalOpen}
+            disabled={portalUpdating || portalLoading || isPortalOpen === null || isPortalOpen}
             onClick={() => handleTogglePortal(true)}
           >
             {portalUpdating && !isPortalOpen ? '⏳ Opening…' : '🟢 Open Portal'}
@@ -1006,7 +982,7 @@ function PortalControlPanel({
               flex: 1,
               minWidth: 140,
             }}
-            disabled={portalUpdating || portalLoading || !isPortalOpen}
+            disabled={portalUpdating || portalLoading || isPortalOpen === null || !isPortalOpen}
             onClick={() => handleTogglePortal(false)}
           >
             {portalUpdating && isPortalOpen ? '⏳ Closing…' : '🔴 Close Portal'}

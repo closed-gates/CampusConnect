@@ -77,8 +77,10 @@ export const adminAdvisingService = {
    */
   async getPortalStatus() {
     const res = await apiClient.get('/api/admin/advising-portal/status')
-    if (!res.ok) return { isOpen: true, message: '' }
-    return res.json()
+    if (!res.ok) throw new Error('Unable to load advising portal status. Please retry.')
+    const data = await res.json()
+    if (typeof data.isOpen !== 'boolean') throw new Error('Invalid advising portal status received.')
+    return data
   },
 
   /**
