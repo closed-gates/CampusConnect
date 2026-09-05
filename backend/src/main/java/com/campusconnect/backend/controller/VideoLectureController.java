@@ -4,6 +4,7 @@ import com.campusconnect.backend.dto.VideoLectureDTO;
 import com.campusconnect.backend.dto.VideoProgressDTO;
 import com.campusconnect.backend.dto.VideoProgressUpdateRequest;
 import com.campusconnect.backend.service.VideoLectureService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -89,9 +90,13 @@ public class VideoLectureController {
     }
 
     @GetMapping("/{id}/stream")
-    public void stream(@PathVariable Long id, Authentication authentication, HttpServletResponse response) throws IOException {
+    public void stream(
+            @PathVariable Long id,
+            Authentication authentication,
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
         requireUserId(authentication);
-        videoLectureService.streamLecture(id, response);
+        videoLectureService.streamLecture(id, request, response);
     }
 
     @GetMapping("/{id}/progress")

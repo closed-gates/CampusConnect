@@ -91,7 +91,9 @@ export function useVideoLectureController() {
 
   const openLecture = useCallback(async (lecture) => {
     if (streamUrlRef.current) {
-      URL.revokeObjectURL(streamUrlRef.current)
+      if (streamUrlRef.current.startsWith('blob:')) {
+        URL.revokeObjectURL(streamUrlRef.current)
+      }
       streamUrlRef.current = ''
       setStreamUrl('')
     }
@@ -101,7 +103,7 @@ export function useVideoLectureController() {
     if (lecture.sourceType !== SOURCE_UPLOAD) return
     setStreamLoading(true)
     try {
-      const url = await videoLectureService.getStreamObjectUrl(lecture.id)
+      const url = videoLectureService.getAuthenticatedStreamUrl(lecture.id)
       streamUrlRef.current = url
       setStreamUrl(url)
     } catch (err) {
@@ -117,7 +119,9 @@ export function useVideoLectureController() {
       persistProgress(selected.id, video.currentTime, video.duration, true)
     }
     if (streamUrlRef.current) {
-      URL.revokeObjectURL(streamUrlRef.current)
+      if (streamUrlRef.current.startsWith('blob:')) {
+        URL.revokeObjectURL(streamUrlRef.current)
+      }
       streamUrlRef.current = ''
     }
     setStreamUrl('')
