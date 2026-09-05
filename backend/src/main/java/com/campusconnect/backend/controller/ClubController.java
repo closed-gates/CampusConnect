@@ -133,7 +133,14 @@ public class ClubController {
     @PostMapping("/apply")
     public ResponseEntity<Map<String, Object>> applyToClub(Authentication auth, @RequestBody Map<String, String> body) {
         requireRole(auth, "STUDENT");
-        Application application = clubService.applyToClub(body);
+        Application application = clubService.applyToClub(
+            body.get("recruitmentId"),
+            body.get("clubName"),
+            body.get("role"),
+            body.get("studentName"),
+            body.get("studentEmail"),
+            body.get("motivation")
+        );
         return ResponseEntity.ok(Map.of(
             "success", true,
             "message", "Application submitted! The club will contact you soon.",

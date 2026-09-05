@@ -86,6 +86,21 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
     }
   }, [activeConvId, resolvedActiveId])
 
+  // ── Subscribe to the initial active room on mount via STOMP ──────────────────
+  // When the messaging page first loads, join the initially-active conversation
+  // so real-time messages and backend history are loaded immediately.
+  useEffect(() => {
+    if (resolvedActiveId) {
+      dmService.subscribeToRoom(resolvedActiveId)
+    }
+    // Cleanup: unsubscribe all rooms when leaving the messaging view
+    return () => {
+      Object.keys(dmService._roomSubs || {}).forEach(roomId => {
+        dmService.unsubscribeFromRoom(roomId)
+      })
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Cross-tab localStorage sync ──────────────────────────────────────────────
   // When another browser tab writes DM data to localStorage, the `storage` event
   // updates messagesMap and conversations immediately without a page refresh.
@@ -114,7 +129,7 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
     return () => window.removeEventListener('storage', handleStorage)
   }, [userId])
 
-  // Subscribe to dmService events (both local and cross-tab via BroadcastChannel)
+  // Subscribe to dmService events (STOMP broadcast, local fallback, cross-tab BroadcastChannel)
   useEffect(() => {
     const unsubscribe = dmService.subscribe(({ event, payload }) => {
       if (event === 'MESSAGE_RECEIVED') {
@@ -175,6 +190,21 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
             }
             return conv
           })
+        })
+      } else if (event === 'HISTORY_LOADED') {
+        // Backend delivered DB history for this room — merge into state
+        const { roomId, history } = payload
+        if (!Array.isArray(history) || history.length === 0) return
+
+        setMessagesMap(prev => {
+          const existing = prev[roomId] || loadRoomMessages(roomId) || []
+          const existingIds = new Set(existing.map(m => m.id?.toString()))
+          const newOnes = history.filter(m => !existingIds.has(m.id?.toString()))
+          if (newOnes.length === 0) return prev
+          const merged = [...newOnes, ...existing].sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          )
+          return { ...prev, [roomId]: merged }
         })
       } else if (event === 'TYPING_STATUS_CHANGED') {
         const { conversationId, isTyping, senderId: typingSenderId, recipientId: typingRecipientId } = payload
@@ -347,6 +377,11 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
   }
 
   const handleSelectConversation = (convId) => {
+    // Unsubscribe from the previously active room to avoid stale subscriptions
+    if (resolvedActiveId && resolvedActiveId !== convId) {
+      dmService.unsubscribeFromRoom(resolvedActiveId)
+    }
+
     setActiveConvId(convId)
     const fresh = loadRoomMessages(convId)
     if (fresh) {
@@ -355,6 +390,9 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
     setConversations(prev =>
       prev.map(c => (c.id === convId ? { ...c, unreadCount: 0 } : c))
     )
+
+    // Subscribe to STOMP room for live messages + backend history
+    dmService.subscribeToRoom(convId)
   }
 
   const handleStartNewDM = (selectedUser) => {
@@ -373,6 +411,8 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
     }
     setConversations(prev => [newConv, ...prev])
     setActiveConvId(deterministicId)
+    // Subscribe to STOMP room immediately for this new conversation
+    dmService.subscribeToRoom(deterministicId)
   }
 
   return {

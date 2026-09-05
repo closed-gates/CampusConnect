@@ -41,42 +41,6 @@ public class Application {
     @Column(name = "status", length = 20)
     private String status;     // e.g. "PENDING", "ACCEPTED", "REJECTED"
 
-    @Column(name = "student_id", length = 50)
-    private String studentId;
-
-    @Column(name = "phone", length = 50)
-    private String phone;
-
-    @Column(name = "department", length = 100)
-    private String department;
-
-    @Column(name = "year_semester", length = 100)
-    private String yearSemester;
-
-    @Column(name = "interested_teams", columnDefinition = "TEXT")
-    private String interestedTeams;
-
-    @Column(name = "skills", columnDefinition = "TEXT")
-    private String skills;
-
-    @Column(name = "has_previous_experience", length = 50)
-    private String hasPreviousExperience;
-
-    @Column(name = "experience_description", columnDefinition = "TEXT")
-    private String experienceDescription;
-
-    @Column(name = "portfolio_link", length = 500)
-    private String portfolioLink;
-
-    @Column(name = "time_commitment", length = 100)
-    private String timeCommitment;
-
-    @Column(name = "willing_to_participate", length = 100)
-    private String willingToParticipate;
-
-    @Column(name = "bring_to_club", columnDefinition = "TEXT")
-    private String bringToClub;
-
     // ── Constructors ──────────────────────────────────────────
     public Application() {}
 
@@ -107,40 +71,4 @@ public class Application {
 
     public String getStatus()                   { return status; }
     public void   setStatus(String s)           { this.status = s; }
-
-    public String getStudentId()                { return studentId; }
-    public void   setStudentId(String si)       { this.studentId = si; }
-
-    public String getPhone()                    { return phone; }
-    public void   setPhone(String p)            { this.phone = p; }
-
-    public String getDepartment()               { return department; }
-    public void   setDepartment(String d)       { this.department = d; }
-
-    public String getYearSemester()             { return yearSemester; }
-    public void   setYearSemester(String ys)    { this.yearSemester = ys; }
-
-    public String getInterestedTeams()          { return interestedTeams; }
-    public void   setInterestedTeams(String it) { this.interestedTeams = it; }
-
-    public String getSkills()                   { return skills; }
-    public void   setSkills(String sk)          { this.skills = sk; }
-
-    public String getHasPreviousExperience()    { return hasPreviousExperience; }
-    public void   setHasPreviousExperience(String hpe) { this.hasPreviousExperience = hpe; }
-
-    public String getExperienceDescription()    { return experienceDescription; }
-    public void   setExperienceDescription(String ed)  { this.experienceDescription = ed; }
-
-    public String getPortfolioLink()            { return portfolioLink; }
-    public void   setPortfolioLink(String pl)   { this.portfolioLink = pl; }
-
-    public String getTimeCommitment()           { return timeCommitment; }
-    public void   setTimeCommitment(String tc)  { this.timeCommitment = tc; }
-
-    public String getWillingToParticipate()     { return willingToParticipate; }
-    public void   setWillingToParticipate(String wtp)  { this.willingToParticipate = wtp; }
-
-    public String getBringToClub()              { return bringToClub; }
-    public void   setBringToClub(String btc)    { this.bringToClub = btc; }
 }
