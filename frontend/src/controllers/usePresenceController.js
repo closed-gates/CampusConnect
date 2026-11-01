@@ -28,6 +28,7 @@ import {
   PRESENCE_HEARTBEAT_DEST,
   PRESENCE_DISCONNECT_DEST,
   PRESENCE_TOPIC,
+  PRESENCE_SNAPSHOT_DEST,
   HEARTBEAT_INTERVAL_MS,
   INACTIVITY_TIMEOUT_MS,
   STATUS_ONLINE,
@@ -163,6 +164,21 @@ export function usePresenceController(currentUser = getCurrentUser()) {
           } catch (e) {
             console.warn('[usePresenceController] Bad presence frame', e)
           }
+        })
+
+        // 2b. Seed the map with everyone already online (deltas above only cover changes)
+        const snapshotSub = client.subscribe(PRESENCE_SNAPSHOT_DEST, (frame) => {
+          try {
+            const list = JSON.parse(frame.body)
+            setOnlineUsers(prev => {
+              const next = new Map(prev)
+              list.forEach(({ userId, displayName, lastActiveAt }) => next.set(userId, { displayName, lastActiveAt }))
+              return next
+            })
+          } catch (e) {
+            console.warn('[usePresenceController] Bad presence snapshot', e)
+          }
+          snapshotSub.unsubscribe()
         })
 
         // 3. Periodic heartbeat and 2-min inactivity check

@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import java.security.Principal;
+import java.util.List;
 import org.springframework.messaging.simp.SimpAttributesContextHolder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -62,14 +65,17 @@ public class PresenceController {
     @MessageMapping("/presence.connect")
     public void onConnect(
             @Payload PresenceDto dto,
-            StompHeaderAccessor headerAccessor
+            StompHeaderAccessor headerAccessor,
+            Principal principal
     ) {
-        log.debug("Presence connect: userId={} displayName={}", dto.userId(), dto.displayName());
-        presenceStore.markOnline(dto.userId(), dto.displayName());
+        if (principal == null) return;
+        String userId = principal.getName();   // the login, not the payload, decides who is online
+        log.debug("Presence connect: userId={} displayName={}", userId, dto.displayName());
+        presenceStore.markOnline(userId, dto.displayName());
 
         // Store userId in session so disconnect event can retrieve it
         if (headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().put("presenceUserId",   dto.userId());
+            headerAccessor.getSessionAttributes().put("presenceUserId",   userId);
             headerAccessor.getSessionAttributes().put("presenceUserName", dto.displayName());
         }
     }
@@ -81,8 +87,20 @@ public class PresenceController {
      * Called by the client every ~25 seconds to keep the presence entry alive.
      */
     @MessageMapping("/presence.heartbeat")
-    public void onHeartbeat(@Payload PresenceDto dto) {
-        presenceStore.refreshHeartbeat(dto.userId());
+    public void onHeartbeat(Principal principal) {
+        if (principal != null) presenceStore.refreshHeartbeat(principal.getName());
+    }
+
+    /* ── snapshot on subscribe ───────────────────────────────────── */
+
+    /**
+     * Replies once, to the subscribing session only, with everyone online now.
+     * The topic only carries changes, so without this a newly opened page would
+     * never see users who were already online.
+     */
+    @SubscribeMapping("/presence.snapshot")
+    public List<PresenceDto> onSnapshot() {
+        return presenceStore.snapshot();
     }
 
     /* ── explicit disconnect ─────────────────────────────────────── */
@@ -92,9 +110,10 @@ public class PresenceController {
      * Client should call this before closing the connection.
      */
     @MessageMapping("/presence.disconnect")
-    public void onDisconnect(@Payload PresenceDto dto) {
-        log.debug("Presence explicit disconnect: userId={}", dto.userId());
-        presenceStore.markOffline(dto.userId());
+    public void onDisconnect(Principal principal) {
+        if (principal == null) return;
+        log.debug("Presence explicit disconnect: userId={}", principal.getName());
+        presenceStore.markOffline(principal.getName());
     }
 
     /* ── abrupt disconnect (tab close / network drop) ────────────── */

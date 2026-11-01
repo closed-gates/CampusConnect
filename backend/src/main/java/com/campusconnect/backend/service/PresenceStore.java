@@ -100,6 +100,16 @@ public class PresenceStore {
                 .collect(Collectors.toSet());
     }
 
+    /** Everyone online right now, for a client that has just subscribed. */
+    public java.util.List<com.campusconnect.backend.dto.PresenceDto> snapshot() {
+        Instant cutoff = Instant.now().minusSeconds(TTL_SECONDS);
+        return store.entrySet().stream()
+                .filter(e -> e.getValue().lastHeartbeatAt().isAfter(cutoff))
+                .map(e -> new com.campusconnect.backend.dto.PresenceDto(
+                        e.getKey(), e.getValue().displayName(), "ONLINE", e.getValue().lastHeartbeatAt()))
+                .toList();
+    }
+
     public boolean isOnline(String userId) {
         UserPresence p = store.get(userId);
         if (p == null) return false;

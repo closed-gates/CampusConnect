@@ -22,6 +22,9 @@ export const PRESENCE_DISCONNECT_DEST = '/app/presence.disconnect'
 /** Topic the client subscribes to for all presence delta events. */
 export const PRESENCE_TOPIC           = '/topic/presence'
 
+/** One-time reply listing everyone already online (the topic only carries changes). */
+export const PRESENCE_SNAPSHOT_DEST  = '/app/presence.snapshot'
+
 /* ── Timing ───────────────────────────────────────────────────────── */
 
 /**
