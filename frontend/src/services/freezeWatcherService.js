@@ -9,6 +9,7 @@
 import { Client } from "@stomp/stompjs"
 import SockJS from "sockjs-client"
 import apiClient from "./apiClient.js"
+import { getStoredToken } from '../models/authModel.js'
 
 const WS_URL = "/ws"
 
@@ -23,6 +24,8 @@ export function subscribeToFreezeEvents(userId, onFrozen, onConnected) {
   if (!userId) return () => {}
 
   const client = new Client({
+
+    connectHeaders: { Authorization: `Bearer ${getStoredToken()}` },
     webSocketFactory: () => new SockJS(WS_URL),
     reconnectDelay: 5000,
     onConnect: () => {

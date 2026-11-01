@@ -180,7 +180,7 @@ export default function PaymentView() {
                   onClick={() => setSelectedStudentId('')}
                   title="Clear student selection"
                 >
-                  ✕ Clear
+                  × Clear
                 </button>
               )}
             </div>
@@ -440,7 +440,7 @@ export default function PaymentView() {
                             className="btn-pay-now active-pay"
                             style={{ background: '#059669', color: '#FFFFFF', cursor: 'default' }}
                           >
-                            <span>✓</span> Payment Completed
+                            Payment Completed
                           </button>
                         )}
                       </>
@@ -725,7 +725,7 @@ function StripeCheckoutCard({
                   fontSize: '15px',
                   color: '#1F2937',
                   '::placeholder': { color: '#9CA3AF' },
-                  fontFamily: 'Inter, sans-serif'
+                  fontFamily: 'var(--font)'
                 },
                 invalid: { color: '#EF4444' }
               }
@@ -858,10 +858,10 @@ function BankMapModal({
       })
 
       const popupHtml = `
-        <div style="font-family: Inter, sans-serif; font-size: 12px; min-width: 190px;">
+        <div style="font-family: var(--font); font-size: 12px; min-width: 190px;">
           <h4 style="margin: 0 0 4px 0; font-size: 13px; color: #111827;">${bank.name}</h4>
           <p style="margin: 0 0 6px 0; color: #6B7280;">${bank.address || 'Dhaka'}</p>
-          <div style="font-size: 11px; font-weight: 600; color: #1A9882; margin-bottom: 4px;">
+          <div style="font-size: 11px; font-weight: 600; color: #147a68; margin-bottom: 4px;">
             Distance: ${bank.distance} km from your area
           </div>
           ${
@@ -915,7 +915,7 @@ function BankMapModal({
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
-            ✕
+            ×
           </button>
         </div>
 
@@ -1060,15 +1060,15 @@ function BypassPaymentModal({
           <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>👑</span> Bypass Current Payment
           </h2>
-          <button className="modal-close-btn" onClick={onClose} aria-label="Close">✕</button>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close">×</button>
         </div>
         <div className="modal-body" style={{ padding: '20px' }}>
           <p style={{ fontSize: '14px', color: '#374151', marginBottom: '14px' }}>
             You are granting administrative fee clearance for student: <strong>{studentId}</strong>.
           </p>
-          <div style={{ background: '#EEF2FF', padding: '14px 18px', borderRadius: '8px', border: '1px solid #C7D2FE', marginBottom: '16px' }}>
-            <div style={{ fontSize: '12px', color: '#4F46E5', fontWeight: '600' }}>TOTAL AMOUNT CLEARED / WAIVED</div>
-            <div style={{ fontSize: '22px', fontWeight: '700', color: '#312E81', marginTop: '2px' }}>
+          <div style={{ background: '#eef1ef', padding: '14px 18px', borderRadius: '8px', border: '1px solid #eef1ef', marginBottom: '16px' }}>
+            <div style={{ fontSize: '12px', color: '#147a68', fontWeight: '600' }}>TOTAL AMOUNT CLEARED / WAIVED</div>
+            <div style={{ fontSize: '22px', fontWeight: '700', color: '#147a68', marginTop: '2px' }}>
               ৳{formatCurrency(netPayable)}
             </div>
           </div>
@@ -1094,7 +1094,7 @@ function BypassPaymentModal({
             onClick={() => onConfirm()}
             disabled={submitting}
             style={{
-              background: '#4F46E5',
+              background: '#147a68',
               color: '#FFFFFF',
               padding: '8px 18px',
               borderRadius: '6px',
@@ -1152,7 +1152,7 @@ function EditPaymentModal({ record, onClose, onSave, submitting }) {
           <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>✏️</span> Edit Payment Record
           </h2>
-          <button className="modal-close-btn" onClick={onClose} aria-label="Close">✕</button>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close">×</button>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="modal-body" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -1254,7 +1254,7 @@ function EditPaymentModal({ record, onClose, onSave, submitting }) {
               type="submit"
               disabled={submitting}
               style={{
-                background: 'var(--color-teal, #1A9882)',
+                background: 'var(--color-teal, #147a68)',
                 color: '#FFFFFF',
                 padding: '8px 18px',
                 borderRadius: '6px',
@@ -1282,7 +1282,7 @@ function DeletePaymentModal({ record, onClose, onConfirm, submitting }) {
           <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#DC2626' }}>
             <span>🗑️</span> Delete Payment Record
           </h2>
-          <button className="modal-close-btn" onClick={onClose} aria-label="Close">✕</button>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close">×</button>
         </div>
         <div className="modal-body" style={{ padding: '20px' }}>
           <p style={{ fontSize: '14px', color: '#374151', marginBottom: '14px' }}>

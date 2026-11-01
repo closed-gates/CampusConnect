@@ -42,10 +42,8 @@ export default function DashboardView() {
         {/* Header */}
         <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h1 className="dashboard-greeting">
-              Welcome back, {fullName}!
-            </h1>
-            <p className="dashboard-date">{today}</p>
+            <h1 className="dashboard-greeting">Home</h1>
+            <p className="dashboard-date">{fullName} · {today}</p>
           </div>
 
           {/* Real-time In-App Notification Bell strictly for student users */}

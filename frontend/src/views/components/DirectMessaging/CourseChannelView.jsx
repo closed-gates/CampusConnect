@@ -4,7 +4,7 @@ import { getCurrentUser } from "../../../models/messagingModel.js";
 import "./CourseChannelView.css";
 
 function getAvatarColor(id) {
-  const palette = ["#1A9882","#3B82F6","#8B5CF6","#EC4899","#F59E0B","#EF4444","#10B981"];
+  const palette = ["#147a68","#3B82F6","#147a68","#EC4899","#F59E0B","#EF4444","#10B981"];
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % palette.length;
   return palette[Math.abs(h)];

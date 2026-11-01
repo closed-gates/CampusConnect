@@ -427,7 +427,7 @@ function PreferencesTab({ ctrl }) {
             </div>
             <select className="pref-select" value={preferences.theme} onChange={e => handlePreferenceChange('theme', e.target.value)}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
           </div>
-          <div className="pref-row"><div className="pref-info"><span className="pref-label">🎨 Accent Color</span><span className="pref-desc">Personalize buttons and highlights</span></div><select className="pref-select" value={preferences.accent} onChange={e => handlePreferenceChange('accent', e.target.value)}><option value="teal">Teal</option><option value="blue">Blue</option><option value="purple">Purple</option></select></div>
+          <div className="pref-row"><div className="pref-info"><span className="pref-label">🎨 Accent Color</span><span className="pref-desc">Colour for progress, charts and the current item</span></div><select className="pref-select" value={preferences.accent} onChange={e => handlePreferenceChange('accent', e.target.value)}><option value="teal">Teal</option><option value="blue">Blue</option></select></div>
 
           <PreferenceHeading title="Notifications" />
           {/* Notification pop-ups */}

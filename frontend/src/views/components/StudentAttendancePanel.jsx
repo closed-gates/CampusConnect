@@ -218,7 +218,7 @@ export default function StudentAttendancePanel() {
               onClick={() => selectCourse(null)}
               aria-label="Close detail"
             >
-              ✕
+              ×
             </button>
           </div>
 

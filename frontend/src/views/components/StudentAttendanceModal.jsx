@@ -30,11 +30,11 @@ export default function StudentAttendanceModal({ isOpen, onClose, attendanceData
   const getStatusBadge = (status) => {
     const s = (status || '').toUpperCase()
     if (s === 'PRESENT') {
-      return <span className="status-badge badge-present">✓ Present</span>
+      return <span className="status-badge badge-present">Present</span>
     } else if (s === 'LATE') {
       return <span className="status-badge badge-late">⏱ Late</span>
     } else {
-      return <span className="status-badge badge-absent">✗ Absent</span>
+      return <span className="status-badge badge-absent">Absent</span>
     }
   }
 
@@ -50,7 +50,7 @@ export default function StudentAttendanceModal({ isOpen, onClose, attendanceData
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
-            ✕
+            ×
           </button>
         </div>
 
@@ -110,14 +110,14 @@ export default function StudentAttendanceModal({ isOpen, onClose, attendanceData
                         className="cb-bar-fill"
                         style={{
                           width: `${Math.min(100, cb.attendanceRate)}%`,
-                          background: cb.attendanceRate >= 80 ? 'var(--color-teal, #1A9882)' : '#F59E0B',
+                          background: cb.attendanceRate >= 80 ? 'var(--color-teal, #147a68)' : '#F59E0B',
                         }}
                       />
                     </div>
                     <div className="cb-counts-row">
-                      <span>✓ {cb.presentCount} present</span>
+                      <span>{cb.presentCount} present</span>
                       <span>⏱ {cb.lateCount} late</span>
-                      <span>✗ {cb.absentCount} absent</span>
+                      <span>{cb.absentCount} absent</span>
                     </div>
                   </div>
                 ))}

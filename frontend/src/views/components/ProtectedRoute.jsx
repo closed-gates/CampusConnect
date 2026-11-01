@@ -11,7 +11,7 @@
  * dialog appears immediately and the session is terminated.
  */
 
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { isTokenValid } from '../../models/authModel.js'
 import ChatbotWidget from './ChatbotWidget.jsx'
 import FrozenAccountDialog from './FrozenAccountDialog.jsx'
@@ -40,11 +40,13 @@ export default function ProtectedRoute() {
 /** Inner shell — rendered only when authenticated, so hooks run unconditionally. */
 function AuthenticatedShell() {
   const { freezeMessage, handleFreezeAcknowledge } = useFreezeWatcher()
+  // Messaging has its own composer in the corner the assistant bubble would cover.
+  const showAssistant = useLocation().pathname !== '/messaging'
 
   return (
     <>
       <Outlet />
-      <ChatbotWidget />
+      {showAssistant && <ChatbotWidget />}
       {/* Full-screen freeze dialog — shown immediately when admin freezes this account */}
       <FrozenAccountDialog
         message={freezeMessage}

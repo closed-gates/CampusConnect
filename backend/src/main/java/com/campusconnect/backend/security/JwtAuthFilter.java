@@ -1,5 +1,6 @@
 package com.campusconnect.backend.security;
 
+import com.campusconnect.backend.repository.AppUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,9 +34,11 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final AppUserRepository userRepo;
 
-    public JwtAuthFilter(JwtService jwtService) {
+    public JwtAuthFilter(JwtService jwtService, AppUserRepository userRepo) {
         this.jwtService = jwtService;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -61,8 +64,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Extract user info from the token
         String userId  = jwtService.extractUserId(token);
-        String role    = jwtService.extractRole(token);
 
+        // Freezing must take effect immediately, not when the 24h token expires.
+        // The /me status route stays open so the client can show the frozen dialog.
+        var user = userRepo.findByUserId(userId);
+        if (user.isEmpty()) {          // deleted account → treated as no token (401)
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (!user.get().isActive() && !request.getRequestURI().equals("/api/admin/account-freezes/me")) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"success\":false,\"message\":\"ACCOUNT_FROZEN\"}");
+            return;
+        }
+
+        String role = user.get().getRole();   // DB role, so demotions apply at once
         // Build Spring Security authentication with the user's role
         var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
         var auth = new UsernamePasswordAuthenticationToken(userId, null, authorities);

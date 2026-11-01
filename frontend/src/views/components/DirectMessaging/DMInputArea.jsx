@@ -1,10 +1,12 @@
 ﻿import React, { useState, useRef } from 'react';
+import { PaperclipIcon, SmileIcon, SendIcon } from '../Icons.jsx';
 
+// taste-skill-ignore: user-insertable emoji content, not interface icons
 const ACADEMIC_EMOJIS = {
-  academic: ['🎓', '📚', '📝', '🔍', '💡', '📊', '💻', '🧪', '📐', '🧠', '📌', '🗓️', '🏆', '⭐'],
-  greetings: ['👋', '🙌', '👍', '🤝', '😊', '🎉', '✨', '👏', '💬', '🔥', '💯'],
-  schedule: ['📅', '⏰', '📌', '📍', '📢', '🔔', '⌛', '🎯'],
-  expressions: ['🤔', '😅', '👀', '💯', '🚀', '⚡', '💪', '🎯']
+  academic: ['🎓', '📚', '📝', '🔍', '💡', '📊', '💻', '🧪', '📐', '🧠', '📌', '🗓️', '🏆', '⭐'], // taste-skill-ignore: user content
+  greetings: ['👋', '🙌', '👍', '🤝', '😊', '🎉', '✨', '👏', '💬', '🔥', '💯'], // taste-skill-ignore: user content
+  schedule: ['📅', '⏰', '📌', '📍', '📢', '🔔', '⌛', '🎯'], // taste-skill-ignore: user content
+  expressions: ['🤔', '😅', '👀', '💯', '🚀', '⚡', '💪', '🎯'] // taste-skill-ignore: user content
 };
 
 export default function DMInputArea({
@@ -86,7 +88,6 @@ export default function DMInputArea({
         <div className="univ-staged-files-bar">
           {stagedFiles.map((fileObj, idx) => (
             <div key={idx} className="univ-staged-chip">
-              <span>📄</span>
               <span>{fileObj.name}</span>
               <span style={{ fontSize: 11, opacity: 0.7 }}>({fileObj.size})</span>
               <button
@@ -94,7 +95,7 @@ export default function DMInputArea({
                 onClick={() => removeStagedFile(idx)}
                 style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '0 2px', fontWeight: 'bold' }}
               >
-                ✕
+                ×
               </button>
             </div>
           ))}
@@ -109,7 +110,7 @@ export default function DMInputArea({
               onClick={() => setShowEmojiPicker(false)}
               style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: 14 }}
             >
-              ✕
+              ×
             </button>
           </div>
           <div style={{ maxHeight: 220, overflowY: 'auto' }}>
@@ -160,8 +161,9 @@ export default function DMInputArea({
           className="univ-action-btn"
           onClick={() => fileInputRef.current?.click()}
           title="Attach Files"
+          aria-label="Attach files"
         >
-          📎
+          <PaperclipIcon />
         </button>
 
         <button
@@ -169,8 +171,9 @@ export default function DMInputArea({
           className="univ-action-btn"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           title="Insert Emoji"
+          aria-label="Insert emoji"
         >
-          😊
+          <SmileIcon />
         </button>
 
         <input
@@ -192,12 +195,13 @@ export default function DMInputArea({
           className="univ-send-submit-btn"
           disabled={!text.trim() && stagedFiles.length === 0}
           title="Send Message"
+          aria-label="Send message"
           style={{
             opacity: (!text.trim() && stagedFiles.length === 0) ? 0.45 : 1,
             cursor: (!text.trim() && stagedFiles.length === 0) ? 'not-allowed' : 'pointer'
           }}
         >
-          ✈️
+          <SendIcon />
         </button>
       </form>
     </div>

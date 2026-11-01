@@ -26,7 +26,7 @@ export default function StudentRoutineModal({ isOpen, onClose, courses, routineG
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
-            ✕
+            ×
           </button>
         </div>
 

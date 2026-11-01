@@ -8,9 +8,9 @@
   display: flex;
   width: 100%;
   height: 100vh;
-  background: var(--color-bg, #F4F6F8);
-  color: var(--color-text, #111827);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--color-bg, var(--ground));
+  color: var(--color-text, var(--text));
+  font-family: var(--font);
   overflow: hidden;
 }
 
@@ -19,29 +19,29 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 100px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .role-badge.faculty {
-  background: #FEF3C7;
-  color: #92400E;
+  background: var(--pill-warning-bg);
+  color: var(--pill-warning-ink);
   border: 1px solid #FCD34D;
 }
 
 .role-badge.student {
-  background: var(--color-lavender, #E8EAFA);
-  color: #3730A3;
-  border: 1px solid var(--color-lavender-mid, #D0D4F5);
+  background: var(--color-lavender, #eef1ef);
+  color: #147a68;
+  border: 1px solid var(--color-lavender-mid, var(--rule));
 }
 
 .role-badge.admin {
-  background: #FEE2E2;
-  color: #991B1B;
+  background: var(--pill-negative-bg);
+  color: var(--pill-negative-ink);
   border: 1px solid #FCA5A5;
 }
 
@@ -51,13 +51,13 @@
 .univ-nav-sidebar {
   width: 72px;
   min-width: 72px;
-  background: var(--color-surface, #FFFFFF);
+  background: var(--color-surface, var(--surface));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   padding: 16px 0;
-  border-right: 1px solid var(--color-border, #E5E7EB);
+  border-right: 1px solid var(--color-border, var(--border));
   z-index: 20;
 }
 
@@ -73,15 +73,14 @@
   width: 44px;
   height: 44px;
   border-radius: var(--radius-sm, 6px);
-  background: linear-gradient(135deg, var(--color-teal, #1A9882), #2FB8A0);
+  background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--on-primary);
   font-size: 20px;
   margin-bottom: 8px;
   cursor: pointer;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
 }
 
 .univ-nav-item {
@@ -92,24 +91,24 @@
   border-radius: var(--radius-sm, 6px);
   background: transparent;
   border: none;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition, 0.2s ease);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
   position: relative;
 }
 
 .univ-nav-item:hover {
   background: var(--color-teal-light, #E6F5F2);
-  color: var(--color-teal, #1A9882);
+  color: var(--color-teal, #147a68);
 }
 
 .univ-nav-item.active {
   background: var(--color-teal-light, #E6F5F2);
-  color: var(--color-teal, #1A9882);
+  color: var(--color-teal, #147a68);
 }
 
 .univ-nav-item.active::before {
@@ -118,7 +117,7 @@
   left: -12px;
   width: 3px;
   height: 20px;
-  background: var(--color-teal, #1A9882);
+  background: var(--color-teal, #147a68);
   border-radius: 0 4px 4px 0;
 }
 
@@ -135,10 +134,10 @@
 .univ-chats-sidebar {
   width: 330px;
   min-width: 290px;
-  background: var(--color-surface, #FFFFFF);
+  background: var(--color-surface, var(--surface));
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--color-border, #E5E7EB);
+  border-right: 1px solid var(--color-border, var(--border));
   z-index: 10;
 }
 
@@ -147,22 +146,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--color-border, #E5E7EB);
+  border-bottom: 1px solid var(--color-border, var(--border));
 }
 
 .univ-chats-title {
   font-size: 16px;
   font-weight: 700;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
   letter-spacing: -0.3px;
 }
 
 .univ-new-dm-btn {
   min-height: 36px;
   padding: 0 14px;
-  background: linear-gradient(135deg, var(--color-teal, #1A9882), var(--color-teal-dark, #147A68));
-  color: white;
-  font-weight: 600;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 500;
   font-size: 13px;
   border: none;
   border-radius: var(--radius-sm, 6px);
@@ -170,13 +169,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
   transition: transform var(--transition, 0.2s ease), box-shadow var(--transition, 0.2s ease);
 }
 
 .univ-new-dm-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
 }
 
 .univ-search-wrapper {
@@ -186,8 +183,8 @@
 .univ-search-input-box {
   display: flex;
   align-items: center;
-  background: var(--color-bg, #F4F6F8);
-  border: 1.5px solid var(--color-border, #E5E7EB);
+  background: var(--color-bg, var(--ground));
+  border: 1.5px solid var(--color-border, var(--border));
   border-radius: var(--radius-sm, 6px);
   padding: 0 12px;
   min-height: 40px;
@@ -196,14 +193,15 @@
 }
 
 .univ-search-input-box:focus-within {
-  border-color: var(--color-teal, #1A9882);
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.1);
+  border-color: var(--color-teal, #147a68);
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .univ-search-input-box input {
   background: transparent;
   border: none;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
   font-size: 13px;
   font-family: inherit;
   width: 100%;
@@ -211,14 +209,14 @@
 }
 
 .univ-search-input-box input::placeholder {
-  color: var(--color-text-light, #9CA3AF);
+  color: var(--color-text-light, var(--muted));
 }
 
 .univ-filter-tabs {
   display: flex;
   padding: 8px 16px;
   gap: 6px;
-  border-bottom: 1px solid var(--color-border, #E5E7EB);
+  border-bottom: 1px solid var(--color-border, var(--border));
 }
 
 .univ-tab-btn {
@@ -227,23 +225,23 @@
   background: transparent;
   border: 1.5px solid transparent;
   border-radius: 100px;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: all var(--transition, 0.2s ease);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .univ-tab-btn:hover {
-  color: var(--color-teal, #1A9882);
+  color: var(--color-teal, #147a68);
   background: var(--color-teal-light, #E6F5F2);
 }
 
 .univ-tab-btn.active {
   background: var(--color-teal-light, #E6F5F2);
-  color: var(--color-teal, #1A9882);
-  border-color: var(--color-teal, #1A9882);
+  color: var(--color-teal, #147a68);
+  border-color: var(--color-teal, #147a68);
 }
 
 .univ-chat-list {
@@ -262,9 +260,9 @@
 .univ-category-label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--color-text-light, #9CA3AF);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
+  color: var(--color-text-light, var(--muted));
+  text-transform: none;
+  letter-spacing: 0;
   padding: 12px 8px 4px 8px;
 }
 
@@ -277,7 +275,7 @@
   border-radius: var(--radius-sm, 6px);
   cursor: pointer;
   margin-bottom: 2px;
-  transition: all var(--transition, 0.2s ease);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
   border: 1.5px solid transparent;
 }
 
@@ -287,7 +285,7 @@
 
 .univ-chat-item.active {
   background: var(--color-teal-light, #E6F5F2);
-  border-color: var(--color-teal, #1A9882);
+  border-color: var(--color-teal, #147a68);
 }
 
 /* ── Avatar ────────────────────────────────────────────────── */
@@ -322,8 +320,8 @@
 
 .univ-chat-name {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text, #111827);
+  font-weight: 500;
+  color: var(--color-text, var(--text));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -331,22 +329,22 @@
 
 .univ-chat-time {
   font-size: 11px;
-  color: var(--color-text-light, #9CA3AF);
+  color: var(--color-text-light, var(--muted));
   flex-shrink: 0;
 }
 
 .univ-chat-preview {
   font-size: 12px;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .univ-badge-count {
-  background: var(--color-teal, #1A9882);
+  background: var(--color-teal, #147a68);
   color: white;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 100px;
@@ -361,7 +359,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg, #F4F6F8);
+  background: var(--color-bg, var(--ground));
   height: 100%;
 }
 
@@ -372,8 +370,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--color-surface, #FFFFFF);
-  border-bottom: 1px solid var(--color-border, #E5E7EB);
+  background: var(--color-surface, var(--surface));
+  border-bottom: 1px solid var(--color-border, var(--border));
 }
 
 .univ-header-user {
@@ -385,7 +383,7 @@
 .univ-header-details h3 {
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
   margin: 0;
   display: flex;
   align-items: center;
@@ -395,29 +393,29 @@
 .univ-header-details p {
   margin: 2px 0 0 0;
   font-size: 12px;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
 }
 
 .univ-key-badge {
   min-height: 36px;
   padding: 0 14px;
-  background: var(--color-bg, #F4F6F8);
-  border: 1.5px solid var(--color-border, #E5E7EB);
-  color: var(--color-text-sub, #6B7280);
+  background: var(--color-bg, var(--ground));
+  border: 1.5px solid var(--color-border, var(--border));
+  color: var(--color-text-sub, var(--muted));
   border-radius: var(--radius-sm, 6px);
   font-family: monospace;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all var(--transition, 0.2s ease);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .univ-key-badge:hover {
-  border-color: var(--color-teal, #1A9882);
-  color: var(--color-teal, #1A9882);
+  border-color: var(--color-teal, #147a68);
+  color: var(--color-teal, #147a68);
   background: var(--color-teal-light, #E6F5F2);
 }
 
@@ -440,8 +438,8 @@
 
 /* ── Welcome banner ────────────────────────────────────────── */
 .univ-welcome-card {
-  background: var(--color-surface, #FFFFFF);
-  border: 1px solid var(--color-border, #E5E7EB);
+  background: var(--color-surface, var(--surface));
+  border: 1px solid var(--color-border, var(--border));
   border-radius: var(--radius-md, 12px);
   padding: 24px;
   margin-bottom: 20px;
@@ -450,7 +448,6 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
 }
 
 .univ-welcome-avatar {
@@ -460,7 +457,7 @@
 .univ-welcome-title {
   font-size: 18px;
   font-weight: 700;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
   margin: 0;
   display: flex;
   align-items: center;
@@ -469,15 +466,15 @@
 
 .univ-welcome-desc {
   font-size: 13px;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   max-width: 480px;
   margin: 0;
   line-height: 1.5;
 }
 
 .univ-welcome-highlight {
-  color: var(--color-teal, #1A9882);
-  font-weight: 600;
+  color: var(--color-teal, #147a68);
+  font-weight: 500;
 }
 
 .univ-msg-card {
@@ -494,20 +491,18 @@
 
 /* ── Message Bubble ────────────────────────────────────────── */
 .univ-msg-bubble {
-  background: var(--color-surface, #FFFFFF);
-  border: 1.5px solid var(--color-border, #E5E7EB);
+  background: var(--color-surface, var(--surface));
+  border: 1.5px solid var(--color-border, var(--border));
   padding: 10px 14px;
   border-radius: var(--radius-md, 12px);
   border-bottom-left-radius: 4px;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
 }
 
 .univ-msg-card.self .univ-msg-bubble {
-  background: linear-gradient(135deg, var(--color-teal, #1A9882), var(--color-teal-dark, #147A68));
+  background: var(--primary);
   border-color: transparent;
   border-bottom-left-radius: var(--radius-md, 12px);
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.25);
 }
 
 .univ-msg-header {
@@ -520,7 +515,7 @@
 .univ-msg-author {
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
 }
 
 .univ-msg-card.self .univ-msg-author {
@@ -529,7 +524,7 @@
 
 .univ-msg-timestamp {
   font-size: 11px;
-  color: var(--color-text-light, #9CA3AF);
+  color: var(--color-text-light, var(--muted));
 }
 
 .univ-msg-card.self .univ-msg-timestamp {
@@ -539,7 +534,7 @@
 .univ-msg-text {
   font-size: 14px;
   line-height: 1.55;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
 }
 
 .univ-msg-card.self .univ-msg-text {
@@ -558,8 +553,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--color-bg, #F4F6F8);
-  border: 1.5px solid var(--color-border, #E5E7EB);
+  background: var(--color-bg, var(--ground));
+  border: 1.5px solid var(--color-border, var(--border));
   border-radius: var(--radius-sm, 6px);
   padding: 10px 12px;
   max-width: 340px;
@@ -568,8 +563,7 @@
 }
 
 .univ-file-card:hover {
-  border-color: var(--color-teal, #1A9882);
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.08);
+  border-color: var(--color-teal, #147a68);
 }
 
 .univ-msg-card.self .univ-file-card {
@@ -579,19 +573,18 @@
 
 .univ-msg-card.self .univ-file-card:hover {
   border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: none;
 }
 
 .univ-file-ext-badge {
   background: var(--color-teal-light, #E6F5F2);
   color: var(--color-teal-dark, #147A68);
   font-family: monospace;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 11px;
   padding: 6px 8px;
   border-radius: var(--radius-sm, 6px);
   border: 1px solid rgba(26, 152, 130, 0.3);
-  text-transform: uppercase;
+  text-transform: none;
   flex-shrink: 0;
 }
 
@@ -608,8 +601,8 @@
 
 .univ-file-name {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text, #111827);
+  font-weight: 500;
+  color: var(--color-text, var(--text));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -621,7 +614,7 @@
 
 .univ-file-size {
   font-size: 11px;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   margin-top: 2px;
 }
 
@@ -637,18 +630,18 @@
   border-radius: var(--radius-sm, 6px);
   background: var(--color-border, #E5E7EB);
   border: none;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   text-decoration: none;
-  transition: all var(--transition, 0.2s ease);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .univ-file-download-btn:hover {
-  background: var(--color-teal, #1A9882);
+  background: var(--color-teal, #147a68);
   color: white;
 }
 
@@ -665,7 +658,7 @@
   max-width: 280px;
   max-height: 200px;
   border-radius: var(--radius-sm, 6px);
-  border: 1.5px solid var(--color-border, #E5E7EB);
+  border: 1.5px solid var(--color-border, var(--border));
   object-fit: cover;
   margin-top: 6px;
 }
@@ -683,8 +676,8 @@
   display: flex;
   gap: 8px;
   padding: 8px 12px;
-  background: var(--color-surface, #FFFFFF);
-  border: 1.5px dashed var(--color-teal, #1A9882);
+  background: var(--color-surface, var(--surface));
+  border: 1.5px dashed var(--color-teal, #147a68);
   border-bottom: none;
   border-radius: var(--radius-sm, 6px) var(--radius-sm, 6px) 0 0;
   overflow-x: auto;
@@ -709,24 +702,24 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--color-surface, #FFFFFF);
-  border: 1.5px solid var(--color-border, #E5E7EB);
+  background: var(--color-surface, var(--surface));
+  border: 1.5px solid var(--color-border, var(--border));
   border-radius: var(--radius-md, 12px);
   padding: 6px 8px 6px 14px;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
   transition: border-color var(--transition, 0.2s ease), box-shadow var(--transition, 0.2s ease);
 }
 
 .univ-input-form-box:focus-within {
-  border-color: var(--color-teal, #1A9882);
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.12);
+  border-color: var(--color-teal, #147a68);
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .univ-input-field {
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
   font-size: 14px;
   font-family: inherit;
   outline: none;
@@ -734,7 +727,7 @@
 }
 
 .univ-input-field::placeholder {
-  color: var(--color-text-light, #9CA3AF);
+  color: var(--color-text-light, var(--muted));
 }
 
 .univ-action-btn {
@@ -745,19 +738,19 @@
   border-radius: var(--radius-sm, 6px);
   border: none;
   background: transparent;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition, 0.2s ease);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
   font-family: inherit;
 }
 
 .univ-action-btn:hover {
   background: var(--color-teal-light, #E6F5F2);
-  color: var(--color-teal, #1A9882);
+  color: var(--color-teal, #147a68);
 }
 
 .univ-send-submit-btn {
@@ -767,20 +760,18 @@
   height: 44px;
   border-radius: var(--radius-sm, 6px);
   border: none;
-  background: linear-gradient(135deg, var(--color-teal, #1A9882), var(--color-teal-dark, #147A68));
-  color: white;
+  background: var(--primary);
+  color: var(--on-primary);
   font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
   transition: transform var(--transition, 0.2s ease), box-shadow var(--transition, 0.2s ease);
 }
 
 .univ-send-submit-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(26, 152, 130, 0.4);
 }
 
 .univ-send-submit-btn:active {
@@ -793,8 +784,8 @@
   bottom: 80px;
   left: 20px;
   width: 320px;
-  background: var(--color-surface, #FFFFFF);
-  border: 1.5px solid var(--color-border, #E5E7EB);
+  background: var(--color-surface, var(--surface));
+  border: 1.5px solid var(--color-border, var(--border));
   border-radius: var(--radius-md, 12px);
   box-shadow: var(--shadow-lg, 0 10px 40px rgba(0,0,0,0.10));
   padding: 14px;
@@ -804,9 +795,9 @@
 .univ-emoji-header {
   font-size: 12px;
   font-weight: 700;
-  color: var(--color-text-sub, #6B7280);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--color-text-sub, var(--muted));
+  text-transform: none;
+  letter-spacing: 0;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -818,22 +809,22 @@
   border: none;
   font-size: 16px;
   cursor: pointer;
-  color: var(--color-text-light, #9CA3AF);
+  color: var(--color-text-light, var(--muted));
   padding: 0;
   line-height: 1;
   transition: color var(--transition, 0.2s ease);
 }
 
 .univ-emoji-header button:hover {
-  color: var(--color-error, #EF4444);
+  color: var(--color-error, var(--negative));
 }
 
 .univ-emoji-category {
   font-size: 11px;
-  font-weight: 600;
-  color: var(--color-teal, #1A9882);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 500;
+  color: var(--color-teal, #147a68);
+  text-transform: none;
+  letter-spacing: 0;
   margin: 10px 0 4px 0;
 }
 
@@ -869,7 +860,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   text-align: center;
   padding: 40px;
 }
@@ -883,13 +874,13 @@
 .univ-empty-state h3 {
   font-size: 18px;
   font-weight: 700;
-  color: var(--color-text, #111827);
+  color: var(--color-text, var(--text));
   margin: 0;
 }
 
 .univ-empty-state p {
   font-size: 14px;
-  color: var(--color-text-sub, #6B7280);
+  color: var(--color-text-sub, var(--muted));
   margin: 0;
   max-width: 280px;
   line-height: 1.5;
@@ -910,345 +901,23 @@
   .univ-chats-sidebar { width: 260px; min-width: 220px; }
 }
 
+.dm-chat-pane { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dm-chat-pane > .univ-message-window, .dm-chat-pane > * + * { flex: 1; min-height: 0; }
+.dm-back-btn { display: none; }
+
+/* Phones: one pane at a time; picking a conversation opens it, back returns to the list */
 @media (max-width: 640px) {
-  .univ-chats-sidebar { display: none; }
-}
-
-/* ============================================================
-   DARK MODE OVERRIDES (:root[data-theme='dark'])
-   Harmonized with CampusConnect website dark theme
-   Palette: #090e17 (deep bg), #0d1726 (surfaces), #111c30 (panels/bubbles), #1e293b (borders)
-   ============================================================ */
-:root[data-theme='dark'] .univ-dm-root {
-  background: #090e17;
-  color: #f8fafc;
-}
-
-/* ── Sidebar & Nav ─────────────────────────────────────────── */
-:root[data-theme='dark'] .univ-nav-sidebar {
-  background: #0d1726;
-  border-right-color: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-nav-item {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-nav-item:hover,
-:root[data-theme='dark'] .univ-nav-item.active {
-  background: rgba(26, 152, 130, 0.15);
-  color: #2dd4bf;
-}
-
-:root[data-theme='dark'] .univ-chats-sidebar {
-  background: #0d1726;
-  border-right-color: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-chats-header {
-  border-bottom-color: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-chats-title {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-search-input-box {
-  background: #111c30;
-  border-color: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-search-input-box:focus-within {
-  border-color: #1A9882;
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.2);
-}
-
-:root[data-theme='dark'] .univ-search-input-box input {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-search-input-box input::placeholder {
-  color: #64748b;
-}
-
-:root[data-theme='dark'] .univ-filter-tabs {
-  border-bottom-color: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-tab-btn {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-tab-btn:hover {
-  color: #2dd4bf;
-  background: rgba(26, 152, 130, 0.15);
-}
-
-:root[data-theme='dark'] .univ-tab-btn.active {
-  background: rgba(26, 152, 130, 0.2);
-  color: #2dd4bf;
-  border-color: rgba(45, 212, 191, 0.4);
-}
-
-:root[data-theme='dark'] .univ-category-label {
-  color: #64748b;
-}
-
-:root[data-theme='dark'] .univ-chat-item:hover {
-  background: rgba(30, 41, 59, 0.5);
-}
-
-:root[data-theme='dark'] .univ-chat-item.active {
-  background: rgba(26, 152, 130, 0.15);
-  border-color: rgba(26, 152, 130, 0.5);
-}
-
-:root[data-theme='dark'] .univ-chat-name {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-chat-time {
-  color: #64748b;
-}
-
-:root[data-theme='dark'] .univ-chat-preview {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-presence-badge {
-  border-color: #0d1726;
-}
-
-/* ── Message Window & Header ───────────────────────────────── */
-:root[data-theme='dark'] .univ-message-window {
-  background: #090e17;
-}
-
-:root[data-theme='dark'] .univ-window-header {
-  background: #0d1726;
-  border-bottom-color: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-header-details h3 {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-header-details p {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-key-badge {
-  background: #111c30;
-  border-color: #1e293b;
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-key-badge:hover {
-  border-color: #2dd4bf;
-  color: #2dd4bf;
-  background: rgba(26, 152, 130, 0.15);
-}
-
-/* ── Welcome Card (Dark Mode) ──────────────────────────────── */
-:root[data-theme='dark'] .univ-welcome-card {
-  background: #0d1726;
-  border-color: #1e293b;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-:root[data-theme='dark'] .univ-welcome-title {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-welcome-desc {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-welcome-highlight {
-  color: #2dd4bf;
-}
-
-/* ── Message Bubbles ───────────────────────────────────────── */
-:root[data-theme='dark'] .univ-msg-bubble {
-  background: #111c30;
-  border-color: #1e293b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
-
-:root[data-theme='dark'] .univ-msg-author {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-msg-timestamp {
-  color: #64748b;
-}
-
-:root[data-theme='dark'] .univ-msg-text {
-  color: #e2e8f0;
-}
-
-:root[data-theme='dark'] .univ-msg-card.self .univ-msg-bubble {
-  background: linear-gradient(135deg, #1A9882 0%, #137462 100%);
-  border-color: transparent;
-  box-shadow: 0 4px 14px rgba(26, 152, 130, 0.3);
-}
-
-:root[data-theme='dark'] .univ-msg-card.self .univ-msg-author {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-:root[data-theme='dark'] .univ-msg-card.self .univ-msg-timestamp {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-:root[data-theme='dark'] .univ-msg-card.self .univ-msg-text {
-  color: #ffffff;
-}
-
-/* ── Role Badges in Dark Mode ──────────────────────────────── */
-:root[data-theme='dark'] .role-badge.faculty {
-  background: rgba(245, 158, 11, 0.18);
-  color: #fcd34d;
-  border-color: rgba(245, 158, 11, 0.35);
-}
-
-:root[data-theme='dark'] .role-badge.student {
-  background: rgba(99, 102, 241, 0.18);
-  color: #a5b4fc;
-  border-color: rgba(99, 102, 241, 0.35);
-}
-
-:root[data-theme='dark'] .role-badge.admin {
-  background: rgba(239, 68, 68, 0.18);
-  color: #fca5a5;
-  border-color: rgba(239, 68, 68, 0.35);
-}
-
-/* ── File Attachments ──────────────────────────────────────── */
-:root[data-theme='dark'] .univ-file-card {
-  background: #0d1726;
-  border-color: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-file-card:hover {
-  border-color: #1A9882;
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.15);
-}
-
-:root[data-theme='dark'] .univ-file-ext-badge {
-  background: rgba(26, 152, 130, 0.2);
-  color: #2dd4bf;
-  border-color: rgba(45, 212, 191, 0.3);
-}
-
-:root[data-theme='dark'] .univ-file-name {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-file-size {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-file-download-btn {
-  background: #1e293b;
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-file-download-btn:hover {
-  background: #1A9882;
-  color: #ffffff;
-}
-
-:root[data-theme='dark'] .univ-msg-card.self .univ-file-card {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-:root[data-theme='dark'] .univ-image-preview {
-  border-color: #1e293b;
-}
-
-/* ── Staged Files & Input ──────────────────────────────────── */
-:root[data-theme='dark'] .univ-staged-files-bar {
-  background: #111c30;
-  border-color: #1A9882;
-}
-
-:root[data-theme='dark'] .univ-staged-chip {
-  background: rgba(26, 152, 130, 0.2);
-  border-color: rgba(26, 152, 130, 0.4);
-  color: #2dd4bf;
-}
-
-:root[data-theme='dark'] .univ-input-form-box {
-  background: #111c30;
-  border-color: #1e293b;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-:root[data-theme='dark'] .univ-input-form-box:focus-within {
-  border-color: #1A9882;
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.2);
-}
-
-:root[data-theme='dark'] .univ-input-field {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-input-field::placeholder {
-  color: #64748b;
-}
-
-:root[data-theme='dark'] .univ-action-btn {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-action-btn:hover {
-  background: rgba(26, 152, 130, 0.15);
-  color: #2dd4bf;
-}
-
-/* ── Emoji Picker ──────────────────────────────────────────── */
-:root[data-theme='dark'] .univ-emoji-picker-modal {
-  background: #0d1726;
-  border-color: #1e293b;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-}
-
-:root[data-theme='dark'] .univ-emoji-header {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-emoji-category {
-  color: #2dd4bf;
-}
-
-:root[data-theme='dark'] .univ-emoji-btn:hover {
-  background: rgba(26, 152, 130, 0.2);
-}
-
-/* ── Empty State & Typing ──────────────────────────────────── */
-:root[data-theme='dark'] .univ-empty-state h3 {
-  color: #f8fafc;
-}
-
-:root[data-theme='dark'] .univ-empty-state p {
-  color: #94a3b8;
-}
-
-:root[data-theme='dark'] .univ-typing-indicator-bubble {
-  background: #111c30;
-  border: 1.5px solid #1e293b;
-  color: #94a3b8;
-}
-
-/* ── Scrollbars ────────────────────────────────────────────── */
-:root[data-theme='dark'] .univ-msg-feed::-webkit-scrollbar-thumb,
-:root[data-theme='dark'] .univ-chat-list::-webkit-scrollbar-thumb {
-  background: #1e293b;
-}
-
-:root[data-theme='dark'] .univ-msg-feed::-webkit-scrollbar-thumb:hover,
-:root[data-theme='dark'] .univ-chat-list::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  .univ-dm-root.dm-pane-list .univ-chats-sidebar { display: flex; width: 100%; min-width: 0; }
+  .univ-dm-root.dm-pane-list .dm-chat-pane { display: none; }
+  .univ-dm-root.dm-pane-chat .univ-chats-sidebar { display: none; }
+  .dm-back-btn {
+    display: flex; align-items: center; min-height: 44px; padding: 0 16px;
+    border: none; border-bottom: 1px solid var(--border);
+    background: var(--surface); color: var(--text);
+    font: inherit; font-size: 14px; font-weight: 500; text-align: left;
+  }
+}
+
+@media (max-width: 900px) {
+  .univ-dm-root { height: calc(100vh - 52px); }
 }

@@ -12,13 +12,13 @@ export default function UserAvatar({ user, size = 40, className = '' }) {
           width: size,
           height: size,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%)',
+          background: '#7f1d1d',
           border: '1.5px solid #ef4444',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          boxShadow: '0 2px 6px rgba(239, 68, 68, 0.25)'
+          boxShadow: 'none'
         }}
         title={`${user?.displayName || 'Admin'} (System Administrator)`}
       >
@@ -35,13 +35,13 @@ export default function UserAvatar({ user, size = 40, className = '' }) {
           width: size,
           height: size,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #1e3a8a 0%, #0b192c 100%)',
+          background: '#1e3a8a',
           border: '1.5px solid #f59e0b',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          boxShadow: '0 2px 6px rgba(245, 158, 11, 0.25)'
+          boxShadow: 'none'
         }}
         title={`${user?.displayName || 'Faculty'} (Faculty Instructor)`}
       >
@@ -83,7 +83,7 @@ export default function UserAvatar({ user, size = 40, className = '' }) {
         width: size,
         height: size,
         borderRadius: '50%',
-        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        background: '#1e293b',
         border: '1.5px solid rgba(255, 255, 255, 0.15)',
         display: 'flex',
         alignItems: 'center',

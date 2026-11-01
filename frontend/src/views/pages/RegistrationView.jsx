@@ -93,7 +93,7 @@ function MyRegistrations({ myRegistrations = [], registeredCredits = 0, preferre
         <div className="reg-credit-bar">
           <div className="reg-credit-fill" style={{
             width: `${creditPct}%`,
-            background: creditPct >= 100 ? '#EF4444' : creditPct >= 80 ? '#F59E0B' : '#1A9882',
+            background: creditPct >= 100 ? '#EF4444' : creditPct >= 80 ? '#F59E0B' : '#147a68',
           }} />
         </div>
         <span className="reg-credit-pct">{creditPct}% of credit limit</span>
@@ -255,7 +255,7 @@ function SectionCard({ section: sec, windowOpen, onRegister, onDrop }) {
               background: '#E0F2FE',
               color: '#0369A1',
               fontWeight: 700,
-              fontSize: 10,
+              fontSize: 12,
               padding: '2px 6px',
               borderRadius: 4,
               border: '1px solid #BAE6FD',
@@ -316,7 +316,7 @@ function SectionCard({ section: sec, windowOpen, onRegister, onDrop }) {
       <div className="reg-card-actions">
         {isRegistered ? (
           <button id={`reg-drop-card-${sec.id}`} className="reg-btn-drop" onClick={() => onDrop(sec.id)}>
-            ✕ Drop Section
+            × Drop Section
           </button>
         ) : (
           <button

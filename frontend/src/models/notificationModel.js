@@ -60,7 +60,7 @@ export const NOTIFICATION_CONFIG = {
   [NOTIFICATION_TYPES.ASSIGNMENT_UPLOADED]: {
     label: 'New Assignment',
     icon: '📝',
-    accentColor: '#8b5cf6',
+    accentColor: '#147a68',
     bgColor: 'rgba(139, 92, 246, 0.12)',
     badgeClass: 'assignment-badge',
     defaultLink: '/assignments',
@@ -76,7 +76,7 @@ export const NOTIFICATION_CONFIG = {
   [NOTIFICATION_TYPES.COURSE_MATERIAL_UPLOADED]: {
     label: 'Course Material',
     icon: '📎',
-    accentColor: '#6366f1',
+    accentColor: '#147a68',
     bgColor: 'rgba(99, 102, 241, 0.12)',
     badgeClass: 'material-badge',
     defaultLink: '/course-materials',

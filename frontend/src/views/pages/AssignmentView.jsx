@@ -20,6 +20,7 @@ import {
 } from "../../models/assignmentModel"
 import * as assignmentService from "../../services/assignmentService"
 import "./AssignmentPage.css"
+import { CheckIcon } from '../components/Icons.jsx'
 
 export default function AssignmentView() {
   const ctrl = useAssignmentController()
@@ -304,7 +305,7 @@ function StudentWorkPanel({ ctrl, deadline }) {
             <div className="asgn-file-name">{ctrl.uploadedFile.name}</div>
             <div className="asgn-file-size">{formatFileSize(ctrl.uploadedFile.size)}</div>
           </div>
-          <button className="asgn-file-remove" onClick={ctrl.removeFile} title="Remove file" id="asgn-remove-file-btn">✕</button>
+          <button className="asgn-file-remove" onClick={ctrl.removeFile} title="Remove file" id="asgn-remove-file-btn">×</button>
         </div>
       )}
 
@@ -379,7 +380,7 @@ function CreateAssignmentModal({ ctrl }) {
       <div className="asgn-create-modal">
         <div className="asgn-create-modal-header">
           <h2>{ctrl.editingAssignmentId ? "Edit Assignment" : "Create Assignment"}</h2>
-          <button className="asgn-create-close" onClick={() => ctrl.closeAssignmentForm()} id="asgn-create-close">✕</button>
+          <button className="asgn-create-close" onClick={() => ctrl.closeAssignmentForm()} id="asgn-create-close">×</button>
         </div>
         <div className="asgn-create-form">
           <div className="asgn-form-group">
@@ -396,7 +397,7 @@ function CreateAssignmentModal({ ctrl }) {
                 <button type="button" key={c.code} className="asgn-course-option"
                   aria-pressed={ctrl.createForm.courseCode === c.code} onClick={() => ctrl.handleCourseSelect(c.code)}>
                   <strong>{c.code}</strong><span>{c.name}</span>
-                  {ctrl.createForm.courseCode === c.code && <span aria-hidden="true">✓</span>}
+                  {ctrl.createForm.courseCode === c.code && <CheckIcon width={14} height={14} />}
                 </button>
               ))}
             </div>
@@ -434,7 +435,7 @@ function CreateAssignmentModal({ ctrl }) {
                   <div className="asgn-file-name">{ctrl.createFile.name}</div>
                   <div className="asgn-file-size">{formatFileSize(ctrl.createFile.size)}</div>
                 </div>
-                <button className="asgn-file-remove" onClick={() => ctrl.handleCreateFileSelect(null)}>✕</button>
+                <button className="asgn-file-remove" onClick={() => ctrl.handleCreateFileSelect(null)}>×</button>
               </div>
             ) : (
               <div className="asgn-dropzone" style={{ minHeight: 80, padding: "16px 14px" }}>
@@ -496,7 +497,7 @@ function SubmissionPreviewModal({ ctrl }) {
         aria-labelledby="asgn-preview-title" onKeyDown={e => e.key === "Escape" && ctrl.closePreview()}>
         <div className="asgn-create-modal-header">
           <h2 id="asgn-preview-title">{preview.name}</h2>
-          <button autoFocus className="asgn-create-close" aria-label="Close preview" onClick={ctrl.closePreview}>✕</button>
+          <button autoFocus className="asgn-create-close" aria-label="Close preview" onClick={ctrl.closePreview}>×</button>
         </div>
         <div className="asgn-preview-content">
           {preview.loading && <p role="status">Loading preview…</p>}

@@ -37,6 +37,7 @@ import {
 } from '../models/courseChatModel.js'
 import { channelService } from '../services/channelService.js'
 import { getCurrentUser } from '../models/messagingModel.js'
+import { getStoredToken } from '../models/authModel.js'
 
 /**
  * useChatController
@@ -111,6 +112,8 @@ export function useChatController(channel, activeSubId, currentUser = getCurrent
     const histTopic   = buildHistoryTopicDestination(courseId, activeSubId)
 
     const client = new StompClient({
+
+      connectHeaders: { Authorization: `Bearer ${getStoredToken()}` },
       webSocketFactory: () => new SockJS(CHAT_WS_URL),
       reconnectDelay:   5000,
       onConnect: () => {

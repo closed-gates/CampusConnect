@@ -89,7 +89,9 @@ public class AuthService {
         // Look up by userId first, then by email
         Optional<AppUser> userOpt = userRepo.findByUserId(id);
         if (userOpt.isEmpty()) {
+            // Exact first: older rows may store mixed-case emails; new signups are saved lowercase.
             userOpt = userRepo.findByEmail(id);
+            if (userOpt.isEmpty()) userOpt = userRepo.findByEmail(id.toLowerCase());
         }
 
         if (userOpt.isEmpty()) {
@@ -140,13 +142,13 @@ public class AuthService {
         if (userRepo.existsByUserId(request.getUserId().trim())) {
             return new AuthResponse(false, "User ID \"" + request.getUserId() + "\" is already taken.");
         }
-        if (userRepo.existsByEmail(request.getEmail().trim())) {
+        if (userRepo.existsByEmail(request.getEmail().trim().toLowerCase())) {
             return new AuthResponse(false, "An account with that email already exists.");
         }
 
-        // Determine role (default STUDENT if not specified)
+        // Public signup never grants ADMIN; admins are created by existing admins.
         String role = request.getRole() != null ? request.getRole().toUpperCase() : "STUDENT";
-        if (!role.equals("STUDENT") && !role.equals("FACULTY") && !role.equals("ADMIN")) {
+        if (!role.equals("STUDENT") && !role.equals("FACULTY")) {
             role = "STUDENT";
         }
 

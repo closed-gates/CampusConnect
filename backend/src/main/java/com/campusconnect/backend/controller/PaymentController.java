@@ -8,6 +8,8 @@ import com.campusconnect.backend.dto.PaymentUpdateRequest;
 import com.campusconnect.backend.model.PaymentRecord;
 import com.campusconnect.backend.service.PaymentService;
 import org.springframework.http.ResponseEntity;
+import com.campusconnect.backend.security.CurrentUser;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,7 +55,8 @@ public class PaymentController {
      * Confirms and persists a payment receipt in the database.
      */
     @PostMapping("/confirm")
-    public ResponseEntity<PaymentRecord> confirmPayment(@RequestBody PaymentConfirmRequest request) {
+    public ResponseEntity<PaymentRecord> confirmPayment(@RequestBody PaymentConfirmRequest request, Authentication auth) {
+        if (!CurrentUser.hasRole(auth, "ADMIN")) request.setStudentId(auth.getName());
         PaymentRecord record = paymentService.confirmAndSavePayment(request);
         return ResponseEntity.ok(record);
     }
@@ -98,10 +101,12 @@ public class PaymentController {
      */
     @GetMapping("/history")
     public ResponseEntity<List<PaymentRecord>> getPaymentHistory(
-            @RequestParam(required = false, defaultValue = "STU001") String studentId,
-            @RequestParam(required = false, defaultValue = "student") String role
+            @RequestParam(required = false) String studentId,
+            Authentication auth
     ) {
-        List<PaymentRecord> history = paymentService.getPaymentHistory(studentId, role);
+        String role = CurrentUser.hasRole(auth, "ADMIN") ? "ADMIN" : "STUDENT";
+        List<PaymentRecord> history = paymentService.getPaymentHistory(
+                "ADMIN".equals(role) ? studentId : auth.getName(), role);
         return ResponseEntity.ok(history);
     }
 
@@ -112,10 +117,10 @@ public class PaymentController {
     @GetMapping("/receipt-record/{id}")
     public ResponseEntity<PaymentRecord> getReceiptRecord(
             @PathVariable Long id,
-            @RequestParam(required = false, defaultValue = "STU001") String studentId,
-            @RequestParam(required = false, defaultValue = "student") String role
+            Authentication auth
     ) {
-        PaymentRecord record = paymentService.getReceiptRecord(id, studentId, role);
+        String role = CurrentUser.hasRole(auth, "ADMIN") ? "ADMIN" : "STUDENT";
+        PaymentRecord record = paymentService.getReceiptRecord(id, auth.getName(), role);
         return ResponseEntity.ok(record);
     }
 }

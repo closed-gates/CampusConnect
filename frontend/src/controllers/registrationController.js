@@ -19,7 +19,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Client } from '@stomp/stompjs'
 import { channelService } from '../services/channelService.js'
-import { getStoredUser } from '../models/authModel.js'
+import { getStoredUser, getStoredToken } from '../models/authModel.js'
 import apiClient from '../services/apiClient.js'
 import { getPreferredSemester, toSemesterApiTerm } from '../models/accountSettingsModel.js'
 
@@ -144,6 +144,8 @@ export function useRegistrationController() {
     const brokerURL  = `${wsProtocol}//${brokerHost}/ws/websocket`
 
     const client = new Client({
+
+      connectHeaders: { Authorization: `Bearer ${getStoredToken()}` },
       brokerURL,
       reconnectDelay: 0,
 

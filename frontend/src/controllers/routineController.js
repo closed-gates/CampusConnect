@@ -433,7 +433,7 @@ export function useRoutineController() {
           c.time    || 'TBA',
           c.room    || '–',
           String(c.credits || 3),
-          conflicts.has(c.id) ? '⚠ Conflict' : '✓ OK',
+          conflicts.has(c.id) ? '⚠ Conflict' : 'OK',
         ])
 
         doc.autoTable({
@@ -480,7 +480,7 @@ export function useRoutineController() {
           didParseCell: (data) => {
             if (data.section === 'body' && data.column.index === 8) {
               const row = data.row.raw
-              data.cell.styles.textColor = row[8].startsWith('⚠') ? [220, 38, 38] : [4, 120, 87]
+              data.cell.styles.textColor = row[8] === 'Conflict' ? [220, 38, 38] : [4, 120, 87]
               data.cell.styles.fontStyle = 'bold'
             }
           },

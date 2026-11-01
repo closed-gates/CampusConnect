@@ -10,8 +10,8 @@
 // ── Role display config ────────────────────────────────────────────────────────
 
 export const ROLE_CONFIG = {
-  STUDENT: { label: 'Student',  color: '#1A9882', bg: '#E6F5F2', icon: '🎓' },
-  FACULTY: { label: 'Faculty',  color: '#7C3AED', bg: '#EDE9FE', icon: '👨‍🏫' },
+  STUDENT: { label: 'Student',  color: '#147a68', bg: '#E6F5F2', icon: '🎓' },
+  FACULTY: { label: 'Faculty',  color: '#147a68', bg: '#eef1ef', icon: '👨‍🏫' },
   ADMIN:   { label: 'Admin',    color: '#DC2626', bg: '#FEE2E2', icon: '🛡️' },
 }
 

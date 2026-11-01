@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { createLogoutHandler } from '../../controllers/authController.js'
 import { getStoredUser, ROLE_LABELS } from '../../models/authModel.js'
+import { useSidebarController } from '../../controllers/sidebarController.js'
 
 /**
  * Sidebar – View layer component for the main navigation.
@@ -31,6 +32,8 @@ export default function Sidebar({ activeItem = 'home' }) {
   const navigate    = useNavigate()
   const handleLogout = createLogoutHandler(navigate)
   const user        = getStoredUser()
+  const { menuOpen, toggleMenu, closeMenu } = useSidebarController()
+  const go = (route) => { closeMenu(); navigate(route) }
 
   const roleLabel = user?.role ? (ROLE_LABELS[user.role] || user.role) : ''
   const isAdmin   = user?.role === 'ADMIN'
@@ -90,12 +93,23 @@ export default function Sidebar({ activeItem = 'home' }) {
   }
 
   return (
-    <aside className="sidebar" role="navigation" aria-label="Main navigation">
-      {/* Logo */}
+    <aside className={`sidebar ${menuOpen ? 'menu-open' : ''}`} aria-label="Main navigation">
+      {/* Logo (+ menu button on phones) */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">🎓</div>
+        <div className="sidebar-logo-icon" aria-hidden="true">🎓</div>
         <span className="sidebar-logo-text">CampusConnect</span>
+        <button
+          type="button"
+          className="sidebar-menu-btn"
+          aria-expanded={menuOpen}
+          aria-controls="sidebar-sheet"
+          onClick={toggleMenu}
+        >
+          {menuOpen ? 'Close' : 'Menu'}
+        </button>
       </div>
+
+      <div className="sidebar-sheet" id="sidebar-sheet">
 
       {/* User info badge */}
       {user && (
@@ -118,7 +132,7 @@ export default function Sidebar({ activeItem = 'home' }) {
             id={`nav-${item.id}`}
             className={`sidebar-nav-item ${activeItem === item.id ? 'active' : ''}`}
             aria-current={activeItem === item.id ? 'page' : undefined}
-            onClick={() => item.route && navigate(item.route)}
+            onClick={() => item.route && go(item.route)}
           >
             {item.icon}
             {item.label}
@@ -132,7 +146,7 @@ export default function Sidebar({ activeItem = 'home' }) {
           id="nav-settings"
           className={`sidebar-nav-item ${activeItem === 'settings' ? 'active' : ''}`}
           aria-current={activeItem === 'settings' ? 'page' : undefined}
-          onClick={() => navigate('/settings')}
+          onClick={() => go('/settings')}
         >
           <SettingsIcon />
           Settings
@@ -146,6 +160,7 @@ export default function Sidebar({ activeItem = 'home' }) {
           <LogoutIcon />
           Logout
         </button>
+      </div>
       </div>
     </aside>
   )

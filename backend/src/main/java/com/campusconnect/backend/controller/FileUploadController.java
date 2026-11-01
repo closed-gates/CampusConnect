@@ -90,6 +90,9 @@ public class FileUploadController {
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
         try {
             Path filePath = uploadDir.resolve(fileName).normalize();
+            if (!filePath.startsWith(uploadDir.normalize())) {
+                return ResponseEntity.badRequest().build();
+            }
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists()) {
@@ -105,9 +108,15 @@ public class FileUploadController {
                 contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
             }
 
+            // Only images and PDFs render inline; anything else (e.g. uploaded HTML) downloads, so it can't run script.
+            boolean inline = contentType.startsWith("image/") && !contentType.contains("svg")
+                    || contentType.equals(MediaType.APPLICATION_PDF_VALUE);
+            if (!inline) contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .header("X-Content-Type-Options", "nosniff")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, (inline ? "inline" : "attachment") + "; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
 
         } catch (MalformedURLException ex) {

@@ -43,6 +43,10 @@ artifacts/*.log
 *.iml
 .agents/
 **/.agents/
+.claude/
+**/.claude/
+.taste-skill/
+**/.taste-skill/
 
 # === OS Files ===
 .DS_Store

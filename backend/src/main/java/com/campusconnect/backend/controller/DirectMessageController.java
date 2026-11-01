@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import com.campusconnect.backend.config.WebSocketAuthInterceptor;
+import java.security.Principal;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -54,7 +56,12 @@ public class DirectMessageController {
      * @param dto the inbound message payload from the sending client
      */
     @MessageMapping("/dm.send")
-    public void sendDirectMessage(@Payload DirectMessageDto dto) {
+    public void sendDirectMessage(@Payload DirectMessageDto dto, Principal principal) {
+        if (principal == null || !principal.getName().equals(dto.senderId())
+                || !canUseRoom(dto.roomId(), principal)) {
+            log.warn("Rejected DM: caller={} senderId={} room={}", principal == null ? null : principal.getName(), dto.senderId(), dto.roomId());
+            return;
+        }
         log.debug("DM received: sender={} → recipient={} room={}",
                 dto.senderId(), dto.recipientId(), dto.roomId());
 
@@ -77,9 +84,13 @@ public class DirectMessageController {
      * @param dto payload carrying the roomId
      */
     @MessageMapping("/dm.history")
-    public void fetchHistory(@Payload DirectMessageDto dto) {
+    public void fetchHistory(@Payload DirectMessageDto dto, Principal principal) {
         if (dto.roomId() == null || dto.roomId().isBlank()) {
             log.warn("DM history request received with blank roomId — ignoring");
+            return;
+        }
+        if (principal == null || !canUseRoom(dto.roomId(), principal)) {
+            log.warn("Rejected DM history request for room={}", dto.roomId());
             return;
         }
         log.debug("DM history request for room={}", dto.roomId());
@@ -103,6 +114,12 @@ public class DirectMessageController {
      *   roomId = "STU001__FAC001"
      *   result = "/topic/dm.STU001__FAC001"
      */
+    /** Private dm_ rooms are limited to their two participants; other room ids are not DMs. */
+    private static boolean canUseRoom(String roomId, Principal principal) {
+        return roomId == null || !roomId.startsWith("dm_")
+                || WebSocketAuthInterceptor.isRoomParticipant(roomId, principal);
+    }
+
     private static String buildRoomTopic(String roomId) {
         return "/topic/dm." + roomId;
     }

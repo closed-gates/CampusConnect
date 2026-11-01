@@ -3,6 +3,8 @@ package com.campusconnect.backend.controller;
 import com.campusconnect.backend.dto.ExamScheduleDTO;
 import com.campusconnect.backend.service.ExamScheduleService;
 import org.springframework.http.ResponseEntity;
+import com.campusconnect.backend.security.CurrentUser;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +41,9 @@ public class ExamScheduleController {
      */
     @GetMapping
     public ResponseEntity<List<ExamScheduleDTO>> getForStudent(
-            @RequestParam("studentId") String studentId) {
+            @RequestParam("studentId") String studentId,
+            Authentication auth) {
+        CurrentUser.requireSelfOrStaff(auth, studentId);
         return ResponseEntity.ok(examService.getExamScheduleForStudent(studentId));
     }
 

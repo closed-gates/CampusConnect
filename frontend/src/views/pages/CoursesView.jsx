@@ -31,13 +31,12 @@ export default function CoursesView() {
         {/* Header */}
         <div className="courses-page-header">
           <div>
-            <span className="courses-eyebrow">Academic resources</span>
             <h1 className="dashboard-greeting">Course Catalog 📚</h1>
             <p className="dashboard-date">Browse {totalCourses} courses across {FACULTIES.length} departments</p>
           </div>
           <div className="view-toggle" role="group" aria-label="View mode">
-            <button id="view-grid-btn" className={'view-toggle-btn' + (viewMode === 'grid' ? ' active' : '')} onClick={() => setViewMode('grid')} title="Grid view">⊞</button>
-            <button id="view-list-btn" className={'view-toggle-btn' + (viewMode === 'list' ? ' active' : '')} onClick={() => setViewMode('list')} title="List view">☰</button>
+            <button id="view-grid-btn" className={'view-toggle-btn' + (viewMode === 'grid' ? ' active' : '')} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'}>⊞ Grid</button>
+            <button id="view-list-btn" className={'view-toggle-btn' + (viewMode === 'list' ? ' active' : '')} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'}>☰ List</button>
           </div>
         </div>
 
@@ -54,7 +53,7 @@ export default function CoursesView() {
             aria-label="Search courses"
           />
           {searchQuery && (
-            <button className="search-clear-btn" onClick={() => setSearchQuery('')} aria-label="Clear search">✕</button>
+            <button className="search-clear-btn" onClick={() => setSearchQuery('')} aria-label="Clear search">×</button>
           )}
         </div>
 
@@ -162,7 +161,7 @@ function CourseCard({ course, faculty }) {
         <div className="course-card-body">
           <h3 className="course-card-name">{course.name}</h3>
           <p className="course-card-instructor">🏫 {course.department || faculty?.label || 'BRACU'}</p>
-          {course.isGenEd && <span className="course-tag" style={{ background: '#EDE9FE', color: '#6D28D9' }}>GenEd</span>}
+          {course.isGenEd && <span className="course-tag" style={{ background: '#eef1ef', color: '#147a68' }}>GenEd</span>}
 
           <div className="course-card-stats">
             <span>📋 {course.credits} cr.</span>
@@ -210,7 +209,7 @@ function CourseCard({ course, faculty }) {
                 id={'close-details-btn-' + course.id}
                 onClick={() => setShowDetails(false)}
                 aria-label="Close details"
-              >✕</button>
+              >×</button>
             </div>
 
             {/* Modal body */}

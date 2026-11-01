@@ -60,8 +60,8 @@ export const SCHOOLS = [
     label: 'Department of Economics and Social Sciences',
     shortLabel: 'Social Sciences',
     icon: '🌐',
-    color: '#FDF4FF',
-    accent: '#9333EA',
+    color: '#eef1ef',
+    accent: '#147a68',
     value: 'Department of Economics and Social Sciences',
   },
   {
@@ -114,8 +114,8 @@ export const SCHOOLS = [
     label: 'School of Humanities and Social Sciences',
     shortLabel: 'Humanities',
     icon: '📚',
-    color: '#FDF4FF',
-    accent: '#7C3AED',
+    color: '#eef1ef',
+    accent: '#147a68',
     value: 'School of Humanities and Social Sciences',
   },
 ]

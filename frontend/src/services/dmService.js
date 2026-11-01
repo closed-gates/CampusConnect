@@ -2,6 +2,7 @@ import { Client as StompClient } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { getDeterministicRoomId } from '../utils/dmUtils.js';
 import { fileToDataURL, recordDirectMessage } from '../models/dmPersistenceModel.js';
+import { getStoredToken } from '../models/authModel.js';
 
 /**
  * DirectMessagingService
@@ -81,6 +82,7 @@ class DirectMessagingService {
 
     this._connectPromise = new Promise((resolve) => {
       const client = new StompClient({
+        connectHeaders: { Authorization: `Bearer ${getStoredToken()}` },
         webSocketFactory: () => new SockJS(WS_URL),
         reconnectDelay: 5000,
 

@@ -61,7 +61,7 @@ export const ACCEPTING_BANKS = [
     accountName: 'BRAC University',
     accountNumber: '70211310000092',
     keywords: ['southeast bank', 'southeast'],
-    color: '#6a1b9a'
+    color: '#147a68'
   }
 ]
 

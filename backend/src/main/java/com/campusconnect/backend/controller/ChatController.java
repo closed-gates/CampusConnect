@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import java.security.Principal;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -58,7 +59,11 @@ public class ChatController {
      * @param dto the inbound message payload from the client
      */
     @MessageMapping("/chat.sendMessage")
-    public void sendMessage(@Payload ChatMessageDto dto) {
+    public void sendMessage(@Payload ChatMessageDto dto, Principal principal) {
+        if (principal == null || !principal.getName().equals(dto.authorId())) {
+            log.warn("Rejected chat message: caller={} authorId={}", principal == null ? null : principal.getName(), dto.authorId());
+            return;
+        }
         log.debug("Received chat message from={} course={} sub={}",
                 dto.authorId(), dto.courseId(), dto.subChannelId());
 

@@ -42,6 +42,8 @@ export default function DirectMessagingView({ user, onMessageSent }) {
     handleTyping,
     handleSelectConversation,
     handleStartNewDM,
+    mobilePane,
+    showConversationList,
   } = useMessagingController(resolvedUser, onMessageSent)
 
   // Global presence map — feeds live dots in DMConversationList + CourseChatPanel
@@ -53,7 +55,7 @@ export default function DirectMessagingView({ user, onMessageSent }) {
 
   return (
     /* univ-dm-root: light-theme flex row (no own nav sidebar) */
-    <div className="univ-dm-root" style={{ position: 'relative' }}>
+    <div className={`univ-dm-root dm-pane-${mobilePane}`} style={{ position: 'relative' }}>
 
       {/* ── Notification toast (CampusConnect teal style) ── */}
       {notificationToast && (
@@ -62,13 +64,13 @@ export default function DirectMessagingView({ user, onMessageSent }) {
             position: 'absolute',
             top: 16,
             right: 16,
-            background: 'linear-gradient(135deg, #1A9882 0%, #147A68 100%)',
+            background: '#147a68',
             color: '#ffffff',
             padding: '10px 18px',
             borderRadius: 8,
             fontSize: 13,
             fontWeight: 600,
-            boxShadow: '0 4px 14px rgba(26,152,130,0.35)',
+            boxShadow: 'none',
             zIndex: 999,
           }}
         >
@@ -88,6 +90,10 @@ export default function DirectMessagingView({ user, onMessageSent }) {
       />
 
       {/* Column 2 – Active chat OR course channel view (real-time WebSocket) */}
+      <div className="dm-chat-pane">
+      <button type="button" className="dm-back-btn" onClick={showConversationList}>
+        ← All conversations
+      </button>
       {isChannel && activeChannel ? (
         <CourseChatPanel channel={activeChannel} />
       ) : (
@@ -112,6 +118,7 @@ export default function DirectMessagingView({ user, onMessageSent }) {
           />
         </main>
       )}
+      </div>
     </div>
   )
 }

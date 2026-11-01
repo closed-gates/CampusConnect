@@ -4,8 +4,8 @@
  * MVC Role: View (shared component)
  *
  * Props:
- *   icon       {string}  – emoji or icon element
- *   iconColor  {string}  – CSS class: 'teal' | 'purple' | 'orange'
+ *   icon       {node}    – emoji or icon element shown beside the value
+ *   iconColor  {string}  – 'red' highlights a value that needs attention
  *   value      {string}  – main metric value
  *   label      {string}  – description below the value
  *   linkText   {string}  – optional "View details" link text
@@ -14,7 +14,7 @@
  */
 export default function StatCard({
   icon,
-  iconColor = 'teal',
+  iconColor = '',
   value,
   label,
   linkText,
@@ -23,22 +23,14 @@ export default function StatCard({
 }) {
   return (
     <div className={`stat-card ${isActive ? 'active-card' : ''}`}>
-      <div className={`stat-card-icon ${iconColor}`}>
-        {icon}
-      </div>
+      {icon && <div className={`stat-card-icon ${iconColor}`} aria-hidden="true">{icon}</div>}
       <div className="stat-card-body">
         <div className="stat-card-value">{value}</div>
         <div className="stat-card-label">{label}</div>
         {linkText && (
-          <div
-            className="stat-card-link"
-            onClick={onLinkClick}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onLinkClick?.()}
-          >
+          <button type="button" className="stat-card-link" onClick={onLinkClick}>
             {linkText} →
-          </div>
+          </button>
         )}
       </div>
     </div>

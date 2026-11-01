@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import { CHANNEL_ROLES } from '../../../models/channelAccessModel.js';
 
 function getAvatarColor(id = '') {
-  const palette = ['#1A9882', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#EF4444', '#10B981'];
+  const palette = ['#147a68', '#3B82F6', '#147a68', '#EC4899', '#F59E0B', '#EF4444', '#10B981'];
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % palette.length;
   return palette[Math.abs(h)];
@@ -108,7 +108,7 @@ export default function ChannelAccessModal({
                 <span
                   style={{
                     backgroundColor: 'rgba(26, 152, 130, 0.2)',
-                    color: '#1A9882',
+                    color: '#147a68',
                     border: '1px solid rgba(26, 152, 130, 0.4)',
                     padding: '2px 8px',
                     borderRadius: 12,
@@ -138,7 +138,7 @@ export default function ChannelAccessModal({
             }}
             title="Close"
           >
-            ✕
+            ×
           </button>
         </div>
 
@@ -171,7 +171,7 @@ export default function ChannelAccessModal({
               fontSize: 13,
             }}
           >
-            ✓ {successMsg}
+            {successMsg}
           </div>
         )}
 
@@ -194,8 +194,8 @@ export default function ChannelAccessModal({
               fontSize: 13,
               fontWeight: 600,
               cursor: 'pointer',
-              color: activeTab === 'CURRENT' ? '#1A9882' : '#8b949e',
-              borderBottom: activeTab === 'CURRENT' ? '2px solid #1A9882' : '2px solid transparent',
+              color: activeTab === 'CURRENT' ? '#147a68' : '#8b949e',
+              borderBottom: activeTab === 'CURRENT' ? '2px solid #147a68' : '2px solid transparent',
               display: 'flex',
               alignItems: 'center',
               gap: 6,
@@ -224,8 +224,8 @@ export default function ChannelAccessModal({
               fontSize: 13,
               fontWeight: 600,
               cursor: 'pointer',
-              color: activeTab === 'ADD' ? '#1A9882' : '#8b949e',
-              borderBottom: activeTab === 'ADD' ? '2px solid #1A9882' : '2px solid transparent',
+              color: activeTab === 'ADD' ? '#147a68' : '#8b949e',
+              borderBottom: activeTab === 'ADD' ? '2px solid #147a68' : '2px solid transparent',
               display: 'flex',
               alignItems: 'center',
               gap: 6,
@@ -278,8 +278,8 @@ export default function ChannelAccessModal({
                     onClick={() => setRoleFilter(t.val)}
                     style={{
                       background: roleFilter === t.val ? 'rgba(26, 152, 130, 0.25)' : '#0d1117',
-                      color: roleFilter === t.val ? '#1A9882' : '#8b949e',
-                      border: `1px solid ${roleFilter === t.val ? '#1A9882' : '#30363d'}`,
+                      color: roleFilter === t.val ? '#147a68' : '#8b949e',
+                      border: `1px solid ${roleFilter === t.val ? '#147a68' : '#30363d'}`,
                       borderRadius: 6,
                       padding: '4px 8px',
                       fontSize: 12,
@@ -366,7 +366,7 @@ export default function ChannelAccessModal({
                             </span>
                             <span
                               style={{
-                                fontSize: 10,
+                                fontSize: 12,
                                 fontWeight: 700,
                                 padding: '1px 5px',
                                 borderRadius: 4,
@@ -415,7 +415,7 @@ export default function ChannelAccessModal({
                         }}
                         title="Revoke channel access"
                       >
-                        {isBusy ? 'Removing…' : '✕ Remove'}
+                        {isBusy ? 'Removing…' : '× Remove'}
                       </button>
                     </div>
                   );
@@ -458,8 +458,8 @@ export default function ChannelAccessModal({
                     onClick={() => setAddRoleFilter(t.val)}
                     style={{
                       background: addRoleFilter === t.val ? 'rgba(26, 152, 130, 0.25)' : '#0d1117',
-                      color: addRoleFilter === t.val ? '#1A9882' : '#8b949e',
-                      border: `1px solid ${addRoleFilter === t.val ? '#1A9882' : '#30363d'}`,
+                      color: addRoleFilter === t.val ? '#147a68' : '#8b949e',
+                      border: `1px solid ${addRoleFilter === t.val ? '#147a68' : '#30363d'}`,
                       borderRadius: 6,
                       padding: '4px 8px',
                       fontSize: 12,
@@ -542,7 +542,7 @@ export default function ChannelAccessModal({
                             </span>
                             <span
                               style={{
-                                fontSize: 10,
+                                fontSize: 12,
                                 fontWeight: 700,
                                 padding: '1px 5px',
                                 borderRadius: 4,
@@ -575,7 +575,7 @@ export default function ChannelAccessModal({
                         onClick={() => handleAddMember(candidate)}
                         disabled={isBusy}
                         style={{
-                          backgroundColor: '#1A9882',
+                          backgroundColor: '#147a68',
                           color: '#ffffff',
                           border: 'none',
                           borderRadius: 6,

@@ -31,9 +31,9 @@ export function getRateColor(rate) {
  * Returns a progress-bar gradient colour string based on rate.
  */
 export function getRateGradient(rate) {
-  if (rate >= 75) return 'linear-gradient(90deg, #22c55e, #16a34a)'
-  if (rate >= 60) return 'linear-gradient(90deg, #f59e0b, #d97706)'
-  return 'linear-gradient(90deg, #ef4444, #dc2626)'
+  if (rate >= 75) return '#22c55e'
+  if (rate >= 60) return '#f59e0b'
+  return '#ef4444'
 }
 
 /**

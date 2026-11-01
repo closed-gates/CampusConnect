@@ -20,7 +20,7 @@
 
 .gpa-header-title {
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-text);
   letter-spacing: -0.5px;
 }
@@ -43,7 +43,6 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 20px 24px;
-  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -51,20 +50,19 @@
 }
 
 .gpa-summary-card:hover {
-  box-shadow: var(--shadow-md);
 }
 
 .gpa-summary-card__label {
   font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--color-text-sub);
 }
 
 .gpa-summary-card__value {
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-teal);
   line-height: 1;
 }
@@ -102,22 +100,21 @@
   border-radius: var(--radius-sm);
   background: transparent;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-sub);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s, transform 0.15s;
   white-space: nowrap;
 }
 
 .gpa-tab-btn:hover {
   color: var(--color-teal);
-  background: var(--color-teal-light);
+  background: var(--active);
 }
 
 .gpa-tab-btn.active {
-  background: var(--color-teal);
-  color: #ffffff;
-  box-shadow: var(--shadow-sm);
+  background: var(--primary);
+  color: var(--on-primary);
 }
 
 /* ── Card Wrapper ────────────────────────────────────────────── */
@@ -125,7 +122,6 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
@@ -164,8 +160,8 @@
   color: var(--color-text-sub);
   font-size: 0.72rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  text-transform: none;
+  letter-spacing: 0;
   padding: 10px 16px;
   text-align: left;
   border-bottom: 1px solid var(--color-border);
@@ -184,24 +180,24 @@
 }
 
 .gpa-table tr:hover td {
-  background: var(--color-teal-light);
+  background: var(--active);
 }
 
 /* Semester group header row */
 .gpa-table tr.sem-header td {
-  background: linear-gradient(90deg, var(--color-teal-light) 0%, #f0faf8 100%);
+  background: var(--active);
   font-weight: 700;
   font-size: 0.82rem;
   color: var(--color-teal-dark);
   padding: 8px 16px;
-  letter-spacing: 0.03em;
+  letter-spacing: 0;
 }
 
 /* GPA summary row at end of each semester */
 .gpa-table tr.sem-summary td {
   background: var(--color-bg);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-sub);
   padding: 8px 16px;
   border-top: 1px solid var(--color-border);
@@ -222,23 +218,23 @@
 
 .transcript-table tr.transcript-sem-row td {
   background: #E5E7EB;
-  color: #374151;
+  color: var(--text);
 }
 
 .transcript-table tr.transcript-cum-row td {
   background: #D1D5DB;
-  color: #111827;
+  color: var(--text);
 }
 
 .transcript-table tr.transcript-sem-row .ts-label,
 .transcript-table tr.transcript-cum-row .ts-label {
   font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
 }
 
 .transcript-table .ts-stat {
   color: var(--color-text-sub);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .transcript-table .ts-val {
@@ -247,13 +243,13 @@
 }
 
 .transcript-table .ts-gpa {
-  color: #1D4ED8;
-  font-weight: 800;
+  color: var(--data);
+  font-weight: 700;
 }
 
 .transcript-table .ts-cgpa {
   color: var(--color-teal-dark);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 /* ── Grade Chips ─────────────────────────────────────────────── */
@@ -263,14 +259,14 @@
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
 }
 
-.grade-chip--high   { background: #D1FAE5; color: #065F46; }
-.grade-chip--mid    { background: #DBEAFE; color: #1E40AF; }
-.grade-chip--low    { background: #FEF3C7; color: #92400E; }
-.grade-chip--fail   { background: #FEE2E2; color: #991B1B; }
-.grade-chip--waived { background: #F3F4F6; color: #6B7280; }
+.grade-chip--high   { background: var(--pill-positive-bg); color: var(--pill-positive-ink); }
+.grade-chip--mid    { background: var(--data-tint); color: #147a68; }
+.grade-chip--low    { background: var(--pill-warning-bg); color: var(--pill-warning-ink); }
+.grade-chip--fail   { background: var(--pill-negative-bg); color: var(--pill-negative-ink); }
+.grade-chip--waived { background: var(--raised); color: var(--muted); }
 
 /* ── Predict Tab ─────────────────────────────────────────────── */
 .predict-table {
@@ -284,8 +280,8 @@
   color: var(--color-text-sub);
   font-size: 0.72rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  text-transform: none;
+  letter-spacing: 0;
   padding: 10px 12px;
   text-align: left;
   border-bottom: 1px solid var(--color-border);
@@ -316,7 +312,8 @@
 .predict-input:focus {
   outline: none;
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px var(--color-teal-light);
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .predict-select {
@@ -335,7 +332,8 @@
 .predict-select:focus {
   outline: none;
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px var(--color-teal-light);
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .row-remove-btn {
@@ -351,7 +349,7 @@
 }
 
 .row-remove-btn:hover {
-  background: #FEE2E2;
+  background: var(--pill-negative-bg);
 }
 
 /* ── Result Cards ────────────────────────────────────────────── */
@@ -374,14 +372,14 @@
 .gpa-result-card__label {
   font-size: 0.72rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--color-text-sub);
 }
 
 .gpa-result-card__value {
   font-size: 2.4rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -415,14 +413,14 @@
 .retake-box__label {
   font-size: 0.75rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0;
   margin-bottom: 8px;
 }
 
 .retake-box__value {
   font-size: 2.6rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -440,12 +438,12 @@
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.9rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
-.cgpa-delta--positive { background: #D1FAE5; color: #065F46; }
-.cgpa-delta--negative { background: #FEE2E2; color: #991B1B; }
-.cgpa-delta--neutral  { background: #F3F4F6; color: #374151; }
+.cgpa-delta--positive { background: var(--pill-positive-bg); color: var(--pill-positive-ink); }
+.cgpa-delta--negative { background: var(--pill-negative-bg); color: var(--pill-negative-ink); }
+.cgpa-delta--neutral  { background: var(--raised); color: var(--text); }
 
 /* ── Simulation Disclaimer ───────────────────────────────────── */
 .simulation-disclaimer {
@@ -453,11 +451,11 @@
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  background: #FFFBEB;
+  background: var(--pill-warning-bg);
   border: 1px solid #FCD34D;
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
-  color: #92400E;
+  color: var(--pill-warning-ink);
   font-weight: 500;
 }
 
@@ -472,19 +470,18 @@
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s, transform 0.15s;
   font-family: inherit;
 }
 
 .gpa-btn--primary {
-  background: var(--color-teal);
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--on-primary);
 }
 
 .gpa-btn--primary:hover {
-  background: var(--color-teal-dark);
+  background: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(26, 152, 130, 0.3);
 }
 
 .gpa-btn--ghost {
@@ -494,14 +491,13 @@
 }
 
 .gpa-btn--ghost:hover {
-  background: var(--color-teal-light);
+  background: var(--active);
 }
 
 .gpa-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
 /* ── Empty State ─────────────────────────────────────────────── */
@@ -551,10 +547,10 @@
 
 .form-field label {
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 /* ── Breakdown table inside result ───────────────────────────── */
@@ -565,8 +561,8 @@
 .breakdown-section__title {
   font-size: 0.78rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--color-text-sub);
   margin-bottom: 10px;
 }

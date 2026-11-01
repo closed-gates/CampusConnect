@@ -35,7 +35,7 @@ export default function PresenceDot({
         background:   color,
         border:       `2px solid ${border}`,
         flexShrink:   0,
-        boxShadow:    isOnline ? `0 0 6px ${color}88` : 'none',
+        boxShadow:    'none',
         animation:    isOnline ? 'presencePulse 2.5s ease-in-out infinite' : 'none',
         ...style,
       }}

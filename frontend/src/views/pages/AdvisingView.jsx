@@ -238,7 +238,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
                   <div
                     className="adv-credit-fill"
                     style={{ width: `${Math.min(creditPct, 100)}%`,
-                             background: creditPct >= 100 ? '#EF4444' : creditPct >= 80 ? '#F59E0B' : '#1A9882' }}
+                             background: creditPct >= 100 ? '#EF4444' : creditPct >= 80 ? '#F59E0B' : '#147a68' }}
                   />
                 </div>
                 <div className="adv-credit-pct-label">{creditPct}% of limit used</div>
@@ -260,7 +260,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
                         onClick={() => handleRemove(c.id)}
                         title="Remove this course"
                       >
-                        ✕
+                        ×
                       </button>
                     </div>
                   ))}
@@ -361,7 +361,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
                       <tbody>
                         {studentRoutine.map(item => (
                           <tr key={item.id} style={{ borderBottom: '1px solid var(--color-border, #EDF2F7)' }}>
-                            <td style={{ padding: '12px', fontWeight: 600, color: 'var(--color-primary, #1A9882)' }}>
+                            <td style={{ padding: '12px', fontWeight: 600, color: 'var(--color-primary, #147a68)' }}>
                               {item.day}
                             </td>
                             <td style={{ padding: '12px', fontWeight: 600 }}>{item.courseCode}</td>
@@ -474,7 +474,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
                             ) : soldOut ? (
                               <span className="adv-soldout-badge">Full</span>
                             ) : null}
-                            {isAssigned && <span className="adv-already-badge">✓ Assigned</span>}
+                            {isAssigned && <span className="adv-already-badge">Assigned</span>}
                           </div>
                           <div className="adv-catalog-title">{course.title}</div>
                           <div className="adv-catalog-meta">
@@ -491,7 +491,7 @@ function AdvisorPanel({ isAdmin = false, advisorCtrl: passedCtrl }) {
                           onClick={() => handleAssign(course)}
                           title={isAssigned ? 'Already assigned' : soldOut ? 'Section full' : courseCount >= courseLimit ? 'Course limit reached' : 'Assign this course'}
                         >
-                          {isAssigned ? '✓' : 'Assign'}
+                          {isAssigned ? 'Assigned' : 'Assign'}
                         </button>
                       </div>
                     )
@@ -852,8 +852,8 @@ function PortalControlPanel({
         padding: '28px 32px',
         marginBottom: 24,
         background: isPortalOpen
-          ? 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.05))'
-          : 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.05))',
+          ? 'rgba(16,185,129,0.12)'
+          : 'rgba(239,68,68,0.12)',
         border: `2px solid ${isPortalOpen ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
         display: 'flex',
         alignItems: 'center',
@@ -871,7 +871,7 @@ function PortalControlPanel({
           fontSize: 34,
           flexShrink: 0,
           border: `2px solid ${isPortalOpen ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)'}`,
-          boxShadow: isPortalOpen ? '0 0 16px rgba(16,185,129,0.2)' : '0 0 16px rgba(239,68,68,0.2)',
+          boxShadow: 'none',
         }}>
           {portalLoading ? '⏳' : isPortalOpen ? '🟢' : '🔴'}
         </div>
@@ -879,7 +879,7 @@ function PortalControlPanel({
         <div style={{ flex: 1 }}>
           <div style={{
             fontSize: 22,
-            fontWeight: 800,
+            fontWeight: 700,
             color: isPortalOpen ? '#059669' : '#DC2626',
             marginBottom: 4,
             letterSpacing: '-0.3px'
@@ -964,7 +964,7 @@ function PortalControlPanel({
             onClick={() => handleTogglePortal(true)}
           >
             {portalUpdating && !isPortalOpen ? '⏳ Opening…' : '🟢 Open Portal'}
-            {isPortalOpen && ' ✓ Currently Open'}
+            {isPortalOpen && ' · Currently open'}
           </button>
 
           <button
@@ -986,7 +986,7 @@ function PortalControlPanel({
             onClick={() => handleTogglePortal(false)}
           >
             {portalUpdating && isPortalOpen ? '⏳ Closing…' : '🔴 Close Portal'}
-            {!isPortalOpen && ' ✓ Currently Closed'}
+            {!isPortalOpen && ' · Currently closed'}
           </button>
         </div>
 

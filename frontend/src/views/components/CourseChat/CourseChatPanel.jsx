@@ -22,11 +22,14 @@ import { getCurrentUser } from '../../../models/messagingModel.js'
 import { channelService } from '../../../services/channelService.js'
 import ChannelAccessModal from './ChannelAccessModal.jsx'
 import '../DirectMessaging/CourseChannelView.css'
+import apiClient from '../../../services/apiClient.js'
+
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
 
 /* ── Tiny helpers ─────────────────────────────────────────────────── */
 
 function getAvatarColor(id) {
-  const palette = ['#1A9882','#3B82F6','#8B5CF6','#EC4899','#F59E0B','#EF4444','#10B981']
+  const palette = ['#147a68','#3B82F6','#147a68','#EC4899','#F59E0B','#EF4444','#10B981']
   let h = 0
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % palette.length
   return palette[Math.abs(h)]
@@ -92,7 +95,7 @@ function ConnectionBadge({ connected }) {
         height:       7,
         borderRadius: '50%',
         background:   connected ? 'var(--color-success, #22c55e)' : 'var(--color-muted, #6B7280)',
-        boxShadow:    connected ? '0 0 6px var(--color-success, #22c55e)' : 'none',
+        boxShadow:    'none',
         flexShrink:   0,
       }} />
       {connected ? 'Live' : 'Offline'}
@@ -184,10 +187,7 @@ export default function CourseChatPanel({ channel }) {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch('/api/chat/upload', {
-        method: 'POST',
-        body: formData,
-      })
+      const res = await apiClient.upload('/api/chat/upload', formData)
 
       if (res.ok) {
         const data = await res.json()
@@ -250,7 +250,7 @@ export default function CourseChatPanel({ channel }) {
                 onClick={accessController.openModal}
                 style={{
                   backgroundColor: 'rgba(26, 152, 130, 0.18)',
-                  color: '#1A9882',
+                  color: '#147a68',
                   border: '1px solid rgba(26, 152, 130, 0.4)',
                   borderRadius: 6,
                   padding: '3px 8px',
@@ -283,7 +283,7 @@ export default function CourseChatPanel({ channel }) {
                 >
                   <span className="cc-sub-icon hash">#</span>
                   <span className="cc-sub-name">{sub.name}</span>
-                  {sub.readOnly && <span className="cc-read-only-tag">PINNED</span>}
+                  {sub.readOnly && <span className="cc-read-only-tag">Pinned</span>}
                 </div>
               ))}
             </div>
@@ -318,7 +318,7 @@ export default function CourseChatPanel({ channel }) {
               onClick={accessController.openModal}
               style={{
                 backgroundColor: 'rgba(26, 152, 130, 0.18)',
-                color: '#1A9882',
+                color: '#147a68',
                 border: '1px solid rgba(26, 152, 130, 0.4)',
                 borderRadius: 6,
                 padding: '4px 11px',
@@ -383,7 +383,9 @@ export default function CourseChatPanel({ channel }) {
                       </div>
                       {safeContent && <div className="cc-msg-content">{safeContent}</div>}
                       {msg.attachments?.map((att, idx) => {
-                        const downloadUrl = att.fileUrl || att.url || '#';
+                        const rawUrl = att.fileUrl || att.url || '#';
+                        // Backend paths need the API host in production (frontend and API are separate Render services).
+                        const downloadUrl = rawUrl.startsWith('/api/') ? `${API_BASE}${rawUrl}` : rawUrl;
                         return (
                           <div key={att.name || idx} className="cc-msg-attachment">
                             <span className="cc-attach-icon">{getFileIcon(att.name, att.type)}</span>
@@ -400,7 +402,7 @@ export default function CourseChatPanel({ channel }) {
                                 style={{
                                   display: 'inline-flex', alignItems: 'center', gap: 4,
                                   padding: '4px 8px', borderRadius: 4, background: 'rgba(26,152,130,0.2)',
-                                  color: '#1A9882', border: '1px solid rgba(26,152,130,0.4)',
+                                  color: '#147a68', border: '1px solid rgba(26,152,130,0.4)',
                                   fontSize: 11, fontWeight: 600, textDecoration: 'none', marginLeft: 8
                                 }}
                                 title={`Download ${att.name}`}
@@ -433,7 +435,7 @@ export default function CourseChatPanel({ channel }) {
               {activeSubId === 'resources' && pendingAttachment && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
-                  background: '#1c2128', border: '1px solid #1A9882', borderRadius: 8,
+                  background: '#1c2128', border: '1px solid #147a68', borderRadius: 8,
                   marginBottom: 8, fontSize: 12, color: '#e6edf3'
                 }}>
                   <span style={{ fontSize: 16 }}>{getFileIcon(pendingAttachment.name, pendingAttachment.type)}</span>
@@ -447,7 +449,7 @@ export default function CourseChatPanel({ channel }) {
                     style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', marginLeft: 'auto', fontWeight: 'bold', fontSize: 14 }}
                     title="Remove attachment"
                   >
-                    ✕
+                    ×
                   </button>
                 </div>
               )}
@@ -469,7 +471,7 @@ export default function CourseChatPanel({ channel }) {
                       disabled={uploading}
                       title="Upload file (PDF, Doc, Image, Code up to 25MB)"
                       style={{
-                        background: 'none', border: 'none', color: uploading ? '#1A9882' : '#8b949e',
+                        background: 'none', border: 'none', color: uploading ? '#147a68' : '#8b949e',
                         fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center',
                         justifyContent: 'center', padding: '4px 4px', borderRadius: 6,
                         opacity: uploading ? 0.6 : 1

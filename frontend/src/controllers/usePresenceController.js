@@ -34,6 +34,7 @@ import {
 } from '../models/presenceModel.js'
 import { CHAT_WS_URL } from '../models/courseChatModel.js'
 import { getCurrentUser } from '../models/messagingModel.js'
+import { getStoredToken } from '../models/authModel.js'
 
 /**
  * usePresenceController
@@ -132,6 +133,7 @@ export function usePresenceController(currentUser = getCurrentUser()) {
 
   useEffect(() => {
     const client = new StompClient({
+      connectHeaders: { Authorization: `Bearer ${getStoredToken()}` },
       webSocketFactory: () => new SockJS(CHAT_WS_URL),
       reconnectDelay:   8000,
 

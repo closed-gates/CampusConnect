@@ -61,7 +61,7 @@ export default function DMConversationList({
               style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 14 }}
               title="Close"
             >
-              ✕
+              ×
             </button>
           </div>
           <div style={{ marginBottom: 8 }}>
@@ -150,7 +150,7 @@ export default function DMConversationList({
               onClick={() => setSearchQuery('')}
               style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
             >
-              ✕
+              ×
             </button>
           )}
         </div>
@@ -287,7 +287,7 @@ function renderAdvisorChannelItem(ch, activeConvId, onSelectConversation) {
     <div
       key={ch.id}
       className={`univ-chat-item ${isActive ? 'active' : ''}`}
-      style={{ borderLeft: '3px solid #1A9882', marginBottom: 4 }}
+      style={{ marginBottom: 4 }}
       onClick={() => onSelectConversation(ch.id)}
     >
       <div
@@ -295,7 +295,7 @@ function renderAdvisorChannelItem(ch, activeConvId, onSelectConversation) {
         style={{
           width: 42, height: 42,
           borderRadius: 10,
-          background: 'linear-gradient(135deg, #1A9882 0%, #147A68 100%)',
+          background: '#147a68',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 20, flexShrink: 0,
         }}
@@ -309,9 +309,9 @@ function renderAdvisorChannelItem(ch, activeConvId, onSelectConversation) {
             <span className="univ-chat-name">{ch.name}</span>
             <span
               style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 6px',
+                fontSize: 12, fontWeight: 700, padding: '2px 6px',
                 borderRadius: 4, background: 'rgba(26,152,130,0.25)',
-                color: '#1A9882', border: '1px solid rgba(26,152,130,0.4)',
+                color: '#147a68', border: '1px solid rgba(26,152,130,0.4)',
                 textTransform: 'uppercase', letterSpacing: '0.4px',
                 flexShrink: 0
               }}
@@ -355,9 +355,9 @@ function renderChannelItem(ch, activeConvId, onSelectConversation) {
             <span className="univ-chat-name">{ch.name}</span>
             <span
               style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 6px',
+                fontSize: 12, fontWeight: 700, padding: '2px 6px',
                 borderRadius: 4, background: 'var(--color-teal-light, #E6F5F2)',
-                color: 'var(--color-teal, #1A9882)', border: '1px solid rgba(26,152,130,0.3)',
+                color: 'var(--color-teal, #147a68)', border: '1px solid rgba(26,152,130,0.3)',
                 textTransform: 'uppercase', letterSpacing: '0.4px',
                 flexShrink: 0
               }}

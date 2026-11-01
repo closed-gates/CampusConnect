@@ -12,6 +12,7 @@ import {
   YEAR_SEMESTER_OPTIONS,
 } from '../../models/clubModel.js'
 import './ClubActivitiesPage.css'
+import { CheckIcon } from '../components/Icons.jsx'
 
 /**
  * ClubActivitiesView – View layer for the Club Activities page.
@@ -302,7 +303,7 @@ export default function ClubActivitiesView() {
                 className="recruit-form-close"
                 onClick={closeApplyModal}
                 aria-label="Close application form"
-              >✕</button>
+              >×</button>
 
               {/* Header */}
               <div className="recruit-form-header">
@@ -338,7 +339,7 @@ export default function ClubActivitiesView() {
                         className={`recruit-progress-step ${i <= applyStep ? 'active' : ''} ${i < applyStep ? 'completed' : ''}`}
                       >
                         <span className="recruit-step-dot">
-                          {i < applyStep ? '✓' : step.icon}
+                          {i < applyStep ? <CheckIcon width={12} height={12} /> : step.icon}
                         </span>
                         <span className="recruit-step-label">{step.label}</span>
                       </div>
@@ -461,7 +462,7 @@ export default function ClubActivitiesView() {
                               checked={applyForm.interestedTeams.includes(team)}
                               onChange={() => toggleApplyArrayField('interestedTeams', team)} />
                             <span className="recruit-checkbox-mark">
-                              {applyForm.interestedTeams.includes(team) ? '✓' : ''}
+                              {applyForm.interestedTeams.includes(team) ? <CheckIcon width={12} height={12} /> : ''}
                             </span>
                             {team}
                           </label>
@@ -498,7 +499,7 @@ export default function ClubActivitiesView() {
                               checked={applyForm.skills.includes(skill)}
                               onChange={() => toggleApplyArrayField('skills', skill)} />
                             <span className="recruit-checkbox-mark">
-                              {applyForm.skills.includes(skill) ? '✓' : ''}
+                              {applyForm.skills.includes(skill) ? <CheckIcon width={12} height={12} /> : ''}
                             </span>
                             {skill}
                           </label>
@@ -625,7 +626,7 @@ export default function ClubActivitiesView() {
                         className="btn btn-primary recruit-done-btn"
                         onClick={closeApplyModal}
                       >
-                        Done ✓
+                        Done
                       </button>
                     </div>
                   </div>

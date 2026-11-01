@@ -3,6 +3,8 @@ package com.campusconnect.backend.controller;
 import com.campusconnect.backend.dto.AdvisorMatchResponse;
 import com.campusconnect.backend.service.AdvisorService;
 import org.springframework.http.ResponseEntity;
+import com.campusconnect.backend.security.CurrentUser;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +30,6 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/advisors")
-@CrossOrigin(origins = "*")
 public class AdvisorController {
 
     private final AdvisorService advisorService;
@@ -52,14 +53,18 @@ public class AdvisorController {
      */
     @GetMapping("/students")
     public ResponseEntity<List<Map<String, Object>>> getAllStudents(
-            @RequestParam(defaultValue = "Fall2026") String term) {
+            @RequestParam(defaultValue = "Fall2026") String term,
+            Authentication auth) {
+        requireAdvisor(auth);
         return ResponseEntity.ok(advisorService.getAllStudentsAsResponse(term));
     }
 
     // ── GET /api/advisors/student/{studentId} ──────────────────────
     @GetMapping("/student/{studentId}")
     public ResponseEntity<?> getStudentProfile(@PathVariable String studentId,
-                                                @RequestParam(defaultValue = "Fall2026") String term) {
+                                                @RequestParam(defaultValue = "Fall2026") String term,
+                                                Authentication auth) {
+        if (!auth.getName().equalsIgnoreCase(studentId)) requireAdvisor(auth);
         Optional<Map<String, Object>> profile = advisorService.getStudentProfileAsResponse(studentId, term);
         return profile.<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -81,7 +86,8 @@ public class AdvisorController {
      * }
      */
     @PostMapping("/assign")
-    public ResponseEntity<Map<String, Object>> assignCourse(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, Object>> assignCourse(@RequestBody Map<String, String> body, Authentication auth) {
+        requireAdvisor(auth);
         Map<String, Object> result = advisorService.assignCourse(
                 body.get("studentId"),
                 body.get("courseId"),
@@ -103,7 +109,9 @@ public class AdvisorController {
     public ResponseEntity<Map<String, Object>> removeCourse(
             @PathVariable String studentId,
             @PathVariable String courseId,
-            @RequestParam(defaultValue = "Fall2026") String term) {
+            @RequestParam(defaultValue = "Fall2026") String term,
+            Authentication auth) {
+        requireAdvisor(auth);
         Map<String, Object> result = advisorService.removeCourse(studentId, courseId, term);
         boolean success = Boolean.TRUE.equals(result.get("success"));
         return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
@@ -114,7 +122,9 @@ public class AdvisorController {
     @PostMapping("/confirm/{studentId}")
     public ResponseEntity<Map<String, Object>> confirmAdvising(
             @PathVariable String studentId,
-            @RequestBody(required = false) Map<String, String> body) {
+            @RequestBody(required = false) Map<String, String> body,
+            Authentication auth) {
+        requireAdvisor(auth);
         String advisorName = (body != null && body.containsKey("advisorName")) ? body.get("advisorName") : "Advisor";
         String term = (body != null && body.containsKey("term")) ? body.get("term") : "Fall2026";
         Map<String, Object> result = advisorService.confirmAdvising(studentId, advisorName, term);
@@ -134,5 +144,13 @@ public class AdvisorController {
     @GetMapping("/seat-updates")
     public ResponseEntity<Map<String, Integer>> getSeatUpdates() {
         return ResponseEntity.ok(advisorService.getSeatUpdates());
+    }
+
+    /** Advising writes are for faculty, admins, or accounts flagged as advisors. */
+    private void requireAdvisor(Authentication auth) {
+        if (CurrentUser.isStaff(auth)) return;
+        if (!Boolean.TRUE.equals(advisorService.getAdvisorStatus(auth.getName()).get("isAdvisor"))) {
+            throw new com.campusconnect.backend.exception.ForbiddenException("Only advisors can manage advising.");
+        }
     }
 }

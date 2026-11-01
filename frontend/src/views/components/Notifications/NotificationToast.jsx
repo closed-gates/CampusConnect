@@ -55,7 +55,7 @@ export default function NotificationToast({ toast, onClose }) {
           title="Dismiss alert"
           aria-label="Close notification"
         >
-          ✕
+          ×
         </button>
       </div>
     </aside>

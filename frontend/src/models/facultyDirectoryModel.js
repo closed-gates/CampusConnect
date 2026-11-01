@@ -9,7 +9,7 @@ const CATEGORY_ORDER = [
   'Senior Lecturers', 'Lecturers', 'Adjunct Lecturers', 'Research Assistants',
   'Department Coordination Officers', 'Lab Technical Officer',
 ]
-const AVATAR_COLORS = ['#0f766e', '#1d4ed8', '#7c3aed', '#b45309', '#be185d', '#0369a1']
+const AVATAR_COLORS = ['#0f766e', '#1d4ed8', '#147a68', '#b45309', '#be185d', '#0369a1']
 
 export function getInitials(name = '') {
   const ignored = new Set(['dr.', 'mr.', 'ms.', 'phd'])

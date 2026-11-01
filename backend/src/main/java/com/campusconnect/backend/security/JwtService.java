@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
 
@@ -34,10 +35,19 @@ public class JwtService {
     private final long expiryMs;
 
     public JwtService(
-            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.secret:}") String secret,
             @Value("${jwt.expiry-ms:86400000}") long expiryMs) {
-        // Decode Base64 secret → HMAC-SHA key
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
+        byte[] keyBytes;
+        if (secret == null || secret.isBlank()) {
+            // Never fall back to a known key: an unset secret gets a random one,
+            // so tokens stay unforgeable (everyone is logged out on restart).
+            keyBytes = new byte[48];
+            new SecureRandom().nextBytes(keyBytes);
+            org.slf4j.LoggerFactory.getLogger(JwtService.class)
+                    .warn("JWT_SECRET is not set; using a random signing key. Set JWT_SECRET so logins survive restarts.");
+        } else {
+            keyBytes = Base64.getDecoder().decode(secret.trim());
+        }
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
         this.expiryMs   = expiryMs;
     }

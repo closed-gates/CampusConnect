@@ -34,16 +34,13 @@ public class CorsConfig {
 
         // Allowed origins for Render production deployment
         String frontendUrl = System.getenv("FRONTEND_URL");
+        // Local Vite dev servers match the WebSocket origins in WebSocketConfig.
+        List<String> origins = new java.util.ArrayList<>(List.of(
+                "https://*.onrender.com", "http://localhost:*", "http://127.0.0.1:*"));
         if (frontendUrl != null && !frontendUrl.isBlank()) {
-            configuration.setAllowedOriginPatterns(List.of(
-                    "https://*.onrender.com",
-                    frontendUrl.trim()
-            ));
-        } else {
-            configuration.setAllowedOriginPatterns(List.of(
-                    "https://*.onrender.com"
-            ));
+            origins.add(frontendUrl.trim());
         }
+        configuration.setAllowedOriginPatterns(origins);
 
         // Allowed HTTP methods
         configuration.setAllowedMethods(List.of(

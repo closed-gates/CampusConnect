@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
 import authIllustration from '../../assets/auth_illustration.png'
+import { Link } from 'react-router-dom'
 import { useSignupController } from '../../controllers/authController.js'
 import { ROLE_LABELS } from '../../models/authModel.js'
 
@@ -26,13 +26,13 @@ export default function SignupView() {
       <div className="auth-form-panel">
         {/* Logo */}
         <div className="auth-logo">
-          <div className="auth-logo-icon">🎓</div>
+          <div className="auth-logo-icon" aria-hidden="true">🎓</div>
           <span className="auth-logo-text">CampusConnect</span>
         </div>
 
         <h1 className="auth-heading">Create Account</h1>
         <p className="auth-subtext">
-          Join thousands of students managing their courses, schedules, and advising — all in one place.
+          Create your account to register for courses, track assignments and message your advisor.
         </p>
 
         <form onSubmit={handleSignup} noValidate>
@@ -102,7 +102,7 @@ export default function SignupView() {
               onChange={handleChange}
               style={{ cursor: 'pointer' }}
             >
-              {Object.entries(ROLE_LABELS).map(([value, label]) => (
+              {Object.entries(ROLE_LABELS).filter(([value]) => value !== 'ADMIN').map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
             </select>

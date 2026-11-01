@@ -22,7 +22,7 @@ export default function EnrolledCoursesModal({ isOpen, onClose, courses }) {
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
-            ✕
+            ×
           </button>
         </div>
 

@@ -34,6 +34,8 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
 
   const [conversations,    setConversations]    = useState(() => loadConversations(userId))
   const [activeConvId,     setActiveConvId]     = useState(() => loadActiveConvId(userId))
+  // Phones show one pane at a time: the conversation list, or the open chat.
+  const [mobilePane,       setMobilePane]       = useState('list')
   const [messagesMap,      setMessagesMap]      = useState(() => loadMessagesMap(userId))
   const [typingState,      setTypingState]      = useState({})
   const [notificationToast, setNotificationToast] = useState(null)
@@ -383,6 +385,7 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
     }
 
     setActiveConvId(convId)
+    setMobilePane('chat')
     const fresh = loadRoomMessages(convId)
     if (fresh) {
       setMessagesMap(prev => ({ ...prev, [convId]: fresh }))
@@ -434,6 +437,8 @@ export function useMessagingController(user = getCurrentUser(), onMessageSent) {
     handleTyping,
     handleSelectConversation,
     handleStartNewDM,
+    mobilePane,
+    showConversationList: () => setMobilePane('list'),
     // Channel convs (auto-provisioned on enrollment)
     channelConvs,
   }

@@ -32,7 +32,6 @@ export default function RoutineView() {
           <h1 className="dashboard-greeting">📅 Create Routine</h1>
           <p className="dashboard-date">
             Search and select courses to build your weekly schedule.
-            Phase 1 — static data. Database integration in Phase 2.
           </p>
         </div>
 
@@ -92,9 +91,9 @@ export default function RoutineView() {
 
           {/* Arrow controls */}
           <div className="routine-arrows">
-            <button id="routine-add-btn"        className="arrow-btn"          title="Add highlighted course"    onClick={handleAddHighlighted}>›</button>
-            <button id="routine-remove-btn"     className="arrow-btn"          title="Remove highlighted course" onClick={handleRemoveHighlighted}>‹</button>
-            <button id="routine-remove-all-btn" className="arrow-btn arrow-btn-all" title="Remove all"          onClick={removeAll}>«</button>
+            <button id="routine-add-btn"        className="arrow-btn"          title="Add highlighted course" aria-label="Add highlighted course" onClick={handleAddHighlighted}>›</button>
+            <button id="routine-remove-btn"     className="arrow-btn"          title="Remove highlighted course" aria-label="Remove highlighted course" onClick={handleRemoveHighlighted}>‹</button>
+            <button id="routine-remove-all-btn" className="arrow-btn arrow-btn-all" title="Remove all" aria-label="Remove all selected courses" onClick={removeAll}>«</button>
           </div>
 
           {/* Selected courses list */}

@@ -47,7 +47,7 @@ export default function GpaView() {
             style={{
               position: 'fixed', top: 24, right: 24, zIndex: 9999,
               padding: '12px 20px', borderRadius: 8,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              boxShadow: 'none',
               background: toastType === 'error' ? '#EF4444' : '#10B981',
               color: '#fff', fontWeight: 600, fontSize: '0.875rem',
             }}
@@ -368,7 +368,7 @@ export default function GpaView() {
                       </span>
                     </div>
 
-                    <div className="gpa-result-card" style={{ background: 'linear-gradient(135deg,#f0faf8,#e6f5f2)', border: '1.5px solid var(--color-teal)' }}>
+                    <div className="gpa-result-card" style={{ background: '#f0faf8', border: '1.5px solid var(--color-teal)' }}>
                       <span className="gpa-result-card__label">Predicted Overall CGPA</span>
                       <span className="gpa-result-card__value" style={{ color: 'var(--color-teal)' }}>
                         {predictResult.predictedCgpa?.toFixed(2) ?? '—'}
@@ -555,7 +555,7 @@ export default function GpaView() {
                           {/* After */}
                           <div className="retake-box" style={{
                             background: retakeResult.improved
-                              ? 'linear-gradient(135deg,#f0faf8,#d1fae5)'
+                              ? '#f0faf8'
                               : retakeResult.cgpaChange < 0
                                 ? '#FEF2F2'
                                 : 'var(--color-bg)',
@@ -595,7 +595,7 @@ export default function GpaView() {
                           </span>
                           <span style={{
                             fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px',
-                            background: '#EFF6FF', color: '#1E40AF', borderRadius: 999,
+                            background: '#EFF6FF', color: '#147a68', borderRadius: 999,
                             border: '1px solid #BFDBFE'
                           }}>
                             Policy: Grade Replacement

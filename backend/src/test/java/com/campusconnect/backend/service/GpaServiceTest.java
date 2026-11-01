@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 /**
@@ -67,7 +68,8 @@ class GpaServiceTest {
                 .advisedCourses(new ArrayList<>())
                 .build();
 
-        when(studentRepo.findById(STUDENT_ID)).thenReturn(Optional.of(profile));
+        // Shared by transcript tests; the retake-simulation tests never read the profile.
+        lenient().when(studentRepo.findById(STUDENT_ID)).thenReturn(Optional.of(profile));
     }
 
     // ── Transcript Tests ────────────────────────────────────────────────────
@@ -269,8 +271,7 @@ class GpaServiceTest {
 
     @Test
     void testRetakeSimulation_invalidGrade_returnsError() {
-        when(completedCourseRepo.findByStudentId(STUDENT_ID)).thenReturn(Collections.emptyList());
-
+        // The grade is rejected before any repository lookup.
         GpaRetakeRequest req = new GpaRetakeRequest("CSE110", "Z+");
         Map<String, Object> result = gpaService.simulateRetake(STUDENT_ID, req);
 

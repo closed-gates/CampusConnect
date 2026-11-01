@@ -12,7 +12,6 @@ export default function FacultyDirectoryView() {
       <main className="dashboard-main faculty-directory-main">
         <header className="faculty-directory-hero">
           <div>
-            <span className="directory-eyebrow">Campus community</span>
             <h1>Faculty & Staff Directory</h1>
             <p>Find BRACU CSE faculty and staff, verified contact information, and thesis supervision availability.</p>
           </div>

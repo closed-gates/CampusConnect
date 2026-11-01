@@ -3,6 +3,8 @@ package com.campusconnect.backend.controller;
 import com.campusconnect.backend.service.RegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.campusconnect.backend.security.CurrentUser;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,7 +48,9 @@ public class RegistrationController {
     @GetMapping("/sections")
     public ResponseEntity<List<Map<String, Object>>> getSections(
             @RequestParam(defaultValue = "STU001") String studentId,
-            @RequestParam(defaultValue = "Fall2026") String term) {
+            @RequestParam(defaultValue = "Fall2026") String term,
+            Authentication auth) {
+        CurrentUser.requireSelfOrStaff(auth, studentId);
         return ResponseEntity.ok(registrationService.getSections(studentId, term));
     }
 
@@ -55,7 +59,9 @@ public class RegistrationController {
     @GetMapping("/my")
     public ResponseEntity<List<Map<String, Object>>> getMyRegistrations(
             @RequestParam(defaultValue = "STU001") String studentId,
-            @RequestParam(defaultValue = "Fall2026") String term) {
+            @RequestParam(defaultValue = "Fall2026") String term,
+            Authentication auth) {
+        CurrentUser.requireSelfOrStaff(auth, studentId);
         return ResponseEntity.ok(registrationService.getStudentRegistrations(studentId, term));
     }
 
@@ -66,7 +72,8 @@ public class RegistrationController {
      */
     @GetMapping("/window/{studentId}")
     public ResponseEntity<Map<String, Object>> getAdvisingWindow(
-            @PathVariable String studentId) {
+            @PathVariable String studentId, Authentication auth) {
+        CurrentUser.requireSelfOrStaff(auth, studentId);
         return ResponseEntity.ok().cacheControl(org.springframework.http.CacheControl.noStore()).body(registrationService.getAdvisingWindow(studentId));
     }
 
@@ -81,8 +88,9 @@ public class RegistrationController {
      *   409 CONFLICT + { success: false, message }                  on full section
      */
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, String> body) {
-        String studentId = body.getOrDefault("studentId", "STU001");
+    public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, String> body, Authentication auth) {
+        String studentId = body.getOrDefault("studentId", auth.getName());
+        CurrentUser.requireSelfOrStaff(auth, studentId);
         String sectionId = body.get("sectionId");
         String term = body.getOrDefault("term", "Fall2026");
 
@@ -113,7 +121,9 @@ public class RegistrationController {
     public ResponseEntity<Map<String, Object>> drop(
             @PathVariable String studentId,
             @PathVariable String sectionId,
-            @RequestParam(defaultValue = "Fall2026") String term) {
+            @RequestParam(defaultValue = "Fall2026") String term,
+            Authentication auth) {
+        CurrentUser.requireSelfOrStaff(auth, studentId);
 
         Map<String, Object> result = registrationService.dropSection(studentId, sectionId, term);
         boolean success = Boolean.TRUE.equals(result.get("success"));

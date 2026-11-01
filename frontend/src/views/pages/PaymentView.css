@@ -7,9 +7,9 @@
 .payment-page-container {
   display: flex;
   min-height: 100vh;
-  background-color: var(--color-bg, #F4F6F8);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--color-text, #111827);
+  background-color: var(--color-bg, var(--ground));
+  font-family: var(--font);
+  color: var(--color-text, var(--text));
 }
 
 .payment-main-content {
@@ -33,7 +33,7 @@
 .payment-title-group h1 {
   font-size: 26px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   margin: 0 0 6px 0;
   display: flex;
   align-items: center;
@@ -42,7 +42,7 @@
 
 .payment-subtitle {
   font-size: 14px;
-  color: #6B7280;
+  color: var(--muted);
   margin: 0;
 }
 
@@ -61,25 +61,23 @@
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  color: #374151;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
 }
 
 .payment-badge.term-badge {
   background: #E6F5F2;
-  color: #1A9882;
+  color: #147a68;
   border-color: #A7F3D0;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* ── Receipt Section Card ─────────────────────────────────── */
 .payment-receipt-card {
-  background: #FFFFFF;
+  background: var(--surface);
   border-radius: 12px;
-  border: 1px solid #E5E7EB;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
   padding: 28px;
   margin-bottom: 32px;
   position: relative;
@@ -91,7 +89,7 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 18px;
-  border-bottom: 2px solid #F3F4F6;
+  border-bottom: 2px solid var(--rule);
   margin-bottom: 20px;
 }
 
@@ -116,27 +114,27 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   letter-spacing: -0.2px;
 }
 
 .receipt-brand-text span {
   font-size: 12px;
-  color: #1A9882;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #147a68;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .receipt-meta-pills {
   display: flex;
   gap: 16px;
   font-size: 13px;
-  color: #4B5563;
+  color: var(--muted);
 }
 
 .receipt-meta-pills strong {
-  color: #111827;
+  color: var(--text);
 }
 
 /* ── Receipt Table Styling ─────────────────────────────────── */
@@ -161,7 +159,7 @@
 }
 
 .receipt-table th {
-  background-color: #FFFFFF;
+  background-color: var(--surface);
   font-weight: 700;
   color: #000000;
   text-align: center;
@@ -170,7 +168,7 @@
 }
 
 .receipt-table td {
-  color: #1F2937;
+  color: var(--text);
 }
 
 .receipt-table .col-center {
@@ -179,12 +177,12 @@
 
 .receipt-table .col-right {
   text-align: right;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .receipt-table tr.total-row {
   font-weight: 700;
-  background-color: #FAFAFA;
+  background-color: var(--raised);
 }
 
 .receipt-table tr.total-row td {
@@ -230,7 +228,7 @@
 .particulars-table th {
   font-weight: 700;
   text-align: center;
-  background: #FFFFFF;
+  background: var(--surface);
 }
 
 .particulars-table .amount-col {
@@ -247,8 +245,8 @@
   padding: 10px 12px;
   font-size: 12px;
   font-weight: 700;
-  color: #111827;
-  background: #FAFAFA;
+  color: var(--text);
+  background: var(--raised);
   border-top: 1px solid #000000;
   line-height: 1.4;
 }
@@ -274,12 +272,12 @@
 .bank-info-table th {
   font-weight: 700;
   text-align: center;
-  background: #FFFFFF;
+  background: var(--surface);
 }
 
 .bank-info-table td.bank-name-cell {
-  font-weight: 600;
-  color: #111827;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .bank-table-title {
@@ -287,7 +285,7 @@
   font-weight: 700;
   padding: 6px;
   border-bottom: 1px solid #000000;
-  background: #FFFFFF;
+  background: var(--surface);
   font-size: 12.5px;
 }
 
@@ -295,10 +293,10 @@
   padding: 8px 10px;
   font-size: 11px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   text-align: center;
   border-top: 1px solid #000000;
-  background: #FFFFFF;
+  background: var(--surface);
   line-height: 1.35;
 }
 
@@ -310,7 +308,7 @@
   gap: 14px;
   margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid #E5E7EB;
+  border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
 
@@ -318,7 +316,7 @@
   background: #38BDF8;
   color: #FFFFFF;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 10px 22px;
   border-radius: 8px;
   border: none;
@@ -326,19 +324,17 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(56, 189, 248, 0.35);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-offline-download:hover {
-  background: #0284C7;
+  background: var(--data);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
 
 .btn-pay-now {
   background: #7DD3FC;
-  color: #0F172A;
+  color: var(--text);
   font-size: 14px;
   font-weight: 700;
   padding: 10px 26px;
@@ -348,33 +344,30 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(125, 211, 252, 0.3);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-pay-now:hover {
   background: #38BDF8;
   color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
 }
 
 .btn-pay-now.active-pay {
-  background: #1A9882;
-  color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(26, 152, 130, 0.4);
+  background: var(--primary);
+  color: var(--on-primary);
 }
 
 .btn-cancel {
   background: #94A3B8;
   color: #FFFFFF;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 10px 22px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-cancel:hover {
@@ -383,13 +376,12 @@
 
 /* ── Stripe Inline Checkout Box ────────────────────────────── */
 .stripe-checkout-container {
-  background: linear-gradient(135deg, #FFFFFF 0%, #F9FAFB 100%);
-  border: 2px solid #1A9882;
+  background: var(--surface);
+  border: 2px solid #147a68;
   border-radius: 12px;
   padding: 24px 28px;
   margin-top: 24px;
   animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 24px rgba(26, 152, 130, 0.12);
 }
 
 @keyframes slideDown {
@@ -420,30 +412,30 @@
   margin: 0;
   font-size: 17px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .stripe-secure-badge {
   font-size: 12px;
-  color: #059669;
-  background: #ECFDF5;
+  color: var(--positive);
+  background: var(--pill-positive-bg);
   padding: 3px 10px;
   border-radius: 12px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .stripe-element-wrapper {
-  background: #FFFFFF;
-  border: 1px solid #D1D5DB;
+  background: var(--surface);
+  border: 1px solid var(--control);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .stripe-element-wrapper:focus-within {
-  border-color: #1A9882;
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.15);
+  border-color: #147a68;
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .stripe-form-actions {
@@ -455,20 +447,20 @@
 
 .stripe-test-hint {
   font-size: 12px;
-  color: #6B7280;
+  color: var(--muted);
 }
 
 .stripe-test-hint code {
   background: #E5E7EB;
   padding: 2px 6px;
   border-radius: 4px;
-  font-weight: 600;
-  color: #1F2937;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .btn-submit-payment {
-  background: #1A9882;
-  color: #FFFFFF;
+  background: var(--primary);
+  color: var(--on-primary);
   font-size: 14px;
   font-weight: 700;
   padding: 11px 28px;
@@ -478,8 +470,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(26, 152, 130, 0.35);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-submit-payment:hover:not(:disabled) {
@@ -503,15 +494,15 @@
 }
 
 .payment-feedback-alert.success {
-  background: #ECFDF5;
+  background: var(--pill-positive-bg);
   border: 1px solid #A7F3D0;
-  color: #065F46;
+  color: var(--pill-positive-ink);
 }
 
 .payment-feedback-alert.error {
-  background: #FEF2F2;
+  background: var(--pill-negative-bg);
   border: 1px solid #FECACA;
-  color: #991B1B;
+  color: var(--pill-negative-ink);
 }
 
 /* ── Live Bank Map Modal ───────────────────────────────────── */
@@ -519,7 +510,6 @@
   position: fixed;
   inset: 0;
   background: rgba(17, 24, 39, 0.65);
-  backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -534,7 +524,7 @@
 }
 
 .bank-map-modal {
-  background: #FFFFFF;
+  background: var(--surface);
   border-radius: 16px;
   width: 100%;
   max-width: 1100px;
@@ -548,18 +538,18 @@
 
 .modal-header {
   padding: 18px 24px;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #FFFFFF;
+  background: var(--surface);
 }
 
 .modal-title-group h2 {
   margin: 0 0 4px 0;
   font-size: 19px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -568,11 +558,11 @@
 .modal-title-group p {
   margin: 0;
   font-size: 13px;
-  color: #6B7280;
+  color: var(--muted);
 }
 
 .modal-close-btn {
-  background: #F3F4F6;
+  background: var(--raised);
   border: none;
   font-size: 18px;
   width: 34px;
@@ -582,20 +572,20 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #4B5563;
-  transition: all 0.2s;
+  color: var(--muted);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s, transform 0.2s;
 }
 
 .modal-close-btn:hover {
   background: #E5E7EB;
-  color: #111827;
+  color: var(--text);
 }
 
 /* ── Neighborhood / Student Area Selector Bar ─────────────── */
 .modal-area-selector-bar {
-  background: #F3F4F6;
+  background: var(--raised);
   padding: 10px 24px;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -606,7 +596,7 @@
 .area-selector-label {
   font-size: 13px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -624,23 +614,23 @@
   flex: 1;
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--control);
   font-size: 13px;
-  font-weight: 600;
-  color: #1F2937;
-  background: #FFFFFF;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
 }
 
 .student-area-select:focus {
   outline: none;
-  border-color: #1A9882;
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.15);
+  border-color: #147a68;
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .btn-detect-gps {
-  background: #1A9882;
-  color: #FFFFFF;
+  background: var(--primary);
+  color: var(--on-primary);
   border: none;
   padding: 8px 14px;
   border-radius: 6px;
@@ -651,8 +641,7 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(26, 152, 130, 0.25);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-detect-gps:hover {
@@ -675,8 +664,8 @@
 
 .map-sidebar-panel {
   width: 380px;
-  background: #F9FAFB;
-  border-right: 1px solid #E5E7EB;
+  background: var(--raised);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -684,14 +673,14 @@
 
 .map-filter-bar {
   padding: 14px 16px;
-  border-bottom: 1px solid #E5E7EB;
-  background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
 }
 
 .map-filter-label {
   font-size: 12px;
-  font-weight: 600;
-  color: #4B5563;
+  font-weight: 500;
+  color: var(--muted);
   margin-bottom: 8px;
   display: block;
 }
@@ -700,10 +689,10 @@
   width: 100%;
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--control);
   font-size: 13px;
-  color: #1F2937;
-  background: #FFFFFF;
+  color: var(--text);
+  background: var(--surface);
 }
 
 .map-branch-list {
@@ -713,29 +702,27 @@
 }
 
 .branch-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px 14px;
   margin-bottom: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .branch-card:hover {
-  border-color: #1A9882;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+  border-color: #147a68;
 }
 
 .branch-card.accepting-partner {
-  border-left: 4px solid #1A9882;
   background: #FAFDFB;
 }
 
 .branch-card-title {
   font-size: 13.5px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   margin-bottom: 4px;
   display: flex;
   justify-content: space-between;
@@ -744,8 +731,8 @@
 
 .branch-distance-tag {
   font-size: 11px;
-  font-weight: 600;
-  color: #1A9882;
+  font-weight: 500;
+  color: #147a68;
   background: #E6F5F2;
   padding: 2px 6px;
   border-radius: 4px;
@@ -753,15 +740,15 @@
 
 .branch-address {
   font-size: 12px;
-  color: #6B7280;
+  color: var(--muted);
   margin-bottom: 6px;
 }
 
 .branch-accept-badge {
   font-size: 11px;
-  font-weight: 600;
-  color: #065F46;
-  background: #D1FAE5;
+  font-weight: 500;
+  color: var(--pill-positive-ink);
+  background: var(--pill-positive-bg);
   display: inline-block;
   padding: 2px 8px;
   border-radius: 10px;
@@ -769,7 +756,7 @@
 
 .branch-account-no {
   font-size: 11.5px;
-  color: #374151;
+  color: var(--text);
   margin-top: 4px;
   font-family: monospace;
 }
@@ -792,7 +779,7 @@
   justify-content: center;
   gap: 12px;
   font-size: 14px;
-  color: #374151;
+  color: var(--text);
   font-weight: 500;
   z-index: 500;
 }
@@ -800,8 +787,8 @@
 .map-spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid #E5E7EB;
-  border-top-color: #1A9882;
+  border: 3px solid var(--border);
+  border-top-color: #147a68;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -818,9 +805,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #1A9882;
-  color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: var(--primary);
+  color: var(--on-primary);
   border: 2px solid #FFFFFF;
   font-size: 15px;
   cursor: pointer;
@@ -832,18 +818,18 @@
 }
 
 .custom-leaflet-marker.user-location-marker {
-  background: #2563EB;
+  background: var(--data);
   animation: pulsePin 1.5s infinite;
 }
 
 @keyframes pulsePin {
-  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  0% { }
+  70% { }
+  100% { }
 }
 
 .custom-leaflet-marker.accepting-marker {
-  background: #10B981;
+  background: var(--positive);
   border-color: #FFFFFF;
 }
 
@@ -857,13 +843,13 @@
   flex-direction: column;
   gap: 16px;
   padding: 40px;
-  background: #FFFFFF;
+  background: var(--surface);
   border-radius: 12px;
 }
 
 .skeleton-bar {
   height: 24px;
-  background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+  background: var(--raised);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 6px;
@@ -876,8 +862,8 @@
 
 /* ── Paid Clearance Banner & Status Tags ────────────────────── */
 .paid-clearance-banner {
-  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
-  border: 2px solid #10B981;
+  background: var(--pill-positive-bg);
+  border: 2px solid var(--positive);
   border-radius: 12px;
   padding: 20px 24px;
   margin-bottom: 24px;
@@ -885,7 +871,6 @@
   align-items: center;
   gap: 16px;
   animation: slideDown 0.35s ease;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
   flex-wrap: wrap;
 }
 
@@ -901,13 +886,13 @@
   margin: 0 0 4px 0;
   font-size: 17px;
   font-weight: 700;
-  color: #065F46;
+  color: var(--pill-positive-ink);
 }
 
 .paid-banner-text p {
   margin: 0;
   font-size: 13.5px;
-  color: #047857;
+  color: var(--positive);
 }
 
 .paid-banner-text code {
@@ -915,11 +900,11 @@
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 700;
-  color: #065F46;
+  color: var(--pill-positive-ink);
 }
 
 .btn-download-paid-receipt {
-  background: #059669;
+  background: var(--positive);
   color: #FFFFFF;
   font-size: 13.5px;
   font-weight: 700;
@@ -930,34 +915,33 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-download-paid-receipt:hover {
-  background: #047857;
+  background: var(--positive);
   transform: translateY(-1px);
 }
 
 /* Status Badges */
 .status-badge-paid {
-  background: #ECFDF5 !important;
-  color: #059669 !important;
+  background: var(--pill-positive-bg) !important;
+  color: var(--positive) !important;
   border-color: #A7F3D0 !important;
   font-weight: 700 !important;
 }
 
 .status-badge-pending {
-  background: #FFFBEB !important;
-  color: #D97706 !important;
+  background: var(--pill-warning-bg) !important;
+  color: var(--warning) !important;
   border-color: #FDE68A !important;
   font-weight: 700 !important;
 }
 
 .status-tag-paid {
-  color: #059669;
+  color: var(--positive);
   font-weight: 700;
-  background: #ECFDF5;
+  background: var(--pill-positive-bg);
   padding: 3px 8px;
   border-radius: 4px;
   border: 1px solid #A7F3D0;
@@ -965,9 +949,9 @@
 }
 
 .status-tag-pending {
-  color: #D97706;
+  color: var(--warning);
   font-weight: 700;
-  background: #FFFBEB;
+  background: var(--pill-warning-bg);
   padding: 3px 8px;
   border-radius: 4px;
   border: 1px solid #FDE68A;
@@ -979,28 +963,27 @@
   position: absolute;
   top: 90px;
   right: 50px;
-  border: 3px solid #10B981;
-  color: #10B981;
-  font-family: 'Inter', -apple-system, sans-serif;
+  border: 3px solid var(--positive);
+  color: var(--positive);
+  font-family: var(--font);
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 700;
   padding: 8px 18px;
   border-radius: 8px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  text-transform: none;
+  letter-spacing: 0;
   transform: rotate(-12deg);
   opacity: 0.85;
   pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
   z-index: 10;
 }
 
 .paid-watermark-stamp small {
-  font-size: 9px;
-  letter-spacing: 1px;
+  font-size: 12px;
+  letter-spacing: 0;
   margin-top: 2px;
   font-weight: 700;
 }
@@ -1009,8 +992,8 @@
 .payment-tab-bar {
   display: flex;
   gap: 4px;
-  background: #F3F4F6;
-  border: 1px solid #E5E7EB;
+  background: var(--raised);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 4px;
   margin-bottom: 24px;
@@ -1027,27 +1010,26 @@
   border: none;
   background: transparent;
   font-size: 13.5px;
-  font-weight: 600;
-  color: #6B7280;
+  font-weight: 500;
+  color: var(--muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .payment-tab-btn:hover {
   background: #E5E7EB;
-  color: #1F2937;
+  color: var(--text);
 }
 
 .payment-tab-btn.active {
-  background: #FFFFFF;
-  color: #1A9882;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  background: var(--surface);
+  color: #147a68;
 }
 
 /* ── Admin Badge ─────────────────────────────────────────────── */
 .admin-badge {
-  background: #FEF3C7 !important;
-  color: #92400E !important;
+  background: var(--pill-warning-bg) !important;
+  color: var(--pill-warning-ink) !important;
   border-color: #FDE68A !important;
 }
 
@@ -1059,8 +1041,8 @@
 }
 
 .history-header-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px 24px;
   display: flex;
@@ -1074,7 +1056,7 @@
   margin: 0 0 6px 0;
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1083,7 +1065,7 @@
 .history-title-box p {
   margin: 0;
   font-size: 13px;
-  color: #6B7280;
+  color: var(--muted);
   max-width: 580px;
 }
 
@@ -1093,28 +1075,28 @@
 
 .history-search-input {
   padding: 9px 14px;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--control);
   border-radius: 8px;
   font-size: 13px;
-  color: #1F2937;
-  background: #F9FAFB;
+  color: var(--text);
+  background: var(--raised);
   width: 280px;
   transition: border-color 0.2s;
 }
 
 .history-search-input:focus {
   outline: none;
-  border-color: #1A9882;
-  box-shadow: 0 0 0 3px rgba(26, 152, 130, 0.15);
+  border-color: #147a68;
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 /* ── History Table ───────────────────────────────────────────── */
 .history-table-wrapper {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .history-table {
@@ -1124,7 +1106,7 @@
 }
 
 .history-table thead tr {
-  background: linear-gradient(135deg, #1A9882, #157E6C);
+  background: var(--primary);
 }
 
 .history-table thead th {
@@ -1132,14 +1114,14 @@
   color: #FFFFFF;
   font-weight: 700;
   font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: none;
+  letter-spacing: 0;
   white-space: nowrap;
   text-align: left;
 }
 
 .history-table tbody tr {
-  border-bottom: 1px solid #F3F4F6;
+  border-bottom: 1px solid var(--rule);
   transition: background 0.15s;
 }
 
@@ -1148,19 +1130,19 @@
 }
 
 .history-table tbody tr:hover {
-  background: #F9FAFB;
+  background: var(--raised);
 }
 
 .history-table tbody td {
   padding: 14px 16px;
-  color: #374151;
+  color: var(--text);
   vertical-align: middle;
 }
 
 /* Receipt code pill */
 .receipt-code-pill {
   font-size: 13px;
-  color: #1A9882;
+  color: #147a68;
   font-family: monospace;
   background: #F0FDF9;
   padding: 3px 8px;
@@ -1170,8 +1152,8 @@
 
 /* History term tag */
 .history-term-tag {
-  background: #EFF6FF;
-  color: #1D4ED8;
+  background: var(--data-tint);
+  color: var(--data);
   border: 1px solid #BFDBFE;
   padding: 3px 9px;
   border-radius: 20px;
@@ -1193,21 +1175,21 @@
 }
 
 .method-badge.stripe {
-  background: #EEF2FF;
-  color: #4338CA;
-  border: 1px solid #C7D2FE;
+  background: #eef1ef;
+  color: #147a68;
+  border: 1px solid var(--rule);
 }
 
 .method-badge.bank {
-  background: #FEF3C7;
-  color: #92400E;
+  background: var(--pill-warning-bg);
+  color: var(--pill-warning-ink);
   border: 1px solid #FDE68A;
 }
 
 /* History PDF download button */
 .btn-history-pdf {
-  background: #1A9882;
-  color: #FFFFFF;
+  background: var(--primary);
+  color: var(--on-primary);
   border: none;
   padding: 7px 13px;
   border-radius: 7px;
@@ -1217,20 +1199,19 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
   white-space: nowrap;
 }
 
 .btn-history-pdf:hover {
   background: #157E6C;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(26, 152, 130, 0.3);
 }
 
 /* ── Empty State ─────────────────────────────────────────────── */
 .history-empty-state {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 60px 24px;
   text-align: center;
@@ -1240,19 +1221,19 @@
   margin: 0 0 8px 0;
   font-size: 17px;
   font-weight: 700;
-  color: #374151;
+  color: var(--text);
 }
 
 .history-empty-state p {
   margin: 0;
   font-size: 13px;
-  color: #9CA3AF;
+  color: var(--muted);
 }
 
 /* ── No Enrollment Empty State ───────────────────────────────── */
 .no-enrollment-card {
-  background: #FFFFFF;
-  border: 2px dashed #D1D5DB;
+  background: var(--surface);
+  border: 2px dashed var(--control);
   border-radius: 16px;
   padding: 60px 40px;
   text-align: center;
@@ -1271,14 +1252,14 @@
 .no-enrollment-card h3 {
   margin: 0;
   font-size: 22px;
-  font-weight: 800;
-  color: #374151;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .no-enrollment-card > p {
   margin: 0;
   font-size: 14px;
-  color: #6B7280;
+  color: var(--muted);
   max-width: 480px;
   line-height: 1.6;
 }
@@ -1287,12 +1268,12 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: #EFF6FF;
+  background: var(--data-tint);
   border: 1px solid #BFDBFE;
   border-radius: 10px;
   padding: 12px 18px;
   font-size: 13px;
-  color: #1D4ED8;
+  color: var(--data);
   max-width: 500px;
   text-align: left;
   margin-top: 4px;
@@ -1300,10 +1281,9 @@
 
 /* ── Admin Student Selector Card ─────────────────────────── */
 .admin-student-selector-card {
-  background: #FFFFFF;
+  background: var(--surface);
   border-radius: 12px;
-  border: 1px solid #E5E7EB;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border);
   padding: 16px 20px;
   margin-bottom: 22px;
   display: flex;
@@ -1319,13 +1299,13 @@
 }
 
 .admin-selector-badge {
-  background: #EEF2FF;
-  color: #4F46E5;
+  background: #eef1ef;
+  color: #147a68;
   font-size: 12px;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 20px;
-  border: 1px solid #C7D2FE;
+  border: 1px solid var(--rule);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1333,7 +1313,7 @@
 
 .admin-selector-instruction {
   font-size: 13px;
-  color: #4B5563;
+  color: var(--muted);
 }
 
 .admin-selector-control-row {
@@ -1345,47 +1325,48 @@
 .admin-student-select-dropdown {
   min-width: 240px;
   padding: 9px 14px;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--control);
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-  background: #F9FAFB;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--raised);
   outline: none;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .admin-student-select-dropdown:focus {
-  border-color: #4F46E5;
-  background: #FFFFFF;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  border-color: #147a68;
+  background: var(--surface);
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .btn-clear-student-select {
   padding: 8px 14px;
-  background: #F3F4F6;
-  border: 1px solid #D1D5DB;
+  background: var(--raised);
+  border: 1px solid var(--control);
   border-radius: 8px;
   font-size: 12px;
-  font-weight: 600;
-  color: #4B5563;
+  font-weight: 500;
+  color: var(--muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-clear-student-select:hover {
   background: #E5E7EB;
-  color: #111827;
+  color: var(--text);
 }
 
 /* ── Admin Empty Selection Placeholder ───────────────────── */
 .admin-empty-selection-placeholder {
-  background: #FFFFFF;
-  border: 2px dashed #CBD5E1;
+  background: var(--surface);
+  border: 2px dashed var(--control);
   border-radius: 12px;
   padding: 56px 24px;
   text-align: center;
-  color: #64748B;
+  color: var(--muted);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1402,7 +1383,7 @@
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #334155;
+  color: var(--text);
 }
 
 .admin-empty-selection-placeholder p {
@@ -1417,20 +1398,19 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #4F46E5;
-  color: #FFFFFF;
-  font-weight: 600;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 500;
   font-size: 13px;
   padding: 10px 18px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-admin-bypass:hover {
-  background: #4338CA;
+  background: var(--primary);
   transform: translateY(-1px);
 }
 
@@ -1443,37 +1423,37 @@
 }
 
 .btn-history-edit {
-  background: #F3F4F6;
-  color: #374151;
-  border: 1px solid #D1D5DB;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--control);
   border-radius: 6px;
   padding: 5px 10px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
 }
 
 .btn-history-edit:hover {
   background: #E6F5F2;
-  color: #1A9882;
+  color: #147a68;
   border-color: #A7F3D0;
 }
 
 .btn-history-delete {
-  background: #FEE2E2;
-  color: #DC2626;
+  background: var(--pill-negative-bg);
+  color: var(--negative);
   border: 1px solid #FECACA;
   border-radius: 6px;
   padding: 5px 10px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
 }
 
 .btn-history-delete:hover {
-  background: #EF4444;
+  background: var(--negative);
   color: #FFFFFF;
-  border-color: #EF4444;
+  border-color: var(--negative);
 }

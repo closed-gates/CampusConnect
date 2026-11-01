@@ -44,14 +44,19 @@ public class AiChatService {
     private static final String FALLBACK_MESSAGE =
         "I do not have the information you need. Please contact the admin or desired department for further assistance.";
 
-    private static final String OPENAI_API_URL    = "https://api.openai.com/v1/chat/completions";
     private static final String DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
     private static final String ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-    private static final String CLAUDE_MODEL       = "claude-3-5-haiku-20241022";
     private static final int    MAX_HISTORY_TURNS  = 6;  // keep last 3 user+assistant pairs
 
     @Value("${openai.api.key:}")
     private String openaiApiKey;
+
+    /** Any OpenAI-compatible chat endpoint: OpenAI, Google Gemini, Groq, OpenRouter. */
+    @Value("${openai.api.url:https://api.openai.com/v1/chat/completions}")
+    private String openaiApiUrl;
+
+    @Value("${anthropic.model:claude-haiku-5-5}")
+    private String claudeModel;
 
     @Value("${openai.model:gpt-4o-mini}")
     private String openaiModel;
@@ -128,7 +133,7 @@ public class AiChatService {
                 log.info("[AiChatService] Generating reply via OpenAI ({})", (openaiModel != null && !openaiModel.isBlank()) ? openaiModel : DEFAULT_OPENAI_MODEL);
                 reply = callOpenAI(effectiveOpenAiKey, systemPrompt, request.getHistory(), userMessage);
             } else if (hasValidAnthropicKey()) {
-                log.info("[AiChatService] Generating reply via Anthropic ({})", CLAUDE_MODEL);
+                log.info("[AiChatService] Generating reply via Anthropic ({})", claudeModel);
                 reply = callClaude(systemPrompt, request.getHistory(), userMessage);
             } else {
                 log.warn("[AiChatService] No valid AI provider key is configured");
@@ -479,7 +484,7 @@ public class AiChatService {
 
         // Build request body
         ObjectNode body = objectMapper.createObjectNode();
-        body.put("model", CLAUDE_MODEL);
+        body.put("model", orDefault(claudeModel, "claude-haiku-5-5"));
         body.put("max_tokens", 1024);
         body.put("system", systemPrompt);
         body.set("messages", messagesArray);
@@ -517,6 +522,11 @@ public class AiChatService {
             return anthropicApiKey.trim();
         }
         return null;
+    }
+
+    /** A blank line in .env overrides the property default, so treat blank as unset. */
+    private static String orDefault(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value.trim();
     }
 
     private boolean hasValidAnthropicKey() {
@@ -568,7 +578,7 @@ public class AiChatService {
         String requestBody = objectMapper.writeValueAsString(body);
 
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(OPENAI_API_URL))
+            .uri(URI.create(orDefault(openaiApiUrl, "https://api.openai.com/v1/chat/completions")))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + apiKey)
             .POST(HttpRequest.BodyPublishers.ofString(requestBody))

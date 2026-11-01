@@ -10,7 +10,7 @@
 
 .cm-page-title {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-text);
   letter-spacing: -0.4px;
 }
@@ -26,7 +26,7 @@
 .cm-delete-btn {
   border: none;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -34,21 +34,21 @@
   padding: 10px 20px;
   border-radius: var(--radius-sm);
   font-size: 14px;
-  background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+  background: var(--primary);
   color: var(--color-white);
 }
 
 .cm-secondary-btn {
   padding: 8px 14px;
   border-radius: var(--radius-sm);
-  background: var(--color-teal-light);
+  background: var(--active);
   color: var(--color-teal-dark);
 }
 
 .cm-delete-btn {
   padding: 8px 12px;
   border-radius: var(--radius-sm);
-  background: #FEF2F2;
+  background: var(--pill-negative-bg);
   color: var(--color-error);
 }
 
@@ -62,7 +62,7 @@
 
 .cm-label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .cm-input,
@@ -119,10 +119,10 @@
 .cm-badge {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--color-teal-dark);
-  background: var(--color-teal-light);
+  background: var(--active);
   border-radius: 999px;
   padding: 3px 8px;
 }

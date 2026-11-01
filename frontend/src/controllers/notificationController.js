@@ -18,6 +18,7 @@ import SockJS from 'sockjs-client';
 import { getCurrentUser } from '../models/messagingModel.js';
 import { CHAT_WS_URL } from '../models/courseChatModel.js';
 import apiClient from '../services/apiClient.js';
+import { getStoredToken } from '../models/authModel.js';
 import {
   loadPreferences,
   PREFERENCE_CHANGE_EVENT,
@@ -94,6 +95,8 @@ export function useNotificationController(user = getCurrentUser()) {
     if (role !== 'STUDENT') return;
 
     const client = new StompClient({
+
+      connectHeaders: { Authorization: `Bearer ${getStoredToken()}` },
       webSocketFactory: () => new SockJS(CHAT_WS_URL),
       reconnectDelay: 5000,
       heartbeatIncoming: 20000,

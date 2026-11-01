@@ -180,10 +180,10 @@ export default function AttendanceView() {
               </div>
               <div className="att-quick-actions">
                 <button id="mark-all-present" className="att-quick-btn present" onClick={() => markAll('PRESENT')}>
-                  ✓ All Present
+                  All Present
                 </button>
                 <button id="mark-all-absent" className="att-quick-btn absent" onClick={() => markAll('ABSENT')}>
-                  ✕ All Absent
+                  × All Absent
                 </button>
               </div>
               <div className="att-mark-progress">
@@ -468,9 +468,9 @@ function HistoryTabContent({ historyDates, historyByDate, courseInfo, loading })
                     {formatAttendanceDate(date)}
                   </div>
                   <div className="att-history-stats">
-                    <span className="att-stat-chip present">✓ {summary.present}</span>
-                    <span className="att-stat-chip absent">✕ {summary.absent}</span>
-                    <span className="att-stat-chip late">⏱ {summary.late}</span>
+                    <span className="att-stat-chip present">{summary.present} present</span>
+                    <span className="att-stat-chip absent">{summary.absent} absent</span>
+                    <span className="att-stat-chip late">⏱ {summary.late} late</span>
                     <span className="att-stat-chip rate">{summary.rate}%</span>
                   </div>
                 </div>
@@ -529,13 +529,13 @@ function SummaryTabContent({ courseSummary, historyDates, historyByDate, courseS
         </div>
 
         <div className="att-summary-card">
-          <div className="att-summary-icon present">✓</div>
+          <div className="att-summary-icon present"></div>
           <div className="att-summary-value">{courseSummary.present}</div>
           <div className="att-summary-label">Total Present</div>
         </div>
 
         <div className="att-summary-card">
-          <div className="att-summary-icon absent">✕</div>
+          <div className="att-summary-icon absent">×</div>
           <div className="att-summary-value">{courseSummary.absent}</div>
           <div className="att-summary-label">Total Absent</div>
         </div>

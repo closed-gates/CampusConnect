@@ -128,7 +128,7 @@ public class PaymentService {
                 ? request.getDescription()
                 : "CampusConnect Course Registration Fee (" + (request.getStudentId() != null ? request.getStudentId() : "STU") + ")";
 
-        if (stripeSecretKey != null && stripeSecretKey.startsWith("sk_") && !stripeSecretKey.equals("sk_test_replace_me")) {
+        if (stripeConfigured()) {
             try {
                 Stripe.apiKey = stripeSecretKey;
 
@@ -175,7 +175,11 @@ public class PaymentService {
      */
     @Transactional
     public PaymentRecord confirmAndSavePayment(PaymentConfirmRequest req) {
-        String receiptNo = "REC-2026-" + String.format("%04d", (int)(Math.random() * 9000) + 1000);
+        // Test mode keeps the demo flow (mock intents included); only live keys must prove the charge.
+        if (stripeSecretKey != null && stripeSecretKey.startsWith("sk_live_")) {
+            verifyStripePayment(req);
+        }
+        String receiptNo = "REC-" + UUID.randomUUID().toString().substring(0, 13).toUpperCase();
         String txnId = (req.getTransactionId() != null && !req.getTransactionId().isBlank())
                 ? req.getTransactionId()
                 : "TXN_" + UUID.randomUUID().toString().substring(0, 12).toUpperCase();
@@ -267,7 +271,7 @@ public class PaymentService {
                 : "Fall2026";
         PaymentReceiptDTO receipt = paymentReceiptService.getReceipt(studentId, term);
 
-        String receiptNo = "REC-BYPASS-" + String.format("%04d", (int)(Math.random() * 9000) + 1000);
+        String receiptNo = "REC-BYPASS-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         String txnId = "BYPASS_" + UUID.randomUUID().toString().substring(0, 10).toUpperCase();
 
         String itemsJson = "[]";
@@ -349,6 +353,32 @@ public class PaymentService {
             throw new ResourceNotFoundException("Payment record not found with id: " + id);
         }
         paymentRecordRepo.deleteById(id);
+    }
+
+    private boolean stripeConfigured() {
+        return stripeSecretKey != null && stripeSecretKey.startsWith("sk_") && !stripeSecretKey.equals("sk_test_replace_me");
+    }
+
+    /** With live Stripe keys, a receipt is only saved for a PaymentIntent Stripe says succeeded. */
+    private void verifyStripePayment(PaymentConfirmRequest req) {
+        String intentId = req.getTransactionId();
+        if (intentId == null || !intentId.startsWith("pi_")) {
+            throw new ForbiddenException("A completed Stripe payment is required.");
+        }
+        try {
+            Stripe.apiKey = stripeSecretKey;
+            PaymentIntent intent = PaymentIntent.retrieve(intentId);
+            if (!"succeeded".equals(intent.getStatus())) {
+                throw new ForbiddenException("Stripe payment has not succeeded (status: " + intent.getStatus() + ").");
+            }
+            // Store what Stripe actually charged, not what the client claims.
+            double paid = intent.getAmount() / 100.0;
+            req.setNetPayable(paid);
+            req.setPaymentStatus("PAID");
+            req.setPaymentMethod("STRIPE_ONLINE");
+        } catch (StripeException e) {
+            throw new ForbiddenException("Could not verify payment with Stripe: " + e.getMessage());
+        }
     }
 
     /**

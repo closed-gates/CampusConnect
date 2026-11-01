@@ -48,7 +48,7 @@ export default function BypassCourseView() {
               zIndex: 9999,
               padding: '12px 20px',
               borderRadius: 8,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              boxShadow: 'none',
               background: toastType === 'error' ? '#EF4444' : '#10B981',
               color: '#FFFFFF',
               fontWeight: 600
@@ -127,13 +127,13 @@ export default function BypassCourseView() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                       <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: 8, border: '1px solid #E2E8F0' }}>
                         <span style={{ fontSize: 11, color: '#64748B', display: 'block' }}>Current CGPA</span>
-                        <span style={{ fontSize: 18, fontWeight: 800, color: standing.color }}>
+                        <span style={{ fontSize: 18, fontWeight: 700, color: standing.color }}>
                           {studentHistory.cgpa.toFixed(2)}
                         </span>
                       </div>
                       <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: 8, border: '1px solid #E2E8F0' }}>
                         <span style={{ fontSize: 11, color: '#64748B', display: 'block' }}>Completed Credits</span>
-                        <span style={{ fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
+                        <span style={{ fontSize: 18, fontWeight: 700, color: '#0F172A' }}>
                           {studentHistory.completedCredits} <span style={{ fontSize: 12, fontWeight: 500, color: '#94A3B8' }}>/ {totalCreditsRequired}</span>
                         </span>
                       </div>
@@ -359,7 +359,7 @@ export default function BypassCourseView() {
                               onClick={() => handleDeleteBypass(course.id)}
                               title="Revert bypass and recalculate CGPA"
                             >
-                              ✕ Revert
+                              × Revert
                             </button>
                           </td>
                         </tr>

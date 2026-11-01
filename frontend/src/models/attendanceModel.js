@@ -24,7 +24,7 @@
  */
 export const COURSE_COLORS = {
   CSE470: '#0D9488',
-  CSE341: '#7C3AED',
+  CSE341: '#147a68',
   CSE221: '#D97706',
   CSE311: '#E11D48',
   CSE332: '#2563EB',
@@ -39,7 +39,7 @@ export const COURSE_COLORS = {
  * @returns {string} CSS colour value
  */
 export function getCourseColor(courseId) {
-  return COURSE_COLORS[courseId] || '#6366F1'
+  return COURSE_COLORS[courseId] || '#147a68'
 }
 
 // ── Date helpers ──────────────────────────────────────────────────────────────
@@ -60,8 +60,8 @@ export function formatAttendanceDate(iso) {
 
 /** Visual config for each attendance status value. */
 export const STATUS_CONFIG = {
-  PRESENT: { label: 'Present', color: '#10B981', bg: '#ECFDF5', icon: '✓' },
-  ABSENT:  { label: 'Absent',  color: '#EF4444', bg: '#FEF2F2', icon: '✕' },
+  PRESENT: { label: 'Present', color: '#10B981', bg: '#ECFDF5', icon: '' },
+  ABSENT:  { label: 'Absent',  color: '#EF4444', bg: '#FEF2F2', icon: '' },
   LATE:    { label: 'Late',    color: '#F59E0B', bg: '#FFFBEB', icon: '⏱' },
 }
 
